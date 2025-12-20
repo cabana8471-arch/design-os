@@ -4,6 +4,120 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-20 17:15] Skills System Integration: Frontend-Design Guidance in Workflow
+
+### Description
+
+Integration of the frontend-design skill into the Design OS workflow, ensuring design guidance is available throughout the planning and export process. Addressed 4 issues (1 P0 critical + 2 P1 medium + 1 P2 clarity) related to skills documentation, command integration, and design guidance hierarchy.
+
+### New Files Created
+
+None (all modifications integrated into existing files)
+
+### Modified Files
+
+| File | Modification |
+|------|--------------|
+| `.claude/commands/design-os/design-shell.md` | **Lines 126-136:** Added Step 6 "Read Design Guidance" instructing users to read `.claude/skills/frontend-design/SKILL.md` before creating shell components. Ensures shell has distinctive, production-grade aesthetics. Renumbered subsequent steps (Step 7→8, Step 8→9, Step 9→10) |
+| `agents.md` | **Lines 64-82:** Updated File Structure section to include `.claude/commands/` and `.claude/skills/` directory documentation. **Lines 181-230:** Added new "Skills & Design Guidance" section documenting: the frontend-design skill location and purpose, when/how skills integrate with commands (design-shell Step 6, design-screen Step 5), and design guidance hierarchy clarifying that both technical requirements and aesthetic guidance are MANDATORY |
+| `.claude/commands/design-os/export-product.md` | **Lines 64-69:** Added `mkdir -p product-plan/design-guidance` directory creation. **Lines 80-81:** Updated export structure diagram to show `design-guidance/frontend-design.md`. **Lines 522-529:** Added Step 7 "Copy Design Guidance" instructing to copy `.claude/skills/frontend-design/SKILL.md` contents to export package. **Lines 1080:** Updated README template "What's Included" section to document design-guidance folder. Renumbered subsequent steps (7→8, 8→9, etc. up to Step 16) |
+
+### Gaps Resolved
+
+**Critical (P0) - 1 Issue:**
+1. **design-shell.md Missing Frontend-Design Skill Reference** → Added Step 6 to read skill before creating components. Ensures shell design quality matches section screens.
+
+**Medium (P1) - 2 Issues:**
+2. **agents.md Has No Documentation About Skills** → Added "Skills & Design Guidance" section with skill location, purpose, and integration points. Updated File Structure to document `.claude/skills/` organization.
+3. **export-product.md Doesn't Include Skills in Export Package** → Added Step 7 to copy frontend-design skill to `product-plan/design-guidance/`. Updated directory creation, export structure, and README template.
+
+**Clarity (P2) - 1 Issue:**
+4. **Logical Inconsistency: Skill Guidance vs. Design Requirements** → Clarified in agents.md that technical requirements (responsive, dark mode, props-based) and aesthetic guidance (distinctive UI, bold directions, thoughtful typography) are complementary and both MANDATORY for production-ready designs.
+
+### Statistics
+
+- **Files modified:** 3
+  - 2 command files (design-shell.md, export-product.md)
+  - 1 documentation file (agents.md)
+- **Critical fixes:** 1
+- **Medium fixes:** 2
+- **Clarity improvements:** 1
+- **Total issues resolved:** 4
+- **Lines added/modified:** ~100 lines
+
+### Key Improvements
+
+1. **Design Quality Consistency**: Shell design now follows same distinctive, non-generic aesthetic standards as section screens
+2. **Workflow Integration**: Skills system is fully documented and integrated into command workflow
+3. **Complete Handoff**: Implementation agents now receive design guidance in export packages
+4. **Clear Hierarchy**: Developers understand that both technical and aesthetic requirements must be followed
+5. **Documentation Completeness**: agents.md now comprehensively documents skills system and design guidance
+
+### Verification
+
+All modifications validated for:
+- ✅ Logical consistency with existing patterns
+- ✅ Alignment with previous 23 fixes (no conflicts)
+- ✅ Complete integration of frontend-design skill into workflow
+- ✅ Design guidance availability in export packages
+- ✅ Clear documentation of design guidance hierarchy
+- ✅ Proper renumbering of all subsequent steps
+
+### Production Status
+
+**After Implementation:**
+- **Skills Integration:** COMPLETE (skill referenced in all UI design commands)
+- **Export Completeness:** ENHANCED (design guidance included in handoff packages)
+- **Design Consistency:** ASSURED (shell and sections follow same quality standards)
+- **Developer Guidance:** COMPREHENSIVE (design hierarchy clearly documented)
+- **Production Ready:** ✅ YES (skills system fully integrated and documented)
+
+### Git Commit
+
+```
+commit 6464298
+author: Claude Code <noreply@anthropic.com>
+date:   2025-12-20
+
+Integrate frontend-design skill into Design OS workflow: Complete skill system documentation
+
+CRITICAL FIX (P0 - 1 issue):
+- Fix design-shell.md: Add Step 6 to read frontend-design skill before creating components
+  Ensures shell has distinctive, production-grade aesthetics matching section screens
+
+MEDIUM FIXES (P1 - 2 issues):
+- Update agents.md: Add comprehensive "Skills & Design Guidance" section documenting:
+  * The frontend-design skill and its purpose
+  * When and how skills integrate with commands (design-shell, design-screen)
+  * Design guidance hierarchy (technical requirements vs aesthetic guidance)
+  * Updated File Structure to include .claude/skills/ organization
+
+- Modify export-product.md: Add skill export to product-plan package:
+  * Add Step 7: Copy Design Guidance (frontend-design.md to product-plan/)
+  * Update directory creation to include design-guidance/
+  * Update export structure diagram to show design-guidance/
+  * Reference skill guidance in implementation prompts
+  * Update README.md template to document design-guidance/
+
+CLARITY IMPROVEMENT (P2 - 1 issue):
+- Document design guidance hierarchy in agents.md:
+  * Technical requirements (responsive, dark mode, props-based, Tailwind v4) = MANDATORY
+  * Aesthetic guidance (distinctive UI, bold directions, thoughtful typography) = MANDATORY
+  * Both must be followed for production-ready designs
+  * Technical ensures portability; aesthetic ensures memorable design
+
+RESULT:
+- Design OS now fully integrates skills system
+- Implementation agents have access to design guidance
+- Clear hierarchy between technical and aesthetic requirements
+- Shell designs follow same quality standards as section screens
+- Handoff packages include design guidance for implementation
+
+Status: 4/4 issues resolved. Skills system fully integrated into Design OS workflow.
+```
+
+---
+
 ## [2025-12-20 16:45] Additional Design OS Enhancements: 9 New Issues Fixed
 
 ### Description
