@@ -39,7 +39,7 @@ If design tokens exist, read them and use them for styling. If they don't exist,
 "Note: Design tokens haven't been defined yet. I'll use default styling, but for consistent branding, consider running `/design-tokens` first."
 
 **Shell:**
-- Check if `src/shell/components/AppShell.tsx` exists
+- Check if `product/shell/spec.md` exists
 
 If shell exists, the screen design will render inside the shell in Design OS. If not, show a warning:
 

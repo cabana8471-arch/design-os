@@ -162,7 +162,11 @@ The `_meta` descriptions should:
 
 The data should directly support the user flows and UI requirements in the spec.
 
-## Step 5.5: Validate Data Structure
+## Step 5.5: Perform Data Validation
+
+After creating data.json, you MUST perform the following validations to ensure data integrity. These validations are mandatory and must complete before proceeding.
+
+### Validate Data Structure
 
 After creating data.json, verify that the file was created correctly:
 
@@ -182,18 +186,22 @@ After creating data.json, verify that the file was created correctly:
 
 If any validation fails, inform the user of the specific issue and recreate the file with corrections.
 
-## Step 5.6: Validate Entity Name Consistency
+### Validate Entity Name Consistency
 
 If a global data model exists, verify that entity names in your sample data match the global data model:
 
 1. **Read the global data model:**
    - Check if `/product/data-model/data-model.md` exists
+   - If it exists, read the file
 
 2. **Extract entity names from the data model:**
-   - Identify all entities defined in the global data model
+   - Entity names are defined in the markdown file using `### EntityName` headings
+   - For example: `### User`, `### Invoice`, `### Project`
+   - Create a list of all entity names found in the markdown headings
 
 3. **Compare with section data:**
    - Check if the keys in `_meta.models` match entity names from the global data model
+   - Compare the names you extracted from the markdown headings (from step 2) with the keys in your data.json `_meta.models`
 
 4. **Report discrepancies:**
    - If entity names don't match ANY from the data model:

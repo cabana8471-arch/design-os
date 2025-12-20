@@ -171,7 +171,13 @@ Export all components.
 
 ## Step 8: Create Shell Preview
 
-Create `src/shell/ShellPreview.tsx` — a preview wrapper for viewing the shell in Design OS:
+First, ensure the shell directory exists:
+
+```bash
+mkdir -p src/shell
+```
+
+Then create `src/shell/ShellPreview.tsx` — a preview wrapper for viewing the shell in Design OS:
 
 ```tsx
 import { AppShell } from './components/AppShell'

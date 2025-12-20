@@ -532,6 +532,67 @@ Reference this file in implementation prompts:
 
 > **Before creating components, read `product-plan/design-guidance/frontend-design.md` and follow its guidance on distinctive UI, bold design directions, thoughtful typography, and effective motion.**
 
+## Step 7.5: Validate All Components
+
+Before proceeding with export, validate that all components are portable and follow the props-based pattern. This is a **blocking step** — the export cannot proceed if validation fails.
+
+### Validate Shell Components
+
+If shell components exist at `src/shell/components/`, validate each file:
+
+1. **Check imports:**
+   - [ ] No `import data from '@/../product/...'` statements
+   - [ ] No direct imports of `.json` files
+   - [ ] Only imports from external libraries or relative component files
+
+2. **Check component structure:**
+   - [ ] Component accepts all data via props
+   - [ ] All callbacks are optional and use optional chaining: `onAction?.()`
+   - [ ] No state management code (useState, useContext, etc.)
+   - [ ] No routing logic or navigation calls
+
+### Validate Section Components
+
+For each section, validate all component files in `src/sections/[section-id]/components/`:
+
+1. **Check imports:**
+   - [ ] No `import data from '@/../product/...'` statements
+   - [ ] No direct imports of `.json` files
+   - [ ] Types imported from `@/../product/sections/[section-id]/types` (these will be transformed to `../types`)
+
+2. **Check component structure:**
+   - [ ] Component accepts all data via props
+   - [ ] All callbacks are optional and use optional chaining: `onAction?.()`
+   - [ ] No state management code (useState, useContext, etc.)
+   - [ ] No routing logic or navigation calls
+
+### If Validation Passes
+
+Continue to Step 8 with confidence.
+
+### If Validation Fails
+
+**Do not proceed with export.** Instead:
+
+1. **Report failures to user** — List all components that failed validation and specify why:
+   - Component imports data directly from JSON
+   - Component contains routing/navigation logic
+   - Component uses state management
+
+2. **Provide fix instructions** — Tell the user:
+   ```
+   The following components cannot be exported as-is:
+   - [Component1] - imports data directly
+   - [Component2] - contains routing logic
+
+   Please run `/design-screen` for the affected sections and fix these issues:
+   - Remove all direct data imports
+   - Use props to accept all data instead
+   - Replace routing with optional callbacks
+   ```
+
+3. **Do not create partial exports** — An incomplete export with missing or broken components will cause failures in the user's codebase. It's better to fix the components first, then re-run the export.
+
 ## Step 8: Copy and Transform Components
 
 ### Shell Components
@@ -559,52 +620,7 @@ Copy `product/sections/[section-id]/types.ts` to `product-plan/sections/[section
 
 Copy `product/sections/[section-id]/data.json` to `product-plan/sections/[section-id]/sample-data.json`
 
-### Validate Components Before Export
-
-Before exporting components, verify they follow the props-based pattern:
-
-**For each component file in src/sections/[section-id]/components/:**
-
-1. **Check imports:**
-   - [ ] No `import data from '@/../product/...'` statements
-   - [ ] No direct imports of `.json` files
-   - [ ] Types imported from `@/../product/sections/[section-id]/types` (these will be transformed to `../types`)
-
-2. **Check component structure:**
-   - [ ] Component accepts all data via props
-   - [ ] All callbacks are optional and use optional chaining: `onAction?.()`
-   - [ ] No state management code (useState, useContext, etc.)
-   - [ ] No routing logic or navigation calls
-
-3. **Flag violations as errors:**
-   - If a component imports data directly, it's not portable — must be fixed
-   - If a component uses routing/navigation, it needs to be callback-driven instead
-
-**Only components that pass validation should be exported.** Non-portable components will break in the user's codebase.
-
-### If Component Validation Fails
-
-If any components fail validation:
-
-1. **Stop the export** — Do not proceed with creating the export package
-2. **Report failures to user** — List all components that failed validation and specify why:
-   - Component imports data directly from JSON
-   - Component contains routing/navigation logic
-   - Component uses state management
-3. **Provide fix instructions** — Tell the user:
-   ```
-   The following components cannot be exported as-is:
-   - [Component1] - imports data directly
-   - [Component2] - contains routing logic
-
-   Please run `/design-screen` for the affected sections and fix these issues:
-   - Remove all direct data imports
-   - Use props to accept all data instead
-   - Replace routing with optional callbacks
-   ```
-4. **Do not export partial packages** — An incomplete export with missing or broken components could cause failures in production. It's better to fix the components first.
-
-## Step 9: Generate Section READMEs
+## Step 10: Generate Section READMEs
 
 For each section, create `product-plan/sections/[section-id]/README.md`:
 
@@ -650,7 +666,159 @@ See `screenshot.png` for the target UI design.
 [Adjust based on actual Props interface]
 ```
 
-## Step 10: Generate Section Test Instructions
+## Step 10.5: Consolidate Data Model Types
+
+Create unified type definitions and documentation for the entire data model in the export package.
+
+### Create data-model/types.ts
+
+Create `product-plan/data-model/types.ts` by consolidating types from all sections:
+
+1. **Read the global data model:**
+   - If `/product/data-model/data-model.md` exists, extract entity descriptions
+
+2. **Consolidate all section types:**
+   - For each section, read `product/sections/[section-id]/types.ts`
+   - Extract all exported interfaces (exclude component Props interfaces)
+   - Combine into a single consolidated types file
+
+3. **Add JSDoc comments:**
+   - Include descriptions from the global data model
+   - Document relationships between entities
+   - Add usage examples where helpful
+
+4. **Export everything:**
+   - Export all entity interfaces
+   - Export any enums or type unions used across sections
+
+**Example structure:**
+
+```typescript
+// =============================================================================
+// Global Entity Types (from Data Model)
+// =============================================================================
+
+/** Represents a user in the system */
+export interface User {
+  id: string
+  name: string
+  email: string
+  // ... other fields
+}
+
+/** Represents a project managed by users */
+export interface Project {
+  id: string
+  name: string
+  ownerId: string  // References User.id
+  // ... other fields
+}
+
+// =============================================================================
+// Section-Specific Types
+// =============================================================================
+
+// From [Section 1]
+export interface Task {
+  id: string
+  projectId: string  // References Project.id
+  // ... other fields
+}
+
+// From [Section 2]
+export interface Document {
+  id: string
+  projectId: string
+  // ... other fields
+}
+
+// =============================================================================
+// Relationships & Documentation
+// =============================================================================
+
+/**
+ * Type relationships in this product:
+ * - User "owns" many Projects
+ * - Project "contains" many Tasks
+ * - Project "contains" many Documents
+ */
+```
+
+### Create data-model/README.md
+
+Create `product-plan/data-model/README.md` to document the data model:
+
+```markdown
+# Data Model
+
+## Overview
+
+[If global data model exists: "This product uses the following core entities:"]
+[If not: "The following entities are used across sections:"]
+
+## Entities
+
+### [Entity 1]
+[Description from data model or inferred from types]
+
+- Fields: [List key fields]
+- Relationships: [How it connects to other entities]
+
+### [Entity 2]
+[Repeat for all entities]
+
+## Relationships
+
+[Document how entities connect to each other]
+
+- Users own Projects
+- Projects contain Tasks
+- etc.
+
+## Sample Data
+
+See `sample-data.json` for example data for each entity.
+
+## Usage in Implementation
+
+When building the product, these entity types should map to:
+- Database schema
+- API response models
+- Component props and state
+
+All sections use these shared types to ensure data consistency across the application.
+```
+
+### Create data-model/sample-data.json
+
+Consolidate sample data from all sections:
+
+```json
+{
+  "_meta": {
+    "models": {
+      "users": "Users of the application",
+      "projects": "Projects owned and managed by users",
+      "tasks": "Individual tasks within projects"
+    },
+    "relationships": [
+      "Each User can own multiple Projects",
+      "Each Project contains multiple Tasks"
+    ]
+  },
+  "users": [
+    { /* sample user data */ }
+  ],
+  "projects": [
+    { /* sample project data */ }
+  ],
+  "tasks": [
+    { /* sample task data */ }
+  ]
+}
+```
+
+## Step 11: Generate Section Test Instructions
 
 For each section, create `product-plan/sections/[section-id]/tests.md` with detailed test-writing instructions based on the section's spec, user flows, and UI design.
 
@@ -868,7 +1036,7 @@ When generating tests.md for each section:
 8. **Include edge cases** — Boundary conditions, transitions between empty and populated states
 9. **Stay framework-agnostic** — Describe WHAT to test, not HOW to write the test code
 
-## Step 11: Generate Design System Files
+## Step 13: Generate Design System Files
 
 ### tokens.css
 
@@ -928,7 +1096,7 @@ Add to your HTML `<head>` or CSS:
 - **Code/technical:** [Mono Font]
 ```
 
-## Step 12: Generate Prompt Files
+## Step 14: Generate Prompt Files
 
 Create the `product-plan/prompts/` directory with two ready-to-use prompt files.
 
@@ -1056,7 +1224,7 @@ Once I answer your questions, proceed with implementation.
 
 ```
 
-## Step 13: Generate README.md
+## Step 15: Generate README.md
 
 Create `product-plan/README.md`:
 
@@ -1133,13 +1301,13 @@ The test instructions are **framework-agnostic** — they describe WHAT to test,
 *Generated by Design OS*
 ```
 
-## Step 14: Copy Screenshots
+## Step 16: Copy Screenshots
 
 Copy any `.png` files from:
 - `product/shell/` → `product-plan/shell/`
 - `product/sections/[section-id]/` → `product-plan/sections/[section-id]/`
 
-## Step 15: Create Zip File
+## Step 17: Create Zip File
 
 After generating all the export files, create a zip archive of the product-plan folder:
 
@@ -1153,7 +1321,7 @@ cd . && zip -r product-plan.zip product-plan/
 
 This creates `product-plan.zip` in the project root, which will be available for download on the Export page.
 
-## Step 16: Confirm Completion
+## Step 18: Confirm Completion
 
 Let the user know:
 
