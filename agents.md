@@ -216,3 +216,62 @@ The Design OS application itself uses a "Refined Utility" aesthetic:
 - **Layout**: Maximum 800px content width, generous whitespace
 - **Cards**: Minimal borders (1px), subtle shadows, generous padding
 - **Motion**: Subtle fade-ins (200ms), no bouncy animations
+
+---
+
+## Standardized Prerequisite Checks
+
+All commands must follow this consistent pattern for checking prerequisites:
+
+### Pattern: Required vs. Optional Prerequisites
+
+**Required Prerequisites** → STOP with clear error message if missing
+- Product overview (almost all commands)
+- Product roadmap (planning commands)
+- Section spec (for data/design commands)
+
+**Optional Enhancements** → WARN and continue if missing
+- Design tokens (design commands proceed with defaults)
+- Data model (sample-data proceeds with local definitions)
+- Application shell (design-shell question may be skipped)
+
+### Standard Error Messages
+
+**Required file missing:**
+```
+I don't see [file description] at [path]. Please run [prerequisite command] first.
+```
+
+**Optional feature missing:**
+```
+Note: [Feature] hasn't been defined yet. I'll proceed with [default approach], but for [reason], consider running [command] first.
+```
+
+### Directory Creation Pattern
+
+All commands that create files must include explicit directory creation:
+
+```bash
+# Before creating /product/sections/[section-id]/spec.md:
+mkdir -p product/sections/[section-id]
+
+# Before creating /product/design-system/colors.json:
+mkdir -p product/design-system
+
+# Before creating src/shell/components/AppShell.tsx:
+mkdir -p src/shell/components
+```
+
+### File Validation Pattern
+
+After creating critical files, verify structure:
+
+1. **Check existence:** File was actually written
+2. **Validate structure:** Required fields/sections exist
+3. **Verify content:** Data is consistent and complete
+
+For `data.json` files specifically:
+- Verify `_meta` object exists at top level
+- Verify `_meta.models` is an object with descriptions
+- Verify `_meta.relationships` is an array
+- Ensure all model names match actual data keys

@@ -52,7 +52,9 @@ Ask questions one or two at a time, conversationally. Focus on user experience a
 
 ## Step 5: Ask About Shell Configuration
 
-If a shell design has been created for this project (check if `/src/shell/components/AppShell.tsx` exists), ask the user about shell usage:
+Check if a shell design has been created for this project by looking for `product/shell/spec.md` (this is more reliable than checking for component files, which might be partial).
+
+If shell specification exists, ask the user about shell usage:
 
 "Should this section's screen designs be displayed **inside the app shell** (with navigation header), or should they be **standalone pages** (without the shell)?
 
@@ -62,7 +64,7 @@ Use AskUserQuestion with options:
 - "Inside app shell" - The default for most in-app sections
 - "Standalone (no shell)" - For public pages, landing pages, or embeds
 
-If no shell design exists yet, skip this question and default to using the shell.
+If no shell design exists yet (no `product/shell/spec.md`), skip this question and default to `shell: true` (it will use the shell once it's designed).
 
 ## Step 6: Present Draft and Refine
 
@@ -91,7 +93,18 @@ Iterate until the user is satisfied. Don't add features that weren't discussed. 
 
 ## Step 7: Create the Spec File
 
-Once the user approves, create the file at `product/sections/[section-id]/spec.md` with this exact format:
+Once the user approves:
+
+### Create Directory
+
+First, ensure the directory exists by creating it if needed:
+```bash
+mkdir -p product/sections/[section-id]
+```
+
+### Create the Specification File
+
+Then create the file at `product/sections/[section-id]/spec.md` with this exact format:
 
 ```markdown
 # [Section Title] Specification

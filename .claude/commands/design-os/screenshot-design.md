@@ -102,6 +102,22 @@ If they want additional screenshots (e.g., dark mode, different states):
 - Mobile viewport
 - Different states (empty, loading, etc.)"
 
+## Step 6: Clean Up - Kill Dev Server
+
+After you're done capturing screenshots, kill the dev server process you started:
+
+```bash
+# Kill the npm run dev process
+pkill -f "npm run dev"
+```
+
+Verify it's actually stopped by checking if port 3000 is free:
+```bash
+lsof -i :3000
+```
+
+If no process appears, the server is successfully stopped.
+
 ## Important Notes
 
 - Start the dev server yourself - do not ask the user to do it
@@ -109,4 +125,4 @@ If they want additional screenshots (e.g., dark mode, different states):
 - Use descriptive filenames that indicate the screen design and any variant (dark mode, mobile, etc.)
 - Capture at a consistent viewport width for documentation consistency
 - Always capture full page screenshots to include all scrollable content
-- After you're done, you may kill the dev server if you started it
+- **Always kill the dev server when done** — do not leave it running in the background

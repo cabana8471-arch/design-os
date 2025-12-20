@@ -441,6 +441,19 @@ Create `product-plan/instructions/one-shot-instructions.md` by combining all mil
 
 ---
 
+## Implementation Sequence
+
+Build this product in milestones:
+
+1. **Foundation** — Design tokens, data model types, routing structure, and application shell (all together)
+2. **[Section 1]** — [Brief description]
+3. **[Section 2]** — [Brief description]
+[List all sections]
+
+Start with the Foundation milestone which sets up the core infrastructure, then build each section in order.
+
+---
+
 ## Test-Driven Development
 
 Each section includes a `tests.md` file with detailed test-writing instructions. These are **framework-agnostic** — adapt them to your testing setup (Jest, Vitest, Playwright, Cypress, RSpec, Minitest, PHPUnit, etc.).
@@ -465,7 +478,10 @@ The test instructions include:
 
 # Milestone 1: Foundation
 
-[Include 01-foundation.md content WITHOUT the preamble — it's already at the top. This includes design tokens, data model, routing, AND application shell.]
+> **Purpose:** Set up all foundational elements in one milestone
+> **Includes:** Design tokens, data model types, routing structure, AND application shell
+
+[Include 01-foundation.md content WITHOUT the preamble — it's already at the top. Foundation includes design tokens, data model, routing, AND application shell all together.]
 
 ---
 
@@ -508,6 +524,29 @@ Copy `product/sections/[section-id]/types.ts` to `product-plan/sections/[section
 ### Sample Data
 
 Copy `product/sections/[section-id]/data.json` to `product-plan/sections/[section-id]/sample-data.json`
+
+### Validate Components Before Export
+
+Before exporting components, verify they follow the props-based pattern:
+
+**For each component file in src/sections/[section-id]/components/:**
+
+1. **Check imports:**
+   - [ ] No `import data from '@/../product/...'` statements
+   - [ ] No direct imports of `.json` files
+   - [ ] Types imported from `@/../product/sections/[section-id]/types` (these will be transformed to `../types`)
+
+2. **Check component structure:**
+   - [ ] Component accepts all data via props
+   - [ ] All callbacks are optional and use optional chaining: `onAction?.()`
+   - [ ] No state management code (useState, useContext, etc.)
+   - [ ] No routing logic or navigation calls
+
+3. **Flag violations as errors:**
+   - If a component imports data directly, it's not portable — must be fixed
+   - If a component uses routing/navigation, it needs to be callback-driven instead
+
+**Only components that pass validation should be exported.** Non-portable components will break in the user's codebase.
 
 ## Step 8: Generate Section READMEs
 

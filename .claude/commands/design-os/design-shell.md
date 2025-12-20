@@ -84,7 +84,17 @@ Iterate until approved.
 
 ## Step 5: Create the Shell Specification
 
-Create `/product/shell/spec.md`:
+### Create Directory
+
+First, ensure the shell directory exists:
+```bash
+mkdir -p product/shell
+mkdir -p src/shell/components
+```
+
+### Create the Specification File
+
+Then create `/product/shell/spec.md`:
 
 ```markdown
 # Application Shell Specification
@@ -152,10 +162,11 @@ Export all components.
 Create `src/shell/ShellPreview.tsx` — a preview wrapper for viewing the shell in Design OS:
 
 ```tsx
-import data from '@/../product/sections/[first-section]/data.json' // if exists
 import { AppShell } from './components/AppShell'
 
 export default function ShellPreview() {
+  // Use placeholder mock data — no need to import from sections
+  // This ensures the preview works even if no sections exist yet
   const navigationItems = [
     { label: '[Section 1]', href: '/section-1', isActive: true },
     { label: '[Section 2]', href: '/section-2' },
@@ -164,6 +175,7 @@ export default function ShellPreview() {
 
   const user = {
     name: 'Alex Morgan',
+    email: 'alex@example.com',
     avatarUrl: undefined,
   }
 
@@ -184,6 +196,8 @@ export default function ShellPreview() {
   )
 }
 ```
+
+**Important:** Use placeholder mock data in the preview, not imports from sections. This ensures the shell preview works even if no sections have been designed yet.
 
 ## Step 8: Apply Design Tokens
 

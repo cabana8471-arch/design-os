@@ -56,7 +56,18 @@ Iterate until the user is satisfied.
 
 ## Step 4: Create the File
 
-Once the user approves, create the file at `/product/product-overview.md` with this exact format:
+Once the user approves:
+
+### Create Product Directory
+
+First, ensure the product directory exists:
+```bash
+mkdir -p product
+```
+
+### Create the Overview File
+
+Then create the file at `/product/product-overview.md` with this exact format:
 
 ```markdown
 # [Product Name]

@@ -97,7 +97,18 @@ Use the AskUserQuestion tool if there are ambiguities about what data is needed.
 
 ## Step 5: Generate the Data File
 
-Once the user approves the structure, create `product/sections/[section-id]/data.json` with:
+Once the user approves the structure:
+
+### Ensure Directory Exists
+
+First, verify the directory exists:
+```bash
+mkdir -p product/sections/[section-id]
+```
+
+### Create the Data File
+
+Then create `product/sections/[section-id]/data.json` with:
 
 - **A `_meta` section** - Human-readable descriptions of each data model and their relationships (displayed in the UI)
 - **Realistic sample data** - Use believable names, dates, descriptions, etc.
@@ -150,6 +161,26 @@ The `_meta` descriptions should:
 - **Match the global data model descriptions if one exists**
 
 The data should directly support the user flows and UI requirements in the spec.
+
+## Step 5.5: Validate Data Structure
+
+After creating data.json, verify that the file was created correctly:
+
+1. **Check file exists:** Verify `product/sections/[section-id]/data.json` exists
+2. **Validate `_meta` structure:**
+   - [ ] `_meta` object exists at top level
+   - [ ] `_meta.models` is an object with descriptions for each data collection
+   - [ ] `_meta.relationships` is an array with plain-language relationship descriptions
+   - [ ] All data model keys in `_meta.models` match the actual data keys below
+3. **Check data consistency:**
+   - [ ] All records have consistent field names
+   - [ ] All required fields are present in all records
+   - [ ] Data types match across records (no inconsistent typing)
+4. **Verify content quality:**
+   - [ ] Sample values are realistic and believable
+   - [ ] Edge cases are included (empty arrays, long text, various statuses)
+
+If any validation fails, inform the user of the specific issue and recreate the file with corrections.
 
 ## Step 6: Generate TypeScript Types
 

@@ -71,7 +71,18 @@ Iterate until the user is satisfied.
 
 ## Step 5: Create the File
 
-Once approved, create the file at `/product/data-model/data-model.md` with this format:
+Once approved:
+
+### Create Directory
+
+First, ensure the data-model directory exists:
+```bash
+mkdir -p product/data-model
+```
+
+### Create the Data Model File
+
+Then create the file at `/product/data-model/data-model.md` with this format:
 
 ```markdown
 # Data Model

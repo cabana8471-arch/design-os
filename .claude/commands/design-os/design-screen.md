@@ -72,15 +72,33 @@ Which view should I create first?"
 
 If there's only one obvious view, proceed directly.
 
-## Step 5: Invoke the Frontend Design Skill
+## Step 5: Read Frontend Design Guidance
 
-Before creating the screen design, read the `frontend-design` skill to ensure high-quality design output.
+Before creating the screen design, read the `frontend-design` skill guidance to ensure high-quality design output.
 
 Read the file at `.claude/skills/frontend-design/SKILL.md` and follow its guidance for creating distinctive, production-grade interfaces.
 
+### Key Design Principles to Follow
+
+From the frontend-design skill:
+- Create distinctive, non-generic interfaces that avoid common AI design patterns
+- Use creative layouts with strong visual hierarchy
+- Apply thoughtful spacing and typography choices
+- Implement meaningful interactions and animations
+- Ensure accessibility and responsive design throughout
+
 ## Step 6: Create the Props-Based Component
 
-Create the main component file at `src/sections/[section-id]/components/[ViewName].tsx`.
+### Ensure Directory Exists
+
+First, create the necessary directories if they don't exist:
+```bash
+mkdir -p src/sections/[section-id]/components
+```
+
+### Create the Component File
+
+Then create the main component file at `src/sections/[section-id]/components/[ViewName].tsx`.
 
 ### Component Structure
 

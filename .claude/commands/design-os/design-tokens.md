@@ -98,7 +98,18 @@ Does this look good? Ready to save it?"
 
 ## Step 6: Create the Files
 
-Once approved, create two files:
+Once approved:
+
+### Create Directory
+
+First, ensure the design-system directory exists:
+```bash
+mkdir -p product/design-system
+```
+
+### Create the Token Files
+
+Then create two files:
 
 **File 1:** `/product/design-system/colors.json`
 ```json
