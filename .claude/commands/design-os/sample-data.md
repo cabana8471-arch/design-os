@@ -182,6 +182,28 @@ After creating data.json, verify that the file was created correctly:
 
 If any validation fails, inform the user of the specific issue and recreate the file with corrections.
 
+## Step 5.6: Validate Entity Name Consistency
+
+If a global data model exists, verify that entity names in your sample data match the global data model:
+
+1. **Read the global data model:**
+   - Check if `/product/data-model/data-model.md` exists
+
+2. **Extract entity names from the data model:**
+   - Identify all entities defined in the global data model
+
+3. **Compare with section data:**
+   - Check if the keys in `_meta.models` match entity names from the global data model
+
+4. **Report discrepancies:**
+   - If entity names don't match ANY from the data model:
+     ```
+     Note: Your data uses [entity1, entity2], but the global data model defines [datamodel-entity1, datamodel-entity2].
+     Consider aligning the names for consistency across sections, or let me know if these are section-specific entities.
+     ```
+
+This validation ensures consistency across all sections and prevents fragmented data models.
+
 ## Step 6: Generate TypeScript Types
 
 After creating data.json, generate `product/sections/[section-id]/types.ts` based on the data structure.

@@ -77,6 +77,16 @@ The Playwright MCP tool can only save screenshots to its default output director
    cp .playwright-mcp/[filename].png product/sections/[section-id]/[filename].png
    ```
 
+3. **Verify the screenshot was saved:**
+   ```bash
+   # Check if the screenshot file exists and has content
+   if [ -f "product/sections/[section-id]/[filename].png" ] && [ -s "product/sections/[section-id]/[filename].png" ]; then
+     echo "Screenshot saved successfully"
+   else
+     echo "Error: Screenshot file not found or is empty"
+   fi
+   ```
+
 **Naming convention:** `[screen-design-name]-[variant].png`
 
 Examples:

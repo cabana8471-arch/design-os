@@ -72,6 +72,16 @@ Which view should I create first?"
 
 If there's only one obvious view, proceed directly.
 
+### Note on Multiple Views
+
+When creating designs for a section with multiple views:
+
+- **Create each view as a separate component file:** `src/sections/[section-id]/components/[ViewName].tsx`
+- **Create a separate preview wrapper for each:** `src/sections/[section-id]/[ViewName].tsx` (in section root)
+- **Update types.ts with Props interfaces:** Add a Props interface for each view (e.g., `ListViewProps`, `DetailViewProps`)
+- **Update components/index.ts:** Export all view components for easy importing
+- **Track created views:** After creating each view, confirm it in the UI so you know which ones are complete
+
 ## Step 5: Read Frontend Design Guidance
 
 Before creating the screen design, read the `frontend-design` skill guidance to ensure high-quality design output.

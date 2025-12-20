@@ -48,7 +48,13 @@ Iterate on the sections based on user feedback. Ask clarifying questions:
 
 ### Create the File
 
-Once approved, create `/product/product-roadmap.md` with this exact format:
+First, ensure the directory exists:
+
+```bash
+mkdir -p product
+```
+
+Then create `/product/product-roadmap.md` with this exact format:
 
 ```markdown
 # Product Roadmap
@@ -73,7 +79,7 @@ Once approved, create `/product/product-roadmap.md` with this exact format:
 2. **[Section 2]** — [Description]
 3. **[Section 3]** — [Description]
 
-**Next step:** Run `/data-model` to define the core entities and relationships in your product. This establishes a shared vocabulary that keeps your sections consistent."
+**Next step:** Run `/data-model` to define the core entities and relationships in your product. After that, run `/design-tokens` to choose your color palette and typography. This establishes a shared vocabulary and consistent styling that keeps your sections aligned."
 
 ---
 

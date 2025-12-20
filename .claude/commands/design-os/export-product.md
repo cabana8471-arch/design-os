@@ -52,7 +52,24 @@ Read all relevant files:
 
 ## Step 3: Create Export Directory Structure
 
-Create the `product-plan/` directory with this structure:
+First, create the root `product-plan/` directory:
+
+```bash
+mkdir -p product-plan
+```
+
+Then create all required subdirectories:
+
+```bash
+mkdir -p product-plan/prompts
+mkdir -p product-plan/instructions/incremental
+mkdir -p product-plan/design-system
+mkdir -p product-plan/data-model
+mkdir -p product-plan/shell/components
+```
+
+The complete structure will be:
+
 
 ```
 product-plan/
@@ -547,6 +564,28 @@ Before exporting components, verify they follow the props-based pattern:
    - If a component uses routing/navigation, it needs to be callback-driven instead
 
 **Only components that pass validation should be exported.** Non-portable components will break in the user's codebase.
+
+### If Component Validation Fails
+
+If any components fail validation:
+
+1. **Stop the export** — Do not proceed with creating the export package
+2. **Report failures to user** — List all components that failed validation and specify why:
+   - Component imports data directly from JSON
+   - Component contains routing/navigation logic
+   - Component uses state management
+3. **Provide fix instructions** — Tell the user:
+   ```
+   The following components cannot be exported as-is:
+   - [Component1] - imports data directly
+   - [Component2] - contains routing logic
+
+   Please run `/design-screen` for the affected sections and fix these issues:
+   - Remove all direct data imports
+   - Use props to accept all data instead
+   - Replace routing with optional callbacks
+   ```
+4. **Do not export partial packages** — An incomplete export with missing or broken components could cause failures in production. It's better to fix the components first.
 
 ## Step 8: Generate Section READMEs
 

@@ -111,8 +111,7 @@ product-plan/                      # Export package (generated)
 │   ├── one-shot-instructions.md   # All milestones combined
 │   └── incremental/               # Milestone-by-milestone instructions
 │       ├── 01-foundation.md
-│       ├── 02-shell.md
-│       └── [NN]-[section-id].md   # Section-specific instructions
+│       └── [NN]-[section-id].md   # Section-specific instructions (starting at 02)
 ├── design-system/                 # Tokens, colors, fonts
 ├── data-model/                    # Types and sample data
 ├── shell/                         # Shell components
