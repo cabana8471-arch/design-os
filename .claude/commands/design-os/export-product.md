@@ -1098,9 +1098,34 @@ Add to your HTML `<head>` or CSS:
 
 ## Step 14: Generate Prompt Files
 
-Create the `product-plan/prompts/` directory with two ready-to-use prompt files.
+Create the `product-plan/prompts/` directory with two ready-to-use prompt files assembled from templates.
+
+### Template System Overview
+
+Prompts are assembled from modular templates stored in `.claude/templates/design-os/`:
+- **Common templates** (`common/`) — Used in both one-shot and section prompts
+- **Prompt-specific templates** (`one-shot/`, `section/`) — Structure specific to each prompt type
+
+### Assembling Prompts
+
+For each prompt, follow this assembly pattern:
+
+1. Create the `product-plan/prompts/` directory
+2. Read the appropriate templates from `.claude/templates/design-os/`
+3. Assemble by concatenating in order
+4. Substitute any variables (e.g., [Product Name])
+5. Write the final assembled prompt to `product-plan/prompts/`
 
 ### one-shot-prompt.md
+
+Assemble from these templates (in order):
+1. `one-shot/preamble.md` — Title and introduction
+2. `common/model-guidance.md` — Model selection guidance
+3. `one-shot/prompt-template.md` — Instructions and file references
+4. `common/top-rules.md` — TOP 3 RULES
+5. `common/reporting-protocol.md` — Implementation reporting
+6. `common/clarifying-questions.md` — Clarifying questions
+7. `common/verification-checklist.md` — Final verification checklist
 
 Create `product-plan/prompts/one-shot-prompt.md`:
 
@@ -1108,6 +1133,18 @@ Create `product-plan/prompts/one-shot-prompt.md`:
 # One-Shot Implementation Prompt
 
 I need you to implement a complete web application based on detailed design specifications and UI components I'm providing.
+
+## Suggested Model Usage
+
+For optimal cost-quality balance, consider this approach:
+
+- **Claude Opus** → Initial implementation planning, architectural decisions, complex business logic
+- **Claude Sonnet** → Implementing repetitive components, writing tests, routine CRUD operations
+- **Claude Opus** → Final integration, edge cases, polish, and deployment
+
+This is optional - use whichever model you prefer, but this can help optimize costs for large implementations.
+
+---
 
 ## Instructions
 
@@ -1121,6 +1158,99 @@ After reading these, also review:
 - **@product-plan/data-model/** — Entity types and relationships
 - **@product-plan/shell/** — Application shell components
 - **@product-plan/sections/** — All section components, types, sample data, and test instructions
+
+## TOP 3 RULES FOR IMPLEMENTATION
+
+These rules prevent common implementation mistakes. Follow them strictly.
+
+### Rule 1: NEVER FABRICATE REQUIREMENTS
+- Only implement features explicitly described in the spec files
+- If a requirement is unclear or ambiguous, ASK the user - don't guess
+- Use the Read tool to verify every requirement before implementing
+
+**Common violations to avoid:**
+- ❌ Adding authentication features not mentioned in spec
+- ❌ Creating admin panels not requested
+- ❌ Adding "nice to have" features without approval
+- ❌ Inventing API endpoints not in data model
+
+**How to follow:**
+- ✅ Read product-overview.md and instructions completely before planning
+- ✅ Ask clarifying questions if anything is unclear
+- ✅ Stick to EXACTLY what's specified in tests.md files
+
+### Rule 2: INTEGRATION > REDESIGN
+- DO NOT restyle or redesign the provided components
+- DO NOT change the design tokens (colors, fonts, spacing)
+- DO NOT modify component props or structure
+- Your job is to integrate components into a working application
+
+**Common violations to avoid:**
+- ❌ "I'll make this component more modern by changing the colors"
+- ❌ "Let me improve the layout by adding more padding"
+- ❌ "I'll replace DM Sans with Inter because I prefer it"
+- ❌ "This component would look better with shadows"
+
+**How to follow:**
+- ✅ Use components exactly as provided
+- ✅ Pass data via props as designed
+- ✅ Focus on backend logic, routing, and state management
+- ✅ If component seems wrong, ask the user before changing
+
+### Rule 3: READ BEFORE BUILDING
+- Read ALL referenced files before creating your implementation plan
+- Don't skip files because they seem optional
+- Don't make assumptions about what files contain
+- If you didn't read it with the Read tool, don't reference it
+
+**Common violations to avoid:**
+- ❌ Skipping tests.md and guessing what tests to write
+- ❌ Not reading sample-data.json and creating wrong data structures
+- ❌ Ignoring types.ts and defining duplicate types
+- ❌ Assuming shell structure without reading AppShell.tsx
+
+**How to follow:**
+- ✅ Read product-overview.md to understand product context
+- ✅ Read ALL instruction files before planning
+- ✅ Read tests.md for EACH section before implementing
+- ✅ Read provided components to understand props and behavior
+- ✅ Create implementation plan AFTER reading, not before
+
+---
+
+## Implementation Reporting Protocol
+
+As you implement each milestone/feature, write brief progress updates to reduce context usage:
+
+**Format:**
+```
+✅ [Milestone/Feature] complete
+📁 Files: [key files created/modified]
+🧪 Tests: [number passing]
+```
+
+**Example:**
+```
+✅ Milestone 1 (Foundation) complete
+📁 Files: src/app/layout.tsx, src/lib/theme.tsx, src/app/page.tsx
+🧪 Tests: 12 passing
+
+✅ Authentication system complete
+📁 Files: src/lib/auth.ts, src/app/login/page.tsx
+🧪 Tests: 8 passing
+```
+
+**DO NOT:**
+- ❌ Echo entire file contents back to conversation
+- ❌ Quote large blocks of code unless specifically needed for discussion
+- ❌ Repeat implementation details already documented
+
+**DO:**
+- ✅ Confirm completion with file paths
+- ✅ Report test results
+- ✅ Highlight any issues or decisions that need user input
+
+---
 
 ## Before You Begin
 
@@ -1154,9 +1284,60 @@ Lastly, be sure to ask me if I have any other notes to add for this implementati
 
 Once I answer your questions, create a comprehensive implementation plan before coding.
 
+## Final Verification Checklist
+
+Before considering this implementation complete, verify:
+
+**Authentication & Data Access:**
+- [ ] Authentication method implemented as discussed
+- [ ] User roles and permissions implemented correctly
+- [ ] Protected routes/pages properly secured
+- [ ] Data access properly scoped to authenticated users
+
+**Component Integration:**
+- [ ] All provided components integrated without modification
+- [ ] Design tokens applied correctly (no hardcoded colors/fonts)
+- [ ] Props passed correctly to all components
+- [ ] Component imports use correct paths
+
+**Testing:**
+- [ ] All test scenarios from tests.md files implemented
+- [ ] User flows work end-to-end
+- [ ] Empty states handled correctly
+- [ ] Error states handled correctly
+- [ ] Loading states implemented
+
+**Responsive & Accessibility:**
+- [ ] Mobile responsive (test at 375px, 768px, 1024px, 1920px)
+- [ ] Dark mode works correctly (all text readable, proper contrast)
+- [ ] Keyboard navigation works (tab order, focus states)
+- [ ] Screen reader friendly (semantic HTML, ARIA labels where needed)
+
+**Deployment Readiness:**
+- [ ] No console errors or warnings
+- [ ] Build succeeds without errors
+- [ ] Environment variables documented in .env.example
+- [ ] README includes setup instructions
+
+**Data Integrity:**
+- [ ] Form validations work correctly
+- [ ] Database constraints properly implemented
+- [ ] Error messages are user-friendly
+- [ ] Data relationships maintain referential integrity
+
 ```
 
 ### section-prompt.md
+
+Assemble from these templates (in order):
+1. `section/preamble.md` — Title, section variables, and introduction
+2. `common/model-guidance.md` — Model selection guidance
+3. `section/prompt-template.md` — Instructions and file references
+4. `common/top-rules.md` — TOP 3 RULES
+5. `common/reporting-protocol.md` — Implementation reporting
+6. `common/tdd-workflow.md` — TDD implementation approach (section-specific)
+7. `common/clarifying-questions.md` — Clarifying questions (section-specific version)
+8. `common/verification-checklist.md` — Final verification checklist
 
 Create `product-plan/prompts/section-prompt.md`:
 
@@ -1173,6 +1354,18 @@ Create `product-plan/prompts/section-prompt.md`:
 
 I need you to implement the **SECTION_NAME** section of my application.
 
+## Suggested Model Usage
+
+For optimal cost-quality balance, consider this approach:
+
+- **Claude Opus** → Initial implementation planning, architectural decisions, complex business logic
+- **Claude Sonnet** → Implementing repetitive components, writing tests, routine CRUD operations
+- **Claude Opus** → Final integration, edge cases, polish, and deployment
+
+This is optional - use whichever model you prefer, but this can help optimize costs for large implementations.
+
+---
+
 ## Instructions
 
 Please carefully read and analyze the following files:
@@ -1186,6 +1379,99 @@ Also review the section assets:
 - **@product-plan/sections/SECTION_ID/components/** — React components to integrate
 - **@product-plan/sections/SECTION_ID/types.ts** — TypeScript interfaces
 - **@product-plan/sections/SECTION_ID/sample-data.json** — Test data
+
+## TOP 3 RULES FOR IMPLEMENTATION
+
+These rules prevent common implementation mistakes. Follow them strictly.
+
+### Rule 1: NEVER FABRICATE REQUIREMENTS
+- Only implement features explicitly described in the spec files
+- If a requirement is unclear or ambiguous, ASK the user - don't guess
+- Use the Read tool to verify every requirement before implementing
+
+**Common violations to avoid:**
+- ❌ Adding authentication features not mentioned in spec
+- ❌ Creating admin panels not requested
+- ❌ Adding "nice to have" features without approval
+- ❌ Inventing API endpoints not in data model
+
+**How to follow:**
+- ✅ Read product-overview.md and instructions completely before planning
+- ✅ Ask clarifying questions if anything is unclear
+- ✅ Stick to EXACTLY what's specified in tests.md files
+
+### Rule 2: INTEGRATION > REDESIGN
+- DO NOT restyle or redesign the provided components
+- DO NOT change the design tokens (colors, fonts, spacing)
+- DO NOT modify component props or structure
+- Your job is to integrate components into a working application
+
+**Common violations to avoid:**
+- ❌ "I'll make this component more modern by changing the colors"
+- ❌ "Let me improve the layout by adding more padding"
+- ❌ "I'll replace DM Sans with Inter because I prefer it"
+- ❌ "This component would look better with shadows"
+
+**How to follow:**
+- ✅ Use components exactly as provided
+- ✅ Pass data via props as designed
+- ✅ Focus on backend logic, routing, and state management
+- ✅ If component seems wrong, ask the user before changing
+
+### Rule 3: READ BEFORE BUILDING
+- Read ALL referenced files before creating your implementation plan
+- Don't skip files because they seem optional
+- Don't make assumptions about what files contain
+- If you didn't read it with the Read tool, don't reference it
+
+**Common violations to avoid:**
+- ❌ Skipping tests.md and guessing what tests to write
+- ❌ Not reading sample-data.json and creating wrong data structures
+- ❌ Ignoring types.ts and defining duplicate types
+- ❌ Assuming shell structure without reading AppShell.tsx
+
+**How to follow:**
+- ✅ Read product-overview.md to understand product context
+- ✅ Read ALL instruction files before planning
+- ✅ Read tests.md for EACH section before implementing
+- ✅ Read provided components to understand props and behavior
+- ✅ Create implementation plan AFTER reading, not before
+
+---
+
+## Implementation Reporting Protocol
+
+As you implement each milestone/feature, write brief progress updates to reduce context usage:
+
+**Format:**
+```
+✅ [Milestone/Feature] complete
+📁 Files: [key files created/modified]
+🧪 Tests: [number passing]
+```
+
+**Example:**
+```
+✅ Milestone 1 (Foundation) complete
+📁 Files: src/app/layout.tsx, src/lib/theme.tsx, src/app/page.tsx
+🧪 Tests: 12 passing
+
+✅ Authentication system complete
+📁 Files: src/lib/auth.ts, src/app/login/page.tsx
+🧪 Tests: 8 passing
+```
+
+**DO NOT:**
+- ❌ Echo entire file contents back to conversation
+- ❌ Quote large blocks of code unless specifically needed for discussion
+- ❌ Repeat implementation details already documented
+
+**DO:**
+- ✅ Confirm completion with file paths
+- ✅ Report test results
+- ✅ Highlight any issues or decisions that need user input
+
+---
 
 ## Before You Begin
 
@@ -1221,6 +1507,47 @@ Use test-driven development:
 Lastly, be sure to ask me if I have any other notes to add for this implementation.
 
 Once I answer your questions, proceed with implementation.
+
+## Final Verification Checklist
+
+Before considering this implementation complete, verify:
+
+**Authentication & Data Access:**
+- [ ] Authentication method implemented as discussed
+- [ ] User roles and permissions implemented correctly
+- [ ] Protected routes/pages properly secured
+- [ ] Data access properly scoped to authenticated users
+
+**Component Integration:**
+- [ ] All provided components integrated without modification
+- [ ] Design tokens applied correctly (no hardcoded colors/fonts)
+- [ ] Props passed correctly to all components
+- [ ] Component imports use correct paths
+
+**Testing:**
+- [ ] All test scenarios from tests.md files implemented
+- [ ] User flows work end-to-end
+- [ ] Empty states handled correctly
+- [ ] Error states handled correctly
+- [ ] Loading states implemented
+
+**Responsive & Accessibility:**
+- [ ] Mobile responsive (test at 375px, 768px, 1024px, 1920px)
+- [ ] Dark mode works correctly (all text readable, proper contrast)
+- [ ] Keyboard navigation works (tab order, focus states)
+- [ ] Screen reader friendly (semantic HTML, ARIA labels where needed)
+
+**Deployment Readiness:**
+- [ ] No console errors or warnings
+- [ ] Build succeeds without errors
+- [ ] Environment variables documented in .env.example
+- [ ] README includes setup instructions
+
+**Data Integrity:**
+- [ ] Form validations work correctly
+- [ ] Database constraints properly implemented
+- [ ] Error messages are user-friendly
+- [ ] Data relationships maintain referential integrity
 
 ```
 
