@@ -64,6 +64,23 @@ Generate the complete export package with all components, types, and handoff doc
 ## File Structure
 
 ```
+.claude/
+├── commands/                      # Executable commands for Design OS
+│   └── design-os/                 # Design OS workflow commands
+│       ├── design-screen.md
+│       ├── design-shell.md
+│       ├── export-product.md
+│       ├── product-vision.md
+│       ├── product-roadmap.md
+│       ├── data-model.md
+│       ├── design-tokens.md
+│       ├── sample-data.md
+│       └── shape-section.md
+│
+└── skills/                        # Specialized guidance for design quality
+    └── frontend-design/           # Guidance for high-quality UI components
+        └── SKILL.md               # Comprehensive design guidance
+
 product/                           # Product definition (portable)
 ├── product-overview.md            # Product description, problems/solutions, features
 ├── product-roadmap.md             # List of sections with titles and descriptions
@@ -104,6 +121,8 @@ src/
 product-plan/                      # Export package (generated)
 ├── README.md                      # Quick start guide
 ├── product-overview.md            # Product summary
+├── design-guidance/               # Design guidance for implementation
+│   └── frontend-design.md         # Frontend design principles
 ├── prompts/                       # Ready-to-use prompts for coding agents
 │   ├── one-shot-prompt.md         # Prompt for full implementation
 │   └── section-prompt.md          # Prompt template for incremental
@@ -175,6 +194,59 @@ Design OS is organized around four main areas:
    - Layout pattern
 
 Plus **Sections** — The individual features, each with spec, data, screen designs.
+
+---
+
+## Skills & Design Guidance
+
+Design OS includes a skills system that provides specialized guidance for creating high-quality screen designs.
+
+### The Frontend-Design Skill
+
+The **frontend-design** skill provides comprehensive guidance for creating distinctive, production-grade frontend interfaces that avoid generic "AI-generated" aesthetics.
+
+**Location:** `.claude/skills/frontend-design/SKILL.md`
+
+**When to Use:**
+- Referenced by `/design-shell` command — before creating shell components
+- Referenced by `/design-screen` command — before creating section screen designs
+
+**What It Covers:**
+- Creating distinctive UI that reflects your product's visual identity
+- Choosing bold design directions and unexpected layouts
+- Applying thoughtful typography and color choices
+- Using motion and transitions effectively
+- Avoiding generic fonts (Inter, Roboto), predictable layouts, and "AI slop" aesthetics
+
+### How Skills Integrate with Commands
+
+Commands that create user-facing components reference the frontend-design skill to ensure design quality:
+
+1. **`/design-shell`** — Creates application shell components
+   - Step 6: Read `.claude/skills/frontend-design/SKILL.md` before creating AppShell, MainNav, UserMenu components
+   - Ensures shell has distinctive, branded aesthetics matching the product vision
+
+2. **`/design-screen`** — Creates section screen designs
+   - Step 5: Read `.claude/skills/frontend-design/SKILL.md` before creating screen components
+   - Ensures consistent, distinctive design quality across all sections
+
+### Design Guidance Hierarchy
+
+When creating screen designs, follow this hierarchy:
+
+1. **Technical Requirements** (agents.md, Design Requirements section) — MANDATORY
+   - Mobile responsive (Tailwind responsive prefixes)
+   - Light/dark mode support (dark: variants)
+   - Props-based components (portable, no direct data imports)
+   - Tailwind CSS v4 (not v3)
+
+2. **Aesthetic Guidance** (frontend-design skill) — MANDATORY
+   - Distinctive visual identity
+   - Bold design directions
+   - Thoughtful typography and color choices
+   - Effective use of motion
+
+Both must be followed for production-ready screen designs. Technical requirements ensure portability and consistency; aesthetic guidance ensures distinctive, memorable design.
 
 ---
 

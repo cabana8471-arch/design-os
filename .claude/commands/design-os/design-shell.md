@@ -123,7 +123,19 @@ Then create `/product/shell/spec.md`:
 [Any additional design decisions or notes]
 ```
 
-## Step 6: Create Shell Components
+## Step 6: Read Design Guidance
+
+Before creating shell components, read the design guidance to ensure the shell has distinctive, production-grade aesthetics:
+
+Read `.claude/skills/frontend-design/SKILL.md` for detailed guidance on:
+- Creating distinctive UI that avoids generic "AI slop" aesthetics
+- Choosing bold design directions and unexpected layouts
+- Applying thoughtful typography and color choices
+- Using motion and transitions effectively
+
+This guidance applies to the shell components just as it does to section screens — the shell is a critical user-facing interface that should reflect your product's distinctive visual identity.
+
+## Step 7: Create Shell Components
 
 Create the shell components at `src/shell/components/`:
 
@@ -157,7 +169,7 @@ Export all components.
 - Use Tailwind CSS for styling
 - Use lucide-react for icons
 
-## Step 7: Create Shell Preview
+## Step 8: Create Shell Preview
 
 Create `src/shell/ShellPreview.tsx` — a preview wrapper for viewing the shell in Design OS:
 
@@ -199,7 +211,7 @@ export default function ShellPreview() {
 
 **Important:** Use placeholder mock data in the preview, not imports from sections. This ensures the shell preview works even if no sections have been designed yet.
 
-## Step 8: Apply Design Tokens
+## Step 9: Apply Design Tokens
 
 If design tokens exist, apply them to the shell components:
 
@@ -215,7 +227,7 @@ If design tokens exist, apply them to the shell components:
 - Apply body font to other text
 - Include Google Fonts import in the preview
 
-## Step 9: Confirm Completion
+## Step 10: Confirm Completion
 
 Let the user know:
 
