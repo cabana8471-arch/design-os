@@ -9,11 +9,21 @@
   Using Tailwind's stone palette for warmth
 */
 @theme {
-  /* Font families - DM Sans for clean, geometric type */
+  /* Font families - DM Sans for clean, geometric type (Design OS Application) */
   --font-display: "DM Sans", system-ui, sans-serif;
   --font-body: "DM Sans", system-ui, sans-serif;
   --font-sans: "DM Sans", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /*
+   * P2 Gap Fix: Centralized Product Typography
+   * These CSS custom properties provide centralized font management for the product shell
+   * based on the design tokens in product/design-system/typography.json
+   * Ref: Section 3.5 Content Area - "Typography follows design tokens"
+   */
+  --font-product-heading: "Space Grotesk", system-ui, sans-serif;
+  --font-product-body: "Inter", system-ui, sans-serif;
+  --font-product-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 /* Shadcn theme integration */
@@ -205,5 +215,48 @@
     to {
       height: 0;
     }
+  }
+
+  /* P0 Gap Fix: Mobile bottom sheet slide-up animation */
+  .animate-slide-up {
+    animation: slide-up 250ms ease-out;
+  }
+
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  /* Hide scrollbar utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
+  }
+
+  /* Safe area inset for iPhone notch */
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /*
+   * P2 Gap Fix: Centralized Product Typography Utilities
+   * Use these classes for product shell components instead of inline style={{fontFamily}}
+   * Ref: Section 3.5 Content Area - "Typography follows design tokens"
+   */
+  .font-product-heading {
+    font-family: var(--font-product-heading);
+  }
+  .font-product-body {
+    font-family: var(--font-product-body);
+  }
+  .font-product-mono {
+    font-family: var(--font-product-mono);
   }
 }
