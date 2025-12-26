@@ -31,6 +31,30 @@ Please complete these first."
 
 **END COMMAND** — Do not proceed to Step 2. The export cannot continue without these files.
 
+### Validate Template Files Exist
+
+Before proceeding, verify all 12 required template files exist. If any are missing, STOP and report:
+
+**Required templates:**
+- `.claude/templates/design-os/common/top-rules.md`
+- `.claude/templates/design-os/common/reporting-protocol.md`
+- `.claude/templates/design-os/common/model-guidance.md`
+- `.claude/templates/design-os/common/verification-checklist.md`
+- `.claude/templates/design-os/common/clarifying-questions.md`
+- `.claude/templates/design-os/common/tdd-workflow.md`
+- `.claude/templates/design-os/one-shot/preamble.md`
+- `.claude/templates/design-os/one-shot/prompt-template.md`
+- `.claude/templates/design-os/section/preamble.md`
+- `.claude/templates/design-os/section/prompt-template.md`
+- `.claude/templates/design-os/section/clarifying-questions.md`
+- `.claude/templates/design-os/section/tdd-workflow.md`
+
+**If any template is missing:**
+
+STOP and report: "Missing template file: `.claude/templates/design-os/[path]`. Cannot generate prompts without all templates. Please restore the missing file."
+
+**END COMMAND** — Do not proceed to Step 2 if any template is missing.
+
 If recommended files are missing, show warnings but continue:
 
 "Note: Some recommended items are missing:
@@ -54,30 +78,6 @@ Read all relevant files:
 8. List screen design components in `src/sections/` and `src/shell/`
 
 ## Step 3: Create Export Directory Structure
-
-### Validate Template Files Exist
-
-Before creating directories, verify all required template files exist. If any are missing, STOP and report:
-
-**Required templates:**
-- `.claude/templates/design-os/common/top-rules.md`
-- `.claude/templates/design-os/common/reporting-protocol.md`
-- `.claude/templates/design-os/common/model-guidance.md`
-- `.claude/templates/design-os/common/verification-checklist.md`
-- `.claude/templates/design-os/common/clarifying-questions.md`
-- `.claude/templates/design-os/common/tdd-workflow.md`
-- `.claude/templates/design-os/one-shot/preamble.md`
-- `.claude/templates/design-os/one-shot/prompt-template.md`
-- `.claude/templates/design-os/section/preamble.md`
-- `.claude/templates/design-os/section/prompt-template.md`
-- `.claude/templates/design-os/section/clarifying-questions.md`
-- `.claude/templates/design-os/section/tdd-workflow.md`
-
-If any template is missing:
-```
-STOP: Missing template file: `.claude/templates/design-os/[path]`
-Cannot generate prompts without all templates. Please restore the missing file.
-```
 
 ### Create Directories
 

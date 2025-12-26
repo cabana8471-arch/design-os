@@ -54,6 +54,13 @@ Ask questions one or two at a time, conversationally. Focus on user experience a
 
 Check if a shell design has been created for this project by looking for `product/shell/spec.md` (this is more reliable than checking for component files, which might be partial).
 
+**Check for existing shell:**
+
+If `product/shell/spec.md` does NOT exist, inform the user before asking:
+```
+Note: No shell has been designed yet. You can still choose 'Inside app shell' — the shell can be designed later with /design-shell.
+```
+
 **Always ask the user about shell usage** to ensure they can override the default if needed:
 
 "Should this section's screen designs be displayed **inside the app shell** (with navigation header), or should they be **standalone pages** (without the shell)?

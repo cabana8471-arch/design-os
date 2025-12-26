@@ -111,7 +111,7 @@ When `/export-product` runs Step 13 (Generate Prompt Files):
 
 1. Reads all template files from this directory in the specified order
 2. Strips version comments (`<!-- v1.0.0 -->`) from each template
-3. Substitutes variables (`[Product Name]`, `SECTION_NAME`, `SECTION_ID`, `NN`)
+3. Substitutes variables (`SECTION_NAME`, `SECTION_ID`, `NN` for section prompts)
 4. Concatenates templates in the correct order
 5. Validates that all templates were included and all variables were substituted
 6. Writes final prompts to `product-plan/prompts/`

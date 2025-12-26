@@ -195,6 +195,13 @@ After creating data.json, verify that the file was created correctly:
 
 Do not proceed to Step 7 until all validation checks pass.
 
+**Retry limit:** If validation fails 3 times in a row, STOP and report:
+```
+Validation has failed 3 times. Please review the data model at product/data-model/data-model.md for consistency issues before continuing.
+```
+
+This prevents infinite regeneration loops when there's a fundamental misunderstanding about the data model structure.
+
 ### Validate Entity Name Consistency
 
 If a global data model exists, verify that entity names in your sample data match the global data model:
