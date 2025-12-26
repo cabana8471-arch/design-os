@@ -21,3 +21,10 @@ dist/
 # Logs
 *.log
 npm-debug.log*
+
+# Cache
+.vite/
+.playwright-mcp/
+
+# Temporary files
+fix-plan.md
