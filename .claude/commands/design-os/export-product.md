@@ -52,6 +52,32 @@ Read all relevant files:
 
 ## Step 3: Create Export Directory Structure
 
+### Validate Template Files Exist
+
+Before creating directories, verify all required template files exist. If any are missing, STOP and report:
+
+**Required templates:**
+- `.claude/templates/design-os/common/top-rules.md`
+- `.claude/templates/design-os/common/reporting-protocol.md`
+- `.claude/templates/design-os/common/model-guidance.md`
+- `.claude/templates/design-os/common/verification-checklist.md`
+- `.claude/templates/design-os/common/clarifying-questions.md`
+- `.claude/templates/design-os/common/tdd-workflow.md`
+- `.claude/templates/design-os/one-shot/preamble.md`
+- `.claude/templates/design-os/one-shot/prompt-template.md`
+- `.claude/templates/design-os/section/preamble.md`
+- `.claude/templates/design-os/section/prompt-template.md`
+- `.claude/templates/design-os/section/clarifying-questions.md`
+- `.claude/templates/design-os/section/tdd-workflow.md`
+
+If any template is missing:
+```
+STOP: Missing template file: `.claude/templates/design-os/[path]`
+Cannot generate prompts without all templates. Please restore the missing file.
+```
+
+### Create Directories
+
 First, create the root `product-plan/` directory:
 
 ```bash
@@ -532,7 +558,7 @@ Reference this file in implementation prompts:
 
 > **Before creating components, read `product-plan/design-guidance/frontend-design.md` and follow its guidance on distinctive UI, bold design directions, thoughtful typography, and effective motion.**
 
-## Step 7.5: Validate All Components
+## Step 8: Validate All Components
 
 Before proceeding with export, validate that all components are portable and follow the props-based pattern. This is a **blocking step** — the export cannot proceed if validation fails.
 
@@ -568,7 +594,7 @@ For each section, validate all component files in `src/sections/[section-id]/com
 
 ### If Validation Passes
 
-Continue to Step 8 with confidence.
+Continue to Step 9 with confidence.
 
 ### If Validation Fails
 
@@ -593,7 +619,12 @@ Continue to Step 8 with confidence.
 
 3. **Do not create partial exports** — An incomplete export with missing or broken components will cause failures in the user's codebase. It's better to fix the components first, then re-run the export.
 
-## Step 8: Copy and Transform Components
+4. **Recovery workflow** — After fixing the issues:
+   - Re-run `/export-product` from the beginning
+   - The export will validate components again before proceeding
+   - Do NOT attempt to resume from Step 9 — always start fresh to ensure consistency
+
+## Step 9: Copy and Transform Components
 
 ### Shell Components
 
@@ -666,7 +697,7 @@ See `screenshot.png` for the target UI design.
 [Adjust based on actual Props interface]
 ```
 
-## Step 10.5: Consolidate Data Model Types
+## Step 11: Consolidate Data Model Types
 
 Create unified type definitions and documentation for the entire data model in the export package.
 
@@ -681,6 +712,11 @@ Create `product-plan/data-model/types.ts` by consolidating types from all sectio
    - For each section, read `product/sections/[section-id]/types.ts`
    - Extract all exported interfaces (exclude component Props interfaces)
    - Combine into a single consolidated types file
+
+   **Handling Type Conflicts:**
+   - If the same type name appears in multiple sections with different definitions, the global data model (`/product/data-model/data-model.md`) is authoritative
+   - If no global data model exists, use the first section's definition and add a comment noting the conflict
+   - Report conflicts to the user: "Type `[TypeName]` is defined differently in [Section A] and [Section B]. Using [resolution]."
 
 3. **Add JSDoc comments:**
    - Include descriptions from the global data model
@@ -818,7 +854,7 @@ Consolidate sample data from all sections:
 }
 ```
 
-## Step 11: Generate Section Test Instructions
+## Step 12: Generate Section Test Instructions
 
 For each section, create `product-plan/sections/[section-id]/tests.md` with detailed test-writing instructions based on the section's spec, user flows, and UI design.
 
@@ -1100,6 +1136,21 @@ Add to your HTML `<head>` or CSS:
 
 Create the `product-plan/prompts/` directory with two ready-to-use prompt files assembled from templates.
 
+### Validate Required Files Exist
+
+Before generating prompts, verify that key files from earlier steps were created successfully. The prompts reference these files, so they must exist:
+
+**Required files:**
+- `product-plan/product-overview.md` — Generated in Step 4
+- `product-plan/instructions/one-shot-instructions.md` — Generated in Step 6
+- `product-plan/instructions/incremental/01-foundation.md` — Generated in Step 5
+
+If any required file is missing:
+```
+STOP: Missing required file: `product-plan/[path]`
+Earlier export steps may have failed. Re-run `/export-product` from the beginning.
+```
+
 ### Template System Overview
 
 Prompts are assembled from modular templates stored in `.claude/templates/design-os/`:
@@ -1116,18 +1167,71 @@ For each prompt, follow this assembly pattern:
 4. Substitute any variables (e.g., [Product Name])
 5. Write the final assembled prompt to `product-plan/prompts/`
 
-### one-shot-prompt.md
+#### Template Assembly Implementation
 
-Assemble from these templates (in order):
+When assembling templates, follow these specific steps:
+
+**1. Read Template Files**
+- Read each template file in the specified order from `.claude/templates/design-os/`
+- Extract the content (without the HTML version comment `<!-- v1.0.0 -->` at the top)
+
+**2. Variable Substitution**
+For one-shot prompts, substitute:
+- `[Product Name]` → The actual product name from `product-overview.md`
+
+For section prompts, substitute:
+- `SECTION_NAME` → Human-readable section name (e.g., "Invoices", "Project Dashboard")
+- `SECTION_ID` → Folder name from `product/sections/` (e.g., "invoices", "project-dashboard")
+- `NN` → Milestone number (e.g., "02" for the first section, "03" for the second)
+
+**3. Template Concatenation Order**
+The templates are designed to be concatenated in a specific order. Do NOT reorder or skip templates:
+
+**For one-shot-prompt.md:**
 1. `one-shot/preamble.md` — Title and introduction
 2. `common/model-guidance.md` — Model selection guidance
 3. `one-shot/prompt-template.md` — Instructions and file references
 4. `common/top-rules.md` — TOP 3 RULES
 5. `common/reporting-protocol.md` — Implementation reporting
-6. `common/clarifying-questions.md` — Clarifying questions
-7. `common/verification-checklist.md` — Final verification checklist
+6. `common/tdd-workflow.md` — TDD implementation approach
+7. `common/clarifying-questions.md` — Clarifying questions
+8. `common/verification-checklist.md` — Final verification checklist
 
-Create `product-plan/prompts/one-shot-prompt.md`:
+**For section-prompt.md:**
+1. `section/preamble.md` — Title, section variables, and introduction
+2. `common/model-guidance.md` — Model selection guidance
+3. `section/prompt-template.md` — Instructions and file references
+4. `common/top-rules.md` — TOP 3 RULES
+5. `common/reporting-protocol.md` — Implementation reporting
+6. `section/tdd-workflow.md` — TDD implementation approach (section-specific)
+7. `section/clarifying-questions.md` — Clarifying questions (section-specific)
+8. `common/verification-checklist.md` — Final verification checklist
+
+**4. Version Comment Handling**
+- Strip all `<!-- v1.0.0 -->` comments from the top of each template before concatenating
+- These are used for version tracking only and should not appear in the final prompt
+- Add the version comments only once at the very top of the final assembled prompt (after all content)
+
+**5. Whitespace and Formatting**
+- Preserve formatting within each template
+- Add a single blank line between concatenated templates to separate sections
+- Ensure the final document has proper spacing for readability
+
+**6. Error Handling**
+If a template file is missing:
+- **STOP the export process**
+- Report to the user: "Missing template file: `.claude/templates/design-os/[path]`. Cannot generate prompts."
+- Do not create partial or incomplete prompts
+
+**7. Validation**
+After assembling each prompt:
+- Verify all variables have been substituted (no unsubstituted `SECTION_NAME`, `SECTION_ID`, `NN`, or `[Product Name]` remain)
+- Verify all template files were included (no skipped sections)
+- Check that the final prompt is readable and properly formatted
+
+### one-shot-prompt.md
+
+Assemble from the templates listed above (see "Template Concatenation Order" section). Follow the template assembly process to create `product-plan/prompts/one-shot-prompt.md`:
 
 ```markdown
 # One-Shot Implementation Prompt
@@ -1154,6 +1258,7 @@ Please carefully read and analyze the following files:
 2. **@product-plan/instructions/one-shot-instructions.md** — Complete implementation instructions for all milestones
 
 After reading these, also review:
+- **@product-plan/design-guidance/frontend-design.md** — Design principles and guidance
 - **@product-plan/design-system/** — Color and typography tokens
 - **@product-plan/data-model/** — Entity types and relationships
 - **@product-plan/shell/** — Application shell components
@@ -1329,17 +1434,7 @@ Before considering this implementation complete, verify:
 
 ### section-prompt.md
 
-Assemble from these templates (in order):
-1. `section/preamble.md` — Title, section variables, and introduction
-2. `common/model-guidance.md` — Model selection guidance
-3. `section/prompt-template.md` — Instructions and file references
-4. `common/top-rules.md` — TOP 3 RULES
-5. `common/reporting-protocol.md` — Implementation reporting
-6. `common/tdd-workflow.md` — TDD implementation approach (section-specific)
-7. `common/clarifying-questions.md` — Clarifying questions (section-specific version)
-8. `common/verification-checklist.md` — Final verification checklist
-
-Create `product-plan/prompts/section-prompt.md`:
+Assemble from the templates listed above (see "Template Concatenation Order" section). Follow the template assembly process to create `product-plan/prompts/section-prompt.md`:
 
 ```markdown
 # Section Implementation Prompt
@@ -1374,6 +1469,7 @@ Please carefully read and analyze the following files:
 2. **@product-plan/instructions/incremental/NN-SECTION_ID.md** — Specific instructions for this section
 
 Also review the section assets:
+- **@product-plan/design-guidance/frontend-design.md** — Design principles and guidance
 - **@product-plan/sections/SECTION_ID/README.md** — Feature overview and design intent
 - **@product-plan/sections/SECTION_ID/tests.md** — Test-writing instructions (use TDD approach)
 - **@product-plan/sections/SECTION_ID/components/** — React components to integrate

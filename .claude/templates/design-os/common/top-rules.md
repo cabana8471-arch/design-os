@@ -10,15 +10,15 @@ These rules prevent common implementation mistakes. Follow them strictly.
 - Use the Read tool to verify every requirement before implementing
 
 **Common violations to avoid:**
-- ❌ Adding authentication features not mentioned in spec
-- ❌ Creating admin panels not requested
-- ❌ Adding "nice to have" features without approval
-- ❌ Inventing API endpoints not in data model
+- (INCORRECT) Adding authentication features not mentioned in spec
+- (INCORRECT) Creating admin panels not requested
+- (INCORRECT) Adding "nice to have" features without approval
+- (INCORRECT) Inventing API endpoints not in data model
 
 **How to follow:**
-- ✅ Read product-overview.md and instructions completely before planning
-- ✅ Ask clarifying questions if anything is unclear
-- ✅ Stick to EXACTLY what's specified in tests.md files
+- (CORRECT) Read product-overview.md and instructions completely before planning
+- (CORRECT) Ask clarifying questions if anything is unclear
+- (CORRECT) Stick to EXACTLY what's specified in tests.md files
 
 ### Rule 2: INTEGRATION > REDESIGN
 - DO NOT restyle or redesign the provided components
@@ -27,16 +27,16 @@ These rules prevent common implementation mistakes. Follow them strictly.
 - Your job is to integrate components into a working application
 
 **Common violations to avoid:**
-- ❌ "I'll make this component more modern by changing the colors"
-- ❌ "Let me improve the layout by adding more padding"
-- ❌ "I'll replace DM Sans with Inter because I prefer it"
-- ❌ "This component would look better with shadows"
+- (INCORRECT) "I'll make this component more modern by changing the colors"
+- (INCORRECT) "Let me improve the layout by adding more padding"
+- (INCORRECT) "I'll replace DM Sans with Inter because I prefer it"
+- (INCORRECT) "This component would look better with shadows"
 
 **How to follow:**
-- ✅ Use components exactly as provided
-- ✅ Pass data via props as designed
-- ✅ Focus on backend logic, routing, and state management
-- ✅ If component seems wrong, ask the user before changing
+- (CORRECT) Use components exactly as provided
+- (CORRECT) Pass data via props as designed
+- (CORRECT) Focus on backend logic, routing, and state management
+- (CORRECT) If component seems wrong, ask the user before changing
 
 ### Rule 3: READ BEFORE BUILDING
 - Read ALL referenced files before creating your implementation plan
@@ -45,14 +45,14 @@ These rules prevent common implementation mistakes. Follow them strictly.
 - If you didn't read it with the Read tool, don't reference it
 
 **Common violations to avoid:**
-- ❌ Skipping tests.md and guessing what tests to write
-- ❌ Not reading sample-data.json and creating wrong data structures
-- ❌ Ignoring types.ts and defining duplicate types
-- ❌ Assuming shell structure without reading AppShell.tsx
+- (INCORRECT) Skipping tests.md and guessing what tests to write
+- (INCORRECT) Not reading sample-data.json and creating wrong data structures
+- (INCORRECT) Ignoring types.ts and defining duplicate types
+- (INCORRECT) Assuming shell structure without reading AppShell.tsx
 
 **How to follow:**
-- ✅ Read product-overview.md to understand product context
-- ✅ Read ALL instruction files before planning
-- ✅ Read tests.md for EACH section before implementing
-- ✅ Read provided components to understand props and behavior
-- ✅ Create implementation plan AFTER reading, not before
+- (CORRECT) Read product-overview.md to understand product context
+- (CORRECT) Read ALL instruction files before planning
+- (CORRECT) Read tests.md for EACH section before implementing
+- (CORRECT) Read provided components to understand props and behavior
+- (CORRECT) Create implementation plan AFTER reading, not before

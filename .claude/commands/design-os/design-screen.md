@@ -106,6 +106,14 @@ First, create the necessary directories if they don't exist:
 mkdir -p src/sections/[section-id]/components
 ```
 
+Then validate the directory was created successfully:
+```bash
+if [ ! -d "src/sections/[section-id]/components" ]; then
+  echo "Error: Failed to create directory src/sections/[section-id]/components"
+  exit 1
+fi
+```
+
 ### Create the Component File
 
 Then create the main component file at `src/sections/[section-id]/components/[ViewName].tsx`.
@@ -122,6 +130,7 @@ The component MUST:
 Example:
 
 ```tsx
+// Note: During export, this path will be transformed to '../types' for portability
 import type { InvoiceListProps } from '@/../product/sections/[section-id]/types'
 
 export function InvoiceList({

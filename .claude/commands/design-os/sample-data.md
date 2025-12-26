@@ -162,7 +162,9 @@ The `_meta` descriptions should:
 
 The data should directly support the user flows and UI requirements in the spec.
 
-## Step 5.5: Perform Data Validation
+**⚠️ MANDATORY: Proceed to Step 6 (Data Validation) before continuing. Validation is required and cannot be skipped.**
+
+## Step 6: Perform Data Validation (MANDATORY)
 
 After creating data.json, you MUST perform the following validations to ensure data integrity. These validations are mandatory and must complete before proceeding.
 
@@ -202,6 +204,8 @@ If a global data model exists, verify that entity names in your sample data matc
 3. **Compare with section data:**
    - Check if the keys in `_meta.models` match entity names from the global data model
    - Compare the names you extracted from the markdown headings (from step 2) with the keys in your data.json `_meta.models`
+   - **Acceptable variations:** Plural forms are expected in data.json (e.g., data model has `### Invoice` heading, data.json uses `invoices` key)
+   - **Naming convention:** Data model uses singular PascalCase (`Invoice`, `User`), data.json uses plural camelCase (`invoices`, `users`)
 
 4. **Report discrepancies:**
    - If entity names don't match ANY from the data model:
@@ -212,7 +216,7 @@ If a global data model exists, verify that entity names in your sample data matc
 
 This validation ensures consistency across all sections and prevents fragmented data models.
 
-## Step 6: Generate TypeScript Types
+## Step 7: Generate TypeScript Types
 
 After creating data.json, generate `product/sections/[section-id]/types.ts` based on the data structure.
 
@@ -295,7 +299,7 @@ export interface InvoiceListProps {
 
 - **Match entity names from the global data model if one exists**
 
-## Step 7: Confirm and Next Steps
+## Step 8: Confirm and Next Steps
 
 Let the user know:
 
