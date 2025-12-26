@@ -17,16 +17,19 @@ Verify the minimum requirements exist:
 - `/product/design-system/typography.json` — Typography tokens
 - `src/shell/components/AppShell.tsx` — Application shell
 
-If required files are missing:
+**If any required file is missing:**
 
+Output error message:
+```
 "To export your product, you need at minimum:
 - A product overview (`/product-vision`)
 - A roadmap with sections (`/product-roadmap`)
 - At least one section with screen designs
 
 Please complete these first."
+```
 
-Stop here if required files are missing.
+**END COMMAND** — Do not proceed to Step 2. The export cannot continue without these files.
 
 If recommended files are missing, show warnings but continue:
 
@@ -1209,8 +1212,8 @@ The templates are designed to be concatenated in a specific order. Do NOT reorde
 
 **4. Version Comment Handling**
 - Strip all `<!-- v1.0.0 -->` comments from the top of each template before concatenating
-- These are used for version tracking only and should not appear in the final prompt
-- Add the version comments only once at the very top of the final assembled prompt (after all content)
+- These comments are used for template version tracking only and should NOT appear in the final assembled prompt
+- Do not add version comments to the final prompt — the prompt should be clean and ready to use
 
 **5. Whitespace and Formatting**
 - Preserve formatting within each template
