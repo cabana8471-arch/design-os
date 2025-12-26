@@ -113,11 +113,31 @@ Ask what changes they want to make, then update the file accordingly.
 Confirm the current state matches what's in the files. If the user has manually edited the `.md` files, let them know the app will pick up those changes on next build/refresh.
 
 **If starting fresh:**
-Follow the "Creating New" flow above, but note you're replacing the existing roadmap.
+
+⚠️ **Warning: This will overwrite manual edits**
+
+Before proceeding, warn the user:
+
+"Starting fresh will **replace your existing roadmap file**. If you've made manual edits to `/product/product-roadmap.md`, those changes will be lost.
+
+Are you sure you want to regenerate the roadmap from scratch?"
+
+Use AskUserQuestion with options:
+- "Yes, replace it" - Proceed with regeneration
+- "No, keep my edits" - Cancel and return to the sync options
+
+If they confirm, follow the "Creating New" flow above but explicitly note you're replacing the existing file.
 
 ---
 
 ## Important Notes
+
+### Manual Edit Protection
+
+When users manually edit `/product/product-roadmap.md`:
+- The "Update sections" and "Sync from files" options preserve their changes
+- The "Start fresh" option will overwrite all manual edits — always confirm before proceeding
+- If a user has associated section specs, sample data, or screen designs that depend on current section names, changing the roadmap may orphan those files
 
 - Sections should be ordered by development priority
 - Each section should be self-contained enough to design and build independently

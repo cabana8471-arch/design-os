@@ -1432,7 +1432,9 @@ Before considering this implementation complete, verify:
 
 ```
 
-### section-prompt.md
+### section-prompt.md (Template File — Requires Variable Substitution)
+
+**Note:** This is a **prompt template** that requires variable substitution before use. Unlike `one-shot-prompt.md`, users must fill in `SECTION_NAME`, `SECTION_ID`, and `NN` values for each section they implement. The variables at the top serve as placeholders that the user replaces with actual values.
 
 Assemble from the templates listed above (see "Template Concatenation Order" section). Follow the template assembly process to create `product-plan/prompts/section-prompt.md`:
 

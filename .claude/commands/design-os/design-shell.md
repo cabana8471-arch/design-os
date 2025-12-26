@@ -24,7 +24,7 @@ If design tokens are missing, show a warning but continue:
 
 ## Step 2: Analyze Product Structure
 
-Review the roadmap sections and present navigation options:
+Review the roadmap sections and present navigation options with recommendations based on product size:
 
 "I'm designing the shell for **[Product Name]**. Based on your roadmap, you have [N] sections:
 
@@ -36,12 +36,17 @@ Let's decide on the shell layout. Common patterns:
 
 **A. Sidebar Navigation** — Vertical nav on the left, content on the right
    Best for: Apps with many sections, dashboard-style tools, admin panels
+   **Recommended when:** 5+ sections, complex navigation hierarchy, or data-heavy applications
 
 **B. Top Navigation** — Horizontal nav at top, content below
    Best for: Simpler apps, marketing-style products, fewer sections
+   **Recommended when:** 3-4 sections, content-focused products, or public-facing sites
 
 **C. Minimal Header** — Just logo + user menu, sections accessed differently
    Best for: Single-purpose tools, wizard-style flows
+   **Recommended when:** 1-2 sections, focused workflows, or embedded applications
+
+**Based on your [N] sections, I'd recommend [Pattern A/B/C]** because [reason based on section count and product type].
 
 Which pattern fits **[Product Name]** best?"
 
@@ -82,7 +87,33 @@ Does this match what you had in mind?"
 
 Iterate until approved.
 
-## Step 5: Create the Shell Specification
+## Step 5: Read Design Guidance
+
+Before creating the shell specification and components, read the design guidance to ensure the shell has distinctive, production-grade aesthetics.
+
+### Validate Skill File Exists
+
+First, check that the frontend-design skill file exists at `.claude/skills/frontend-design/SKILL.md`.
+
+If the file is missing:
+```
+Note: Design guidance file not found at `.claude/skills/frontend-design/SKILL.md`.
+I'll proceed with general design best practices, but the shell may lack the distinctive aesthetics that the skill provides.
+```
+
+Continue with the design process even if the file is missing, but prefer to have it available for best results.
+
+### Read Design Guidance
+
+Read `.claude/skills/frontend-design/SKILL.md` for detailed guidance on:
+- Creating distinctive UI that avoids generic "AI slop" aesthetics
+- Choosing bold design directions and unexpected layouts
+- Applying thoughtful typography and color choices
+- Using motion and transitions effectively
+
+This guidance applies to both the shell specification and shell components — the shell is a critical user-facing interface that should reflect your product's distinctive visual identity.
+
+## Step 6: Create the Shell Specification
 
 ### Create Directory
 
@@ -123,18 +154,6 @@ Then create `/product/shell/spec.md`:
 [Any additional design decisions or notes]
 ```
 
-## Step 6: Read Design Guidance
-
-Before creating shell components, read the design guidance to ensure the shell has distinctive, production-grade aesthetics:
-
-Read `.claude/skills/frontend-design/SKILL.md` for detailed guidance on:
-- Creating distinctive UI that avoids generic "AI slop" aesthetics
-- Choosing bold design directions and unexpected layouts
-- Applying thoughtful typography and color choices
-- Using motion and transitions effectively
-
-This guidance applies to the shell components just as it does to section screens — the shell is a critical user-facing interface that should reflect your product's distinctive visual identity.
-
 ## Step 7: Create Shell Components
 
 Create the shell components at `src/shell/components/`:
@@ -171,13 +190,7 @@ Export all components.
 
 ## Step 8: Create Shell Preview
 
-First, ensure the shell directory exists:
-
-```bash
-mkdir -p src/shell
-```
-
-Then create `src/shell/ShellPreview.tsx` — a preview wrapper for viewing the shell in Design OS:
+Create `src/shell/ShellPreview.tsx` — a preview wrapper for viewing the shell in Design OS:
 
 ```tsx
 import { AppShell } from './components/AppShell'

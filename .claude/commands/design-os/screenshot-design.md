@@ -112,6 +112,10 @@ If they want additional screenshots (e.g., dark mode, different states):
 - Mobile viewport
 - Different states (empty, loading, etc.)"
 
+When all screenshots are complete, guide the user to the next step:
+
+"**Next step:** When all your sections have screen designs and screenshots, run `/export-product` to generate the complete handoff package for implementation."
+
 ## Step 6: Clean Up - Kill Dev Server
 
 After you're done capturing screenshots, kill the dev server process you started:

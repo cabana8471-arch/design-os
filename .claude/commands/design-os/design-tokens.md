@@ -78,9 +78,37 @@ My suggestions for [Product Name]:
 
 What do you prefer?"
 
-## Step 5: Present Final Choices
+## Step 5: Preview Colors in Light and Dark Mode
 
-Once they've made decisions:
+Before finalizing, help the user visualize how their color choices will look in both light and dark mode:
+
+"Let's preview your colors in both light and dark mode to make sure they work well:
+
+**Light Mode Preview:**
+- Background: `[neutral]-50` or `[neutral]-100`
+- Text: `[neutral]-900` or `[neutral]-800`
+- Primary buttons: `bg-[primary]-600 text-white`
+- Secondary elements: `[secondary]-100` with `[secondary]-800` text
+- Borders: `[neutral]-200` or `[neutral]-300`
+
+**Dark Mode Preview:**
+- Background: `[neutral]-900` or `[neutral]-950`
+- Text: `[neutral]-100` or `[neutral]-50`
+- Primary buttons: `bg-[primary]-500 text-white` (slightly lighter for dark backgrounds)
+- Secondary elements: `[secondary]-900` with `[secondary]-200` text
+- Borders: `[neutral]-700` or `[neutral]-800`
+
+**Contrast Check:**
+- Primary on dark background: Is `[primary]-500` visible against `[neutral]-900`? ✓
+- Text readability: Is `[neutral]-100` legible on `[neutral]-900`? ✓
+
+Do these combinations look good for your product? Any adjustments needed for dark mode?"
+
+If the user wants adjustments, iterate on the color choices. Some colors (like `yellow` or `lime`) may need shade adjustments for dark mode visibility.
+
+## Step 6: Present Final Choices
+
+Once they've reviewed both modes:
 
 "Here's your design system:
 
@@ -94,9 +122,14 @@ Once they've made decisions:
 - Body: [Font Name]
 - Mono: [Font Name]
 
+**Verified for:**
+- ✓ Light mode readability
+- ✓ Dark mode readability
+- ✓ Sufficient contrast
+
 Does this look good? Ready to save it?"
 
-## Step 6: Create the Files
+## Step 7: Create the Files
 
 Once approved:
 
@@ -129,7 +162,7 @@ Then create two files:
 }
 ```
 
-## Step 7: Confirm Completion
+## Step 8: Confirm Completion
 
 Let the user know:
 

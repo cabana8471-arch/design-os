@@ -54,9 +54,24 @@ Does this capture your vision? Would you like to adjust anything?"
 
 Iterate until the user is satisfied.
 
+### Validate Product Name Before Proceeding
+
+**Before creating the file, verify that a product name has been established:**
+
+1. Check that you have captured a clear product name from the conversation
+2. If the product name is missing, vague, or still a placeholder:
+   - Ask explicitly: "Before I save this, what would you like to call this product? (A short, memorable name)"
+   - Wait for their response
+3. Do NOT proceed to file creation until you have a confirmed product name
+
+The product name is critical because:
+- It becomes the `# [Product Name]` heading in the markdown file
+- It displays as the main title in Design OS
+- It's referenced throughout the export process
+
 ## Step 4: Create the File
 
-Once the user approves:
+Once the user approves and you have confirmed the product name:
 
 ### Create Product Directory
 

@@ -86,6 +86,20 @@ When creating designs for a section with multiple views:
 
 Before creating the screen design, read the `frontend-design` skill guidance to ensure high-quality design output.
 
+### Validate Skill File Exists
+
+First, check that the frontend-design skill file exists at `.claude/skills/frontend-design/SKILL.md`.
+
+If the file is missing:
+```
+Note: Design guidance file not found at `.claude/skills/frontend-design/SKILL.md`.
+I'll proceed with general design best practices, but the screen design may lack the distinctive aesthetics that the skill provides.
+```
+
+Continue with the design process even if the file is missing, but prefer to have it available for best results.
+
+### Read Design Guidance
+
 Read the file at `.claude/skills/frontend-design/SKILL.md` and follow its guidance for creating distinctive, production-grade interfaces.
 
 ### Key Design Principles to Follow

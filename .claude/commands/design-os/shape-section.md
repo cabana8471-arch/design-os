@@ -54,17 +54,21 @@ Ask questions one or two at a time, conversationally. Focus on user experience a
 
 Check if a shell design has been created for this project by looking for `product/shell/spec.md` (this is more reliable than checking for component files, which might be partial).
 
-If shell specification exists, ask the user about shell usage:
+**Always ask the user about shell usage** to ensure they can override the default if needed:
 
 "Should this section's screen designs be displayed **inside the app shell** (with navigation header), or should they be **standalone pages** (without the shell)?
 
 Most sections use the app shell, but some pages like public-facing views, landing pages, or embedded widgets should be standalone."
 
 Use AskUserQuestion with options:
-- "Inside app shell" - The default for most in-app sections
+- "Inside app shell (Recommended)" - The default for most in-app sections
 - "Standalone (no shell)" - For public pages, landing pages, or embeds
 
-If no shell design exists yet (no `product/shell/spec.md`), skip this question and default to `shell: true` (it will use the shell once it's designed).
+**Note:** Even if no shell design exists yet, the user should still make this choice:
+- If they choose "Inside app shell", set `shell: true` — it will use the shell once it's designed later
+- If they choose "Standalone", set `shell: false` — this is a deliberate design decision for public or embedded pages
+
+This ensures the user explicitly chooses the display mode rather than inheriting a default they may not want.
 
 ## Step 6: Present Draft and Refine
 
@@ -85,9 +89,27 @@ Once you have enough information, present a draft specification:
 - [Requirement 2]
 - [Requirement 3]
 
+**Views:**
+[If multiple views were discussed, list them explicitly:]
+- [View 1] — [Brief description, e.g., "List view showing all items"]
+- [View 2] — [Brief description, e.g., "Detail view for single item"]
+- [View 3] — [Brief description, e.g., "Create/edit form modal"]
+
+[If only one view, omit this section]
+
 **Display:** [Inside app shell / Standalone]
 
 Does this capture everything? Would you like to adjust anything?"
+
+### Handling Multiple Views
+
+If the section requires multiple views (e.g., list + detail, or dashboard + settings):
+
+1. **List each view explicitly** in the draft and final spec
+2. **Describe the purpose** of each view briefly
+3. **Note transitions** between views (e.g., "Clicking an item opens the detail view")
+
+This ensures `/design-screen` and `/sample-data` commands know to create components and data for each view.
 
 Iterate until the user is satisfied. Don't add features that weren't discussed. Don't leave out features that were discussed.
 
@@ -123,6 +145,11 @@ Then create the file at `product/sections/[section-id]/spec.md` with this exact 
 - [Requirement 2]
 - [Requirement 3]
 [Add all requirements discussed]
+
+## Views
+[Only include this section if multiple views were discussed]
+- [View 1] — [Brief description]
+- [View 2] — [Brief description]
 
 ## Configuration
 - shell: [true/false]
