@@ -186,7 +186,14 @@ After creating data.json, verify that the file was created correctly:
    - [ ] Sample values are realistic and believable
    - [ ] Edge cases are included (empty arrays, long text, various statuses)
 
-If any validation fails, inform the user of the specific issue and recreate the file with corrections.
+**If validation fails:**
+
+1. **Identify the specific failing check** — Note which validation item(s) failed
+2. **Explain to the user what needs to change** — Describe the issue in plain language (e.g., "The `_meta.models` object is missing the `invoices` key")
+3. **Return to Step 5** — Regenerate `data.json` with the necessary corrections
+4. **Re-run Step 6 validation** — Verify all checks pass before proceeding
+
+Do not proceed to Step 7 until all validation checks pass.
 
 ### Validate Entity Name Consistency
 

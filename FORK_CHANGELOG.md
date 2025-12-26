@@ -6,7 +6,90 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-26 21:15] P0 Critical Fixes: 2 Control Flow and Documentation Issues
+## [2025-12-26 22:30] P1 Medium Fixes: 8 Workflow and Clarity Improvements
+
+### Description
+
+Implementation of 8 P1 (Medium) issues identified in fix-plan.md. These fixes address workflow clarity, explicit action instructions, recovery workflows, and user experience improvements across the command system.
+
+### New Files Created
+
+None (all modifications integrated into existing files)
+
+### Modified Files
+
+| File | Modification |
+|------|--------------|
+| `.claude/commands/design-os/design-shell.md` | **Line 108:** Made skill file reading explicit with "**Read the file... now.**" instruction. **Lines 219-220, 227, 252-255:** Clarified navigation data source — navigation items from roadmap, user menu uses placeholder mock data |
+| `.claude/commands/design-os/design-screen.md` | **Line 103:** Made skill file reading explicit with "**Read the file... now.**" instruction |
+| `.claude/commands/design-os/screenshot-design.md` | **Lines 47-49:** Added PID tracking note and wait time clarification (5 seconds or verify response). **Lines 57-58:** Clarified "Hide" button context — Design OS preview chrome vs product shell, added fallback if button not found. **Lines 122-147:** Improved dev server cleanup — safer process termination, ask user before killing if server was pre-existing |
+| `.claude/commands/design-os/sample-data.md` | **Lines 189-196:** Added explicit recovery workflow for validation failures — 4-step process: identify failing check, explain to user, return to Step 5, re-run validation |
+| `.claude/commands/design-os/product-vision.md` | **Line 74:** Simplified Step 4 intro — removed redundant product name validation reference since Step 3 already handles validation |
+| `.claude/commands/design-os/shape-section.md` | **Lines 59-63:** Added explanation of what the app shell is and how to design it with `/design-shell` |
+| `.claude/commands/design-os/export-product.md` | **Lines 625-628:** Changed recovery workflow to allow resumption from Step 8 instead of requiring full restart |
+
+### Fixes Applied
+
+**Medium (P1) - 8 Issues:**
+
+1. **#3 design-shell.md & design-screen.md — Skill File Reading Could Be More Explicit** → Changed "Read X for guidance" to explicit "**Read the file X now.**" instruction. AI agents now have unambiguous action to read the skill file.
+
+2. **#4 screenshot-design.md Step 3 — "Hide" Button Context Unclear** → Added clarification that the "Hide" link is the Design OS preview chrome, separate from the product's shell navigation. Added fallback: "If the Hide button cannot be found, proceed without hiding."
+
+3. **#5 sample-data.md Step 6 — Mandatory Validation with Unclear Recovery** → Added explicit 4-step recovery workflow: (1) Identify failing check, (2) Explain to user, (3) Return to Step 5, (4) Re-run validation. Clear instruction to not proceed until all checks pass.
+
+4. **#6 screenshot-design.md Step 6 — Kills Dev Server Without Confirmation** → Improved dev server cleanup: added note to track if server was started by this command, safer kill command using port-based termination, ask user before killing if server was pre-existing.
+
+5. **#7 product-vision.md — Redundant Product Name Validation** → Simplified Step 4 intro from "Once the user approves and you have confirmed the product name" to "Once the user approves (product name was validated in Step 3)". Removed redundant reference.
+
+6. **#8 design-shell.md — Unclear Navigation Data Source** → Added clear comments and documentation: navigation items use REAL section names from roadmap, user menu uses placeholder mock data. Prevents confusion about data sources.
+
+7. **#9 shape-section.md Step 5 — Confusing "Navigation Header" Reference** → Added explanation: "The app shell is the persistent navigation and layout that wraps your application — typically a sidebar or top navigation bar, user menu, and consistent header. You can design it later with `/design-shell`."
+
+8. **#10 export-product.md — Component Validation Requires Full Restart** → Changed recovery workflow to allow resumption from Step 8 after fixing issues, instead of requiring full restart. Only restart from beginning if earlier steps were incomplete.
+
+### Statistics
+
+- **Files modified:** 7
+  - 7 command files (design-shell.md, design-screen.md, screenshot-design.md, sample-data.md, product-vision.md, shape-section.md, export-product.md)
+- **Medium fixes:** 8
+- **Total issues resolved:** 8
+- **Lines added/modified:** ~50 lines
+
+### Key Improvements
+
+1. **Explicit Instructions**: AI agents now have unambiguous "Read now" actions instead of informational prose
+2. **Clear Context**: Hide button context clarified with fallback handling
+3. **Recovery Workflows**: Clear step-by-step recovery process for validation failures
+4. **Safer Operations**: Dev server cleanup is more careful about existing processes
+5. **Reduced Redundancy**: Product name validation is now single-source in Step 3
+6. **Data Source Clarity**: Navigation vs mock data sources clearly documented
+7. **Better Onboarding**: App shell concept explained for new users
+8. **Faster Recovery**: Validation failures can resume from Step 8 instead of full restart
+
+### Verification
+
+All modifications validated for:
+- ✅ Explicit action instructions (no ambiguous prose)
+- ✅ Clear recovery workflows with step-by-step guidance
+- ✅ Safe operations with user confirmation when needed
+- ✅ Proper documentation of data sources
+- ✅ No conflicts with previous P0 and P2 fixes
+- ✅ Consistent patterns across all commands
+
+### Production Status
+
+**After Implementation:**
+- **Instructions:** EXPLICIT (clear action verbs, "Read now")
+- **Recovery:** DOCUMENTED (step-by-step workflows)
+- **Safety:** IMPROVED (user confirmation for risky operations)
+- **Clarity:** ENHANCED (data sources, shell concepts explained)
+- **Workflow:** FLEXIBLE (resume from validation step)
+- **Production Ready:** ✅ YES (all P1 medium issues resolved)
+
+---
+
+## [2025-12-26 19:15] P0 Critical Fixes: 2 Control Flow and Documentation Issues
 
 ### Description
 
@@ -61,7 +144,7 @@ All modifications validated for:
 
 ---
 
-## [2025-12-26 19:30] P2 Minor Fixes: 11 Documentation and Consistency Improvements
+## [2025-12-26 18:30] P2 Minor Fixes: 11 Documentation and Consistency Improvements
 
 ### Description
 

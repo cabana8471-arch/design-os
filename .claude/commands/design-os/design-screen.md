@@ -100,7 +100,7 @@ Continue with the design process even if the file is missing, but prefer to have
 
 ### Read Design Guidance
 
-Read the file at `.claude/skills/frontend-design/SKILL.md` and follow its guidance for creating distinctive, production-grade interfaces.
+**Read the file `.claude/skills/frontend-design/SKILL.md` now.** Follow its guidance for creating distinctive, production-grade interfaces.
 
 ### Key Design Principles to Follow
 

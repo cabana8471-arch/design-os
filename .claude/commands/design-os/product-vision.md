@@ -71,7 +71,7 @@ The product name is critical because:
 
 ## Step 4: Create the File
 
-Once the user approves and you have confirmed the product name:
+Once the user approves (product name was validated in Step 3):
 
 ### Create Directory
 

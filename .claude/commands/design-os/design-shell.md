@@ -105,7 +105,7 @@ Continue with the design process even if the file is missing, but prefer to have
 
 ### Read Design Guidance
 
-Read `.claude/skills/frontend-design/SKILL.md` for detailed guidance on:
+**Read the file `.claude/skills/frontend-design/SKILL.md` now.** Apply the following guidance:
 - Creating distinctive UI that avoids generic "AI slop" aesthetics
 - Choosing bold design directions and unexpected layouts
 - Applying thoughtful typography and color choices
@@ -216,14 +216,15 @@ Create `src/shell/ShellPreview.tsx` — a preview wrapper for viewing the shell 
 import { AppShell } from './components/AppShell'
 
 export default function ShellPreview() {
-  // Use placeholder mock data — no need to import from sections
-  // This ensures the preview works even if no sections exist yet
+  // Navigation items use REAL section names from the product roadmap
+  // User menu and other chrome use placeholder mock data
   const navigationItems = [
-    { label: '[Section 1]', href: '/section-1', isActive: true },
-    { label: '[Section 2]', href: '/section-2' },
-    { label: '[Section 3]', href: '/section-3' },
+    { label: '[Section 1 from roadmap]', href: '/section-1', isActive: true },
+    { label: '[Section 2 from roadmap]', href: '/section-2' },
+    { label: '[Section 3 from roadmap]', href: '/section-3' },
   ]
 
+  // User menu uses placeholder data — not from sections
   const user = {
     name: 'Alex Morgan',
     email: 'alex@example.com',
@@ -248,7 +249,10 @@ export default function ShellPreview() {
 }
 ```
 
-**Important:** Use placeholder mock data in the preview, not imports from sections. This ensures the shell preview works even if no sections have been designed yet.
+**Important:**
+- **Navigation items** should use the REAL section names from `product/product-roadmap.md`
+- **User menu, notifications, and other chrome** should use placeholder mock data
+- Do NOT import data from section folders — this ensures the shell preview works even if no sections have been designed yet
 
 ## Step 9: Apply Design Tokens
 

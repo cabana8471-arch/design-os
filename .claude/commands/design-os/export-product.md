@@ -623,9 +623,9 @@ Continue to Step 9 with confidence.
 3. **Do not create partial exports** — An incomplete export with missing or broken components will cause failures in the user's codebase. It's better to fix the components first, then re-run the export.
 
 4. **Recovery workflow** — After fixing the issues:
-   - Re-run `/export-product` from the beginning
-   - The export will validate components again before proceeding
-   - Do NOT attempt to resume from Step 9 — always start fresh to ensure consistency
+   - You may resume from Step 8 (this step) to re-validate components
+   - If validation passes, continue to Step 9 and subsequent steps
+   - If earlier steps (1-7) were not completed, re-run `/export-product` from the beginning instead
 
 ## Step 9: Copy and Transform Components
 

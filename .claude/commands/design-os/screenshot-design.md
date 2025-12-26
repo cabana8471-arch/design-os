@@ -44,7 +44,9 @@ Start the dev server yourself using Bash. Run `npm run dev` in the background so
 
 Do NOT ask the user if the server is running or tell them to start it. You must start it yourself.
 
-After starting the server, wait a few seconds for it to be ready before navigating to the screen design URL.
+**Track the dev server process:** Note that you started this dev server so you can clean it up in Step 6. If the dev server was already running before this command, be careful not to kill it during cleanup.
+
+After starting the server, wait 5 seconds for it to be ready, or verify `http://localhost:3000` returns a response before navigating to the screen design URL.
 
 ## Step 3: Capture the Screenshot
 
@@ -54,7 +56,8 @@ The screen design URL pattern is: `http://localhost:3000/sections/[section-id]/s
 
 1. First, use `browser_navigate` to go to the screen design URL
 2. Wait for the page to fully load
-3. **Click the "Hide" link** in the navigation bar to hide it before taking the screenshot. The Hide button has the attribute `data-hide-header` which you can use to locate it.
+3. **Hide the Design OS preview header** — Click the "Hide" link (with `data-hide-header` attribute). This is the Design OS preview chrome, separate from the product's shell navigation.
+   - If the Hide button cannot be found, proceed without hiding.
 4. Use `browser_take_screenshot` to capture the page (without the navigation bar)
 
 **Screenshot specifications:**
@@ -118,14 +121,25 @@ When all screenshots are complete, guide the user to the next step:
 
 ## Step 6: Clean Up - Kill Dev Server
 
-After you're done capturing screenshots, kill the dev server process you started:
+After you're done capturing screenshots, clean up the dev server process.
+
+**If you started the dev server in Step 2:**
 
 ```bash
-# Kill the npm run dev process
-pkill -f "npm run dev"
+# Kill the npm run dev process on port 3000
+lsof -ti :3000 | xargs kill -9 2>/dev/null || true
 ```
 
-Verify it's actually stopped by checking if port 3000 is free:
+**If the dev server was already running before this command:**
+
+Ask the user before killing:
+```
+"I see a dev server running on port 3000. Did you have this running before I started, or should I shut it down?"
+```
+
+Only kill the process if the user confirms it was started by this command.
+
+**Verify cleanup:**
 ```bash
 lsof -i :3000
 ```

@@ -58,6 +58,8 @@ Check if a shell design has been created for this project by looking for `produc
 
 "Should this section's screen designs be displayed **inside the app shell** (with navigation header), or should they be **standalone pages** (without the shell)?
 
+**What is the app shell?** The app shell is the persistent navigation and layout that wraps your application — typically a sidebar or top navigation bar, user menu, and consistent header. You can design it later with `/design-shell`.
+
 Most sections use the app shell, but some pages like public-facing views, landing pages, or embedded widgets should be standalone."
 
 Use AskUserQuestion with options:
