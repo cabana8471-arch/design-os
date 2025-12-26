@@ -53,6 +53,98 @@ EXCLUDE_PATTERNS=(
 )
 
 # ============================================================================
+# CREATE MODE - EXCLUDE PATTERNS
+# These patterns define what to EXCLUDE when creating a new project
+# ============================================================================
+
+# Directories to exclude when creating a new project
+CREATE_EXCLUDE_DIRS=(
+  ".git"
+  ".github"
+  "node_modules"
+  "dist"
+  ".vite"
+  "_documentatie"
+  "scripts/logs"
+  ".playwright-mcp"
+  ".claude/plans"
+  "product"
+  "product-plan"
+  "src/sections"
+  "src/shell/components"
+)
+
+# Files to exclude when creating a new project
+CREATE_EXCLUDE_FILES=(
+  "FORK_CHANGELOG.md"
+  "fix-plan.md"
+  "VERSION"
+  "scripts/targets.txt"
+  ".claude/settings.local.json"
+  ".DS_Store"
+)
+
+# File extensions to exclude
+CREATE_EXCLUDE_EXTENSIONS=(
+  "log"
+)
+
+# ============================================================================
+# CREATE MODE - HELPER FUNCTIONS
+# ============================================================================
+
+# Check if path should be excluded in create mode
+# Note: Variable names use _excl_ prefix to avoid conflicts with caller's scope
+is_create_excluded() {
+  local _excl_path="$1"
+  local _excl_basename
+  _excl_basename=$(basename "$_excl_path")
+
+  # Check excluded directories
+  for _excl_dir in "${CREATE_EXCLUDE_DIRS[@]}"; do
+    # Exact match or starts with dir/
+    if [[ "$_excl_path" == "$_excl_dir" ]] || [[ "$_excl_path" == "$_excl_dir/"* ]]; then
+      return 0
+    fi
+  done
+
+  # Check excluded files
+  for _excl_file in "${CREATE_EXCLUDE_FILES[@]}"; do
+    if [[ "$_excl_path" == "$_excl_file" ]] || [[ "$_excl_basename" == "$_excl_file" ]]; then
+      return 0
+    fi
+  done
+
+  # Check excluded extensions
+  local _excl_ext="${_excl_path##*.}"
+  for _excl_ext_pattern in "${CREATE_EXCLUDE_EXTENSIONS[@]}"; do
+    if [[ "$_excl_ext" == "$_excl_ext_pattern" ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+# Sanitize project name for npm package.json
+sanitize_project_name() {
+  local name="$1"
+  # Convert to lowercase
+  name=$(echo "$name" | tr '[:upper:]' '[:lower:]')
+  # Replace spaces with hyphens
+  name=$(echo "$name" | tr ' ' '-')
+  # Remove special characters (keep a-z, 0-9, -)
+  name=$(echo "$name" | sed 's/[^a-z0-9-]//g')
+  # Remove multiple consecutive hyphens
+  name=$(echo "$name" | sed 's/-\+/-/g')
+  # Remove leading/trailing hyphens
+  name=$(echo "$name" | sed 's/^-//;s/-$//')
+  # Truncate to 214 characters (npm limit)
+  name=$(echo "$name" | cut -c1-214)
+  echo "$name"
+}
+
+# ============================================================================
 # RETENTION SETTINGS
 # ============================================================================
 BACKUP_RETENTION_DAYS=30

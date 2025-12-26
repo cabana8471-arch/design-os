@@ -1,6 +1,13 @@
 # Design OS Boilerplate Sync
 
-Script de sincronizare pentru menținerea proiectelor Design OS la zi cu boilerplate-ul.
+Script de sincronizare pentru menținerea proiectelor Design OS la zi cu boilerplate-ul și pentru crearea de proiecte noi.
+
+## Funcționalități
+
+- **Create Mode** - Creează proiecte noi din boilerplate
+- **Sync Mode** - Sincronizează proiecte existente cu actualizările din boilerplate
+- **Batch Mode** - Sincronizează multiple proiecte simultan
+- **Backup & Restore** - Backup automat înainte de modificări
 
 ## Cerințe
 
@@ -25,15 +32,111 @@ sudo dnf install jq inotify-tools
 ## Început Rapid
 
 ```bash
-# 1. Verifică ce fișiere ar fi sincronizate (dry-run)
-./scripts/sync.sh --target ~/projects/my-app --dry-run
+# Creează un proiect nou
+./scripts/sync.sh --create ~/projects/my-app
 
-# 2. Sincronizează proiectul
+# Sau sincronizează un proiect existent
 ./scripts/sync.sh --target ~/projects/my-app
-
-# 3. Verifică statusul
-./scripts/sync.sh --target ~/projects/my-app --status
 ```
+
+## Create Mode (Proiecte Noi)
+
+Create mode copiază fișierele din boilerplate într-un folder nou, configurând automat proiectul.
+
+### Utilizare de Bază
+
+```bash
+# Creează proiect nou
+./scripts/sync.sh --create ~/projects/my-app
+
+# Cu nume personalizat (diferit de numele folderului)
+./scripts/sync.sh --create ~/projects/my-app --name "My SaaS App"
+```
+
+### Opțiuni
+
+```bash
+# Fără npm install (pentru CI/CD sau configurare manuală)
+./scripts/sync.sh --create ~/projects/my-app --no-install
+
+# Fără git init
+./scripts/sync.sh --create ~/projects/my-app --no-git
+
+# Combinație
+./scripts/sync.sh --create ~/projects/my-app --name "My App" --no-install --no-git
+```
+
+### Ce face Create Mode
+
+1. **Validare** - Verifică dacă target-ul există și cere confirmare dacă nu e gol
+2. **Copiere** - Copiază fișierele din boilerplate (exclude `.git`, `node_modules`, `product/*`, etc.)
+3. **Transformare**:
+   - Actualizează `package.json` cu numele proiectului (sanitizat pentru npm)
+   - Generează `README.md` nou pentru proiect
+   - Actualizează `<title>` în `index.html`
+4. **Creare folder-e goale** - `product/`, `src/sections/`, `src/shell/components/` cu `.gitkeep`
+5. **Git Init** - Inițializează repo și creează commit inițial
+6. **npm Install** - Instalează dependențele
+
+### Fișiere Excluse la Create
+
+| Folder/Fișier | Motiv |
+|---------------|-------|
+| `.git/` | Se creează repo nou |
+| `node_modules/` | Se generează cu npm install |
+| `product/*` | Conținut specific proiectului |
+| `product-plan/` | Export output |
+| `src/sections/*` | Design-uri de utilizator |
+| `_documentatie/` | Documentație internă fork |
+| `scripts/logs/` | Log-uri locale |
+| `VERSION` | Doar pentru sync |
+| `FORK_CHANGELOG.md` | Specific fork-ului |
+| `fix-plan.md` | Task-uri de dezvoltare |
+
+### Output Exemplu
+
+```
+═══════════════════════════════════════════════════════════════
+  DESIGN OS - CREATE NEW PROJECT
+  Version: 1.0.0
+═══════════════════════════════════════════════════════════════
+
+[INFO] Creating project: my-saas-app
+[INFO] Location: /Users/user/projects/my-saas-app
+[INFO] Copying boilerplate files...
+[✓] Copied 127 files (skipped 45)
+[INFO] Creating .gitkeep files...
+[INFO] Updating package.json...
+[✓] Updated package.json (name: "my-saas-app")
+[INFO] Updating index.html...
+[✓] Updated index.html title
+[INFO] Generating README.md...
+[✓] Generated README.md
+[INFO] Initializing git repository...
+[✓] Git repository initialized with initial commit
+[INFO] Installing dependencies...
+[✓] npm install completed (245 packages)
+
+═══════════════════════════════════════════════════════════════
+  ✓ PROJECT CREATED SUCCESSFULLY
+═══════════════════════════════════════════════════════════════
+
+  Project: my-saas-app
+  Location: /Users/user/projects/my-saas-app
+
+  Next steps:
+    cd /Users/user/projects/my-saas-app
+    npm run dev
+
+  Start designing:
+    /product-vision    - Define your product
+    /product-roadmap   - Plan your sections
+
+  Documentation:
+    ./docs/getting-started.md
+```
+
+## Sync Mode (Proiecte Existente)
 
 ## Utilizare
 
@@ -142,6 +245,17 @@ cp scripts/targets.txt.example scripts/targets.txt
 ```
 
 ## Opțiuni Complete
+
+### Create Mode
+
+| Opțiune | Descriere |
+|---------|-----------|
+| `--create <path>` | Creează un proiect Design OS nou la `<path>` |
+| `--name <name>` | Numele proiectului (implicit: numele folderului) |
+| `--no-install` | Nu rula `npm install` după copiere |
+| `--no-git` | Nu inițializa repository git |
+
+### Sync Mode
 
 | Opțiune | Descriere |
 |---------|-----------|
@@ -283,6 +397,8 @@ Retenție implicită:
 
 ## Coduri de Ieșire
 
+### Sync Mode
+
 | Cod | Semnificație |
 |-----|--------------|
 | `0` | Success - sync complet fără erori |
@@ -294,6 +410,17 @@ Retenție implicită:
 | `6` | Eroare de copiere |
 | `7` | Dependență lipsă |
 | `10` | Batch mode - cel puțin un proiect a eșuat |
+
+### Create Mode
+
+| Cod | Semnificație |
+|-----|--------------|
+| `0` | Success - proiect creat |
+| `1` | Eroare generală / argumente invalide |
+| `11` | Anulat de utilizator (target existent) |
+| `12` | Eroare la copiere fișiere |
+| `13` | npm install a eșuat (warning, continuă) |
+| `14` | git init a eșuat (warning, continuă) |
 
 ## Configurare
 

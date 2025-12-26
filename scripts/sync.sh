@@ -22,6 +22,11 @@ EXIT_BACKUP_ERROR=5
 EXIT_COPY_ERROR=6
 EXIT_MISSING_DEPENDENCY=7
 EXIT_BATCH_PARTIAL_FAIL=10
+# Create mode exit codes
+EXIT_CREATE_CANCELLED=11
+EXIT_CREATE_COPY_ERROR=12
+EXIT_CREATE_NPM_ERROR=13
+EXIT_CREATE_GIT_ERROR=14
 
 # ============================================================================
 # DEFAULT OPTIONS
@@ -41,6 +46,13 @@ SKIP_ALL_CONFLICTS=false
 CLEANUP_MODE=false
 VERBOSE=false
 QUIET=false
+
+# Create mode options
+CREATE_MODE=false
+CREATE_PATH=""
+PROJECT_NAME=""
+NO_INSTALL=false
+NO_GIT=false
 
 # Runtime state
 LOCK_FILE=""
@@ -90,11 +102,18 @@ Design OS Boilerplate Sync Script
 USAGE:
   ./scripts/sync.sh --target <path> [options]
   ./scripts/sync.sh --batch [options]
+  ./scripts/sync.sh --create <path> [options]
 
 REQUIRED (for sync/restore/status):
   --target <path>       Path to target project
 
-OPTIONS:
+CREATE MODE:
+  --create <path>       Create a new Design OS project at <path>
+  --name <name>         Project name (default: folder name)
+  --no-install          Skip npm install
+  --no-git              Skip git init
+
+SYNC OPTIONS:
   --batch               Sync to all projects in targets.txt
   --dry-run             Simulate sync without making changes
   --backup              Create backup before sync (default: on)
@@ -111,6 +130,18 @@ OPTIONS:
   --help                Show this help
 
 EXAMPLES:
+  # Create a new project
+  ./scripts/sync.sh --create ~/projects/my-app
+
+  # Create with custom name
+  ./scripts/sync.sh --create ~/projects/my-app --name "My SaaS App"
+
+  # Create without npm install (for CI/CD)
+  ./scripts/sync.sh --create ~/projects/my-app --no-install
+
+  # Create without git init
+  ./scripts/sync.sh --create ~/projects/my-app --no-git
+
   # Preview changes (dry-run)
   ./scripts/sync.sh --target ~/projects/my-app --dry-run
 
@@ -140,6 +171,10 @@ EXIT CODES:
   6   Copy error
   7   Missing dependency
   10  Batch mode - at least one project failed
+  11  Create cancelled by user
+  12  Create copy error
+  13  npm install failed (warning only)
+  14  git init failed (warning only)
 EOF
 }
 
@@ -153,6 +188,23 @@ parse_arguments() {
       --target)
         TARGET_PATH="$2"
         shift 2
+        ;;
+      --create)
+        CREATE_MODE=true
+        CREATE_PATH="$2"
+        shift 2
+        ;;
+      --name)
+        PROJECT_NAME="$2"
+        shift 2
+        ;;
+      --no-install)
+        NO_INSTALL=true
+        shift
+        ;;
+      --no-git)
+        NO_GIT=true
+        shift
         ;;
       --batch)
         BATCH_MODE=true
@@ -1108,6 +1160,368 @@ EOF
 }
 
 # ============================================================================
+# CREATE MODE
+# ============================================================================
+
+# Validate target path for create mode
+validate_create_target() {
+  local target="$1"
+
+  # Expand ~ to home directory
+  target="${target/#\~/$HOME}"
+
+  # Check if parent directory exists
+  local parent_dir
+  parent_dir=$(dirname "$target")
+  if [[ ! -d "$parent_dir" ]]; then
+    log_error "Parent directory does not exist: $parent_dir"
+    exit $EXIT_GENERAL_ERROR
+  fi
+
+  # Check write permissions
+  if [[ ! -w "$parent_dir" ]]; then
+    log_error "No write permission for: $parent_dir"
+    exit $EXIT_GENERAL_ERROR
+  fi
+
+  # Check if target exists and is not empty
+  if [[ -d "$target" ]] && [[ -n "$(ls -A "$target" 2>/dev/null)" ]]; then
+    echo ""
+    log_warn "Directory exists and is not empty: $target"
+    echo ""
+    echo "Contents may be overwritten. Continue? [y/N]"
+    read -r response
+    if [[ "$response" != "y" ]] && [[ "$response" != "Y" ]]; then
+      log_info "Create cancelled by user"
+      exit $EXIT_CREATE_CANCELLED
+    fi
+  fi
+
+  # Return expanded path
+  echo "$target"
+}
+
+# Copy boilerplate files to target
+copy_boilerplate() {
+  local target="$1"
+  local copied=0
+  local skipped=0
+
+  log_info "Copying boilerplate files..."
+
+  # Create target directory
+  mkdir -p "$target"
+
+  # Use temp file for bash 3.2 compatibility (avoid process substitution issues)
+  local temp_file
+  temp_file=$(mktemp)
+  find "$BOILERPLATE_ROOT" -type f -print0 > "$temp_file" 2>/dev/null
+
+  while IFS= read -r -d '' file; do
+    local rel_path="${file#$BOILERPLATE_ROOT/}"
+
+    # Skip if excluded
+    if is_create_excluded "$rel_path"; then
+      ((skipped++))
+      log_verbose "Skipped: $rel_path"
+      continue
+    fi
+
+    # Skip symlinks
+    if [[ -L "$file" ]]; then
+      log_verbose "Skipped symlink: $rel_path"
+      continue
+    fi
+
+    # Create target directory
+    local target_dir
+    target_dir=$(dirname "$target/$rel_path")
+    mkdir -p "$target_dir"
+
+    # Copy file
+    if cp -p "$file" "$target/$rel_path" 2>/dev/null; then
+      ((copied++))
+      log_verbose "Copied: $rel_path"
+    else
+      log_error "Failed to copy: $rel_path"
+      rm -f "$temp_file"
+      exit $EXIT_CREATE_COPY_ERROR
+    fi
+  done < "$temp_file"
+
+  rm -f "$temp_file"
+
+  log_success "Copied $copied files (skipped $skipped)"
+}
+
+# Create gitkeep files in empty directories
+create_gitkeeps() {
+  local target="$1"
+
+  log_info "Creating .gitkeep files..."
+
+  # product/ folder
+  mkdir -p "$target/product"
+  touch "$target/product/.gitkeep"
+
+  # src/sections/ folder
+  mkdir -p "$target/src/sections"
+  touch "$target/src/sections/.gitkeep"
+
+  # src/shell/components/ folder
+  mkdir -p "$target/src/shell/components"
+  touch "$target/src/shell/components/.gitkeep"
+
+  log_verbose "Created .gitkeep files in product/, src/sections/, src/shell/components/"
+}
+
+# Transform package.json with project name
+transform_package_json() {
+  local target="$1"
+  local name="$2"
+  local package_file="$target/package.json"
+
+  if [[ ! -f "$package_file" ]]; then
+    log_warn "package.json not found, skipping transformation"
+    return
+  fi
+
+  # Sanitize name for npm
+  local sanitized_name
+  sanitized_name=$(sanitize_project_name "$name")
+
+  log_info "Updating package.json..."
+
+  # Use sed to replace the name field
+  if [[ "$(uname)" == "Darwin" ]]; then
+    sed -i '' "s/\"name\": \"[^\"]*\"/\"name\": \"$sanitized_name\"/" "$package_file"
+  else
+    sed -i "s/\"name\": \"[^\"]*\"/\"name\": \"$sanitized_name\"/" "$package_file"
+  fi
+
+  log_success "Updated package.json (name: \"$sanitized_name\")"
+}
+
+# Transform index.html with project name
+transform_index_html() {
+  local target="$1"
+  local name="$2"
+  local html_file="$target/index.html"
+
+  if [[ ! -f "$html_file" ]]; then
+    log_warn "index.html not found, skipping transformation"
+    return
+  fi
+
+  log_info "Updating index.html..."
+
+  # Use sed to replace the title
+  if [[ "$(uname)" == "Darwin" ]]; then
+    sed -i '' "s/<title>[^<]*<\/title>/<title>$name<\/title>/" "$html_file"
+  else
+    sed -i "s/<title>[^<]*<\/title>/<title>$name<\/title>/" "$html_file"
+  fi
+
+  log_success "Updated index.html title"
+}
+
+# Generate README.md for new project
+generate_readme() {
+  local target="$1"
+  local name="$2"
+
+  log_info "Generating README.md..."
+
+  cat > "$target/README.md" << EOF
+# $name
+
+Built with [Design OS](https://github.com/buildermethods/design-os).
+
+## Getting Started
+
+\`\`\`bash
+npm run dev
+\`\`\`
+
+## Design OS Commands
+
+- \`/product-vision\` - Define product overview
+- \`/product-roadmap\` - Plan development sections
+- \`/data-model\` - Design data structures
+- \`/design-tokens\` - Set colors and typography
+- \`/design-shell\` - Create app navigation
+- \`/shape-section\` - Define section specs
+- \`/sample-data\` - Generate test data
+- \`/design-screen\` - Design UI screens
+- \`/screenshot-design\` - Capture screenshots
+- \`/export-product\` - Export for implementation
+
+## Sync with Boilerplate
+
+\`\`\`bash
+# Check for updates
+./scripts/sync.sh --target . --status
+
+# Sync updates
+./scripts/sync.sh --target . --dry-run
+./scripts/sync.sh --target .
+\`\`\`
+EOF
+
+  log_success "Generated README.md"
+}
+
+# Initialize git repository
+init_git() {
+  local target="$1"
+  local version
+  version=$(get_boilerplate_version)
+
+  log_info "Initializing git repository..."
+
+  # Change to target directory
+  cd "$target" || exit $EXIT_CREATE_GIT_ERROR
+
+  # Initialize git
+  if ! git init &>/dev/null; then
+    log_warn "git init failed"
+    return 1
+  fi
+
+  # Add all files
+  if ! git add . &>/dev/null; then
+    log_warn "git add failed"
+    return 1
+  fi
+
+  # Create initial commit
+  local commit_msg="Initial project from Design OS boilerplate v$version
+
+🤖 Generated with Design OS Boilerplate"
+
+  if ! git commit -m "$commit_msg" &>/dev/null; then
+    log_warn "git commit failed"
+    return 1
+  fi
+
+  log_success "Git repository initialized with initial commit"
+  return 0
+}
+
+# Run npm install
+run_npm_install() {
+  local target="$1"
+
+  log_info "Installing dependencies..."
+
+  # Change to target directory
+  cd "$target" || exit $EXIT_CREATE_NPM_ERROR
+
+  # Run npm install
+  if npm install 2>&1 | tail -5; then
+    local pkg_count
+    pkg_count=$(npm list --depth=0 2>/dev/null | wc -l | tr -d ' ')
+    log_success "npm install completed ($pkg_count packages)"
+    return 0
+  else
+    log_warn "npm install failed - you can run it manually later"
+    return 1
+  fi
+}
+
+# Create initial sync manifest
+create_initial_manifest() {
+  local target="$1"
+  local version
+  version=$(get_boilerplate_version)
+  local timestamp
+  timestamp=$(get_timestamp)
+
+  cat > "$target/.sync-manifest.json" << EOF
+{
+  "last_sync": "$timestamp",
+  "boilerplate_version": "$version",
+  "created_from_boilerplate": true,
+  "files": {}
+}
+EOF
+
+  log_verbose "Created initial sync manifest"
+}
+
+# Show create report
+show_create_report() {
+  local target="$1"
+  local name="$2"
+
+  echo ""
+  echo "═══════════════════════════════════════════════════════════════"
+  echo "  ✓ PROJECT CREATED SUCCESSFULLY"
+  echo "═══════════════════════════════════════════════════════════════"
+  echo ""
+  echo "  Project: $name"
+  echo "  Location: $target"
+  echo ""
+  echo "  Next steps:"
+  echo "    cd $target"
+  [[ "$NO_INSTALL" == true ]] && echo "    npm install"
+  echo "    npm run dev"
+  echo ""
+  echo "  Start designing:"
+  echo "    /product-vision    - Define your product"
+  echo "    /product-roadmap   - Plan your sections"
+  echo ""
+  echo "  Documentation:"
+  echo "    ./docs/getting-started.md"
+  echo ""
+}
+
+# Main create project function
+create_project() {
+  local target="$1"
+  local name="$2"
+
+  # Validate target
+  target=$(validate_create_target "$target")
+  CREATE_PATH="$target"
+
+  # Default name to folder name if not provided
+  if [[ -z "$name" ]]; then
+    name=$(basename "$target")
+  fi
+
+  log_info "Creating project: $name"
+  log_info "Location: $target"
+
+  # Copy boilerplate files
+  copy_boilerplate "$target"
+
+  # Create gitkeep files
+  create_gitkeeps "$target"
+
+  # Transform files
+  transform_package_json "$target" "$name"
+  transform_index_html "$target" "$name"
+  generate_readme "$target" "$name"
+
+  # Create manifest
+  create_initial_manifest "$target"
+
+  # Initialize git (if not --no-git)
+  if [[ "$NO_GIT" != true ]]; then
+    init_git "$target" || true
+  fi
+
+  # Run npm install (if not --no-install)
+  if [[ "$NO_INSTALL" != true ]]; then
+    run_npm_install "$target" || true
+  fi
+
+  # Show report
+  show_create_report "$target" "$name"
+}
+
+# ============================================================================
 # MAIN
 # ============================================================================
 
@@ -1121,10 +1535,24 @@ main() {
   if [[ "$QUIET" != true ]]; then
     echo ""
     echo "═══════════════════════════════════════════════════════════════"
-    echo "  DESIGN OS BOILERPLATE SYNC"
+    if [[ "$CREATE_MODE" == true ]]; then
+      echo "  DESIGN OS - CREATE NEW PROJECT"
+    else
+      echo "  DESIGN OS BOILERPLATE SYNC"
+    fi
     echo "  Version: $(get_boilerplate_version)"
     echo "═══════════════════════════════════════════════════════════════"
     echo ""
+  fi
+
+  # Create mode
+  if [[ "$CREATE_MODE" == true ]]; then
+    if [[ -z "$CREATE_PATH" ]]; then
+      log_error "--create requires a path"
+      exit $EXIT_GENERAL_ERROR
+    fi
+    create_project "$CREATE_PATH" "$PROJECT_NAME"
+    exit $EXIT_SUCCESS
   fi
 
   # Standalone operations
@@ -1172,7 +1600,7 @@ main() {
 
   # Single target sync
   if [[ -z "$TARGET_PATH" ]]; then
-    log_error "Missing --target or --batch"
+    log_error "Missing --target, --batch, or --create"
     echo "Use --help for usage information"
     exit $EXIT_GENERAL_ERROR
   fi

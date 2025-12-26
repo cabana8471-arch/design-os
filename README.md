@@ -4,6 +4,24 @@
 
 [Design OS](https://buildermethods.com/design-os) is a product planning and design tool that helps you define your product vision, structure your data model, design your UI, and export production-ready components for implementation. Rather than jumping straight into code, you work through a guided process that captures what you're building and why—then hands off everything your coding agent needs to build it right.
 
+---
+
+## 🔧 Fork Improvements
+
+> **This is an enhanced fork** of the original [Design OS](https://github.com/buildermethods/design-os) by Brian Casel.
+
+This fork includes **50+ bug fixes and improvements** making Design OS production-ready:
+
+- **Quality-First Template System** — Anti-hallucination rules, verification checklists, modular templates
+- **Robustness Fixes** — Complete validation, directory creation patterns, standardized error handling
+- **Skills Integration** — Frontend-design skill integrated for distinctive UI quality
+- **Documentation Consistency** — Accurate step numbering, mandatory indicators, recovery instructions
+- **Upstream Sync** — Latest bug fixes from original repository (ampersand handling, font imports)
+
+📋 **Full changelog:** [FORK_CHANGELOG.md](FORK_CHANGELOG.md)
+
+---
+
 ## The Problem
 
 AI coding tools are incredible at building fast. But the results often miss the mark. You describe what you want, the agent builds *something*, but it's not what you envisioned. The UI looks generic. Features get half-implemented. You spend as much time fixing and redirecting as you would have spent building.

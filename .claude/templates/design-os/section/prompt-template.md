@@ -8,6 +8,7 @@ Please carefully read and analyze the following files:
 2. **@product-plan/instructions/incremental/NN-SECTION_ID.md** — Specific instructions for this section
 
 Also review the section assets:
+- **@product-plan/design-guidance/frontend-design.md** — Design principles and guidance
 - **@product-plan/sections/SECTION_ID/README.md** — Feature overview and design intent
 - **@product-plan/sections/SECTION_ID/tests.md** — Test-writing instructions (use TDD approach)
 - **@product-plan/sections/SECTION_ID/components/** — React components to integrate
