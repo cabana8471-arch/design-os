@@ -6,6 +6,69 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-27 00:15] High Priority P1 Fixes: Validation, Routing & Template Improvements
+
+### Description
+
+Implementation of all 12 HIGH priority (P1) fixes from fix-plan.md. These fixes improve validation logic, clarify routing patterns, add tracking mechanisms, and differentiate template content for better maintainability.
+
+### Modified Files
+
+| File | Modification |
+|------|--------------|
+| `.claude/commands/design-os/product-roadmap.md` | **Lines 184-206:** Added "Validate section IDs conform to rules" step with bash validation script and reference to Section ID Rules. Ensures manually renamed sections follow consistent naming. |
+| `.claude/commands/design-os/design-tokens.md` | **Lines 347-382:** Added comprehensive "Font Weight Validation" section with UI element weight table, validation process, common issues table, and minimum recommended weights. |
+| `.claude/commands/design-os/sample-data.md` | **Lines 311-363:** Added "Bidirectional Naming Validation" section ensuring consistency between data-model.md, data.json, and types.ts with transformation tables and mismatch reporting. |
+| `.claude/commands/design-os/design-shell.md` | **Lines 201-224:** Added "Navigation Href Format" section defining `/sections/[section-id]` pattern with route type table and example navigation items. |
+| `.claude/commands/design-os/design-screen.md` | **Lines 73-108:** Added "Check for Existing Views" section that lists existing components before prompting, marks views as CREATED/PENDING, and skips completed views. **Lines 460-465:** Added "Where do Props come from?" clarification explaining types.ts contains both entity types and Props interfaces. |
+| `.claude/commands/design-os/export-product.md` | **Lines 215-232:** Added "Preamble Handling for One-Shot vs Incremental" section clarifying that one-shot has preamble once at top, while each incremental file has its own preamble. |
+| `.claude/commands/design-os/screenshot-design.md` | **Lines 57-66:** Added "Route Verification" section confirming URL pattern matches router.tsx and providing troubleshooting steps for 404/blank screens. |
+| `.claude/commands/design-os/shape-section.md` | **Lines 88-118:** Enhanced shell check to be comprehensive: checks spec.md + AppShell.tsx + ShellPreview.tsx, provides status table for different combinations, and reports shell status to user. |
+| `.claude/commands/design-os/product-vision.md` | **Lines 67-86:** Added "Product Name Validation Criteria" with length rules (2-50 chars), generic names to reject list, and prompt for when user provides placeholder names. |
+| `.claude/templates/design-os/section/clarifying-questions.md` | **Full rewrite to v1.1.0:** Differentiated from common version by removing tech stack questions, adding section-specific permissions, state & navigation, and section-specific edge cases sections. Added note clarifying this is for section-specific implementation. |
+| `.claude/templates/design-os/common/tdd-workflow.md` | **Lines 2, 22-30:** Added usage comment, test categories table (unit/integration/E2E), and note clarifying this is for one-shot implementation. |
+| `.claude/templates/design-os/section/tdd-workflow.md` | **Lines 2, 22-30:** Added usage comment, test scope table with examples, and note clarifying this is for section-specific implementation. |
+
+### Issues Addressed (from fix-plan.md)
+
+| Issue # | Title | Resolution |
+|---------|-------|------------|
+| P1-8 | Section ID Generation Rules Not Enforced in Roadmap | Added validation script in orphaned files section |
+| P1-9 | Font Weight Validation Missing | Added Font Weight Validation section with tables and process |
+| P1-10 | Entity Naming Bidirectional Check Missing | Added bidirectional validation between types.ts ↔ data.json |
+| P1-11 | Navigation Href Format Undefined | Defined pattern `/sections/[section-id]` with examples |
+| P1-12 | Multiple Views Tracking Missing | Added check for existing views before prompting |
+| P1-13 | Duplicate Template Content - clarifying-questions.md | Differentiated section version with unique sections |
+| P1-14 | Duplicate Template Content - tdd-workflow.md | Added usage comments and clarifying notes to both versions |
+| P1-15 | One-Shot vs. Incremental Preamble Confusion | Clarified preamble handling for each prompt type |
+| P1-16 | Screenshot Route Pattern Unverified | Added route verification and troubleshooting steps |
+| P1-17 | Re-Export Pattern Backwards | Clarified Props interfaces come from types.ts |
+| P1-18 | Shell Completeness Check Unreliable | Enhanced to check all 3 files with status table |
+| P1-19 | Product Name Validation Criteria Vague | Added criteria table and generic names rejection list |
+
+### Statistics
+
+- **Files modified:** 12
+- **Commands updated:** 9 (product-roadmap, design-tokens, sample-data, design-shell, design-screen, export-product, screenshot-design, shape-section, product-vision)
+- **Templates updated:** 3 (section/clarifying-questions, common/tdd-workflow, section/tdd-workflow)
+- **Total issues resolved:** 12 P1 issues
+
+### Verification
+
+- All section ID validation uses consistent rules from agents.md
+- Font weight validation includes common issues and solutions
+- Entity naming bidirectional check covers all three files
+- Navigation href format matches router.tsx patterns
+- Multiple views tracking prevents duplicate creation
+- Templates clearly differentiated with usage comments
+- Preamble handling explicitly documented
+- Screenshot route verified against router.tsx
+- Props source clarified as types.ts
+- Shell check comprehensive (3 files)
+- Product name validation has concrete criteria
+
+---
+
 ## [2025-12-26 23:03] Critical P0 Fixes: Template/Command Consistency & Production Readiness
 
 ### Description

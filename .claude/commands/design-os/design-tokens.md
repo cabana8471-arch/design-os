@@ -344,6 +344,43 @@ Before finalizing design tokens, verify:
 - [ ] Tailwind classes (font-heading, font-body, font-mono) work correctly
 - [ ] All font weights used in designs are loaded
 
+### Font Weight Validation
+
+Before finalizing typography choices, ensure all font weights needed for UI components are included in the Google Fonts URL:
+
+**Common Weight Usage in UI Components:**
+
+| UI Element | Typical Weight | Tailwind Class |
+|------------|----------------|----------------|
+| Body text | 400 (Regular) | `font-normal` |
+| Emphasized text | 500 (Medium) | `font-medium` |
+| Subheadings | 600 (Semibold) | `font-semibold` |
+| Headings | 700 (Bold) | `font-bold` |
+| Code/mono | 400-500 | `font-normal`/`font-medium` |
+
+**Validation Process:**
+
+1. **Review screen designs** — Check which font weights are used in existing components
+2. **Verify weights are loaded** — Ensure the Google Fonts URL includes all needed weights:
+   ```html
+   <!-- Example: Loading 400, 500, 600, 700 weights -->
+   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap">
+   ```
+3. **Test fallback behavior** — If a weight isn't loaded, the browser substitutes the nearest available weight, which may look incorrect
+
+**Common Issues:**
+
+| Problem | Symptom | Solution |
+|---------|---------|----------|
+| Missing semibold (600) | `font-semibold` looks like bold or normal | Add `;600` to weight list |
+| Missing medium (500) | `font-medium` looks like normal | Add `;500` to weight list |
+| Only 400 loaded | All text looks the same weight | Add needed weights to URL |
+
+**Minimum Recommended Weights:**
+- **Heading font:** 400, 500, 600, 700
+- **Body font:** 400, 500, 600 (700 optional)
+- **Mono font:** 400, 500 (for code highlighting)
+
 **Example Configuration:**
 
 ```json

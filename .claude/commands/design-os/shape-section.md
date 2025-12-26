@@ -86,9 +86,36 @@ Ask questions one or two at a time, conversationally. Focus on user experience a
 
 ## Step 5: Ask About Shell Configuration
 
-Check if a shell design has been created for this project by looking for `product/shell/spec.md` (this is more reliable than checking for component files, which might be partial).
+Check if a shell design has been created for this project by checking for all shell files:
 
-**Check for existing shell:**
+**Check for existing shell (comprehensive check):**
+
+A complete shell consists of three parts:
+1. `product/shell/spec.md` — Shell specification (design decisions)
+2. `src/shell/components/AppShell.tsx` — Main shell component
+3. `src/shell/ShellPreview.tsx` — Preview wrapper
+
+**Determine shell status:**
+
+```bash
+# Check all three shell files
+SPEC_EXISTS=$([ -f "product/shell/spec.md" ] && echo "yes" || echo "no")
+SHELL_EXISTS=$([ -f "src/shell/components/AppShell.tsx" ] && echo "yes" || echo "no")
+PREVIEW_EXISTS=$([ -f "src/shell/ShellPreview.tsx" ] && echo "yes" || echo "no")
+```
+
+| Spec | Components | Preview | Status |
+|------|------------|---------|--------|
+| yes | yes | yes | Shell complete |
+| yes | no | no | Spec only (run `/design-shell` to complete) |
+| no | yes | yes | Components exist but no spec (unusual) |
+| no | no | no | No shell designed |
+
+**Report shell status to user:**
+
+- **Complete:** "Your application shell is fully designed and ready to use."
+- **Spec only:** "A shell spec exists but components haven't been generated yet. Run `/design-shell` to complete the shell."
+- **No shell:** (inform before asking, as below)
 
 If `product/shell/spec.md` does NOT exist, inform the user before asking:
 ```

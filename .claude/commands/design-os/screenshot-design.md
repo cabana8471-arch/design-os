@@ -54,6 +54,17 @@ Use the Playwright MCP tool to navigate to the screen design and capture a scree
 
 The screen design URL pattern is: `http://localhost:3000/sections/[section-id]/screen-designs/[screen-design-name]`
 
+**Route Verification:**
+This URL pattern matches the route defined in `src/lib/router.tsx`:
+- Router pattern: `/sections/:sectionId/screen-designs/:screenDesignName`
+- Ensure `section-id` matches a directory in `src/sections/`
+- Ensure `screen-design-name` matches a `.tsx` file (without extension) in `src/sections/[section-id]/`
+
+If the page shows a 404 or blank screen, check:
+1. The route exists in router.tsx
+2. The file exists at `src/sections/[section-id]/[screen-design-name].tsx`
+3. The component has a default export
+
 1. First, use `browser_navigate` to go to the screen design URL
 2. Wait for the page to fully load
 3. **Hide the Design OS preview header** — Click the "Hide" link (with `data-hide-header` attribute). This is the Design OS preview chrome, separate from the product's shell navigation.

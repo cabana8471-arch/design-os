@@ -181,7 +181,30 @@ ls src/sections/
   mv src/sections/removed-section _archive/
   ```
 
-**4. Verify cleanup:**
+**4. Validate section IDs conform to rules:**
+
+After renaming or cleaning up sections, verify all section IDs follow the generation rules:
+
+```bash
+# For each remaining section directory, verify the ID conforms to rules
+for dir in product/sections/*/; do
+  section_id=$(basename "$dir")
+  # Check: lowercase, no spaces, no special chars except hyphens, doesn't start/end with hyphen
+  if [[ ! "$section_id" =~ ^[a-z][a-z0-9-]*[a-z0-9]$ ]] || [[ ${#section_id} -gt 50 ]]; then
+    echo "Warning: Section ID '$section_id' may not conform to naming rules"
+  fi
+done
+```
+
+**Section ID Rules (Reference):**
+1. Lowercase only
+2. Hyphens instead of spaces
+3. "&" replaced with "-and-"
+4. No special characters except hyphens
+5. Cannot start or end with hyphen
+6. Maximum 50 characters
+
+**5. Verify cleanup:**
 - Run the dev server and check the homepage shows only current sections
 - Ensure no broken navigation links exist
 

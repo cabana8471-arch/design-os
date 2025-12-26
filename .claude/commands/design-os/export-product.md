@@ -212,6 +212,25 @@ Each milestone has a dedicated instruction document in `product-plan/instruction
 
 ## Step 5: Generate Milestone Instructions
 
+### Preamble Handling for One-Shot vs Incremental
+
+**One-Shot Prompt (`one-shot-prompt.md`):**
+- Include the preamble **once at the top** of the file
+- All milestone instructions follow in sequence
+- The preamble applies to the entire implementation
+
+**Incremental Instructions (`instructions/incremental/*.md`):**
+- **Each milestone file includes its own preamble** at the top
+- This ensures the preamble is always visible when providing a single milestone
+- Preamble can be customized per milestone if needed (e.g., different context for foundation vs sections)
+
+**Why separate preambles?**
+- Incremental files are meant to be provided independently
+- User may skip earlier milestones or provide them in different sessions
+- Each file should be self-contained with full context
+
+---
+
 Each milestone instruction file should begin with the following preamble (adapt the milestone-specific details):
 
 ```markdown

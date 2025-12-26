@@ -308,6 +308,60 @@ This ensures consistency: types match the data model, while JSON keys follow Jav
 
 This validation ensures consistency across all sections and prevents fragmented data models.
 
+### Bidirectional Naming Validation
+
+After generating `types.ts`, perform a reverse validation to ensure naming consistency between all three files:
+
+**Validation Flow:**
+```
+data-model.md  ←→  data.json  ←→  types.ts
+(PascalCase)      (camelCase)    (PascalCase)
+```
+
+**1. Validate types.ts → data.json consistency:**
+
+For each interface in types.ts, verify a corresponding key exists in data.json:
+
+| types.ts Interface | Expected data.json Key |
+|--------------------|------------------------|
+| `Invoice` | `invoices` |
+| `User` | `users` |
+| `LineItem` | `lineItems` |
+
+**Transformation Rule:** Convert PascalCase to camelCase + pluralize
+
+**2. Validate data.json → types.ts consistency:**
+
+For each key in data.json (excluding `_meta`), verify a corresponding interface exists in types.ts:
+
+| data.json Key | Expected types.ts Interface |
+|---------------|----------------------------|
+| `invoices` | `Invoice` |
+| `users` | `User` |
+| `lineItems` | `LineItem` |
+
+**Transformation Rule:** Singularize + convert camelCase to PascalCase
+
+**3. Report mismatches:**
+
+If any validation fails, report the specific mismatch:
+
+```
+Naming inconsistency detected:
+- data.json has 'invoices' but types.ts is missing 'Invoice' interface
+- types.ts has 'Project' interface but data.json is missing 'projects' key
+
+Please ensure all entity names are consistent across files.
+```
+
+**4. Props interface validation:**
+
+Verify that Props interfaces in types.ts correctly reference entity types:
+- `InvoiceListProps.invoices` should be typed as `Invoice[]`
+- `UserDetailProps.user` should be typed as `User`
+
+This bidirectional check prevents subtle bugs where types and data diverge.
+
 ## Step 7: Generate TypeScript Types
 
 After creating data.json, generate `product/sections/[section-id]/types.ts` based on the data structure.

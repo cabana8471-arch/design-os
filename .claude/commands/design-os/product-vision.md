@@ -64,6 +64,27 @@ Iterate until the user is satisfied.
    - Wait for their response
 3. Do NOT proceed to file creation until you have a confirmed product name
 
+**Product Name Validation Criteria:**
+
+| Criterion | Rule | Example |
+|-----------|------|---------|
+| Length | 2-50 characters | "OK" (2) to "Enterprise Resource Planning Dashboard" (40) |
+| Not generic | Reject placeholders | "My App", "Untitled", "New Project", "App", "Test" |
+| Meaningful | Describes the product | "InvoiceFlow", "TaskMaster", "HealthSync" |
+| No special chars | Letters, numbers, spaces, hyphens only | "Project 42" (OK), "App@v2" (reject) |
+
+**Generic names to reject:**
+- "My App", "My Project", "My Product"
+- "Untitled", "Untitled App", "New App"
+- "App", "Project", "Product" (single generic words)
+- "Test", "Demo", "Sample"
+- "[Placeholder]", "TBD", "TODO"
+
+If the user provides a generic name:
+```
+"'[name]' seems like a placeholder. Your product name will appear throughout the design and export — what would you like to call it?"
+```
+
 The product name is critical because:
 - It becomes the `# [Product Name]` heading in the markdown file
 - It displays as the main title in Design OS

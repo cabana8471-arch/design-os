@@ -1,4 +1,5 @@
 <!-- v1.1.0 -->
+<!-- Usage: Include in section-specific prompts for incremental implementation -->
 
 ## Implementation Approach
 
@@ -17,3 +18,13 @@ Use test-driven development for this section:
 - Ensure components work with the sample data from `data.json`
 
 When the section's tests pass, the section is ready for integration.
+
+### Test Scope for This Section
+
+| Test Type | What to Test | Example |
+|-----------|--------------|---------|
+| Component unit tests | Props rendering, callbacks | "renders invoice list with data" |
+| User interaction tests | Click handlers, form submissions | "calls onDelete when delete clicked" |
+| Edge case tests | Empty states, error states | "shows empty message when no invoices" |
+
+**Note:** This workflow template is for section-specific implementation. Cross-section integration tests and E2E tests are covered in the one-shot workflow (`common/tdd-workflow.md`).

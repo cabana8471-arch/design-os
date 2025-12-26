@@ -198,6 +198,31 @@ interface MainNavProps {
 }
 ```
 
+### Navigation Href Format
+
+Navigation item `href` values must follow this pattern to ensure compatibility with the application routing:
+
+| Route Type | Format | Example |
+|------------|--------|---------|
+| Section page | `/sections/[section-id]` | `/sections/invoice-management` |
+| Screen design | `/sections/[section-id]/screen-designs/[name]` | `/sections/invoice-management/screen-designs/invoice-list` |
+| Static pages | `/[page-name]` | `/settings`, `/help` |
+
+**Important:**
+- Section IDs must match the directory names in `src/sections/`
+- The `href` values are used by both Design OS preview and the exported shell
+- When exporting, these routes should be updated to match your application's actual routing structure
+
+**Example navigation items:**
+```tsx
+const navigationItems = [
+  { label: 'Dashboard', href: '/sections/dashboard', isActive: true },
+  { label: 'Invoices', href: '/sections/invoice-management' },
+  { label: 'Reports', href: '/sections/reports-and-analytics' },
+  { label: 'Settings', href: '/settings' },
+]
+```
+
 ### UserMenu.tsx
 The user menu with avatar and dropdown.
 

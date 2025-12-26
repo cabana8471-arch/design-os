@@ -70,14 +70,40 @@ Identify what views are needed based on the spec. Common patterns:
 
 ## Step 4: Clarify the Screen Design Scope
 
+### Check for Existing Views
+
+Before prompting the user for which view to create, check what already exists:
+
+```bash
+# List existing screen design components
+ls src/sections/[section-id]/components/ 2>/dev/null || echo "No components yet"
+
+# List existing preview wrappers
+ls src/sections/[section-id]/*.tsx 2>/dev/null | grep -v components || echo "No preview wrappers yet"
+```
+
+If components already exist, report them to the user:
+
+"I found the following screen designs already created for **[Section Title]**:
+- [Existing View 1] (component + preview)
+- [Existing View 2] (component + preview)
+
+Based on the spec, you still need: [remaining views]"
+
+### Ask Which View to Build
+
 If the spec implies multiple views, use the AskUserQuestion tool to confirm which view to build first:
 
 "The specification suggests a few different views for **[Section Title]**:
 
-1. **[View 1]** - [Brief description]
-2. **[View 2]** - [Brief description]
+1. **[View 1]** - [Brief description] [CREATED if exists]
+2. **[View 2]** - [Brief description] [PENDING if not exists]
 
 Which view should I create first?"
+
+**Skip views that already exist** — Only offer pending views as options. If all views are complete, inform the user:
+
+"All views specified for **[Section Title]** have been created. Run `/screenshot-design` to capture screenshots, or `/export-product` when ready to export."
 
 If there's only one obvious view, proceed directly.
 
@@ -430,6 +456,13 @@ The index file should export:
 **Re-export Props interfaces:**
 - Include Props interfaces so consumers can import from one location
 - This makes the component API more discoverable
+
+**Where do Props come from?**
+Props interfaces are defined in `product/sections/[section-id]/types.ts` by the `/sample-data` command. The types.ts file contains BOTH:
+- Entity types (e.g., `Invoice`, `LineItem`) — describe the data structure
+- Props interfaces (e.g., `InvoiceListProps`) — describe component inputs including data and callbacks
+
+Components import Props from types.ts, not define them locally. This ensures Props interfaces are consistent with the data model.
 
 ### Example index.ts
 
