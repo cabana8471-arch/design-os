@@ -206,6 +206,71 @@ These rules apply to both the Design OS application and all screen designs/compo
 
 - **Use Built-in Colors**: Avoid defining custom colors. Use Tailwind's built-in color utility classes (e.g., `stone-500`, `lime-400`, `red-600`).
 
+### Tailwind v4 Specific Patterns
+
+Design OS uses Tailwind CSS v4, which has several differences from v3:
+
+| Feature | v3 Pattern | v4 Pattern |
+|---------|------------|------------|
+| Configuration | `tailwind.config.js` | CSS-based via `@import "tailwindcss"` |
+| Theme Extension | `extend: { colors: {...} }` | `@theme { --color-* }` in CSS |
+| Dark Mode | `darkMode: 'class'` | Built-in, automatic |
+| Content Paths | `content: ['./src/**/*.tsx']` | Automatic detection |
+| Plugins | `plugins: [...]` in config | CSS `@plugin` directive |
+
+**Key v4 behaviors in Design OS:**
+- Theme tokens defined in `src/index.css` using `@theme` block
+- Dark mode toggles `dark` class on `<html>` element
+- Colors use Tailwind's built-in palette (no custom tokens)
+- Typography uses Google Fonts loaded via CSS `@import`
+
+**Migration notes for developers:**
+- Never create `tailwind.config.js` — it's not used in v4
+- Custom colors go in `@theme { --color-custom: #value }` not config
+- The `@apply` directive still works for composing utilities
+- JIT mode is always on — no need to enable it
+
+---
+
+## Import Path Aliases
+
+Design OS uses TypeScript path aliases for cleaner imports. The `@/` alias maps to `./src/*`.
+
+### Configuration
+
+Defined in `tsconfig.json`:
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+### Usage Examples
+
+| Instead of | Use |
+|------------|-----|
+| `import { Button } from '../../../components/ui/button'` | `import { Button } from '@/components/ui/button'` |
+| `import { loadSectionData } from '../../lib/section-loader'` | `import { loadSectionData } from '@/lib/section-loader'` |
+| `import type { SectionData } from '../types/section'` | `import type { SectionData } from '@/types/section'` |
+
+### When to Use
+
+- **Always use `@/`** for imports from `src/` — cleaner and path-independent
+- **Use relative imports** only within the same directory (e.g., `./Button.tsx`)
+- **Barrel exports** (index.ts files) can use relative imports for their directory
+
+### Consistency Rules
+
+1. Components in `src/components/` import utilities from `@/lib/`
+2. Pages import components from `@/components/`
+3. Types are always imported from `@/types/`
+4. UI primitives are imported from `@/components/ui/`
+
 ---
 
 ## The Four Pillars
@@ -434,6 +499,16 @@ The Design OS boilerplate includes several intentionally empty directories. This
 2. **No confusion** — Example content could be mistaken for required structure
 3. **Workflow-driven** — Each directory is populated through its corresponding command
 4. **Portable** — The boilerplate works for any product type without modification
+
+### The .gitkeep Convention
+
+Empty directories contain a `.gitkeep` file to ensure they're tracked by Git. This is a common convention since Git doesn't track empty directories.
+
+**Important:**
+- `.gitkeep` files are placeholders only — they have no special meaning to Git
+- When a command creates files in the directory, the `.gitkeep` can remain (harmless)
+- Never reference `.gitkeep` in code or commands — treat directories as empty until populated
+- These files are intentionally excluded from exports and sync operations
 
 ### Helper Functions
 

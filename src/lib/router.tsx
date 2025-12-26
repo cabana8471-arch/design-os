@@ -27,6 +27,21 @@ import { ExportPage } from '@/components/ExportPage'
  *   → Used for: Shell design screenshots
  *
  * Keep these in sync to ensure /screenshot-design command works correctly.
+ *
+ * ERROR BOUNDARY NOTE
+ * ===================
+ * Currently, routes do not have error boundaries. Design OS gracefully handles
+ * missing content (empty product, missing sections) at the component level.
+ *
+ * If error boundaries are needed in the future:
+ * 1. Create an ErrorBoundary component in src/components/ErrorBoundary.tsx
+ * 2. Use react-router-dom's errorElement property on each route
+ * 3. Consider route-specific error handling for dynamic content routes
+ *
+ * Routes that would benefit from error boundaries if added:
+ * - /sections/:sectionId (section data loading)
+ * - /sections/:sectionId/screen-designs/:screenDesignName (component loading)
+ * - /shell/design (shell component loading)
  */
 export const router = createBrowserRouter([
   {

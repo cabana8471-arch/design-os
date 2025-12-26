@@ -1,3 +1,28 @@
+/**
+ * ThemeToggle Component - Theme Persistence System
+ *
+ * This component manages the Design OS light/dark theme with localStorage persistence.
+ *
+ * ## How Theme Syncing Works
+ *
+ * 1. **Initial Load**: Reads theme from `localStorage.getItem('theme')`, defaults to 'system'
+ * 2. **Theme Application**: Adds/removes `dark` class on `document.documentElement`
+ * 3. **Persistence**: Saves preference to localStorage on every change
+ * 4. **System Mode**: When 'system', follows OS preference via `prefers-color-scheme` media query
+ *
+ * ## Theme Cycle
+ * Click cycles through: light → dark → system → light
+ *
+ * ## Integration with Screen Designs
+ * Screen designs rendered in iframes inherit the theme through:
+ * - CSS custom properties propagated from the parent
+ * - The iframe content reads the same localStorage key
+ * - The ScreenDesignPage component syncs theme to iframes on load
+ *
+ * ## localStorage Key
+ * - Key: 'theme'
+ * - Values: 'light' | 'dark' | 'system'
+ */
 import { useState, useEffect } from 'react'
 import { Moon, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'

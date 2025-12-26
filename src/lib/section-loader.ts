@@ -22,10 +22,18 @@ const dataFiles = import.meta.glob('/product/sections/*/data.json', {
   eager: true,
 }) as Record<string, { default: Record<string, unknown> }>
 
-// Load screen design components from src/sections lazily
+/**
+ * Load screen design components from src/sections lazily
+ *
+ * Type safety note: ComponentType<Record<string, unknown>> indicates these are
+ * React components that accept arbitrary props. This is intentional since:
+ * - Screen design components define their own prop interfaces in types.ts
+ * - Props are passed dynamically at runtime based on data.json content
+ * - The actual prop validation happens at the component level
+ */
 const screenDesignModules = import.meta.glob('/src/sections/*/*.tsx') as Record<
   string,
-  () => Promise<{ default: ComponentType }>
+  () => Promise<{ default: ComponentType<Record<string, unknown>> }>
 >
 
 // Load screenshot files from product/sections at build time
@@ -190,11 +198,15 @@ export function getSectionScreenshots(sectionId: string): ScreenshotInfo[] {
 
 /**
  * Load screen design component dynamically
+ *
+ * Returns a lazy-load function that resolves to the component module.
+ * The component accepts Record<string, unknown> props since actual
+ * prop types are defined per-component in types.ts.
  */
 export function loadScreenDesignComponent(
   sectionId: string,
   screenDesignName: string
-): (() => Promise<{ default: ComponentType }>) | null {
+): (() => Promise<{ default: ComponentType<Record<string, unknown>> }>) | null {
   const path = `/src/sections/${sectionId}/${screenDesignName}.tsx`
   return screenDesignModules[path] || null
 }
