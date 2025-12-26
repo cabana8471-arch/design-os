@@ -6,6 +6,54 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-27] Critical P0 Fixes: Validation, Content Checks & Clarity Improvements
+
+### Description
+
+Implementation of all 6 CRITICAL priority (P0) fixes from the analysis plan. These fixes address blocking issues that could prevent commands from working correctly, improve validation robustness, and clarify agent instructions.
+
+### Modified Files
+
+| File | Modification |
+|------|--------------|
+| `.claude/commands/design-os/design-shell.md` | **Lines 100-132:** Enhanced skill file validation to check for meaningful content (>100 characters after frontmatter), not just file existence. Added bash validation script with content length check. |
+| `.claude/commands/design-os/design-screen.md` | **Lines 152-184:** Enhanced skill file validation to check for meaningful content (>100 characters after frontmatter), not just file existence. Added bash validation script with content length check. |
+| `.claude/templates/design-os/README.md` | **Lines 116, 121, 130:** Fixed step numbering references from "Step 13" to "Step 14" to match actual export-product.md structure. |
+| `.claude/templates/design-os/one-shot/preamble.md` | **Full rewrite to v1.1.0:** Added `[Product Name]` placeholder in title and intro text. Product name is now substituted during export. |
+| `.claude/commands/design-os/shape-section.md` | **Lines 114-129:** Added handling for "Components only (unusual)" shell state. Now reports all 4 possible shell states with actionable guidance. |
+| `.claude/commands/design-os/sample-data.md` | **Lines 215-249:** Rewrote retry loop section from pseudo-code to declarative agent instructions. Clarified that the AI agent tracks retry attempts during execution. |
+| `.claude/commands/design-os/export-product.md` | **Lines 1332-1391:** Completely rewrote validation section to differentiate one-shot vs section-prompt validation. Added clear table explaining which variables should be substituted vs remain. |
+
+### Issues Addressed (from analysis plan)
+
+| Issue # | Title | Resolution |
+|---------|-------|------------|
+| P0-1 | Skill File Check Nu Verifică Conținut | Added content validation (>100 chars after frontmatter) to both design-shell.md and design-screen.md |
+| P0-2 | Step Numbering Confusion în export-product | Fixed 3 references in templates README.md from "Step 13" to "Step 14" |
+| P0-3 | Missing Product Name Placeholder în One-Shot Preamble | Added `[Product Name]` placeholder to preamble title and intro |
+| P0-4 | Shell Prerequisite Check Incomplet | Added handling for "Components exist but no spec" case with actionable guidance |
+| P0-5 | Retry Loop State Management Pseudo-Code | Rewrote as declarative agent instructions with clear flow diagram |
+| P0-6 | Validation Inconsistentă One-Shot vs Section-Prompt | Added differentiated validation with clear table explaining substitution rules |
+
+### Statistics
+
+- **Files modified:** 7
+- **Validation improvements:** 3 (skill content, shell state, prompt variables)
+- **Clarity improvements:** 2 (retry logic, step numbering)
+- **Template updates:** 1 (preamble.md version bump to v1.1.0)
+- **Total issues resolved:** 6 P0 critical issues
+
+### Verification
+
+- Skill file validation now catches empty/stub files that would provide no guidance
+- Step numbering references now match actual export-product.md steps
+- Product name placeholder ensures generated prompts are personalized
+- Shell state handling covers all 4 possible combinations
+- Retry logic clearly explains agent behavior without implying file-level state
+- Prompt validation correctly differentiates between fully-substituted and template files
+
+---
+
 ## [2025-12-26 23:57] Low Priority P3 Fixes: Documentation, Type Safety & Developer Experience
 
 ### Description
@@ -57,7 +105,7 @@ Implementation of all 8 LOW priority (P3) fixes from fix-plan.md. These fixes im
 
 ---
 
-## [2025-12-27] Medium Priority P2 Fixes: Documentation, Validation & Architecture Clarity
+## [2025-12-27 23:45] Medium Priority P2 Fixes: Documentation, Validation & Architecture Clarity
 
 ### Description
 

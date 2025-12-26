@@ -212,47 +212,41 @@ Validation has failed 3 times. Please review the data model at product/data-mode
 
 This prevents infinite regeneration loops when there's a fundamental misunderstanding about the data model structure.
 
-### Retry Loop State Management (Pseudo-Code)
+### Retry Loop Behavior (Agent Instructions)
+
+**Important:** This is guidance for AI agent behavior — the agent must mentally track retry attempts.
+
+**Retry behavior:**
+
+1. **First attempt:** Generate data.json and run validation (Steps 5-6)
+2. **On validation failure:** Note this is attempt 1 of 3, explain the issue, and regenerate
+3. **On second failure:** Note this is attempt 2 of 3, explain the issue, and regenerate
+4. **On third failure:** STOP with the error message below — do not attempt a 4th time
+
+The maximum of 3 attempts prevents infinite loops when there's a fundamental data model issue.
+
+**Flow diagram:**
 
 ```
-STATE: retryCount = 0, maxRetries = 3
-
-STEP 5: Generate data.json
-    |
-    v
-STEP 6: Validate data.json
-    |
-    +--> PASS --> STEP 7: Generate types.ts
-    |
-    +--> FAIL:
-         retryCount++
-         IF retryCount >= maxRetries:
-             STOP("Validation failed 3 times. Review data model.")
-             **END COMMAND**
-         ELSE:
-             Report failure to user
-             Return to STEP 5 (regenerate with corrections)
-             Loop back to STEP 6 validation
+[Generate data.json] → [Validate] → Pass → [Generate types.ts] → [Complete]
+                            ↓
+                          Fail
+                            ↓
+                      [Track attempt #]
+                            ↓
+                 ┌─────────────────────┐
+                 │ Attempt < 3?        │
+                 └─────────────────────┘
+                    ↓ Yes         ↓ No
+            [Report & Retry]  [STOP with error]
+                    ↓
+            [Return to Generate]
 ```
 
-**State Diagram:**
-```
-[Step 5: Generate] --> [Step 6: Validate]
-                            |
-                      +-----+-----+
-                      |           |
-                   PASS         FAIL
-                      |           |
-                      v           v
-              [Step 7: Types]  [Retry?]
-                                  |
-                            +-----+-----+
-                            |           |
-                         < 3x        >= 3x
-                            |           |
-                            v           v
-                      [Step 5]    [STOP/END]
-```
+**Key points:**
+- The AI agent tracks retry attempts during command execution
+- Each retry should address the specific validation failure identified
+- After 3 failed attempts, stop and ask user to review the data model manually
 
 ### Validate Entity Name Consistency
 

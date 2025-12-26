@@ -149,15 +149,39 @@ src/sections/[section-id]/
 
 Before creating the screen design, read the `frontend-design` skill guidance to ensure high-quality design output.
 
-### Validate Skill File Exists
+### Validate Skill File Exists and Has Content
 
-First, check that the frontend-design skill file exists at `.claude/skills/frontend-design/SKILL.md`.
+First, check that the frontend-design skill file exists at `.claude/skills/frontend-design/SKILL.md` and contains meaningful content.
+
+**Validation Steps:**
+
+1. **Check file exists:**
+   ```bash
+   if [ ! -f ".claude/skills/frontend-design/SKILL.md" ]; then
+     echo "Missing: .claude/skills/frontend-design/SKILL.md"
+     exit 1
+   fi
+   ```
+
+2. **Check file has meaningful content (>100 characters after frontmatter):**
+   ```bash
+   # Count content length excluding frontmatter and blank lines
+   CONTENT_LENGTH=$(sed '/^---$/,/^---$/d' .claude/skills/frontend-design/SKILL.md | tr -d '[:space:]' | wc -c)
+   if [ "$CONTENT_LENGTH" -lt 100 ]; then
+     echo "The skill file exists but appears to be empty or contains only frontmatter."
+     exit 1
+   fi
+   ```
 
 **If the file is missing:**
 
 STOP and inform the user: "The frontend-design skill file is required for creating distinctive UI. Please ensure `.claude/skills/frontend-design/SKILL.md` exists."
 
-**END COMMAND** — Do not proceed to Step 6. The skill file is required for creating distinctive, production-grade screen designs.
+**If the file exists but has insufficient content:**
+
+STOP and inform the user: "The frontend-design skill file exists but appears to be empty or contains only frontmatter. Please ensure `.claude/skills/frontend-design/SKILL.md` has meaningful design guidance content (at least 100 characters)."
+
+**END COMMAND** — Do not proceed to Step 6. The skill file with meaningful content is required for creating distinctive, production-grade screen designs.
 
 ### Read Design Guidance
 

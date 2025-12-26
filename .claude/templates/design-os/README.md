@@ -113,12 +113,12 @@ Changes apply to all future exports automatically.
 
 1. Create new file in appropriate directory (`common/`, `one-shot/`, or `section/`)
 2. Add version comment: `<!-- v1.0.0 -->`
-3. Update assembly order in `.claude/commands/design-os/export-product.md` Step 13
+3. Update assembly order in `.claude/commands/design-os/export-product.md` Step 14
 4. Document the change in the assembly order section above
 
 ## Template Usage in Exports
 
-When `/export-product` runs Step 13 (Generate Prompt Files):
+When `/export-product` runs Step 14 (Generate Prompt Files):
 
 1. Reads all template files from this directory in the specified order
 2. Strips version comments (`<!-- v1.0.0 -->`) from each template
@@ -127,6 +127,6 @@ When `/export-product` runs Step 13 (Generate Prompt Files):
 5. Validates that all templates were included and all variables were substituted
 6. Writes final prompts to `product-plan/prompts/`
 
-For detailed implementation instructions, see `.claude/commands/design-os/export-product.md` Step 13, section "Template Assembly Implementation".
+For detailed implementation instructions, see `.claude/commands/design-os/export-product.md` Step 14, section "Template Assembly Implementation".
 
 Templates are applied consistently across all exports, ensuring uniform prompt quality and structure.

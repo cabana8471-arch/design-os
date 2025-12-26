@@ -1334,6 +1334,11 @@ Review the template files and assembly process before continuing.
 After writing each prompt file, run these validation commands to catch issues:
 
 ```bash
+# ============================================================
+# ONE-SHOT-PROMPT.MD VALIDATION
+# All variables should be substituted - no placeholders remain
+# ============================================================
+
 # Check for remaining version comments (should return no matches)
 if grep -E '<!--\s*v[0-9]+\.[0-9]+\.[0-9]+\s*-->' product-plan/prompts/one-shot-prompt.md; then
   echo "ERROR: Version comments remain in one-shot-prompt.md"
@@ -1346,14 +1351,44 @@ if grep -E '\[Product Name\]|SECTION_NAME|SECTION_ID|\bNN\b' product-plan/prompt
   exit 1
 fi
 
-# Repeat for section-prompt.md (SECTION_NAME, SECTION_ID, NN are expected in this file as it's a template)
+# ============================================================
+# SECTION-PROMPT.MD VALIDATION
+# This is a TEMPLATE file with different rules:
+# - [Product Name] MUST be substituted (user shouldn't have to fill this in)
+# - SECTION_NAME, SECTION_ID, NN SHOULD remain (user fills these per-section)
+# ============================================================
+
+# Check for remaining version comments (should return no matches)
 if grep -E '<!--\s*v[0-9]+\.[0-9]+\.[0-9]+\s*-->' product-plan/prompts/section-prompt.md; then
   echo "ERROR: Version comments remain in section-prompt.md"
   exit 1
 fi
+
+# Check that [Product Name] was substituted (should return no matches)
+if grep -E '\[Product Name\]' product-plan/prompts/section-prompt.md; then
+  echo "ERROR: [Product Name] was not substituted in section-prompt.md"
+  exit 1
+fi
+
+# Verify SECTION_NAME, SECTION_ID, NN ARE present (they should remain as user placeholders)
+if ! grep -q 'SECTION_NAME' product-plan/prompts/section-prompt.md; then
+  echo "WARNING: SECTION_NAME placeholder missing in section-prompt.md (expected)"
+fi
+if ! grep -q 'SECTION_ID' product-plan/prompts/section-prompt.md; then
+  echo "WARNING: SECTION_ID placeholder missing in section-prompt.md (expected)"
+fi
 ```
 
-These commands provide concrete verification that the assembly process worked correctly.
+**Validation differences explained:**
+
+| Variable | one-shot-prompt.md | section-prompt.md |
+|----------|-------------------|-------------------|
+| `[Product Name]` | ❌ Must be substituted | ❌ Must be substituted |
+| `SECTION_NAME` | ❌ Must be substituted | ✅ Must remain (user fills) |
+| `SECTION_ID` | ❌ Must be substituted | ✅ Must remain (user fills) |
+| `NN` | ❌ Must be substituted | ✅ Must remain (user fills) |
+
+These commands provide concrete verification that the assembly process worked correctly for each prompt type.
 
 ### one-shot-prompt.md
 

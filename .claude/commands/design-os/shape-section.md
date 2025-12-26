@@ -115,9 +115,15 @@ PREVIEW_EXISTS=$([ -f "src/shell/ShellPreview.tsx" ] && echo "yes" || echo "no")
 
 - **Complete:** "Your application shell is fully designed and ready to use."
 - **Spec only:** "A shell spec exists but components haven't been generated yet. Run `/design-shell` to complete the shell."
+- **Components only (unusual):** "Shell components exist at `src/shell/` but there's no specification at `product/shell/spec.md`. This is an unusual state. Run `/design-shell` to create a proper specification that documents your shell design decisions."
 - **No shell:** (inform before asking, as below)
 
-If `product/shell/spec.md` does NOT exist, inform the user before asking:
+If shell components exist but spec.md doesn't exist, inform the user:
+```
+Note: Shell components exist but the specification is missing. The shell will still work, but consider running /design-shell to document the design decisions.
+```
+
+If no shell files exist at all, inform the user before asking:
 ```
 Note: No shell has been designed yet. You can still choose 'Inside app shell' — the shell can be designed later with /design-shell.
 ```
