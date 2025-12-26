@@ -147,6 +147,48 @@ When users manually edit `/product/product-roadmap.md`:
 - The "Start fresh" option will overwrite all manual edits — always confirm before proceeding
 - If a user has associated section specs, sample data, or screen designs that depend on current section names, changing the roadmap may orphan those files
 
+### Handling Orphaned Files
+
+When you rename or remove sections from the roadmap, previously created files may become "orphaned" — they exist on disk but are no longer referenced by the roadmap. Here's how to handle them:
+
+**1. Identify orphaned files:**
+```bash
+# List all section directories
+ls product/sections/
+ls src/sections/
+
+# Compare against sections in product-roadmap.md
+```
+
+**2. For renamed sections:**
+- **Rename directories** to match the new section ID:
+  ```bash
+  mv product/sections/old-name product/sections/new-name
+  mv src/sections/old-name src/sections/new-name
+  ```
+- **Update internal references** in `spec.md`, `types.ts`, and component imports
+
+**3. For removed sections:**
+- **Delete the directories** if the section is permanently removed:
+  ```bash
+  rm -rf product/sections/removed-section
+  rm -rf src/sections/removed-section
+  ```
+- **Archive instead** if you might restore it later:
+  ```bash
+  mkdir -p _archive
+  mv product/sections/removed-section _archive/
+  mv src/sections/removed-section _archive/
+  ```
+
+**4. Verify cleanup:**
+- Run the dev server and check the homepage shows only current sections
+- Ensure no broken navigation links exist
+
+**Warning:** Always backup before bulk deletions. Use `git status` to review changes before committing.
+
+### General Notes
+
 - Sections should be ordered by development priority
 - Each section should be self-contained enough to design and build independently
 - Section titles become navigation items in the app

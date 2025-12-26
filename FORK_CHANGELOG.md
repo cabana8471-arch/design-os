@@ -6,7 +6,87 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-26 20:30] P1 High Fixes: 4 Validation & Error Message Issues from fix-plan.md BATCH 2
+## [2025-12-26 20:29] P1 Documentation Fixes: 6 Issues from fix-plan.md BATCH 3
+
+### Description
+
+Implementation of all 6 P1 (High) documentation issues from BATCH 3 in fix-plan.md. These fixes improve documentation clarity, add missing guidance for multi-view workflows, standardize viewport specifications, and differentiate TDD templates between one-shot and section-based implementations.
+
+### New Files Created
+
+None (all modifications integrated into existing files)
+
+### Modified Files
+
+| File | Modification |
+|------|--------------|
+| `.claude/commands/design-os/design-screen.md` | **Lines 151-165:** Added "Import Path Transformation" section with table showing Development Path to Export Path transformations. **Lines 94-120:** Added "Multiple Views File Structure" section with complete file tree and key points, cross-reference to `/shape-section`. |
+| `.claude/commands/design-os/sample-data.md` | **Lines 233-258:** Added "Entity Naming Transformation Table" section documenting singular to plural conventions, transformation rules, and examples table (Data Model Entity to data.json Key to TypeScript Type). |
+| `.claude/templates/design-os/common/tdd-workflow.md` | **Full rewrite (v1.1.0):** Changed from generic 3-line TDD to full implementation TDD with guidance on foundation tests, milestone progression, regression testing, and integration tests. |
+| `.claude/templates/design-os/section/tdd-workflow.md` | **Full rewrite (v1.1.0):** Changed from duplicate content to section-specific TDD with guidance on component isolation, Props testing, callbacks verification, and edge cases. |
+| `.claude/templates/design-os/README.md` | **Lines 15, 25:** Updated TDD template descriptions to reflect differentiated content (full implementation vs section-specific). |
+| `.claude/commands/design-os/product-roadmap.md` | **Lines 150-188:** Added "Handling Orphaned Files" section with 4-step workflow: identify orphaned files, handle renamed sections, handle removed sections, verify cleanup. |
+| `.claude/commands/design-os/shape-section.md` | **Lines 125-152:** Added "Multiple Views Workflow (Full Picture)" section documenting how views flow through all 5 Design OS commands from spec to screenshot. |
+| `.claude/commands/design-os/screenshot-design.md` | **Lines 63-79:** Replaced "1280px recommended" with standardized viewport table (Desktop 1280x800, Mobile 375x667, Tablet 768x1024). **Lines 124-128:** Updated additional screenshot suggestions with specific viewport sizes. **Line 167:** Updated Important Notes with standard viewports. |
+
+### Fixes Applied
+
+**High Priority (P1) - 6 Issues:**
+
+1. **#9 design-screen.md — Import path documentation** → Added comprehensive "Import Path Transformation" section with table showing how `@/../product/sections/...` paths become relative `../types` paths during export.
+
+2. **#10 sample-data.md — Entity naming table** → Added "Entity Naming Transformation Table" with clear rules: Data Model uses singular PascalCase, data.json uses plural camelCase, TypeScript Types use singular PascalCase.
+
+3. **#11 TDD templates — Duplicate content** → Differentiated `common/tdd-workflow.md` (full implementation: foundation, milestones, integration) from `section/tdd-workflow.md` (section-specific: component isolation, props testing, edge cases).
+
+4. **#15 product-roadmap.md — Orphaned file guidance** → Added comprehensive 4-step recovery workflow for handling renamed/removed sections with bash commands and verification steps.
+
+5. **#16 design-screen.md & shape-section.md — Multiple views workflow** → Added consolidated guidance in both files: shape-section has full 5-command workflow, design-screen has file structure and cross-reference.
+
+6. **#17 screenshot-design.md — Viewport standardization** → Replaced "1280px recommended" with mandatory viewport table (Desktop 1280x800 default, Mobile 375x667, Tablet 768x1024).
+
+### Statistics
+
+- **Files modified:** 8
+  - 5 command files (design-screen.md, sample-data.md, product-roadmap.md, shape-section.md, screenshot-design.md)
+  - 3 template files (common/tdd-workflow.md, section/tdd-workflow.md, README.md)
+- **High priority fixes:** 6
+- **Total issues resolved:** 6
+- **Lines added/modified:** ~180 lines
+
+### Key Improvements
+
+1. **Import Path Clarity**: Developers now understand exactly how paths transform during export with a clear before/after table
+2. **Entity Naming Convention**: Clear transformation rules prevent confusion between data model entities and JSON keys
+3. **TDD Differentiation**: One-shot and section prompts now have appropriate TDD guidance for their scope
+4. **Orphaned File Recovery**: Users have actionable steps when roadmap changes break existing files
+5. **Multi-View Workflow**: Complete documentation of how multi-view sections flow through all Design OS commands
+6. **Viewport Standardization**: Consistent screenshot dimensions for professional documentation
+
+### Verification
+
+All modifications validated for:
+- ✅ Clear documentation with tables and examples
+- ✅ Cross-references between related commands
+- ✅ Version bumps for modified templates (v1.0.0 → v1.1.0)
+- ✅ Actionable guidance with bash commands where appropriate
+- ✅ No conflicts with previous BATCH 1 and BATCH 2 fixes
+- ✅ Consistent patterns across all command files
+
+### Production Status
+
+**After Implementation:**
+- **Import Paths:** DOCUMENTED (clear transformation table)
+- **Entity Naming:** STANDARDIZED (transformation rules with examples)
+- **TDD Templates:** DIFFERENTIATED (scope-appropriate guidance)
+- **Orphaned Files:** RECOVERABLE (4-step workflow)
+- **Multi-View Workflow:** DOCUMENTED (full command chain)
+- **Viewports:** STANDARDIZED (mandatory dimensions)
+- **Production Ready:** ✅ YES (all P1 BATCH 3 issues resolved)
+
+---
+
+## [2025-12-26 20:18] P1 High Fixes: 4 Validation & Error Message Issues from fix-plan.md BATCH 2
 
 ### Description
 

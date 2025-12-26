@@ -91,6 +91,34 @@ When creating designs for a section with multiple views:
 - **Update components/index.ts:** Export all view components for easy importing
 - **Track created views:** After creating each view, confirm it in the UI so you know which ones are complete
 
+### Multiple Views File Structure
+
+For a section with multiple views, the complete file structure looks like:
+
+```
+product/sections/[section-id]/
+├── spec.md                    # Defines all views (from /shape-section)
+├── data.json                  # Contains data for ALL views
+└── types.ts                   # Props interfaces for EACH view
+
+src/sections/[section-id]/
+├── components/
+│   ├── ListView.tsx           # First view component (props-based)
+│   ├── DetailView.tsx         # Second view component (props-based)
+│   ├── [SubComponent].tsx     # Shared sub-components
+│   └── index.ts               # Exports all components
+├── ListView.tsx               # Preview wrapper for first view
+└── DetailView.tsx             # Preview wrapper for second view
+```
+
+**Key points:**
+- Each view has its own component AND preview wrapper
+- All views share the same `data.json` and `types.ts`
+- Sub-components can be shared across views (import from `./[SubComponent]`)
+- Run `/design-screen` once per view — the command asks which view to create
+
+**See also:** `/shape-section` documents the full multi-view workflow from spec to screenshot
+
 ## Step 5: Read Frontend Design Guidance
 
 Before creating the screen design, read the `frontend-design` skill guidance to ensure high-quality design output.
@@ -148,7 +176,22 @@ The component MUST:
 - Accept callback props for all actions
 - Be fully self-contained and portable
 
-Example:
+### Import Path Transformation
+
+During development in Design OS, components use aliased import paths like `@/../product/sections/[section-id]/types`. During the export process (`/export-product`), these paths are automatically transformed to relative paths for portability.
+
+| Development Path (Design OS) | Export Path (Portable) |
+|------------------------------|------------------------|
+| `@/../product/sections/[section-id]/types` | `../types` |
+| `@/../product/sections/[section-id]/data.json` | `../data.json` |
+| `./[SubComponent]` | `./[SubComponent]` (unchanged) |
+
+**Why this matters:**
+- Development paths use the `@/` alias to work within Design OS's directory structure
+- Exported components need relative paths to be copy-paste portable
+- The transformation is automatic — no manual changes needed
+
+**Example:**
 
 ```tsx
 // Note: During export, this path will be transformed to '../types' for portability

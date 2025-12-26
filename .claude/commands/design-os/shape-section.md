@@ -122,6 +122,35 @@ If the section requires multiple views (e.g., list + detail, or dashboard + sett
 
 This ensures `/design-screen` and `/sample-data` commands know to create components and data for each view.
 
+### Multiple Views Workflow (Full Picture)
+
+When a section has multiple views, here's how they flow through the Design OS commands:
+
+**1. `/shape-section` (You are here)**
+- Define all views in the Views section of the spec
+- Specify which data each view needs
+- Document transitions between views
+
+**2. `/sample-data`**
+- Creates a single `data.json` with data for ALL views
+- Creates `types.ts` with Props interfaces for EACH view (e.g., `ListViewProps`, `DetailViewProps`)
+- Props for each view receive only the data they need
+
+**3. `/design-screen`**
+- Run once per view — the command will ask which view to create
+- Each view becomes a separate component file
+- All views share the same `types.ts` and can reference the same entities
+- Preview wrappers are created for each view independently
+
+**4. `/screenshot-design`**
+- Run once per view to capture screenshots
+- Each screenshot is saved with the view name (e.g., `invoice-list.png`, `invoice-detail.png`)
+
+**5. Shell navigation**
+- All views share the same shell (if `shell: true`)
+- The shell shows the section name; view switching happens within the section
+- Transitions use callbacks (e.g., `onView` opens detail view)
+
 Iterate until the user is satisfied. Don't add features that weren't discussed. Don't leave out features that were discussed.
 
 ## Step 7: Create the Spec File

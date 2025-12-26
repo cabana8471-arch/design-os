@@ -12,7 +12,7 @@ design-os/
 │   ├── model-guidance.md            # Suggested Model Usage
 │   ├── verification-checklist.md    # Final Verification Checklist
 │   ├── clarifying-questions.md      # One-shot clarifying questions
-│   └── tdd-workflow.md              # TDD implementation approach (used in one-shot prompts)
+│   └── tdd-workflow.md              # Full implementation TDD (foundation, milestones, integration)
 │
 ├── one-shot/                        # One-shot prompt templates
 │   ├── preamble.md                 # Title and introduction
@@ -22,7 +22,7 @@ design-os/
     ├── preamble.md                 # Title, variables, and introduction
     ├── prompt-template.md           # Instructions and file references
     ├── clarifying-questions.md      # Section-specific clarifying questions
-    └── tdd-workflow.md              # Section-specific TDD workflow
+    └── tdd-workflow.md              # Section TDD (component isolation, props testing, edge cases)
 ```
 
 ## How Prompts Are Assembled

@@ -61,11 +61,22 @@ The screen design URL pattern is: `http://localhost:3000/sections/[section-id]/s
 4. Use `browser_take_screenshot` to capture the page (without the navigation bar)
 
 **Screenshot specifications:**
-- Capture at desktop viewport width (1280px recommended)
+
+| Viewport | Width | Height | Use Case |
+|----------|-------|--------|----------|
+| **Desktop** (default) | 1280px | 800px | Standard documentation screenshots |
+| **Mobile** | 375px | 667px | Mobile-responsive variants |
+| **Tablet** | 768px | 1024px | Tablet variants (optional) |
+
+**Requirements:**
+- **Desktop is the default** — always capture at 1280x800 unless mobile/tablet requested
 - Use **full page screenshot** to capture the entire scrollable content (not just the viewport)
 - PNG format for best quality
+- Consistent viewport dimensions ensure documentation screenshots look uniform
 
-When using `browser_take_screenshot`, set `fullPage: true` to capture the entire page including content below the fold.
+When using `browser_take_screenshot`:
+- Set `fullPage: true` to capture the entire page including content below the fold
+- Set viewport size before capturing: `browser_set_viewport_size` with width and height from the table above
 
 ## Step 4: Save the Screenshot
 
@@ -111,9 +122,10 @@ The screenshot captures the **[ScreenDesignName]** screen design for the **[Sect
 If they want additional screenshots (e.g., dark mode, different states):
 
 "Would you like me to capture any additional screenshots? For example:
-- Dark mode version
-- Mobile viewport
-- Different states (empty, loading, etc.)"
+- Dark mode version (same viewport, toggle theme)
+- Mobile viewport (375x667)
+- Tablet viewport (768x1024)
+- Different states (empty, loading, error, etc.)"
 
 When all screenshots are complete, guide the user to the next step:
 
@@ -152,7 +164,7 @@ If no process appears, the server is successfully stopped.
 - Start the dev server yourself - do not ask the user to do it
 - Screenshots are saved to `product/sections/[section-id]/` alongside spec.md and data.json
 - Use descriptive filenames that indicate the screen design and any variant (dark mode, mobile, etc.)
-- Capture at a consistent viewport width for documentation consistency
+- **Standard viewports:** Desktop 1280x800 (default), Mobile 375x667, Tablet 768x1024
 - Always capture full page screenshots to include all scrollable content
 - **Always kill the dev server when done** — do not leave it running in the background
 

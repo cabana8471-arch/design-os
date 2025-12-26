@@ -229,7 +229,33 @@ If a global data model exists, verify that entity names in your sample data matc
    - Check if the keys in `_meta.models` match entity names from the global data model
    - Compare the names you extracted from the markdown headings (from step 2) with the keys in your data.json `_meta.models`
    - **Acceptable variations:** Plural forms are expected in data.json (e.g., data model has `### Invoice` heading, data.json uses `invoices` key)
-   - **Naming convention:** Data model uses singular PascalCase (`Invoice`, `User`), data.json uses plural camelCase (`invoices`, `users`)
+
+### Entity Naming Transformation Table
+
+The naming convention differs between the data model and data.json files:
+
+| Location | Format | Example |
+|----------|--------|---------|
+| **Data Model** (`data-model.md`) | Singular PascalCase | `Invoice`, `User`, `LineItem` |
+| **Data JSON** (`data.json` keys) | Plural camelCase | `invoices`, `users`, `lineItems` |
+| **TypeScript Types** (`types.ts`) | Singular PascalCase | `Invoice`, `User`, `LineItem` |
+
+**Transformation Rules:**
+1. **Singular → Plural**: Add `s` (or `es` for words ending in `s`, `x`, `ch`, `sh`)
+2. **PascalCase → camelCase**: Lowercase the first letter
+3. **Special cases**: Handle irregular plurals manually (`Person` → `people`, `Child` → `children`)
+
+**Examples:**
+
+| Data Model Entity | data.json Key | TypeScript Type |
+|-------------------|---------------|-----------------|
+| `Invoice` | `invoices` | `Invoice` |
+| `User` | `users` | `User` |
+| `LineItem` | `lineItems` | `LineItem` |
+| `Category` | `categories` | `Category` |
+| `Status` | `statuses` | `Status` |
+
+This ensures consistency: types match the data model, while JSON keys follow JavaScript object naming conventions.
 
 4. **Report discrepancies:**
    - If entity names don't match ANY from the data model:
