@@ -28,3 +28,8 @@ npm-debug.log*
 
 # Temporary files
 fix-plan.md
+
+# Sync script - local only
+scripts/logs/
+scripts/targets.txt
+scripts/backups/

@@ -1,0 +1,11 @@
+# Design OS Sync Targets
+# Add full paths to your projects (one per line)
+# Lines starting with # are ignored
+
+# Examples:
+# ~/projects/my-saas-app
+# ~/projects/client-dashboard
+# /Users/username/work/ecommerce-platform
+
+# Copy this file as targets.txt and fill it in:
+# cp scripts/targets.txt.example scripts/targets.txt
