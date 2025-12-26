@@ -212,6 +212,48 @@ Validation has failed 3 times. Please review the data model at product/data-mode
 
 This prevents infinite regeneration loops when there's a fundamental misunderstanding about the data model structure.
 
+### Retry Loop State Management (Pseudo-Code)
+
+```
+STATE: retryCount = 0, maxRetries = 3
+
+STEP 5: Generate data.json
+    |
+    v
+STEP 6: Validate data.json
+    |
+    +--> PASS --> STEP 7: Generate types.ts
+    |
+    +--> FAIL:
+         retryCount++
+         IF retryCount >= maxRetries:
+             STOP("Validation failed 3 times. Review data model.")
+             **END COMMAND**
+         ELSE:
+             Report failure to user
+             Return to STEP 5 (regenerate with corrections)
+             Loop back to STEP 6 validation
+```
+
+**State Diagram:**
+```
+[Step 5: Generate] --> [Step 6: Validate]
+                            |
+                      +-----+-----+
+                      |           |
+                   PASS         FAIL
+                      |           |
+                      v           v
+              [Step 7: Types]  [Retry?]
+                                  |
+                            +-----+-----+
+                            |           |
+                         < 3x        >= 3x
+                            |           |
+                            v           v
+                      [Step 5]    [STOP/END]
+```
+
 ### Validate Entity Name Consistency
 
 If a global data model exists, verify that entity names in your sample data match the global data model:

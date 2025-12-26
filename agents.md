@@ -385,3 +385,39 @@ When creating section IDs from section titles, follow these standardized rules:
 - "Q&A Forum" → `q-and-a-forum`
 
 This ensures consistent path naming across all commands that reference sections.
+
+---
+
+## Template State (Boilerplate Directories)
+
+The Design OS boilerplate includes several intentionally empty directories. This is by design — they serve as placeholders that users populate through the Design OS workflow commands.
+
+### Intentionally Empty Directories
+
+| Directory | Purpose | Populated By |
+|-----------|---------|--------------|
+| `product/` | Product definition files | `/product-vision`, `/product-roadmap`, `/data-model`, `/design-tokens` |
+| `product/sections/` | Section specifications and data | `/shape-section`, `/sample-data` |
+| `product/shell/` | Shell specification | `/design-shell` |
+| `product/design-system/` | Design tokens (colors, typography) | `/design-tokens` |
+| `product/data-model/` | Global data model | `/data-model` |
+| `src/shell/components/` | Shell React components | `/design-shell` |
+| `src/sections/` | Section screen design components | `/design-screen` |
+| `product-plan/` | Export package (generated) | `/export-product` |
+
+### Why Empty?
+
+1. **Clean starting point** — Users begin with a blank canvas, not outdated example content
+2. **No confusion** — Example content could be mistaken for required structure
+3. **Workflow-driven** — Each directory is populated through its corresponding command
+4. **Portable** — The boilerplate works for any product type without modification
+
+### Helper Functions
+
+The Design OS source code includes functions that check for content existence:
+
+- `hasShellComponents()` — Returns `false` until `/design-shell` creates shell components
+- `hasShellSpec()` — Returns `false` until `/design-shell` creates `product/shell/spec.md`
+- `loadProductData()` — Returns empty/null values until product files are created
+
+These functions gracefully handle the empty state and enable the UI to show appropriate "get started" messaging rather than errors.

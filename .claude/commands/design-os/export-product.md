@@ -1180,6 +1180,46 @@ For each prompt, follow this assembly pattern:
 4. Substitute any variables (e.g., [Product Name])
 5. Write the final assembled prompt to `product-plan/prompts/`
 
+#### Template Assembly Algorithm (Pseudo-Code)
+
+```
+FUNCTION assemblePrompt(templateOrder, variables):
+    result = ""
+
+    FOR EACH templatePath IN templateOrder:
+        // Step 1: Read template file
+        content = readFile(templatePath)
+        IF content IS NULL:
+            STOP("Missing template file: " + templatePath)
+
+        // Step 2: Strip version comment from top
+        // Regex: /^<!--\s*v[\d.]+\s*-->\n?/
+        content = content.replace(/^<!--\s*v[\d.]+\s*-->\n?/, "")
+
+        // Step 3: Append to result with separator
+        IF result IS NOT EMPTY:
+            result += "\n\n"  // Blank line between templates
+        result += content
+    END FOR
+
+    // Step 4: Substitute variables
+    FOR EACH (key, value) IN variables:
+        result = result.replaceAll(key, value)
+    END FOR
+
+    // Step 5: Validate no unsubstituted variables remain
+    // Regex: /\[Product Name\]|SECTION_NAME|SECTION_ID|\bNN\b/
+    IF result.matches(/\[Product Name\]|SECTION_NAME|SECTION_ID|\bNN\b/):
+        STOP("Unsubstituted variables remain in output")
+
+    // Step 6: Validate no version comments remain
+    IF result.matches(/<!--\s*v[\d.]+\s*-->/):
+        STOP("Version comments remain in output")
+
+    RETURN result
+END FUNCTION
+```
+
 #### Template Assembly Implementation
 
 When assembling templates, follow these specific steps:
@@ -1315,15 +1355,15 @@ These rules prevent common implementation mistakes. Follow them strictly.
 - Use the Read tool to verify every requirement before implementing
 
 **Common violations to avoid:**
-- ❌ Adding authentication features not mentioned in spec
-- ❌ Creating admin panels not requested
-- ❌ Adding "nice to have" features without approval
-- ❌ Inventing API endpoints not in data model
+- (INCORRECT) Adding authentication features not mentioned in spec
+- (INCORRECT) Creating admin panels not requested
+- (INCORRECT) Adding "nice to have" features without approval
+- (INCORRECT) Inventing API endpoints not in data model
 
 **How to follow:**
-- ✅ Read product-overview.md and instructions completely before planning
-- ✅ Ask clarifying questions if anything is unclear
-- ✅ Stick to EXACTLY what's specified in tests.md files
+- (CORRECT) Read product-overview.md and instructions completely before planning
+- (CORRECT) Ask clarifying questions if anything is unclear
+- (CORRECT) Stick to EXACTLY what's specified in tests.md files
 
 ### Rule 2: INTEGRATION > REDESIGN
 - DO NOT restyle or redesign the provided components
@@ -1332,16 +1372,16 @@ These rules prevent common implementation mistakes. Follow them strictly.
 - Your job is to integrate components into a working application
 
 **Common violations to avoid:**
-- ❌ "I'll make this component more modern by changing the colors"
-- ❌ "Let me improve the layout by adding more padding"
-- ❌ "I'll replace DM Sans with Inter because I prefer it"
-- ❌ "This component would look better with shadows"
+- (INCORRECT) "I'll make this component more modern by changing the colors"
+- (INCORRECT) "Let me improve the layout by adding more padding"
+- (INCORRECT) "I'll replace DM Sans with Inter because I prefer it"
+- (INCORRECT) "This component would look better with shadows"
 
 **How to follow:**
-- ✅ Use components exactly as provided
-- ✅ Pass data via props as designed
-- ✅ Focus on backend logic, routing, and state management
-- ✅ If component seems wrong, ask the user before changing
+- (CORRECT) Use components exactly as provided
+- (CORRECT) Pass data via props as designed
+- (CORRECT) Focus on backend logic, routing, and state management
+- (CORRECT) If component seems wrong, ask the user before changing
 
 ### Rule 3: READ BEFORE BUILDING
 - Read ALL referenced files before creating your implementation plan
@@ -1350,17 +1390,17 @@ These rules prevent common implementation mistakes. Follow them strictly.
 - If you didn't read it with the Read tool, don't reference it
 
 **Common violations to avoid:**
-- ❌ Skipping tests.md and guessing what tests to write
-- ❌ Not reading sample-data.json and creating wrong data structures
-- ❌ Ignoring types.ts and defining duplicate types
-- ❌ Assuming shell structure without reading AppShell.tsx
+- (INCORRECT) Skipping tests.md and guessing what tests to write
+- (INCORRECT) Not reading sample-data.json and creating wrong data structures
+- (INCORRECT) Ignoring types.ts and defining duplicate types
+- (INCORRECT) Assuming shell structure without reading AppShell.tsx
 
 **How to follow:**
-- ✅ Read product-overview.md to understand product context
-- ✅ Read ALL instruction files before planning
-- ✅ Read tests.md for EACH section before implementing
-- ✅ Read provided components to understand props and behavior
-- ✅ Create implementation plan AFTER reading, not before
+- (CORRECT) Read product-overview.md to understand product context
+- (CORRECT) Read ALL instruction files before planning
+- (CORRECT) Read tests.md for EACH section before implementing
+- (CORRECT) Read provided components to understand props and behavior
+- (CORRECT) Create implementation plan AFTER reading, not before
 
 ---
 
@@ -1370,31 +1410,31 @@ As you implement each milestone/feature, write brief progress updates to reduce 
 
 **Format:**
 ```
-✅ [Milestone/Feature] complete
-📁 Files: [key files created/modified]
-🧪 Tests: [number passing]
+[DONE] [Milestone/Feature] complete
+Files: [key files created/modified]
+Tests: [number passing]
 ```
 
 **Example:**
 ```
-✅ Milestone 1 (Foundation) complete
-📁 Files: src/app/layout.tsx, src/lib/theme.tsx, src/app/page.tsx
-🧪 Tests: 12 passing
+[DONE] Milestone 1 (Foundation) complete
+Files: src/app/layout.tsx, src/lib/theme.tsx, src/app/page.tsx
+Tests: 12 passing
 
-✅ Authentication system complete
-📁 Files: src/lib/auth.ts, src/app/login/page.tsx
-🧪 Tests: 8 passing
+[DONE] Authentication system complete
+Files: src/lib/auth.ts, src/app/login/page.tsx
+Tests: 8 passing
 ```
 
 **DO NOT:**
-- ❌ Echo entire file contents back to conversation
-- ❌ Quote large blocks of code unless specifically needed for discussion
-- ❌ Repeat implementation details already documented
+- (INCORRECT) Echo entire file contents back to conversation
+- (INCORRECT) Quote large blocks of code unless specifically needed for discussion
+- (INCORRECT) Repeat implementation details already documented
 
 **DO:**
-- ✅ Confirm completion with file paths
-- ✅ Report test results
-- ✅ Highlight any issues or decisions that need user input
+- (CORRECT) Confirm completion with file paths
+- (CORRECT) Report test results
+- (CORRECT) Highlight any issues or decisions that need user input
 
 ---
 
@@ -1529,15 +1569,15 @@ These rules prevent common implementation mistakes. Follow them strictly.
 - Use the Read tool to verify every requirement before implementing
 
 **Common violations to avoid:**
-- ❌ Adding authentication features not mentioned in spec
-- ❌ Creating admin panels not requested
-- ❌ Adding "nice to have" features without approval
-- ❌ Inventing API endpoints not in data model
+- (INCORRECT) Adding authentication features not mentioned in spec
+- (INCORRECT) Creating admin panels not requested
+- (INCORRECT) Adding "nice to have" features without approval
+- (INCORRECT) Inventing API endpoints not in data model
 
 **How to follow:**
-- ✅ Read product-overview.md and instructions completely before planning
-- ✅ Ask clarifying questions if anything is unclear
-- ✅ Stick to EXACTLY what's specified in tests.md files
+- (CORRECT) Read product-overview.md and instructions completely before planning
+- (CORRECT) Ask clarifying questions if anything is unclear
+- (CORRECT) Stick to EXACTLY what's specified in tests.md files
 
 ### Rule 2: INTEGRATION > REDESIGN
 - DO NOT restyle or redesign the provided components
@@ -1546,16 +1586,16 @@ These rules prevent common implementation mistakes. Follow them strictly.
 - Your job is to integrate components into a working application
 
 **Common violations to avoid:**
-- ❌ "I'll make this component more modern by changing the colors"
-- ❌ "Let me improve the layout by adding more padding"
-- ❌ "I'll replace DM Sans with Inter because I prefer it"
-- ❌ "This component would look better with shadows"
+- (INCORRECT) "I'll make this component more modern by changing the colors"
+- (INCORRECT) "Let me improve the layout by adding more padding"
+- (INCORRECT) "I'll replace DM Sans with Inter because I prefer it"
+- (INCORRECT) "This component would look better with shadows"
 
 **How to follow:**
-- ✅ Use components exactly as provided
-- ✅ Pass data via props as designed
-- ✅ Focus on backend logic, routing, and state management
-- ✅ If component seems wrong, ask the user before changing
+- (CORRECT) Use components exactly as provided
+- (CORRECT) Pass data via props as designed
+- (CORRECT) Focus on backend logic, routing, and state management
+- (CORRECT) If component seems wrong, ask the user before changing
 
 ### Rule 3: READ BEFORE BUILDING
 - Read ALL referenced files before creating your implementation plan
@@ -1564,17 +1604,17 @@ These rules prevent common implementation mistakes. Follow them strictly.
 - If you didn't read it with the Read tool, don't reference it
 
 **Common violations to avoid:**
-- ❌ Skipping tests.md and guessing what tests to write
-- ❌ Not reading sample-data.json and creating wrong data structures
-- ❌ Ignoring types.ts and defining duplicate types
-- ❌ Assuming shell structure without reading AppShell.tsx
+- (INCORRECT) Skipping tests.md and guessing what tests to write
+- (INCORRECT) Not reading sample-data.json and creating wrong data structures
+- (INCORRECT) Ignoring types.ts and defining duplicate types
+- (INCORRECT) Assuming shell structure without reading AppShell.tsx
 
 **How to follow:**
-- ✅ Read product-overview.md to understand product context
-- ✅ Read ALL instruction files before planning
-- ✅ Read tests.md for EACH section before implementing
-- ✅ Read provided components to understand props and behavior
-- ✅ Create implementation plan AFTER reading, not before
+- (CORRECT) Read product-overview.md to understand product context
+- (CORRECT) Read ALL instruction files before planning
+- (CORRECT) Read tests.md for EACH section before implementing
+- (CORRECT) Read provided components to understand props and behavior
+- (CORRECT) Create implementation plan AFTER reading, not before
 
 ---
 
@@ -1584,31 +1624,31 @@ As you implement each milestone/feature, write brief progress updates to reduce 
 
 **Format:**
 ```
-✅ [Milestone/Feature] complete
-📁 Files: [key files created/modified]
-🧪 Tests: [number passing]
+[DONE] [Milestone/Feature] complete
+Files: [key files created/modified]
+Tests: [number passing]
 ```
 
 **Example:**
 ```
-✅ Milestone 1 (Foundation) complete
-📁 Files: src/app/layout.tsx, src/lib/theme.tsx, src/app/page.tsx
-🧪 Tests: 12 passing
+[DONE] Milestone 1 (Foundation) complete
+Files: src/app/layout.tsx, src/lib/theme.tsx, src/app/page.tsx
+Tests: 12 passing
 
-✅ Authentication system complete
-📁 Files: src/lib/auth.ts, src/app/login/page.tsx
-🧪 Tests: 8 passing
+[DONE] Authentication system complete
+Files: src/lib/auth.ts, src/app/login/page.tsx
+Tests: 8 passing
 ```
 
 **DO NOT:**
-- ❌ Echo entire file contents back to conversation
-- ❌ Quote large blocks of code unless specifically needed for discussion
-- ❌ Repeat implementation details already documented
+- (INCORRECT) Echo entire file contents back to conversation
+- (INCORRECT) Quote large blocks of code unless specifically needed for discussion
+- (INCORRECT) Repeat implementation details already documented
 
 **DO:**
-- ✅ Confirm completion with file paths
-- ✅ Report test results
-- ✅ Highlight any issues or decisions that need user input
+- (CORRECT) Confirm completion with file paths
+- (CORRECT) Report test results
+- (CORRECT) Highlight any issues or decisions that need user input
 
 ---
 

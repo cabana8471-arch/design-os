@@ -105,7 +105,7 @@ First, check that the frontend-design skill file exists at `.claude/skills/front
 
 STOP and inform the user: "The frontend-design skill file is required for creating distinctive UI. Please ensure `.claude/skills/frontend-design/SKILL.md` exists."
 
-Do not proceed without this file.
+**END COMMAND** — Do not proceed to Step 6. The skill file is required for creating distinctive, production-grade shell components.
 
 ### Read Design Guidance
 

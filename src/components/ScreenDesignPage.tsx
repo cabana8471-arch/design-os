@@ -208,10 +208,14 @@ export function ScreenDesignFullscreen() {
         if (module && typeof module.default === 'function') {
           return module
         }
-        console.error('Screen design does not have a valid default export:', screenDesignName)
+        if (import.meta.env.DEV) {
+          console.error('Screen design does not have a valid default export:', screenDesignName)
+        }
         return { default: () => <div>Invalid screen design: {screenDesignName}</div> }
       } catch (e) {
-        console.error('Failed to load screen design:', screenDesignName, e)
+        if (import.meta.env.DEV) {
+          console.error('Failed to load screen design:', screenDesignName, e)
+        }
         return { default: () => <div>Failed to load: {screenDesignName}</div> }
       }
     })
@@ -221,19 +225,27 @@ export function ScreenDesignFullscreen() {
   const AppShellComponent = useMemo(() => {
     // Check if this section should use the shell (based on spec.md config)
     if (sectionId && !sectionUsesShell(sectionId)) {
-      console.log('[ScreenDesignFullscreen] Section configured to not use shell')
+      if (import.meta.env.DEV) {
+        console.log('[ScreenDesignFullscreen] Section configured to not use shell')
+      }
       return null
     }
 
     // Check if shell components exist
     const shellExists = hasShellComponents()
-    console.log('[ScreenDesignFullscreen] Shell exists:', shellExists)
+    if (import.meta.env.DEV) {
+      console.log('[ScreenDesignFullscreen] Shell exists:', shellExists)
+    }
     if (!shellExists) return null
 
     const loader = loadAppShell()
-    console.log('[ScreenDesignFullscreen] AppShell loader:', loader)
+    if (import.meta.env.DEV) {
+      console.log('[ScreenDesignFullscreen] AppShell loader:', loader)
+    }
     if (!loader) {
-      console.warn('[ScreenDesignFullscreen] hasShellComponents() returned true but loadAppShell() returned null')
+      if (import.meta.env.DEV) {
+        console.warn('[ScreenDesignFullscreen] hasShellComponents() returned true but loadAppShell() returned null')
+      }
       return null
     }
 
@@ -244,7 +256,9 @@ export function ScreenDesignFullscreen() {
         const ShellComponent = (module?.default || module?.AppShell) as React.ComponentType<Record<string, unknown>>
 
         if (typeof ShellComponent !== 'function') {
-          console.warn('[ScreenDesignFullscreen] AppShell does not have a valid export')
+          if (import.meta.env.DEV) {
+            console.warn('[ScreenDesignFullscreen] AppShell does not have a valid export')
+          }
           return { default: ({ children }: { children?: React.ReactNode }) => <>{children}</> }
         }
 
@@ -268,7 +282,9 @@ export function ScreenDesignFullscreen() {
 
         return { default: ShellWrapper }
       } catch (e) {
-        console.error('[ScreenDesignFullscreen] Failed to load AppShell:', e)
+        if (import.meta.env.DEV) {
+          console.error('[ScreenDesignFullscreen] Failed to load AppShell:', e)
+        }
         return { default: ({ children }: { children?: React.ReactNode }) => <>{children}</> }
       }
     })
