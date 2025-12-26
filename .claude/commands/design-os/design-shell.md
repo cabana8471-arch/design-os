@@ -10,13 +10,19 @@ First, verify prerequisites exist:
 2. Read `/product/product-roadmap.md` — Sections for navigation
 3. Check if `/product/design-system/colors.json` and `/product/design-system/typography.json` exist
 
-If overview or roadmap are missing:
+If either file is missing, show a specific error message:
 
-"Before designing the shell, you need to define your product and sections. Please run:
-1. `/product-vision` — Define your product
-2. `/product-roadmap` — Define your sections"
+**If `/product/product-overview.md` is missing:**
+```
+Missing: product/product-overview.md. Run /product-vision to create it.
+```
 
-Stop here if overview or roadmap are missing.
+**If `/product/product-roadmap.md` is missing:**
+```
+Missing: product/product-roadmap.md. Run /product-roadmap to create it.
+```
+
+Stop here if any required file is missing.
 
 If design tokens are missing, show a warning but continue:
 
@@ -119,6 +125,18 @@ First, ensure the shell directory exists:
 ```bash
 mkdir -p product/shell
 mkdir -p src/shell/components
+```
+
+Then validate the directories were created:
+```bash
+if [ ! -d "product/shell" ]; then
+  echo "Error: Failed to create directory product/shell."
+  exit 1
+fi
+if [ ! -d "src/shell/components" ]; then
+  echo "Error: Failed to create directory src/shell/components."
+  exit 1
+fi
 ```
 
 ### Create the Specification File

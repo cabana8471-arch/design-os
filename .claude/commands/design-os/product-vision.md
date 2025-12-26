@@ -80,6 +80,14 @@ First, ensure the product directory exists:
 mkdir -p product
 ```
 
+Then validate the directory was created:
+```bash
+if [ ! -d "product" ]; then
+  echo "Error: Failed to create directory product."
+  exit 1
+fi
+```
+
 ### Create the Overview File
 
 Then create the file at `/product/product-overview.md` with this exact format:

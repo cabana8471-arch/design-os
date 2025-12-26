@@ -98,6 +98,16 @@ mkdir -p product-plan/data-model
 mkdir -p product-plan/shell/components
 ```
 
+Then validate all directories were created:
+```bash
+for dir in product-plan product-plan/prompts product-plan/instructions/incremental product-plan/design-guidance product-plan/design-system product-plan/data-model product-plan/shell/components; do
+  if [ ! -d "$dir" ]; then
+    echo "Error: Failed to create directory $dir."
+    exit 1
+  fi
+done
+```
+
 The complete structure will be:
 
 

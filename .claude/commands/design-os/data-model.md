@@ -9,11 +9,19 @@ First, verify that the product overview and roadmap exist:
 1. Read `/product/product-overview.md` to understand what the product does
 2. Read `/product/product-roadmap.md` to understand the planned sections
 
-If either file is missing, let the user know:
+If either file is missing, let the user know with a specific message:
 
-"Before defining your data model, you'll need to establish your product vision. Please run `/product-vision` first, then `/product-roadmap` to define your sections."
+**If `/product/product-overview.md` is missing:**
+```
+Missing: product/product-overview.md. Run /product-vision to create it.
+```
 
-Stop here if prerequisites are missing.
+**If `/product/product-roadmap.md` is missing:**
+```
+Missing: product/product-roadmap.md. Run /product-roadmap to create it.
+```
+
+Stop here if any prerequisite is missing.
 
 ## Step 2: Gather Initial Input
 
@@ -78,6 +86,14 @@ Once approved:
 First, ensure the data-model directory exists:
 ```bash
 mkdir -p product/data-model
+```
+
+Then validate the directory was created:
+```bash
+if [ ! -d "product/data-model" ]; then
+  echo "Error: Failed to create directory product/data-model."
+  exit 1
+fi
 ```
 
 ### Create the Data Model File

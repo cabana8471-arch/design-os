@@ -10,7 +10,9 @@ Read `/product/product-overview.md` to understand what the product is.
 
 If it doesn't exist:
 
-"Before defining your design system, you'll need to establish your product vision. Please run `/product-vision` first."
+```
+Missing: product/product-overview.md. Run /product-vision to create it.
+```
 
 Stop here if the prerequisite is missing.
 
@@ -138,6 +140,14 @@ Once approved:
 First, ensure the design-system directory exists:
 ```bash
 mkdir -p product/design-system
+```
+
+Then validate the directory was created:
+```bash
+if [ ! -d "product/design-system" ]; then
+  echo "Error: Failed to create directory product/design-system."
+  exit 1
+fi
 ```
 
 ### Create the Token Files

@@ -16,15 +16,24 @@ Then verify all required files exist:
 - `product/sections/[section-id]/data.json`
 - `product/sections/[section-id]/types.ts`
 
-If spec.md doesn't exist:
+If any file is missing, show a specific error message:
 
-"I don't see a specification for **[Section Title]** yet. Please run `/shape-section` first to define the section's requirements."
+**If `spec.md` doesn't exist:**
+```
+Missing: product/sections/[section-id]/spec.md. Run /shape-section to create it.
+```
 
-If data.json or types.ts don't exist:
+**If `data.json` doesn't exist:**
+```
+Missing: product/sections/[section-id]/data.json. Run /sample-data to create it.
+```
 
-"I don't see sample data for **[Section Title]** yet. Please run `/sample-data` first to create sample data and types for the screen designs."
+**If `types.ts` doesn't exist:**
+```
+Missing: product/sections/[section-id]/types.ts. Run /sample-data to create it.
+```
 
-Stop here if any file is missing.
+Stop here if any required file is missing.
 
 ## Step 2: Check for Design System and Shell
 

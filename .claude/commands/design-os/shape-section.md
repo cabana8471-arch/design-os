@@ -6,7 +6,9 @@ You are helping the user define the specification for a section of their product
 
 First, verify that `/product/product-roadmap.md` exists. If it doesn't:
 
-"I don't see a product roadmap defined yet. Please run `/product-roadmap` first to define your product sections, then come back to shape individual sections."
+```
+Missing: product/product-roadmap.md. Run /product-roadmap to create it.
+```
 
 Stop here if the roadmap doesn't exist.
 
@@ -133,6 +135,14 @@ First, ensure the directory exists by creating it if needed:
 mkdir -p product/sections/[section-id]
 ```
 
+Then validate the directory was created:
+```bash
+if [ ! -d "product/sections/[section-id]" ]; then
+  echo "Error: Failed to create directory product/sections/[section-id]."
+  exit 1
+fi
+```
+
 ### Create the Specification File
 
 Then create the file at `product/sections/[section-id]/spec.md` with this exact format:
@@ -168,7 +178,21 @@ Then create the file at `product/sections/[section-id]/spec.md` with this exact 
 - Set `shell: true` if the section should display inside the app shell (this is the default)
 - Set `shell: false` if the section should display as a standalone page without the shell
 
-The section-id is the slug version of the section title (lowercase, hyphens instead of spaces).
+### Section ID Generation Rules
+
+The `section-id` is generated from the section title following these rules:
+
+1. Convert to lowercase
+2. Replace spaces with hyphens
+3. Replace "&" with "-and-"
+4. Remove special characters except hyphens
+5. Cannot start or end with hyphen
+6. Maximum 50 characters
+
+**Examples:**
+- "Invoice Management" → `invoice-management`
+- "Reports & Analytics" → `reports-and-analytics`
+- "User Settings" → `user-settings`
 
 ## Step 8: Confirm and Next Steps
 

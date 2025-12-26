@@ -54,6 +54,14 @@ First, ensure the directory exists:
 mkdir -p product
 ```
 
+Then validate the directory was created:
+```bash
+if [ ! -d "product" ]; then
+  echo "Error: Failed to create directory product."
+  exit 1
+fi
+```
+
 Then create `/product/product-roadmap.md` with this exact format:
 
 ```markdown

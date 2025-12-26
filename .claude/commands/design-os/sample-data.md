@@ -12,7 +12,9 @@ If there's only one section, auto-select it. If there are multiple sections, use
 
 Then check if `product/sections/[section-id]/spec.md` exists. If it doesn't:
 
-"I don't see a specification for **[Section Title]** yet. Please run `/shape-section` first to define the section's requirements, then come back to generate sample data."
+```
+Missing: product/sections/[section-id]/spec.md. Run /shape-section to create it.
+```
 
 Stop here if the spec doesn't exist.
 
@@ -104,6 +106,14 @@ Once the user approves the structure:
 First, verify the directory exists:
 ```bash
 mkdir -p product/sections/[section-id]
+```
+
+Then validate the directory was created:
+```bash
+if [ ! -d "product/sections/[section-id]" ]; then
+  echo "Error: Failed to create directory product/sections/[section-id]."
+  exit 1
+fi
 ```
 
 ### Create the Data File

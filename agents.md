@@ -366,3 +366,22 @@ For `data.json` files specifically:
 - Verify `_meta.models` is an object with descriptions
 - Verify `_meta.relationships` is an array
 - Ensure all model names match actual data keys
+
+### Section ID Generation Rules
+
+When creating section IDs from section titles, follow these standardized rules:
+
+1. **Convert to lowercase** — "Invoice Management" → "invoice management"
+2. **Replace spaces with hyphens** — "invoice management" → "invoice-management"
+3. **Replace "&" with "-and-"** — "Reports & Analytics" → "reports-and-analytics"
+4. **Remove special characters except hyphens** — Strip punctuation, quotes, etc.
+5. **Cannot start or end with hyphen** — Trim leading/trailing hyphens
+6. **Maximum 50 characters** — Truncate if necessary
+
+**Examples:**
+- "Invoice Management" → `invoice-management`
+- "Reports & Analytics" → `reports-and-analytics`
+- "User Settings" → `user-settings`
+- "Q&A Forum" → `q-and-a-forum`
+
+This ensures consistent path naming across all commands that reference sections.
