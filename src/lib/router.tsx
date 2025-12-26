@@ -8,6 +8,26 @@ import { ScreenDesignPage, ScreenDesignFullscreen } from '@/components/ScreenDes
 import { ShellDesignPage, ShellDesignFullscreen } from '@/components/ShellDesignPage'
 import { ExportPage } from '@/components/ExportPage'
 
+/**
+ * Design OS Router Configuration
+ *
+ * IMPORTANT: Route patterns are referenced by commands
+ * ====================================================
+ * If you modify these routes, update the corresponding command files:
+ *
+ * - `/sections/:sectionId/screen-designs/:screenDesignName`
+ *   → Referenced in: .claude/commands/design-os/screenshot-design.md (Step 3)
+ *   → Used for: Screen design preview and screenshot capture
+ *
+ * - `/sections/:sectionId/screen-designs/:screenDesignName/fullscreen`
+ *   → Referenced in: src/components/ScreenDesignPage.tsx (iframe src)
+ *   → Used for: Isolated screen design rendering, shell integration, screenshots
+ *
+ * - `/shell/design/fullscreen`
+ *   → Used for: Shell design screenshots
+ *
+ * Keep these in sync to ensure /screenshot-design command works correctly.
+ */
 export const router = createBrowserRouter([
   {
     path: '/',

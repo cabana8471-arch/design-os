@@ -144,7 +144,9 @@ fi
 Then create `/product/shell/spec.md`:
 
 ```markdown
-# Application Shell Specification
+# [Product Name] Shell Specification
+
+**Note:** Replace `[Product Name]` with the actual product name from `product/product-overview.md` to maintain consistency with other documentation files.
 
 ## Overview
 [Description of the shell design and its purpose]

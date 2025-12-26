@@ -257,7 +257,7 @@ These are starting suggestions — feel free to explore [Google Fonts](https://f
 - Colors should be Tailwind palette names (not hex codes)
 - Fonts should be exact Google Fonts names
 - Keep suggestions contextual to the product type
-- The mono font is optional but recommended for any product with code/technical content
+- **Mono font handling:** The mono field is required in the JSON file for consistent structure. If the user skips or doesn't specify a mono font, use `IBM Plex Mono` as the default. This ensures the typography.json file always has all three fields, preventing parsing errors in downstream tools.
 - Design tokens apply to screen designs only — the Design OS app keeps its own aesthetic
 
 ### Tailwind Color Validation

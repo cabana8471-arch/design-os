@@ -6,6 +6,66 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-27] Medium Priority P2 Fixes: Documentation, Validation & Architecture Clarity
+
+### Description
+
+Implementation of all 11 MEDIUM priority (P2) fixes from fix-plan.md. These fixes improve documentation clarity, add validation patterns, clarify architectural decisions, and ensure consistency across commands, templates, and source code.
+
+### Modified Files
+
+| File | Modification |
+|------|--------------|
+| `.claude/commands/design-os/data-model.md` | **Lines 163-164:** Added optional relationship patterns (`optionally belongs to`, `optionally has one`) to the relationship patterns table. |
+| `.claude/commands/design-os/design-tokens.md` | **Line 260:** Clarified mono font handling — required in JSON with `IBM Plex Mono` as default if user skips selection. |
+| `.claude/commands/design-os/design-shell.md` | **Lines 147-149:** Standardized shell spec header to `# [Product Name] Shell Specification` with note to replace with actual product name. |
+| `.claude/commands/design-os/export-product.md` | **Lines 1863-1901:** Added screenshot filename validation (Step 2.5) with naming convention rules, valid/invalid examples, and bash validation script. **Lines 1332-1356:** Added post-assembly validation commands with specific grep patterns for version comments and unsubstituted variables. |
+| `.claude/commands/design-os/product-roadmap.md` | **Lines 222-246:** Added "Completion Confirmation" section with summary template and next steps guidance. |
+| `agents.md` | **Lines 294-297:** Documented that export-product copies frontend-design skill to `design-guidance/frontend-design.md`. **Lines 141-158:** Added "Components vs. Preview Wrappers" section with table explaining exportable components vs preview wrappers and example structure. |
+| `.claude/templates/design-os/README.md` | **Lines 56-67:** Added "What Section-Specific Means" table explaining differences between section templates and one-shot templates. |
+| `src/components/ScreenDesignPage.tsx` | **Lines 165-186:** Added comprehensive JSDoc comment explaining iframe architecture: CSS isolation, theme syncing, shell integration, and screenshot capture. |
+| `src/lib/router.tsx` | **Lines 11-30:** Added documentation comment explaining route patterns and their references in command files, ensuring future changes stay in sync. |
+
+### Issues Addressed (from fix-plan.md)
+
+| Issue # | Title | Resolution |
+|---------|-------|------------|
+| P2-20 | Optional Relationships Not in Pattern Table | Added `optionally belongs to` and `optionally has one` to table |
+| P2-21 | Mono Font Optional vs. Required Contradiction | Clarified required in JSON with default fallback |
+| P2-22 | Shell Spec Header Format Inconsistent | Standardized to `# [Product Name] Shell Specification` |
+| P2-23 | Screenshot Filename Validation Missing | Added Step 2.5 with naming convention validation |
+| P2-24 | Product-Roadmap Missing End State | Added Completion Confirmation section |
+| P2-25 | Version Comment Stripping Risk | Added post-assembly validation commands with grep |
+| P2-26 | Skill Reference Documentation Gap | Documented skill copy in agents.md Export section |
+| P2-27 | Template Assembly Order Documentation | Added table explaining section-specific template differences |
+| P2-28 | agents.md File Structure Minor Gap | Added Components vs. Preview Wrappers section |
+| P2-29 | ScreenDesignPage Iframe Usage Undocumented | Added comprehensive JSDoc explaining iframe architecture |
+| P2-30 | Router Route Verification Needed | Added documentation linking routes to command files |
+
+### Statistics
+
+- **Files modified:** 9
+- **Commands updated:** 5 (data-model, design-tokens, design-shell, export-product, product-roadmap)
+- **Documentation updated:** 3 (agents.md, templates README.md, router.tsx)
+- **Source files updated:** 2 (ScreenDesignPage.tsx, router.tsx)
+- **Total issues resolved:** 11 P2 issues
+
+### Verification
+
+- All optional relationship patterns now in table with examples
+- Mono font requirement clarified with default fallback
+- Shell spec header matches product-vision naming pattern
+- Screenshot filename validation provides clear feedback
+- Roadmap completion confirmation guides users to next steps
+- Version comment stripping has concrete validation commands
+- Skill copy documented in agents.md
+- Section-specific template differences clearly explained
+- Component vs wrapper distinction documented with examples
+- Iframe architecture fully documented
+- Router routes cross-referenced with command files
+
+---
+
 ## [2025-12-27 00:15] High Priority P1 Fixes: Validation, Routing & Template Improvements
 
 ### Description

@@ -133,10 +133,29 @@ src/
 │
 └── sections/
     └── [section-name]/
-        ├── components/            # Exportable components
+        ├── components/            # Exportable components (see note below)
         │   ├── [Component].tsx
         │   └── index.ts
-        └── [ViewName].tsx         # Preview wrapper
+        └── [ViewName].tsx         # Preview wrapper (see note below)
+
+**Components vs. Preview Wrappers:**
+
+| Type | Location | Purpose | Exported? |
+|------|----------|---------|-----------|
+| **Exportable Components** | `components/[Component].tsx` | Props-based UI components that receive data via props. These are portable and meant to be copied to your production codebase. | Yes — copied to `product-plan/sections/[id]/components/` |
+| **Preview Wrappers** | `[ViewName].tsx` (root of section folder) | Design OS preview files that load sample data and pass it to exportable components. Used only for viewing designs in the browser. | No — these stay in Design OS only |
+
+**Example:**
+```
+src/sections/invoices/
+├── components/
+│   ├── InvoiceList.tsx       ← Exportable: receives `invoices` prop, renders list
+│   ├── InvoiceCard.tsx       ← Exportable: receives `invoice` prop, renders card
+│   └── index.ts              ← Re-exports all components
+└── InvoiceListView.tsx       ← Preview wrapper: loads data.json, passes to InvoiceList
+```
+
+The preview wrapper imports sample data and provides it to components for Design OS viewing. The exportable components never import data directly — they accept everything via props.
 
 product-plan/                      # Export package (generated)
 ├── README.md                      # Quick start guide
@@ -291,6 +310,10 @@ The `/export-product` command generates a complete handoff package:
   - `product-overview.md`: Always provide for context
   - `one-shot-instructions.md`: All milestones combined
   - Incremental instructions in `instructions/incremental/`
+- **Design guidance**: The frontend-design skill is copied to `design-guidance/frontend-design.md`
+  - Provides guidance for creating distinctive, production-grade components
+  - Ensures implementation agents follow the same quality standards
+  - Referenced in prompts: "Read `product-plan/design-guidance/frontend-design.md` before creating components"
 - **Test instructions**: Each section includes `tests.md` with TDD specs
 - **Portable components**: Props-based, ready for any React setup
 

@@ -53,7 +53,18 @@ design-os/
 
 **Output:** `product-plan/prompts/section-prompt.md`
 
-**Note:** This prompt uses section-specific versions of TDD workflow and clarifying questions, which ask only about data relationships, integration points, and section-specific business logic (not full one-shot questions about auth, user modeling, and tech stack).
+**What "Section-Specific" Means:**
+
+The section prompt uses specialized templates that differ from the one-shot versions:
+
+| Template | Section Version Differences |
+|----------|----------------------------|
+| `section/preamble.md` | Includes SECTION_NAME, SECTION_ID, NN variables for user substitution |
+| `section/prompt-template.md` | References section-specific files only, not full product |
+| `section/tdd-workflow.md` | Focuses on component testing, props validation, section integration |
+| `section/clarifying-questions.md` | Asks about data relationships, integration points, section permissions — NOT full auth, user modeling, or tech stack questions |
+
+This distinction matters because section prompts are used after Foundation is complete, so they assume auth and core infrastructure already exist. They focus on integrating new functionality rather than building from scratch.
 
 ## Template Versioning
 

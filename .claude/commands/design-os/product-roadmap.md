@@ -218,3 +218,29 @@ done
 - The numbered format (`### 1. Title`) is required for parsing
 - Keep descriptions to one sentence - concise and clear
 - Don't create too many sections (3-5 is ideal)
+
+---
+
+## Completion Confirmation
+
+After successfully creating or updating the roadmap, confirm completion with a summary:
+
+```
+Roadmap [created/updated] successfully!
+
+Sections defined:
+1. [Section 1 Title] — [Brief description]
+2. [Section 2 Title] — [Brief description]
+3. [Section 3 Title] — [Brief description]
+...
+
+File: /product/product-roadmap.md
+
+Next steps:
+- Run `/data-model` to define core entities and relationships
+- Run `/design-tokens` to choose colors and typography
+- Run `/design-shell` to design the application navigation
+- Then for each section: `/shape-section` → `/sample-data` → `/design-screen`
+```
+
+This confirmation helps users understand what was created and guides them to the next step in the Design OS workflow.

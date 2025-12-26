@@ -1329,6 +1329,32 @@ Review the template files and assembly process before continuing.
 - Missing sections → Template file not found or skipped
 - Broken markdown → Improper whitespace handling between templates
 
+**Post-Assembly Validation Commands:**
+
+After writing each prompt file, run these validation commands to catch issues:
+
+```bash
+# Check for remaining version comments (should return no matches)
+if grep -E '<!--\s*v[0-9]+\.[0-9]+\.[0-9]+\s*-->' product-plan/prompts/one-shot-prompt.md; then
+  echo "ERROR: Version comments remain in one-shot-prompt.md"
+  exit 1
+fi
+
+# Check for unsubstituted variables (should return no matches)
+if grep -E '\[Product Name\]|SECTION_NAME|SECTION_ID|\bNN\b' product-plan/prompts/one-shot-prompt.md; then
+  echo "ERROR: Unsubstituted variables remain in one-shot-prompt.md"
+  exit 1
+fi
+
+# Repeat for section-prompt.md (SECTION_NAME, SECTION_ID, NN are expected in this file as it's a template)
+if grep -E '<!--\s*v[0-9]+\.[0-9]+\.[0-9]+\s*-->' product-plan/prompts/section-prompt.md; then
+  echo "ERROR: Version comments remain in section-prompt.md"
+  exit 1
+fi
+```
+
+These commands provide concrete verification that the assembly process worked correctly.
+
 ### one-shot-prompt.md
 
 Assemble from the templates listed above (see "Template Concatenation Order" section). Follow the template assembly process to create `product-plan/prompts/one-shot-prompt.md`:
@@ -1858,6 +1884,46 @@ for section in product/sections/*/; do
     echo "Note: No screenshots found for section: $section_id"
   fi
 done
+```
+
+**Step 2.5: Validate screenshot filenames**
+
+After copying, validate that screenshot filenames follow the naming convention. This helps ensure consistent documentation.
+
+**Expected naming convention:** `[screen-design-name].png` or `[screen-design-name]-[variant].png`
+
+Valid examples:
+- `invoice-list.png` (main view)
+- `invoice-list-dark.png` (dark mode variant)
+- `invoice-detail-mobile.png` (mobile variant)
+- `dashboard-empty.png` (empty state)
+
+Invalid examples:
+- `screenshot1.png` (non-descriptive)
+- `Screen Shot 2024-01-15.png` (system default name)
+- `IMG_1234.png` (camera roll naming)
+
+```bash
+# Validate screenshot filenames in each section
+for section in product-plan/sections/*/; do
+  section_id=$(basename "$section")
+  for png in "$section"*.png 2>/dev/null; do
+    [ -f "$png" ] || continue
+    filename=$(basename "$png")
+    # Check if filename matches expected pattern: lowercase, hyphens, optional variant suffix
+    if [[ ! "$filename" =~ ^[a-z][a-z0-9-]*\.png$ ]]; then
+      echo "Warning: Screenshot '$filename' in $section_id doesn't follow naming convention."
+      echo "  Expected format: [screen-design-name].png or [screen-design-name]-[variant].png"
+    fi
+  done
+done
+```
+
+If warnings are reported, inform the user but continue with the export:
+```
+Note: Some screenshot filenames don't follow the naming convention.
+Consider renaming them to match the pattern: [screen-design-name]-[variant].png
+This improves documentation consistency but doesn't block the export.
 ```
 
 **Step 3: Report summary**

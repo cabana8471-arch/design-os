@@ -160,6 +160,8 @@ Relationships should follow a consistent format that clearly communicates cardin
 | `[A] has one [B]` | One-to-one, A owns B | "User has one Profile" |
 | `[A] belongs to [B]` | Many-to-one, A is child | "Project belongs to User" |
 | `[A] and [B] are linked through [C]` | Many-to-many via junction | "Users and Roles are linked through UserRoles" |
+| `[A] optionally belongs to [B]` | Optional many-to-one | "Task optionally belongs to Project (can be standalone)" |
+| `[A] optionally has one [B]` | Optional one-to-one | "User optionally has one Avatar" |
 
 **Valid Relationship Descriptions:**
 ```

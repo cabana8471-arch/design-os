@@ -162,7 +162,29 @@ export function ScreenDesignPage() {
           </div>
         </div>
 
-        {/* Preview container using iframe for true isolation */}
+        {/*
+          Preview container using iframe for true isolation.
+
+          WHY IFRAME?
+          -----------
+          We use an iframe to completely isolate the screen design from Design OS styles:
+
+          1. CSS Isolation: The iframe creates a separate document context, so Design OS
+             styles (stone palette, DM Sans, etc.) don't bleed into screen designs that
+             use their own design tokens (different colors, fonts).
+
+          2. Theme Syncing: The iframe loads ScreenDesignFullscreen which syncs theme
+             via localStorage polling, ensuring dark/light mode matches the parent.
+
+          3. Shell Integration: The fullscreen component can optionally wrap the screen
+             design in the AppShell component, showing the complete app experience.
+
+          4. Screenshots: The /fullscreen route is what gets captured by Playwright
+             during /screenshot-design, providing clean screenshots without Design OS chrome.
+
+          The iframe src points to: /sections/[sectionId]/screen-designs/[name]/fullscreen
+          This route renders ScreenDesignFullscreen which handles lazy loading and shell wrapping.
+        */}
         <div
           className="bg-white dark:bg-stone-950 rounded-lg shadow-xl border border-stone-200 dark:border-stone-700 overflow-hidden"
           style={{ width: previewWidth, minWidth: MIN_WIDTH, maxWidth: '100%' }}
