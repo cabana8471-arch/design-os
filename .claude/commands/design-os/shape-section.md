@@ -22,6 +22,38 @@ If there's only one section, auto-select it. If there are multiple sections, use
 
 Present the available sections as options.
 
+### Check for Existing Specification
+
+After identifying the target section, check if a spec already exists at `product/sections/[section-id]/spec.md`.
+
+**If spec.md already exists:**
+
+```
+"A specification already exists for **[Section Title]** at `product/sections/[section-id]/spec.md`.
+
+What would you like to do?"
+```
+
+Use AskUserQuestion with options:
+- "Update existing spec" — Preserve existing content, modify specific sections
+- "Start fresh" — Replace the existing spec entirely
+- "View current spec" — Read and display the current specification first
+
+**If user chooses "Update existing spec":**
+- Read the current spec.md
+- Ask which parts they want to modify
+- Update only those sections, preserving the rest
+
+**If user chooses "Start fresh":**
+- Warn: "This will replace your existing specification. Any manual edits will be lost. Are you sure?"
+- If confirmed, proceed with the normal flow starting from Step 3
+
+**If user chooses "View current spec":**
+- Display the current spec content
+- Ask what they'd like to do next
+
+This prevents accidental overwrites of carefully crafted specifications.
+
 ## Step 3: Gather Initial Input
 
 Once the section is identified, invite the user to share any initial thoughts:

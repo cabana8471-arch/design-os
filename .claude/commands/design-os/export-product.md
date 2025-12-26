@@ -1242,6 +1242,34 @@ After assembling each prompt:
 - Verify all template files were included (no skipped sections)
 - Check that the final prompt is readable and properly formatted
 
+**8. Prompt Assembly Validation Checklist**
+
+Before saving each assembled prompt, perform these validation checks:
+
+```
+[x] No version comments remain (<!-- v1.0.0 --> etc.)
+[x] No unsubstituted variables remain ([Product Name], SECTION_NAME, etc.)
+[x] All expected sections are present (TOP 3 RULES, Verification Checklist, etc.)
+[x] No duplicate sections (same template included twice)
+[x] Proper markdown formatting (headings, code blocks, lists)
+[x] No broken markdown (unclosed code blocks, missing list items)
+[x] File size is reasonable (not empty, not excessively large)
+```
+
+**If validation fails:**
+```
+STOP: Prompt assembly validation failed for [prompt-file]:
+- [Specific issue found]
+
+Review the template files and assembly process before continuing.
+```
+
+**Common Assembly Issues:**
+- Version comments appearing in output → Template reading not stripping comments
+- Duplicate content → Same template included multiple times in order
+- Missing sections → Template file not found or skipped
+- Broken markdown → Improper whitespace handling between templates
+
 ### one-shot-prompt.md
 
 Assemble from the templates listed above (see "Template Concatenation Order" section). Follow the template assembly process to create `product-plan/prompts/one-shot-prompt.md`:
@@ -1745,6 +1773,53 @@ Copy any `.png` files from:
 - `product/shell/` → `product-plan/shell/`
 - `product/sections/[section-id]/` → `product-plan/sections/[section-id]/`
 
+### Screenshot Copying with Reporting
+
+Track which screenshots exist and were copied. Report the results to the user:
+
+**Step 1: Check for shell screenshots**
+```bash
+if ls product/shell/*.png 1> /dev/null 2>&1; then
+  cp product/shell/*.png product-plan/shell/
+  echo "Copied shell screenshots"
+else
+  echo "Note: No shell screenshots found in product/shell/"
+fi
+```
+
+**Step 2: Check for section screenshots**
+For each section, check and report:
+```bash
+for section in product/sections/*/; do
+  section_id=$(basename "$section")
+  if ls "$section"*.png 1> /dev/null 2>&1; then
+    cp "$section"*.png "product-plan/sections/$section_id/"
+    echo "Copied screenshots for section: $section_id"
+  else
+    echo "Note: No screenshots found for section: $section_id"
+  fi
+done
+```
+
+**Step 3: Report summary**
+After copying, provide a summary:
+```
+Screenshot Summary:
+- Shell: [Copied / Not found]
+- Section [section-1]: [Copied / Not found]
+- Section [section-2]: [Copied / Not found]
+...
+```
+
+**If no screenshots exist for any section:**
+```
+Warning: No screenshots were found for export.
+The sections/[section-id]/ folders will not include visual references.
+Consider running /screenshot-design for each section to capture screenshots.
+```
+
+This ensures users know which sections have visual documentation and which may need screenshots captured.
+
 ## Step 17: Create Zip File
 
 After generating all the export files, create a zip archive of the product-plan folder.
@@ -1768,6 +1843,11 @@ If `zip` is not available, skip zip creation but continue with the export. The `
 If `zip` is available:
 
 ```bash
+# Check if existing zip file exists and ask before removing
+if [ -f "product-plan.zip" ]; then
+  echo "Note: Existing product-plan.zip found. It will be replaced with the new export."
+fi
+
 # Remove any existing zip file
 rm -f product-plan.zip
 
@@ -1776,11 +1856,23 @@ cd . && zip -r product-plan.zip product-plan/
 
 # Verify zip was created
 if [ -f "product-plan.zip" ]; then
-  echo "Zip archive created successfully."
+  zip_size=$(du -h product-plan.zip | cut -f1)
+  echo "Zip archive created successfully: product-plan.zip ($zip_size)"
 else
   echo "Warning: Zip creation may have failed. Check product-plan/ folder."
 fi
 ```
+
+### Zip Cleanup Behavior
+
+The previous zip file is always replaced during export. This is intentional because:
+- Each export represents a complete, updated snapshot
+- Keeping old zips could cause confusion about which version to use
+- The product-plan/ folder is always preserved for comparison
+
+**If you need to preserve old exports:**
+- Rename the existing zip before running export: `mv product-plan.zip product-plan-backup.zip`
+- Or use version control to track export history
 
 This creates `product-plan.zip` in the project root, which will be available for download on the Export page.
 
@@ -1830,6 +1922,45 @@ The components are props-based and portable — they accept data and callbacks, 
 - Sample data files are for testing before real APIs are built
 - The export is self-contained — no dependencies on Design OS
 - Components are portable — they work with any React setup
+
+### Progress Reporting
+
+During the export process, provide progress updates to keep the user informed:
+
+**Report at the start of each major step:**
+```
+[Step X/18] Starting: [Step Name]...
+```
+
+**Report after completing key milestones:**
+```
+[DONE] Step 3: Created export directory structure
+[DONE] Step 4: Generated product-overview.md
+[DONE] Step 5-6: Generated milestone instructions (4 milestones)
+[DONE] Step 8: Validated all components (12 components, 0 issues)
+[DONE] Step 9: Copied and transformed components
+...
+```
+
+**For long-running steps, report progress within the step:**
+```
+[Step 9] Copying section components...
+  - invoices: 3 components copied
+  - projects: 4 components copied
+  - reports: 2 components copied
+```
+
+**Summary at completion:**
+```
+Export Complete!
+- Total steps: 18
+- Milestones generated: 4
+- Components exported: 9
+- Screenshots copied: 3
+- Zip file: product-plan.zip (2.4MB)
+```
+
+This helps users understand what's happening during longer exports and provides confidence that the process is progressing correctly.
 
 ### Performance Note
 

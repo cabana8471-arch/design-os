@@ -117,6 +117,37 @@ Then create the file at `/product/product-overview.md` with this exact format:
 
 **Important:** The `# [Product Name]` heading at the top is required - this is what displays as the card title in the app.
 
+### Validate File Creation
+
+After creating the file, verify it was created correctly:
+
+```bash
+if [ ! -f "product/product-overview.md" ]; then
+  echo "Error: Failed to create product/product-overview.md"
+  exit 1
+fi
+```
+
+Also verify the file contains expected content:
+- Check that the file is not empty
+- Verify the first line starts with `# ` (the product name heading)
+
+```bash
+# Check file is not empty
+if [ ! -s "product/product-overview.md" ]; then
+  echo "Error: product/product-overview.md is empty"
+  exit 1
+fi
+
+# Check first line is a heading
+first_line=$(head -1 product/product-overview.md)
+if [[ ! "$first_line" =~ ^#\  ]]; then
+  echo "Warning: product/product-overview.md may be malformed - first line should be '# [Product Name]'"
+fi
+```
+
+If validation fails, report to user and offer to recreate the file.
+
 ## Step 5: Confirm Completion
 
 Let the user know:

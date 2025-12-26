@@ -147,3 +147,48 @@ Next step: Run `/design-tokens` to choose your color palette and typography."
 - Relationships should describe how entities connect conceptually
 - The implementation agent will extend this with additional fields as needed
 - Entity names should be singular (User, Invoice, Project — not Users, Invoices)
+
+### Entity Relationship Format
+
+Relationships should follow a consistent format that clearly communicates cardinality and direction:
+
+**Standard Relationship Patterns:**
+
+| Pattern | Meaning | Example |
+|---------|---------|---------|
+| `[A] has many [B]` | One-to-many, A is parent | "User has many Projects" |
+| `[A] has one [B]` | One-to-one, A owns B | "User has one Profile" |
+| `[A] belongs to [B]` | Many-to-one, A is child | "Project belongs to User" |
+| `[A] and [B] are linked through [C]` | Many-to-many via junction | "Users and Roles are linked through UserRoles" |
+
+**Valid Relationship Descriptions:**
+```
+- User has many Projects
+- Project belongs to User
+- Project has many Tasks
+- Task belongs to Project
+- Users and Projects are linked through Memberships (many-to-many)
+```
+
+**Invalid or Unclear Formats (avoid these):**
+```
+- User → Project (direction unclear)
+- User/Project (relationship type unclear)
+- Project references User (technical, not plain language)
+- User can have Projects (ambiguous cardinality)
+```
+
+**Bidirectional Relationships:**
+When documenting bidirectional relationships, include both directions for clarity:
+```
+- User has many Projects
+- Project belongs to User
+```
+
+This redundancy ensures the relationship is clear from both entity perspectives.
+
+**Optional Relationships:**
+If a relationship is optional (entity B can exist without entity A), note it:
+```
+- Task optionally belongs to Project (can be standalone)
+```

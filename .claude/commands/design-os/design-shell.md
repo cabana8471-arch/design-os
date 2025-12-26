@@ -286,6 +286,52 @@ If design tokens exist, apply them to the shell components:
 - Apply body font to other text
 - Include Google Fonts import in the preview
 
+### Shell-Specific Design Token Shades
+
+Use these specific shades for shell UI elements:
+
+**Navigation Shades:**
+| Element | Light Mode | Dark Mode |
+|---------|------------|-----------|
+| Sidebar/header background | `white` | `[neutral]-900` |
+| Nav item text (inactive) | `[neutral]-600` | `[neutral]-400` |
+| Nav item text (active) | `[primary]-700` | `[primary]-400` |
+| Nav item background (active) | `[primary]-50` | `[primary]-950` |
+| Nav item hover | `[neutral]-100` | `[neutral]-800` |
+| Nav divider | `[neutral]-200` | `[neutral]-800` |
+
+**User Menu Shades:**
+| Element | Light Mode | Dark Mode |
+|---------|------------|-----------|
+| Avatar background | `[neutral]-200` | `[neutral]-700` |
+| Avatar text (initials) | `[neutral]-700` | `[neutral]-200` |
+| Dropdown background | `white` | `[neutral]-800` |
+| Dropdown item hover | `[neutral]-100` | `[neutral]-700` |
+| Username text | `[neutral]-900` | `[neutral]-100` |
+| Email text | `[neutral]-500` | `[neutral]-400` |
+
+**Layout Shades:**
+| Element | Light Mode | Dark Mode |
+|---------|------------|-----------|
+| Content area background | `[neutral]-50` | `[neutral]-950` |
+| Main border | `[neutral]-200` | `[neutral]-800` |
+| Mobile overlay | `black/50` | `black/70` |
+
+**Example Shell Styling:**
+```tsx
+// Sidebar
+<aside className="bg-white dark:bg-stone-900 border-r border-stone-200 dark:border-stone-800">
+
+// Active nav item
+<a className="bg-lime-50 dark:bg-lime-950 text-lime-700 dark:text-lime-400">
+
+// Inactive nav item
+<a className="text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800">
+
+// User avatar
+<div className="bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200">
+```
+
 ## Step 10: Confirm Completion
 
 Let the user know:

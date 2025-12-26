@@ -364,6 +364,91 @@ Use consistent action-based callback names:
 
 **Note:** `onClick` is a React DOM event handler used inside components. The callback props (`onView`, `onEdit`, etc.) describe the user intent and are passed from parent components.
 
+### Complex Callback Scenarios
+
+For advanced UI interactions, use these additional callback patterns:
+
+**Bulk Operations:**
+```typescript
+/** Called when user selects/deselects multiple items */
+onSelectionChange?: (selectedIds: string[]) => void
+/** Called when user performs action on multiple items */
+onBulkDelete?: (ids: string[]) => void
+onBulkArchive?: (ids: string[]) => void
+onBulkExport?: (ids: string[]) => void
+```
+
+**Filtering and Sorting:**
+```typescript
+/** Called when user changes filter criteria */
+onFilterChange?: (filters: FilterCriteria) => void
+/** Called when user changes sort order */
+onSortChange?: (field: string, direction: 'asc' | 'desc') => void
+/** Called when user searches */
+onSearch?: (query: string) => void
+```
+
+**Pagination:**
+```typescript
+/** Called when user changes page */
+onPageChange?: (page: number) => void
+/** Called when user changes items per page */
+onPageSizeChange?: (size: number) => void
+```
+
+**Inline Editing:**
+```typescript
+/** Called when user saves inline edit */
+onInlineEdit?: (id: string, field: string, value: unknown) => void
+/** Called when user cancels inline edit */
+onInlineEditCancel?: (id: string) => void
+```
+
+**Drag and Drop:**
+```typescript
+/** Called when user reorders items */
+onReorder?: (items: { id: string; order: number }[]) => void
+/** Called when user moves item to different container */
+onMove?: (id: string, targetContainerId: string) => void
+```
+
+**Modal/Dialog Actions:**
+```typescript
+/** Called when user opens a modal for an item */
+onOpenModal?: (id: string, modalType: 'edit' | 'view' | 'delete') => void
+/** Called when modal is closed */
+onCloseModal?: () => void
+```
+
+**When to Use Complex Callbacks:**
+- The spec mentions bulk operations or multi-select
+- The spec includes filtering, sorting, or search
+- The spec requires pagination for large datasets
+- The spec mentions inline editing or drag-and-drop
+- The UI includes modals or slide-over panels
+
+**Example Complex Props Interface:**
+```typescript
+export interface ProjectListProps {
+  projects: Project[]
+  // Basic callbacks
+  onView?: (id: string) => void
+  onCreate?: () => void
+  // Bulk operations
+  selectedIds?: string[]
+  onSelectionChange?: (ids: string[]) => void
+  onBulkDelete?: (ids: string[]) => void
+  // Filtering
+  filters?: FilterCriteria
+  onFilterChange?: (filters: FilterCriteria) => void
+  onSearch?: (query: string) => void
+  // Pagination
+  currentPage?: number
+  totalPages?: number
+  onPageChange?: (page: number) => void
+}
+```
+
 ## Step 8: Confirm and Next Steps
 
 Let the user know:

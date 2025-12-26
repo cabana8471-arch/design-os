@@ -238,7 +238,6 @@ export function InvoiceList({
 - Use the primary color for buttons, links, and key accents
 - Use the secondary color for tags, highlights, secondary elements
 - Use the neutral color for backgrounds, text, and borders
-- Example: If primary is `lime`, use `lime-500`, `lime-600`, etc. for primary actions
 
 **If `/product/design-system/typography.json` exists:**
 - Note the font choices for reference in comments
@@ -246,6 +245,59 @@ export function InvoiceList({
 
 **If design tokens don't exist:**
 - Fall back to `stone` for neutrals and `lime` for accents (Design OS defaults)
+
+### Design Token Shade Guide
+
+Use specific shades for each UI element type to ensure consistency:
+
+**Primary Color Shades:**
+| Element | Light Mode | Dark Mode |
+|---------|------------|-----------|
+| Primary button background | `[primary]-600` | `[primary]-500` |
+| Primary button hover | `[primary]-700` | `[primary]-400` |
+| Primary link text | `[primary]-600` | `[primary]-400` |
+| Primary accent/highlight | `[primary]-500` | `[primary]-400` |
+| Primary badge/tag background | `[primary]-100` | `[primary]-900` |
+| Primary badge/tag text | `[primary]-800` | `[primary]-200` |
+
+**Secondary Color Shades:**
+| Element | Light Mode | Dark Mode |
+|---------|------------|-----------|
+| Secondary button background | `[secondary]-100` | `[secondary]-800` |
+| Secondary button text | `[secondary]-800` | `[secondary]-100` |
+| Secondary badge background | `[secondary]-100` | `[secondary]-900` |
+| Secondary badge text | `[secondary]-700` | `[secondary]-200` |
+| Subtle highlight | `[secondary]-50` | `[secondary]-900/50` |
+
+**Neutral Color Shades:**
+| Element | Light Mode | Dark Mode |
+|---------|------------|-----------|
+| Page background | `[neutral]-50` | `[neutral]-950` |
+| Card background | `white` | `[neutral]-900` |
+| Border/divider | `[neutral]-200` | `[neutral]-800` |
+| Primary text | `[neutral]-900` | `[neutral]-100` |
+| Secondary text | `[neutral]-600` | `[neutral]-400` |
+| Muted/placeholder text | `[neutral]-400` | `[neutral]-500` |
+| Disabled element | `[neutral]-300` | `[neutral]-700` |
+
+**Example Usage:**
+```tsx
+// Primary button
+<button className="bg-lime-600 hover:bg-lime-700 dark:bg-lime-500 dark:hover:bg-lime-400 text-white">
+  Save Changes
+</button>
+
+// Secondary badge
+<span className="bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
+  Active
+</span>
+
+// Card with neutral styling
+<div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
+  <p className="text-stone-900 dark:text-stone-100">Primary text</p>
+  <p className="text-stone-600 dark:text-stone-400">Secondary text</p>
+</div>
+```
 
 ### What to Include
 
@@ -357,13 +409,51 @@ The preview wrapper:
 
 Create an index file at `src/sections/[section-id]/components/index.ts` to cleanly export all components.
 
-Example:
+### What to Export
+
+The index file should export:
+
+1. **Main view components** — Always export these
+2. **Reusable sub-components** — Export if they may be useful standalone
+3. **Props interfaces** — Re-export from types.ts for convenience
+
+### Export Requirements
+
+**Always export:**
+- All view components (e.g., `InvoiceList`, `InvoiceDetail`)
+- Components that might be reused in other sections
+
+**Optionally export:**
+- Internal sub-components used only within this section (e.g., `InvoiceRow`)
+- Helper components that aren't standalone (consider keeping private)
+
+**Re-export Props interfaces:**
+- Include Props interfaces so consumers can import from one location
+- This makes the component API more discoverable
+
+### Example index.ts
 
 ```tsx
+// Re-export components
 export { InvoiceList } from './InvoiceList'
+export { InvoiceDetail } from './InvoiceDetail'
 export { InvoiceRow } from './InvoiceRow'
-// Add other sub-components as needed
+
+// Re-export Props interfaces for convenience
+export type { InvoiceListProps, InvoiceDetailProps } from '@/../product/sections/[section-id]/types'
+
+// Optionally re-export entity types if useful
+export type { Invoice, LineItem } from '@/../product/sections/[section-id]/types'
 ```
+
+### When NOT to Export
+
+Keep components private (don't export) if:
+- They're highly specific to a single parent component
+- They contain hardcoded layout assumptions
+- They're being refactored and the API is unstable
+
+**Note:** During export (`/export-product`), the import paths will be transformed to relative paths (e.g., `../types`).
 
 ## Step 10: Confirm and Next Steps
 

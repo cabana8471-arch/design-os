@@ -100,9 +100,29 @@ Before finalizing, help the user visualize how their color choices will look in 
 - Secondary elements: `[secondary]-900` with `[secondary]-200` text
 - Borders: `[neutral]-700` or `[neutral]-800`
 
-**Contrast Check:**
-- Primary on dark background: Is `[primary]-500` visible against `[neutral]-900`? ✓
-- Text readability: Is `[neutral]-100` legible on `[neutral]-900`? ✓
+### Contrast Validation Checklist
+
+Before proceeding, verify each combination passes minimum contrast requirements (WCAG AA: 4.5:1 for text, 3:1 for large text/UI):
+
+**Light Mode Validation:**
+- [ ] Primary button text (`white` on `[primary]-600`) — Should have 4.5:1 contrast
+- [ ] Body text (`[neutral]-800` on `[neutral]-50`) — Should have 4.5:1 contrast
+- [ ] Secondary text (`[secondary]-800` on `[secondary]-100`) — Should have 4.5:1 contrast
+- [ ] Border visibility (`[neutral]-200` on `[neutral]-50`) — Should be distinguishable
+
+**Dark Mode Validation:**
+- [ ] Primary button text (`white` on `[primary]-500`) — Should have 4.5:1 contrast
+- [ ] Body text (`[neutral]-100` on `[neutral]-900`) — Should have 4.5:1 contrast
+- [ ] Secondary text (`[secondary]-200` on `[secondary]-900`) — Should have 4.5:1 contrast
+- [ ] Border visibility (`[neutral]-700` on `[neutral]-900`) — Should be distinguishable
+
+**Colors Known to Have Dark Mode Issues:**
+- `yellow` (500 and below often too light on dark backgrounds)
+- `lime` (needs 600+ for dark mode visibility)
+- `amber` (500 and below may need adjustment)
+- `cyan` (check 400-500 range carefully)
+
+If any validation fails, suggest shade adjustments (e.g., `yellow-500` → `yellow-400` for dark mode).
 
 Do these combinations look good for your product? Any adjustments needed for dark mode?"
 
@@ -239,3 +259,114 @@ These are starting suggestions — feel free to explore [Google Fonts](https://f
 - Keep suggestions contextual to the product type
 - The mono font is optional but recommended for any product with code/technical content
 - Design tokens apply to screen designs only — the Design OS app keeps its own aesthetic
+
+### Tailwind Color Validation
+
+Before saving colors, validate that each color name is a valid Tailwind v4 palette color:
+
+**Valid Tailwind Colors:**
+`red`, `orange`, `amber`, `yellow`, `lime`, `green`, `emerald`, `teal`, `cyan`, `sky`, `blue`, `indigo`, `violet`, `purple`, `fuchsia`, `pink`, `rose`, `slate`, `gray`, `zinc`, `neutral`, `stone`
+
+**Invalid color names to reject:**
+- Custom/hex colors (e.g., `#3B82F6`) — Use the closest Tailwind equivalent
+- Misspelled colors (e.g., `purle`, `organge`)
+- Non-existent colors (e.g., `turquoise`, `coral`, `navy`)
+- Old Tailwind v3 colors that no longer exist in v4
+
+If the user provides an invalid color name:
+```
+"[color] isn't a standard Tailwind color. Did you mean [suggestion]? Here are the available options: [list relevant colors]"
+```
+
+### Google Fonts Validation
+
+Before saving fonts, validate that each font name exactly matches the Google Fonts naming:
+
+**Common Naming Mistakes:**
+| User Input | Correct Name |
+|------------|--------------|
+| `DMSans` | `DM Sans` |
+| `Jetbrains Mono` | `JetBrains Mono` |
+| `Source Sans` | `Source Sans 3` |
+| `Fira code` | `Fira Code` |
+| `IBM Plex` | `IBM Plex Mono` (be specific) |
+| `Open sans` | `Open Sans` |
+
+**Validation Steps:**
+1. Check for exact casing (most fonts use Title Case with spaces)
+2. Check for version numbers where applicable (e.g., `Source Sans 3`)
+3. Check for font weight suffixes that should be separate (e.g., `Inter` not `Inter Bold`)
+
+If the user provides a potentially incorrect font name:
+```
+"Just checking — did you mean '[Correct Font Name]'? Font names need to match Google Fonts exactly for proper loading."
+```
+
+**Verification:** You can verify font names at [Google Fonts](https://fonts.google.com/) by searching for the font and checking the exact display name.
+
+### Font Matching Between CSS and Design Tokens
+
+When design tokens are exported, fonts must be properly connected between:
+1. **typography.json** — The font names chosen by the user
+2. **index.html** — The Google Fonts `<link>` tag for loading
+3. **CSS/Tailwind** — The font-family declarations
+
+**Ensuring Fonts Match:**
+
+| Location | Format | Example |
+|----------|--------|---------|
+| typography.json | Exact Google Font name | `"heading": "DM Sans"` |
+| index.html | URL-encoded for Google Fonts | `family=DM+Sans:wght@400;500;700` |
+| CSS | CSS font-family with fallback | `font-family: 'DM Sans', sans-serif;` |
+| Tailwind class | Custom font class | `font-heading` |
+
+**Common Mismatch Issues:**
+
+1. **Spaces in font names:**
+   - typography.json: `DM Sans`
+   - URL encoding: `DM+Sans` (spaces become `+`)
+   - CSS: `'DM Sans'` (quotes required for multi-word names)
+
+2. **Font weights:**
+   - Include all weights used in the design
+   - Example: `wght@400;500;600;700` covers regular, medium, semibold, bold
+
+3. **Variable fonts:**
+   - Some fonts (like Inter) support variable weights
+   - Format: `wght@100..900` for full weight range
+
+**Verification Checklist:**
+
+Before finalizing design tokens, verify:
+- [ ] Font names in typography.json exactly match Google Fonts
+- [ ] index.html includes the correct Google Fonts URL with all weights
+- [ ] CSS custom properties reference the correct font-family
+- [ ] Tailwind classes (font-heading, font-body, font-mono) work correctly
+- [ ] All font weights used in designs are loaded
+
+**Example Configuration:**
+
+```json
+// typography.json
+{
+  "heading": "DM Sans",
+  "body": "Inter",
+  "mono": "JetBrains Mono"
+}
+```
+
+```html
+<!-- index.html -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+```
+
+```css
+/* CSS custom properties */
+:root {
+  --font-heading: 'DM Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+```
