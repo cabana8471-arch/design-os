@@ -29,3 +29,5 @@ Please ask me clarifying questions about:
    - Integration requirements
 
 Lastly, be sure to ask me if I have any other notes to add for this implementation.
+
+Once I answer your questions, create a comprehensive implementation plan before coding.

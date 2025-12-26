@@ -73,7 +73,7 @@ The product name is critical because:
 
 Once the user approves and you have confirmed the product name:
 
-### Create Product Directory
+### Create Directory
 
 First, ensure the product directory exists:
 ```bash
@@ -123,3 +123,15 @@ Let the user know:
 - Keep the final output concise and clear
 - The format must match exactly for the app to parse it correctly
 - **Always ensure the product has a name** - if user didn't provide one, ask for it
+
+### Length Guidelines
+
+Keep content focused and scannable:
+
+- **Description:** 1-3 sentences (max 50 words)
+- **Problems & Solutions:** 3-5 problems (prioritize the most impactful)
+- **Key Features:** 5-8 features (focus on core differentiators)
+
+If the user provides 10+ features or problems, help them prioritize:
+
+"You've listed quite a few features. To keep the overview focused, which 5-8 would you consider the absolute core of your product? We can always expand later."

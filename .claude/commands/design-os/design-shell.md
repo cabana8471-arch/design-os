@@ -174,8 +174,28 @@ interface AppShellProps {
 ### MainNav.tsx
 The navigation component (sidebar or top nav based on the chosen pattern).
 
+```tsx
+interface MainNavProps {
+  items: Array<{ label: string; href: string; isActive?: boolean; icon?: React.ReactNode }>
+  onNavigate?: (href: string) => void
+  collapsed?: boolean
+}
+```
+
 ### UserMenu.tsx
 The user menu with avatar and dropdown.
+
+```tsx
+interface UserMenuProps {
+  user?: {
+    name: string
+    email?: string
+    avatarUrl?: string
+  }
+  onLogout?: () => void
+  onSettings?: () => void
+}
+```
 
 ### index.ts
 Export all components.

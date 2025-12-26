@@ -75,11 +75,31 @@ Generate the complete export package with all components, types, and handoff doc
 │       ├── data-model.md
 │       ├── design-tokens.md
 │       ├── sample-data.md
+│       ├── screenshot-design.md
 │       └── shape-section.md
 │
-└── skills/                        # Specialized guidance for design quality
-    └── frontend-design/           # Guidance for high-quality UI components
-        └── SKILL.md               # Comprehensive design guidance
+├── skills/                        # Specialized guidance for design quality
+│   └── frontend-design/           # Guidance for high-quality UI components
+│       └── SKILL.md               # Comprehensive design guidance
+│
+└── templates/                     # Modular prompt templates
+    └── design-os/
+        ├── README.md              # Template system documentation
+        ├── common/                # Templates used in both prompt types
+        │   ├── top-rules.md
+        │   ├── reporting-protocol.md
+        │   ├── model-guidance.md
+        │   ├── verification-checklist.md
+        │   ├── clarifying-questions.md
+        │   └── tdd-workflow.md
+        ├── one-shot/              # One-shot implementation prompts
+        │   ├── preamble.md
+        │   └── prompt-template.md
+        └── section/               # Section-specific prompts
+            ├── preamble.md
+            ├── prompt-template.md
+            ├── clarifying-questions.md
+            └── tdd-workflow.md
 
 product/                           # Product definition (portable)
 ├── product-overview.md            # Product description, problems/solutions, features
@@ -223,7 +243,7 @@ The **frontend-design** skill provides comprehensive guidance for creating disti
 Commands that create user-facing components reference the frontend-design skill to ensure design quality:
 
 1. **`/design-shell`** — Creates application shell components
-   - Step 6: Read `.claude/skills/frontend-design/SKILL.md` before creating AppShell, MainNav, UserMenu components
+   - Step 5: Read `.claude/skills/frontend-design/SKILL.md` before creating AppShell, MainNav, UserMenu components
    - Ensures shell has distinctive, branded aesthetics matching the product vision
 
 2. **`/design-screen`** — Creates section screen designs

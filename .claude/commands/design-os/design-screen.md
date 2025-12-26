@@ -113,7 +113,7 @@ From the frontend-design skill:
 
 ## Step 6: Create the Props-Based Component
 
-### Ensure Directory Exists
+### Create Directory
 
 First, create the necessary directories if they don't exist:
 ```bash
@@ -123,7 +123,7 @@ mkdir -p src/sections/[section-id]/components
 Then validate the directory was created successfully:
 ```bash
 if [ ! -d "src/sections/[section-id]/components" ]; then
-  echo "Error: Failed to create directory src/sections/[section-id]/components"
+  echo "Error: Failed to create directory src/sections/[section-id]/components."
   exit 1
 fi
 ```

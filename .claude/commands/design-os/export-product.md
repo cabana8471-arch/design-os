@@ -1734,7 +1734,25 @@ Copy any `.png` files from:
 
 ## Step 17: Create Zip File
 
-After generating all the export files, create a zip archive of the product-plan folder:
+After generating all the export files, create a zip archive of the product-plan folder.
+
+### Validate Zip Command Exists
+
+First, check if the `zip` command is available on the system:
+
+```bash
+if ! command -v zip &> /dev/null; then
+  echo "Warning: 'zip' command not found. Skipping zip creation."
+  echo "The export folder is still available at product-plan/"
+  echo "To create a zip manually, install zip and run: zip -r product-plan.zip product-plan/"
+fi
+```
+
+If `zip` is not available, skip zip creation but continue with the export. The `product-plan/` folder is still fully functional.
+
+### Create the Zip Archive
+
+If `zip` is available:
 
 ```bash
 # Remove any existing zip file
@@ -1742,6 +1760,13 @@ rm -f product-plan.zip
 
 # Create the zip file
 cd . && zip -r product-plan.zip product-plan/
+
+# Verify zip was created
+if [ -f "product-plan.zip" ]; then
+  echo "Zip archive created successfully."
+else
+  echo "Warning: Zip creation may have failed. Check product-plan/ folder."
+fi
 ```
 
 This creates `product-plan.zip` in the project root, which will be available for download on the Export page.
@@ -1792,3 +1817,12 @@ The components are props-based and portable — they accept data and callbacks, 
 - Sample data files are for testing before real APIs are built
 - The export is self-contained — no dependencies on Design OS
 - Components are portable — they work with any React setup
+
+### Performance Note
+
+This command performs many file operations and may take longer for products with many sections. The most resource-intensive steps are:
+- **Component validation** (Step 8) — Reads and validates all component files
+- **Prompt generation** (Step 14) — Reads and assembles multiple template files
+- **Zip creation** (Step 17) — Creates archive of entire export folder
+
+For large products (5+ sections), expect this command to take more time. Progress updates are provided throughout.

@@ -81,9 +81,9 @@ The Playwright MCP tool can only save screenshots to its default output director
    ```bash
    # Check if the screenshot file exists and has content
    if [ -f "product/sections/[section-id]/[filename].png" ] && [ -s "product/sections/[section-id]/[filename].png" ]; then
-     echo "Screenshot saved successfully"
+     echo "Screenshot saved successfully."
    else
-     echo "Error: Screenshot file not found or is empty"
+     echo "Error: Screenshot file not found or is empty."
    fi
    ```
 
@@ -134,9 +134,19 @@ If no process appears, the server is successfully stopped.
 
 ## Important Notes
 
+- **Requires Playwright MCP** — This command requires the Playwright MCP server to be installed. Run `claude mcp add playwright npx @playwright/mcp@latest` if not already set up
 - Start the dev server yourself - do not ask the user to do it
 - Screenshots are saved to `product/sections/[section-id]/` alongside spec.md and data.json
 - Use descriptive filenames that indicate the screen design and any variant (dark mode, mobile, etc.)
 - Capture at a consistent viewport width for documentation consistency
 - Always capture full page screenshots to include all scrollable content
 - **Always kill the dev server when done** — do not leave it running in the background
+
+### Performance Note
+
+This command involves several steps that may take time:
+- **Dev server startup** (Step 2) — Wait for the server to be fully ready before navigating
+- **Page rendering** (Step 3) — Allow time for fonts, images, and animations to load
+- **Screenshot capture** — Full page screenshots of complex pages may take a moment
+
+If the screenshot appears incomplete or shows loading states, try waiting a few seconds longer before capturing.

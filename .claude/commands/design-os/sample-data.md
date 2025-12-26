@@ -99,7 +99,7 @@ Use the AskUserQuestion tool if there are ambiguities about what data is needed.
 
 Once the user approves the structure:
 
-### Ensure Directory Exists
+### Create Directory
 
 First, verify the directory exists:
 ```bash
@@ -298,6 +298,21 @@ export interface InvoiceListProps {
 - Add JSDoc comments for callback props to explain when they're called
 
 - **Match entity names from the global data model if one exists**
+
+### Callback Prop Naming Convention
+
+Use consistent action-based callback names:
+
+| Callback | Purpose |
+|----------|---------|
+| `onView` | Called when user wants to view item details |
+| `onEdit` | Called when user wants to edit an item |
+| `onDelete` | Called when user wants to delete an item |
+| `onCreate` | Called when user wants to create a new item |
+| `onArchive` | Called when user wants to archive an item |
+| `onSelect` | Called when user selects an item (for multi-select) |
+
+**Note:** `onClick` is a React DOM event handler used inside components. The callback props (`onView`, `onEdit`, etc.) describe the user intent and are passed from parent components.
 
 ## Step 8: Confirm and Next Steps
 

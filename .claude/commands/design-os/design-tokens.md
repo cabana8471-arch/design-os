@@ -194,12 +194,33 @@ Available colors (each has shades 50-950):
 
 ## Reference: Popular Google Font Pairings
 
+These are starting suggestions — feel free to explore [Google Fonts](https://fonts.google.com/) for other combinations that match your product's personality.
+
+### Sans-Serif Pairings
 - **Modern & Clean:** DM Sans + DM Sans + IBM Plex Mono
 - **Professional:** Inter + Inter + JetBrains Mono
 - **Friendly:** Nunito Sans + Nunito Sans + Fira Code
 - **Bold & Modern:** Space Grotesk + Inter + Source Code Pro
+- **Geometric:** Outfit + Outfit + Source Code Pro
+- **Humanist:** Manrope + Manrope + Fira Code
+- **Minimal:** Work Sans + Work Sans + JetBrains Mono
+- **Approachable:** Poppins + Poppins + IBM Plex Mono
+
+### Serif + Sans Combinations
 - **Editorial:** Playfair Display + Source Sans 3 + IBM Plex Mono
+- **Classic Modern:** Merriweather + Open Sans + Fira Code
+- **Elegant:** Libre Baskerville + Lato + Source Code Pro
+- **Sophisticated:** Cormorant Garamond + Raleway + JetBrains Mono
+
+### Technical/Developer Focus
 - **Tech-forward:** JetBrains Mono + Inter + JetBrains Mono
+- **Hacker:** Fira Code + Fira Sans + Fira Code
+- **Developer:** Source Code Pro + Source Sans 3 + Source Code Pro
+
+### Tips for Custom Pairings
+- Pair fonts with contrasting weights (bold heading + regular body)
+- Keep heading and body from the same family for consistency
+- Use mono fonts that complement your primary font's style
 
 ## Important Notes
 
