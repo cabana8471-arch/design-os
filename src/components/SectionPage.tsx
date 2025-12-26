@@ -181,7 +181,7 @@ export function SectionPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {sectionData.screenshots.map((screenshot) => (
                     <div key={screenshot.name} className="group">
                       <div className="aspect-video rounded-lg overflow-hidden bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700">

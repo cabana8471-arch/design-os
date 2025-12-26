@@ -105,7 +105,7 @@ export function DesignPage() {
                     <h4 className="text-sm font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wide mb-4">
                       Colors
                     </h4>
-                    <div className="grid grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                       <ColorSwatch
                         label="Primary"
                         colorName={designSystem.colors.primary}
@@ -128,7 +128,7 @@ export function DesignPage() {
                     <h4 className="text-sm font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wide mb-4">
                       Typography
                     </h4>
-                    <div className="grid grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                       <div>
                         <p className="text-xs text-stone-500 dark:text-stone-400 mb-1">Heading</p>
                         <p className="font-semibold text-stone-900 dark:text-stone-100">
