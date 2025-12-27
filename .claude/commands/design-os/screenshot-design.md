@@ -72,13 +72,33 @@ Present the available screen designs as options, grouped by section:
 
 ## Step 2: Start the Dev Server
 
-Start the dev server yourself using Bash. Run `npm run dev` in the background so you can continue with the screenshot capture.
+Start the dev server yourself using Bash. Do NOT ask the user if the server is running or tell them to start it.
 
-Do NOT ask the user if the server is running or tell them to start it. You must start it yourself.
+### Dev Server Detection and Startup
 
-**Track the dev server process:** Note that you started this dev server so you can clean it up in Step 6. If the dev server was already running before this command, be careful not to kill it during cleanup.
+**First, check if a dev server is already running:**
 
-After starting the server, wait 5 seconds for it to be ready, or verify `http://localhost:3000` returns a response before navigating to the screen design URL.
+```bash
+# Check if dev server is already running on port 5173 (Vite default)
+if lsof -i :5173 > /dev/null 2>&1; then
+  echo "Dev server already running on port 5173"
+  # Set flag: DEV_SERVER_PREEXISTING=true
+else
+  echo "Starting dev server..."
+  npm run dev &
+  # Set flag: DEV_SERVER_PREEXISTING=false
+  # Wait for server to be ready
+  sleep 5
+fi
+```
+
+**Track the dev server state:**
+- If `DEV_SERVER_PREEXISTING=true`: Do NOT kill the server in Step 6
+- If `DEV_SERVER_PREEXISTING=false`: Kill the server in Step 6 (you started it)
+
+**Verify server is ready:**
+
+After the check/startup, verify `http://localhost:5173` returns a response before navigating to the screen design URL. If using port 3000 instead (older configs), check that port.
 
 ## Step 3: Capture the Screenshot
 
@@ -203,40 +223,40 @@ When all screenshots are complete, guide the user to the next step:
 
 ## Step 6: Clean Up - Kill Dev Server
 
-After you're done capturing screenshots, clean up the dev server process.
+After you're done capturing screenshots, clean up the dev server process based on the detection from Step 2.
 
-**If you started the dev server in Step 2:**
+**If `DEV_SERVER_PREEXISTING=false` (you started the server in Step 2):**
 
 ```bash
-# Kill the npm run dev process on port 3000
-lsof -ti :3000 | xargs kill -9 2>/dev/null || true
+# Kill the npm run dev process on port 5173 (Vite default)
+lsof -ti :5173 | xargs kill -9 2>/dev/null || true
+
+# Verify cleanup
+if ! lsof -i :5173 > /dev/null 2>&1; then
+  echo "Dev server stopped successfully"
+fi
 ```
 
-**If the dev server was already running before this command:**
+**If `DEV_SERVER_PREEXISTING=true` (server was already running):**
 
-Ask the user before killing:
+Do NOT kill the server. Inform the user:
 ```
-"I see a dev server running on port 3000. Did you have this running before I started, or should I shut it down?"
-```
-
-Only kill the process if the user confirms it was started by this command.
-
-**Verify cleanup:**
-```bash
-lsof -i :3000
+"Leaving dev server running (it was already running before this command)."
 ```
 
-If no process appears, the server is successfully stopped.
+**Important:** Never kill a pre-existing dev server without explicit user confirmation. The detection in Step 2 ensures you know whether you started the server or not.
 
 ## Important Notes
 
 - **Requires Playwright MCP** — This command requires the Playwright MCP server to be installed. Run `claude mcp add playwright npx @playwright/mcp@latest` if not already set up
+- **Dev server management** — Detect if server is running before starting; only kill servers you started
 - Start the dev server yourself - do not ask the user to do it
 - Screenshots are saved to `product/sections/[section-id]/` alongside spec.md and data.json
 - Use descriptive filenames that indicate the screen design and any variant (dark mode, mobile, etc.)
 - **Standard viewports:** Desktop 1280x800 (default), Mobile 375x667, Tablet 768x1024
+- **Default port:** Vite uses port 5173 by default
 - Always capture full page screenshots to include all scrollable content
-- **Always kill the dev server when done** — do not leave it running in the background
+- **Cleanup:** Only kill the dev server if you started it (DEV_SERVER_PREEXISTING=false)
 
 ### Performance Note
 

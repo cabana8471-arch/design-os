@@ -6,6 +6,52 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-27 10:30] CRITICAL P0 Fixes: Runtime Errors, Type Safety & Command Conflicts
+
+### Description
+
+Implementation of 6 CRITICAL (P0) fixes from the analysis plan (deep-tickling-simon.md). These fixes address runtime errors, unsafe type assertions, and command workflow conflicts that could cause issues during normal operation.
+
+### Modified Files
+
+| File | Modification |
+|------|--------------|
+| `src/components/ShellDesignPage.tsx` | **Line 40-41:** Added `Math.round()` to width calculation in resize handler to prevent floating-point display values causing visual glitches. Added comment explaining the fix. |
+| `src/lib/shell-loader.ts` | **Lines 115-143:** Enhanced `loadAppShell()` function with explicit module validation before type assertion. Added documentation explaining type safety approach. Added DEV-mode logging when AppShell.tsx not found. |
+| `.claude/commands/design-os/data-model.md` | **Lines 219-236:** Replaced "Do not auto-singularize" guidance with auto-singularization rules table. Commands now transform plural entity names (Invoices → Invoice) for TypeScript interfaces. |
+| `.claude/commands/design-os/sample-data.md` | **Lines 352-375:** Added "Auto-singularize plural entity names" step and "Auto-Singularization Rules" section with transformation patterns (ies→y, es→'', s→''). Ensures TypeScript interfaces follow naming conventions. |
+| `.claude/commands/design-os/screenshot-design.md` | **Lines 73-101:** Replaced ambiguous dev server instructions with explicit detection logic. Added bash script to detect pre-existing server before starting. **Lines 224-247:** Updated cleanup step to only kill servers started by the command (using DEV_SERVER_PREEXISTING flag). **Lines 249-259:** Updated Important Notes with correct port (5173) and cleanup behavior. |
+
+### Issues Addressed (from analysis plan)
+
+| Issue # | Category | File | Title | Resolution |
+|---------|----------|------|-------|------------|
+| P0-1 | Critical | ShellDesignPage.tsx | Missing Math.round() in width calculation | Added `Math.round()` wrapper to prevent floating-point values |
+| P0-2 | Critical | shell-loader.ts | Unsafe type assertion without validation | Added module existence check before type cast, added documentation |
+| P0-3 | Critical | ScreenDesignPage.tsx | Null check after useMemo | Verified: Current implementation is correct (null check inside useMemo is React-compliant) |
+| P0-4 | Critical | ScreenDesignPage.tsx | React.lazy missing return paths | Verified: All code paths already return valid module objects |
+| P0-5 | Critical | data-model.md + sample-data.md | Entity naming singularization conflict | Aligned both commands: allow plural in data-model, auto-singularize in sample-data for types.ts |
+| P0-6 | Critical | screenshot-design.md | Dev server lifecycle ambiguity | Added detection logic before starting server, conditional cleanup based on who started server |
+
+### Statistics
+
+- **Files modified:** 5 (2 source code, 3 commands)
+- **Critical issues fixed:** 4 (P0-1, P0-2, P0-5, P0-6)
+- **Critical issues verified:** 2 (P0-3, P0-4 already correctly implemented)
+- **New documentation sections:** 2 (Auto-Singularization Rules, Dev Server Detection)
+- **New bash scripts:** 2 (server detection, conditional cleanup)
+
+### Verification
+
+- TypeScript compilation passes without errors (`npx tsc --noEmit`)
+- Width calculations now rounded to integers, preventing visual glitches
+- Shell loader validates module existence before unsafe type assertions
+- Entity naming is now consistent: singular PascalCase for interfaces, plural camelCase for JSON keys
+- Dev server management is explicit: detect before start, cleanup only what you started
+- React hooks rules not violated (null checks remain inside useMemo callbacks)
+
+---
+
 ## [2025-12-27 09:16] BATCH 3 Documentation Fixes: Naming Clarity, File Structure & Quick References
 
 ### Description

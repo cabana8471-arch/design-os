@@ -220,10 +220,20 @@ If a user defines a plural entity name (e.g., `### Invoices`), these issues occu
 
 If entity names in the data model appear to be plural:
 1. **Warn the user** — "Entity 'Invoices' appears to be plural. Consider changing to 'Invoice' for consistency."
-2. **Continue with warning** — Use the name as-is but note the inconsistency
-3. **Do not auto-singularize** — The user may have intentionally used the plural form
+2. **Auto-singularize for types.ts** — Transform `Invoices` → `Invoice` when generating TypeScript interfaces
+3. **Continue with transformation** — Apply the singular form to maintain TypeScript naming conventions
 
-This ensures consistency without blocking progress on edge cases.
+**Auto-singularization Rules (applied by `/sample-data`):**
+
+| Plural Form | Singular Form | Rule Applied |
+|-------------|---------------|--------------|
+| `Invoices` | `Invoice` | Remove trailing 's' |
+| `Categories` | `Category` | 'ies' → 'y' |
+| `Statuses` | `Status` | 'es' → '' |
+| `People` | `Person` | Irregular (special case) |
+| `Children` | `Child` | Irregular (special case) |
+
+This ensures TypeScript interfaces follow standard naming conventions while allowing flexibility in the data model.
 
 ### Entity Naming Validation
 

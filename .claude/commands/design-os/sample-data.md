@@ -349,6 +349,30 @@ This ensures consistency: types match the data model, while JSON keys follow Jav
      Consider aligning the names for consistency across sections, or let me know if these are section-specific entities.
      ```
 
+5. **Auto-singularize plural entity names:**
+   - If an entity name appears to be plural (e.g., `Invoices`), apply singularization for types.ts
+   - Warn the user about the transformation:
+     ```
+     Note: Entity 'Invoices' appears to be plural. I'll use 'Invoice' for the TypeScript interface to follow standard naming conventions.
+     ```
+
+### Auto-Singularization Rules
+
+When generating types.ts, apply these transformations to plural entity names:
+
+| Pattern | Transformation | Example |
+|---------|---------------|---------|
+| Ends with 'ies' | Replace 'ies' with 'y' | `Categories` → `Category` |
+| Ends with 'es' (after s, x, ch, sh) | Remove 'es' | `Statuses` → `Status` |
+| Ends with 's' | Remove trailing 's' | `Invoices` → `Invoice` |
+| Irregular plurals | Use lookup table | `People` → `Person`, `Children` → `Child` |
+
+**Detection heuristic:** An entity name is likely plural if:
+- It ends with 's' and the singular form is a valid English word
+- It matches known plural patterns (ies, es, s)
+
+**Important:** Only apply singularization to TypeScript interface names. The data.json keys should remain in their original (pluralized, camelCase) form.
+
 This validation ensures consistency across all sections and prevents fragmented data models.
 
 ### Bidirectional Naming Validation

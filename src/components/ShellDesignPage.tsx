@@ -37,7 +37,8 @@ export function ShellDesignPage() {
       const minPercent = (MIN_WIDTH / containerWidth) * 100
       newWidthPercent = Math.max(minPercent, Math.min(100, newWidthPercent))
 
-      setWidthPercent(newWidthPercent)
+      // Round to avoid floating point precision issues in width calculations
+      setWidthPercent(Math.round(newWidthPercent))
     }
 
     const handleMouseUp = () => {

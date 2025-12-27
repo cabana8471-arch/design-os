@@ -118,10 +118,28 @@ export function loadShellComponent(
  * Note: This function loads AppShell.tsx directly. The previous ShellWrapper.tsx
  * fallback was removed to align with the documented shell component structure
  * (AppShell.tsx, MainNav.tsx, UserMenu.tsx) per design-shell.md specifications.
+ *
+ * Type Safety: The type assertion assumes AppShell accepts a children prop.
+ * This is validated at runtime in ScreenDesignPage.tsx where the component
+ * is actually used. If the component doesn't accept children, the shell
+ * wrapper in ScreenDesignPage will gracefully fall back to a passthrough.
  */
 export function loadAppShell(): (() => Promise<{ default: ComponentType<{ children?: ReactNode }> }>) | null {
   const path = '/src/shell/components/AppShell.tsx'
-  return shellComponentModules[path] as (() => Promise<{ default: ComponentType<{ children?: ReactNode }> }>) || null
+  const loader = shellComponentModules[path]
+
+  // Validate module exists before type assertion
+  if (!loader) {
+    if (import.meta.env.DEV) {
+      console.log('[shell-loader] AppShell.tsx not found at:', path)
+    }
+    return null
+  }
+
+  // Type assertion is safe because:
+  // 1. We've verified the loader exists
+  // 2. Runtime validation happens in ScreenDesignPage.tsx
+  return loader as () => Promise<{ default: ComponentType<{ children?: ReactNode }> }>
 }
 
 /**
