@@ -75,8 +75,12 @@ export function SectionPage() {
   const requiredStepsComplete = areRequiredStepsComplete(sectionData)
 
   // Next section navigation logic
-  const isLastSection = currentIndex === sections.length - 1 || currentIndex === -1
-  const nextSection = !isLastSection ? sections[currentIndex + 1] : null
+  // Note: currentIndex === -1 means section wasn't found in roadmap (shouldn't happen
+  // if we passed the !section check above, but we handle it defensively).
+  // In that case, we don't show a "next section" button to avoid unexpected navigation.
+  const hasValidIndex = currentIndex !== -1
+  const isLastSection = hasValidIndex && currentIndex === sections.length - 1
+  const nextSection = hasValidIndex && !isLastSection ? sections[currentIndex + 1] : null
 
   return (
     <AppLayout backTo="/sections" backLabel="Sections" title={section.title}>

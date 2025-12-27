@@ -10,10 +10,38 @@ Read `/product/product-roadmap.md` to get the list of available sections.
 
 If there's only one section, auto-select it. If there are multiple sections, use the AskUserQuestion tool to ask which section the user wants to generate data for.
 
-Then check if `product/sections/[section-id]/spec.md` exists. If it doesn't:
+Then check if `product/sections/[section-id]/spec.md` exists:
+
+**Check both directory and spec file:**
+
+```bash
+# Check if directory exists but spec.md is missing
+if [ -d "product/sections/[section-id]" ] && [ ! -f "product/sections/[section-id]/spec.md" ]; then
+  echo "Directory exists but spec.md is missing"
+fi
+```
+
+**Handle the following cases:**
+
+| Condition | Action |
+|-----------|--------|
+| Directory doesn't exist | Show error: "Missing: product/sections/[section-id]/. Run /shape-section to create it." |
+| Directory exists, spec.md missing | Show error: "Directory product/sections/[section-id]/ exists but spec.md is missing. Run /shape-section to create the specification." |
+| Directory exists, spec.md exists | Continue to Step 2 |
+
+**If the spec doesn't exist:**
 
 ```
 Missing: product/sections/[section-id]/spec.md. Run /shape-section to create it.
+```
+
+**If directory exists but spec.md was deleted (edge case):**
+
+```
+The section directory exists at product/sections/[section-id]/ but the spec.md file is missing.
+This can happen if the spec was accidentally deleted.
+
+To fix: Run /shape-section to recreate the specification.
 ```
 
 Stop here if the spec doesn't exist.

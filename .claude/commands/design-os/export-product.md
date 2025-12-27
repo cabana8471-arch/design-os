@@ -2,6 +2,14 @@
 
 You are helping the user export their complete product design as a handoff package for implementation. This generates all files needed to build the product in a real codebase.
 
+> **Design Note on Step Count:** This command has 15 steps, which may seem verbose. This is intentional:
+> - Each step performs a discrete, verifiable operation
+> - Steps can be referenced individually in error messages
+> - The granularity aids debugging when exports fail
+> - Users can track progress through the export process
+>
+> Do not attempt to consolidate steps — the verbosity ensures reliability.
+
 ## Step 1: Check Prerequisites
 
 Verify the minimum requirements exist:
@@ -57,6 +65,38 @@ Before proceeding, verify all 12 required template files exist. If any are missi
 STOP and report: "Missing template file: `.claude/templates/design-os/[path]`. Cannot generate prompts without all templates. Please restore the missing file."
 
 **END COMMAND** — Do not proceed to Step 2 if any template is missing.
+
+### Validate File Content (Not Just Existence)
+
+For critical files, verify they contain meaningful content, not just that they exist:
+
+**Content validation rules:**
+
+| File | Minimum Requirements |
+|------|---------------------|
+| `product-overview.md` | Contains `# ` heading and at least 50 characters of content |
+| `product-roadmap.md` | Contains at least one `## ` section heading |
+| `spec.md` (per section) | Contains `## Overview` or `## User Flows` section |
+| `data.json` (per section) | Valid JSON with at least one key besides `_meta` |
+| `types.ts` (per section) | Contains at least one `export interface` declaration |
+
+**Validation script (conceptual):**
+
+```bash
+# Check product-overview.md has meaningful content
+if [ -f "product/product-overview.md" ]; then
+  CONTENT_LENGTH=$(wc -c < "product/product-overview.md")
+  if [ "$CONTENT_LENGTH" -lt 50 ]; then
+    echo "Warning: product-overview.md appears to be empty or incomplete ($CONTENT_LENGTH bytes)"
+  fi
+fi
+```
+
+**If a required file exists but is empty or invalid:**
+
+Show warning: "File [path] exists but appears to be empty or incomplete. Please verify content before exporting."
+
+Continue with export but note the warning in the README.
 
 If recommended files are missing, show warnings but continue:
 
@@ -1284,7 +1324,8 @@ This algorithm describes the template assembly process. When implementing, follo
    a. Read file content from templatePath
    b. If file doesn't exist → STOP with error "Missing template file: [path]"
    c. Strip version comment from top of content:
-      - Match pattern: /^<!--\s*v[\d.]+\s*-->\n?/
+      - Match pattern: /^<!--\s*v[\d.]+([-\w]*)\s*-->\n?/
+      - This handles versions like v1.0.0, v1.2.0-section, v2.0.0-beta
       - Remove the matched portion
    d. If result is not empty, append "\n\n" (blank line separator)
    e. Append stripped content to result
@@ -1298,7 +1339,8 @@ This algorithm describes the template assembly process. When implementing, follo
    - If found → STOP with error listing unsubstituted variables
 
 5. Validate no version comments remain:
-   - Pattern: /<!--\s*v[\d.]+\s*-->/
+   - Pattern: /<!--\s*v[\d.]+([-\w]*)\s*-->/
+   - Handles versions with suffixes like v1.2.0-section
    - If found → STOP with error "Version comments not fully stripped"
 
 6. Return assembled result
@@ -1348,7 +1390,8 @@ The templates are designed to be concatenated in a specific order. Do NOT reorde
 8. `common/verification-checklist.md` — Final verification checklist
 
 **4. Version Comment Handling**
-- Strip all `<!-- v1.0.0 -->` comments from the top of each template before concatenating
+- Strip all version comments from the top of each template before concatenating
+- Version formats: `<!-- v1.0.0 -->`, `<!-- v1.2.0-section -->`, etc.
 - These comments are used for template version tracking only and should NOT appear in the final assembled prompt
 - Do not add version comments to the final prompt — the prompt should be clean and ready to use
 
@@ -1374,7 +1417,7 @@ After assembling each prompt:
 Before saving each assembled prompt, perform these validation checks:
 
 ```
-[x] No version comments remain (<!-- v1.0.0 --> etc.)
+[x] No version comments remain (<!-- v1.0.0 -->, <!-- v1.2.0-section -->, etc.)
 [x] No unsubstituted variables remain ([Product Name], SECTION_NAME, etc.)
 [x] All expected sections are present (TOP 3 RULES, Verification Checklist, etc.)
 [x] No duplicate sections (same template included twice)
@@ -1408,7 +1451,8 @@ After writing each prompt file, run these validation commands to catch issues:
 # ============================================================
 
 # Check for remaining version comments (should return no matches)
-if grep -E '<!--\s*v[0-9]+\.[0-9]+\.[0-9]+\s*-->' product-plan/prompts/one-shot-prompt.md; then
+# Pattern handles version suffixes like v1.2.0-section
+if grep -E '<!--\s*v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?\s*-->' product-plan/prompts/one-shot-prompt.md; then
   echo "ERROR: Version comments remain in one-shot-prompt.md"
   exit 1
 fi
@@ -1427,7 +1471,8 @@ fi
 # ============================================================
 
 # Check for remaining version comments (should return no matches)
-if grep -E '<!--\s*v[0-9]+\.[0-9]+\.[0-9]+\s*-->' product-plan/prompts/section-prompt.md; then
+# Pattern handles version suffixes like v1.2.0-section
+if grep -E '<!--\s*v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?\s*-->' product-plan/prompts/section-prompt.md; then
   echo "ERROR: Version comments remain in section-prompt.md"
   exit 1
 fi

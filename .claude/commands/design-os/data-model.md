@@ -148,6 +148,34 @@ Next step: Run `/design-tokens` to choose your color palette and typography."
 - The implementation agent will extend this with additional fields as needed
 - Entity names should be singular (User, Invoice, Project — not Users, Invoices)
 
+### Plural Entity Names (Why Singular is Required)
+
+The data model uses **singular** entity names because they're transformed during downstream operations:
+
+**Why Singular?**
+- **TypeScript interfaces are singular** — `interface Invoice { }` matches TypeScript conventions
+- **Data model describes the concept** — "An Invoice represents..." not "Invoices represent..."
+- **Automatic pluralization** — `/sample-data` converts `Invoice` → `invoices` for JSON keys
+
+**What Happens with Plural Names?**
+
+If a user defines a plural entity name (e.g., `### Invoices`), these issues occur:
+
+| Location | Expected | Actual (with plural) | Problem |
+|----------|----------|---------------------|---------|
+| types.ts | `Invoice` interface | `Invoices` interface | Non-standard TypeScript naming |
+| data.json | `invoices` key | `invoicess` key | Double-s suffix |
+| Component props | `invoice: Invoice` | `invoice: Invoices` | Confusing singular/plural mix |
+
+**Guidance for `/sample-data`:**
+
+If entity names in the data model appear to be plural:
+1. **Warn the user** — "Entity 'Invoices' appears to be plural. Consider changing to 'Invoice' for consistency."
+2. **Continue with warning** — Use the name as-is but note the inconsistency
+3. **Do not auto-singularize** — The user may have intentionally used the plural form
+
+This ensures consistency without blocking progress on edge cases.
+
 ### Entity Naming Validation
 
 Entity names must follow a consistent format for proper parsing by `/sample-data` and other commands:

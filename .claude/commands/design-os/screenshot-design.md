@@ -79,6 +79,33 @@ If the page shows a 404 or blank screen, check:
 | **Mobile** | 375px | 667px | Mobile-responsive variants |
 | **Tablet** | 768px | 1024px | Tablet variants (optional) |
 
+### Viewport Selection Guidance
+
+**When to use each viewport:**
+
+| Viewport | Best For | Examples |
+|----------|----------|----------|
+| **Desktop** | Primary documentation, complex layouts, data tables, dashboards | Admin panels, analytics dashboards, multi-column forms |
+| **Mobile** | Touch-first interfaces, mobile-specific features, responsive validation | Mobile navigation, touch gestures, bottom sheets |
+| **Tablet** | Hybrid layouts, side-by-side views, reading-focused content | Document viewers, email clients, iPad-optimized apps |
+
+**Decision guide:**
+
+1. **Always capture Desktop first** — This is the default and provides the most complete view
+2. **Add Mobile if:**
+   - The product targets mobile users
+   - The spec mentions mobile-specific interactions
+   - You want to verify responsive breakpoints work correctly
+3. **Add Tablet if:**
+   - The product specifically targets tablet users (e.g., iPad apps)
+   - The layout has a unique tablet breakpoint (not just scaled desktop)
+   - The spec mentions tablet-specific features
+
+**Screenshot naming with viewports:**
+- `invoice-list.png` — Desktop (default, no suffix needed)
+- `invoice-list-mobile.png` — Mobile variant
+- `invoice-list-tablet.png` — Tablet variant
+
 **Requirements:**
 - **Desktop is the default** — always capture at 1280x800 unless mobile/tablet requested
 - Use **full page screenshot** to capture the entire scrollable content (not just the viewport)

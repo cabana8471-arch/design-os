@@ -6,7 +6,60 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-27 16:45] Medium Priority P2 Fixes (Batch 2): Runtime Logging, Algorithm Clarity & Export Documentation
+## [2025-12-27 09:15] Low Priority P3 Fixes: Documentation, Edge Cases & Code Clarity
+
+### Description
+
+Implementation of 9 LOW priority (P3) fixes from the analysis plan (vivid-marinating-wand.md). These fixes improve documentation clarity, handle edge cases, fix code logic issues, and add comprehensive JSDoc comments.
+
+### Modified Files
+
+| File | Modification |
+|------|--------------|
+| `.claude/commands/design-os/data-model.md` | **Lines 151-177:** Added "Plural Entity Names (Why Singular is Required)" section explaining what happens when users use plural entity names, with transformation table and guidance for /sample-data. |
+| `.claude/commands/design-os/screenshot-design.md` | **Lines 82-107:** Added "Viewport Selection Guidance" section with decision guide explaining when to use Desktop (default), Mobile, or Tablet viewports. |
+| `.claude/commands/design-os/sample-data.md` | **Lines 13-47:** Enhanced prerequisite check to handle edge case where section directory exists but spec.md is deleted. Added table showing all possible conditions and actions. |
+| `.claude/commands/design-os/export-product.md` | **Lines 5-11:** Added design note explaining why 15 steps is intentional. **Lines 61-91:** Added "Validate File Content (Not Just Existence)" section with content validation rules table. **Lines 1319-1336, 1385-1388, 1412, 1444-1449, 1464-1469:** Updated version regex patterns to handle version suffixes like v1.2.0-section. |
+| `src/components/SectionPage.tsx` | **Lines 77-83:** Fixed array index logic confusion. Added `hasValidIndex` check and clarifying comments to properly handle currentIndex === -1 case. |
+| `src/lib/section-loader.ts` | **Lines 142-158:** Improved shell config regex to prioritize Configuration section, reducing false positives from code blocks or prose. Added fallback for backwards compatibility. |
+| `src/shell/navigation-config.ts` | **Lines 1-25:** Added comprehensive JSDoc explaining why the file returns empty data, what happens after /design-shell, and how to fix empty navigation. **Lines 47-67:** Enhanced getNavigationCategories function JSDoc explaining the stub pattern. |
+
+### Issues Addressed (from analysis plan)
+
+| Issue # | Title | Resolution |
+|---------|-------|------------|
+| P3-38 | Entity Naming Flexibility Undefined | Added documentation explaining singular requirement and what happens with plural names |
+| P3-39 | Screenshot Viewport Selection Guidance Missing | Added decision guide for Desktop/Mobile/Tablet viewport selection |
+| P3-40 | Empty Section Directory Behavior | Added handling for directory-exists-but-spec-missing edge case |
+| P3-41 | File Content Validation Missing | Added content validation rules table for critical files |
+| P3-42 | Version Comment Regex Too Strict | Updated regex patterns to handle v1.2.0-section style versions |
+| P3-43 | Excessive Step Count in Export | Added design note explaining why 15 steps is intentional |
+| P3-44 | Array Index Logic Confusion | Fixed currentIndex === -1 handling with hasValidIndex check |
+| P3-45 | Shell Config Regex Too Permissive | Improved regex to prioritize Configuration section match |
+| P3-46 | Navigation Config Placeholder | Added comprehensive JSDoc explaining empty array behavior |
+
+### Statistics
+
+- **Files modified:** 7
+- **Documentation improvements:** 5 (plural names, viewport guidance, edge case handling, file validation, step count)
+- **Code improvements:** 3 (array index logic, shell config regex, navigation JSDoc)
+- **Regex improvements:** 1 (version comment pattern with suffix support)
+- **Total issues addressed:** 9 P3 low priority issues
+
+### Verification
+
+- Plural entity names are now documented with transformation table and clear guidance
+- Viewport selection has decision guide for Desktop/Mobile/Tablet choices
+- Empty section directory edge case is explicitly handled with actionable error messages
+- File content validation ensures critical files have meaningful content
+- Version regex now handles v1.2.0-section format used by section TDD workflow
+- Array index logic is clearer and properly handles section-not-found case
+- Shell config regex prioritizes Configuration section to reduce false positives
+- Navigation config stub has comprehensive JSDoc explaining its purpose
+
+---
+
+## [2025-12-27 07:41] Medium Priority P2 Fixes (Batch 2): Runtime Logging, Algorithm Clarity & Export Documentation
 
 ### Description
 

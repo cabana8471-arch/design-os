@@ -140,8 +140,21 @@ export function parseSpec(md: string): ParsedSpec | null {
     }
 
     // Extract configuration - check for shell: false
-    // Look for "shell: false" or "- shell: false" anywhere in the document
-    const shellDisabled = /(?:^|\n)\s*-?\s*shell\s*:\s*false/i.test(md)
+    // First, try to find a Configuration section to limit scope
+    const configSection = md.match(/## Configuration\s*\n+([\s\S]*?)(?=\n## |\n#[^#]|$)/)
+
+    // Look for "shell: false" or "- shell: false"
+    // Priority: Check Configuration section first, then fall back to document-wide search
+    // This reduces false positives from code blocks or prose mentioning "shell: false"
+    let shellDisabled = false
+    if (configSection?.[1]) {
+      // Prefer Configuration section match
+      shellDisabled = /^\s*-?\s*shell\s*:\s*false/im.test(configSection[1])
+    } else {
+      // Fall back to document-wide search (for backwards compatibility)
+      // Only match at start of line to avoid matching in code blocks or inline text
+      shellDisabled = /^-?\s*shell\s*:\s*false/im.test(md)
+    }
     const useShell = !shellDisabled
 
     return { title, overview, userFlows, uiRequirements, useShell }
