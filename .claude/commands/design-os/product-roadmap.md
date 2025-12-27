@@ -57,7 +57,7 @@ mkdir -p product
 Then validate the directory was created:
 ```bash
 if [ ! -d "product" ]; then
-  echo "Error: Failed to create directory product."
+  echo "Error: product/ - Directory creation failed. Check write permissions."
   exit 1
 fi
 ```

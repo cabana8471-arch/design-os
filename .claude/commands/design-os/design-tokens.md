@@ -147,15 +147,26 @@ function detectMonoFontChoice(userResponse):
 - User only specifies heading and body fonts
 - User's response doesn't mention any mono font option
 
-**When no mono font is specified:**
+**When no mono font is specified (explicit skip):**
+If the user explicitly skips mono (Priority 2):
 ```
-"I'll use IBM Plex Mono as the default mono font. This ensures code blocks and technical content display correctly. If you'd prefer a different option, just let me know."
+"I'll use IBM Plex Mono as the default mono font for code blocks. If you'd prefer a different option, just let me know."
 ```
 
 Then set `"mono": "IBM Plex Mono"` in typography.json.
 
-**When detection is ambiguous:**
-If the algorithm reaches `ASK_USER`, use AskUserQuestion:
+**When only heading/body mentioned (Priority 3 - possible oversight):**
+If the user mentions heading/body but not mono, briefly confirm their intent:
+
+Use AskUserQuestion with options:
+- "Use IBM Plex Mono (Recommended)" — Apply default mono font
+- "Choose a different mono font" — Ask for user's preference
+- "Skip mono — my product doesn't display code" — No mono needed
+
+This distinguishes between users who forgot to mention mono vs. those who intentionally left it out.
+
+**When detection is ambiguous (Priority 5):**
+If the algorithm reaches `ASK_USER` due to unclear intent:
 ```
 "For the mono font (used in code blocks and technical content), would you like to:
 - Use the default (IBM Plex Mono)
@@ -294,7 +305,7 @@ mkdir -p product/design-system
 Then validate the directory was created:
 ```bash
 if [ ! -d "product/design-system" ]; then
-  echo "Error: Failed to create directory product/design-system."
+  echo "Error: product/design-system/ - Directory creation failed. Check write permissions."
   exit 1
 fi
 ```

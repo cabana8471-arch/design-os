@@ -246,7 +246,7 @@ Then validate all directories were created:
 ```bash
 for dir in product-plan product-plan/prompts product-plan/instructions/incremental product-plan/design-guidance product-plan/design-system product-plan/data-model product-plan/shell/components; do
   if [ ! -d "$dir" ]; then
-    echo "Error: Failed to create directory $dir."
+    echo "Error: $dir/ - Directory creation failed. Check write permissions."
     exit 1
   fi
 done

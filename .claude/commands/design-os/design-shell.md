@@ -189,11 +189,11 @@ mkdir -p src/shell/components
 Then validate the directories were created:
 ```bash
 if [ ! -d "product/shell" ]; then
-  echo "Error: Failed to create directory product/shell."
+  echo "Error: product/shell/ - Directory creation failed. Check write permissions."
   exit 1
 fi
 if [ ! -d "src/shell/components" ]; then
-  echo "Error: Failed to create directory src/shell/components."
+  echo "Error: src/shell/components/ - Directory creation failed. Check write permissions."
   exit 1
 fi
 ```

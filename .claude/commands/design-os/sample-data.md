@@ -139,7 +139,7 @@ mkdir -p product/sections/[section-id]
 Then validate the directory was created:
 ```bash
 if [ ! -d "product/sections/[section-id]" ]; then
-  echo "Error: Failed to create directory product/sections/[section-id]."
+  echo "Error: product/sections/[section-id]/ - Directory creation failed. Check write permissions."
   exit 1
 fi
 ```
@@ -297,6 +297,33 @@ EOF
 - [ ] At least one status/enum field shows multiple values (e.g., 'draft', 'sent', 'paid')
 - [ ] At least one record has a long description (50+ chars) for text overflow testing
 - [ ] No placeholder values like "Test 123", "Lorem ipsum", or "Sample X"
+
+**5. Verify bidirectional entity naming consistency:**
+If a data model exists at `product/data-model/data-model.md`, verify entity names match:
+
+| Location | Format | Example |
+|----------|--------|---------|
+| data-model.md | Singular PascalCase | `Invoice`, `Customer` |
+| data.json keys | Plural camelCase | `invoices`, `customers` |
+| types.ts interfaces | Singular PascalCase | `Invoice`, `Customer` |
+
+```bash
+# Check if data model exists
+if [ -f "product/data-model/data-model.md" ]; then
+  # Extract entity names from data model
+  DATA_MODEL_ENTITIES=$(grep -E '^## [A-Z]' product/data-model/data-model.md | sed 's/^## //')
+
+  # Verify each entity has corresponding data.json key (pluralized, camelCase)
+  for entity in $DATA_MODEL_ENTITIES; do
+    plural=$(echo "$entity" | sed 's/y$/ie/' | tr '[:upper:]' '[:lower:]')s
+    if ! grep -q "\"$plural\":" product/sections/[section-id]/data.json; then
+      echo "Warning: Entity '$entity' not found as '$plural' in data.json"
+    fi
+  done
+fi
+```
+
+If mismatches are found, either update the entity names or document why they differ.
 
 **If validation fails:**
 

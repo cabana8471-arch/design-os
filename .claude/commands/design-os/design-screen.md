@@ -310,7 +310,7 @@ When working with sections that have multiple views, here's how the commands wor
 
 When navigating to `/sections/[section-id]`:
 - The **first view listed in the spec** is the default view
-- Other views are accessed via `/sections/[section-id]/screen-designs/[view-name]`
+- Other views are accessed via `/sections/[section-id]/screen-designs/[ViewName]` (matching the component file name, PascalCase)
 - Name your primary view first (e.g., "ListView" before "DetailView")
 
 **See also:** `/shape-section` documents the full multi-view workflow from spec to screenshot
@@ -354,7 +354,7 @@ mkdir -p src/sections/[section-id]/components
 Then validate the directory was created successfully:
 ```bash
 if [ ! -d "src/sections/[section-id]/components" ]; then
-  echo "Error: Failed to create directory src/sections/[section-id]/components."
+  echo "Error: src/sections/[section-id]/components/ - Directory creation failed. Check write permissions."
   exit 1
 fi
 ```
@@ -378,7 +378,8 @@ Components in Design OS use relative import paths. Here's how imports work for d
 
 | File Type | Import From Component | Example |
 |-----------|----------------------|---------|
-| **Types** (types.ts in product/) | Relative path from component | `import type { InvoiceListProps } from '@/../product/sections/invoices/types'` |
+| **Types** (types.ts in product/) | Alias path via product | `import type { InvoiceListProps } from '@/../product/sections/invoices/types'` |
+| **Sample data** (data.json in product/) | Alias path via product | `import invoiceData from '@/../product/sections/invoices/data.json'` (preview wrappers only!) |
 | **Sub-components** (in same directory) | Relative path | `import { StatusBadge } from './StatusBadge'` |
 | **UI components** (shared library) | Alias path | `import { Button } from '@/components/ui/button'` |
 
@@ -728,6 +729,29 @@ Let the user know:
 If the spec indicates additional views are needed:
 
 "The specification also calls for [other view(s)]. Run `/design-screen` again to create those, then `/screenshot-design` to capture each one."
+
+### View Progress Tracking
+
+After creating a component, check and report the view progress for multi-view sections:
+
+```bash
+# Count views from spec (lines starting with "- " under ## Views section)
+SPEC_VIEWS=$(sed -n '/^## Views$/,/^## /p' product/sections/[section-id]/spec.md | grep -c '^- ')
+
+# Count created components (excluding index.ts)
+CREATED=$(ls src/sections/[section-id]/components/*.tsx 2>/dev/null | grep -v index.ts | wc -l | tr -d ' ')
+
+if [ "$SPEC_VIEWS" -gt 0 ] && [ "$CREATED" -lt "$SPEC_VIEWS" ]; then
+  REMAINING=$((SPEC_VIEWS - CREATED))
+  echo "Progress: $CREATED of $SPEC_VIEWS views created. $REMAINING view(s) remaining."
+fi
+```
+
+**Report to user:**
+- For single-view sections: No additional message needed
+- For multi-view sections: "Progress: Created X of Y views. Z view(s) remaining: [list pending view names]"
+
+This helps users track their progress and ensures all views are completed before running `/export-product`.
 
 ## Important Notes
 

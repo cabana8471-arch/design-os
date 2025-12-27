@@ -210,21 +210,20 @@ If the user is satisfied with the existing components, they can proceed without 
 
 **Report shell status to user:**
 
-Based on the table above, report the appropriate message. The most common states are:
-- **Complete** (yes/yes/yes) — Ideal state, shell is ready
-- **No shell** (no/no/no) — Normal for new projects, shell can be designed later
-- **Spec only** (yes/no/no) — Spec was written but `/design-shell` wasn't completed
-- **Components only** (no/yes/yes) — Components were created manually or spec was deleted
+Based on the detection table above, report the appropriate message for ALL 8 possible states:
 
-If shell components exist but spec.md doesn't exist, inform the user:
-```
-Note: Shell components exist but the specification is missing. The shell will still work, but consider running /design-shell to document the design decisions.
-```
+| State | Message to User |
+|-------|-----------------|
+| **Complete** (yes/yes/yes) | "Your application shell is fully designed and ready to use." |
+| **Missing preview** (yes/yes/no) | "Shell spec and components exist, but ShellPreview.tsx is missing. Run `/design-shell` to regenerate the preview wrapper." |
+| **Orphaned preview** (yes/no/yes) | "Spec and preview exist but AppShell.tsx is missing. Run `/design-shell` to regenerate the components." |
+| **Spec only** (yes/no/no) | "A shell spec exists but components haven't been generated. Run `/design-shell` to complete the shell design." |
+| **Components only** (no/yes/yes) | "Shell components exist but the specification is missing. The shell will work, but consider running `/design-shell` to document the design decisions." |
+| **Partial components** (no/yes/no) | "AppShell.tsx exists but ShellPreview.tsx and spec are missing. Run `/design-shell` to create a complete shell." |
+| **Orphaned preview** (no/no/yes) | "Only ShellPreview.tsx exists — this is an unusual state. Run `/design-shell` to create a proper shell with spec and components." |
+| **No shell** (no/no/no) | "No shell has been designed yet. You can still choose 'Inside app shell' — the shell can be designed later with `/design-shell`." |
 
-If no shell files exist at all, inform the user before asking:
-```
-Note: No shell has been designed yet. You can still choose 'Inside app shell' — the shell can be designed later with /design-shell.
-```
+**Use the appropriate message based on the detected state.** Most common states are Complete and No shell.
 
 **Always ask the user about shell usage** to ensure they can override the default if needed:
 
@@ -274,6 +273,10 @@ Once you have enough information, present a draft specification:
 **Display:** [Inside app shell / Standalone]
 
 Does this capture everything? Would you like to adjust anything?"
+
+**Note:** When writing the final spec file (Step 7), transform the Display choice:
+- "Inside app shell" → `shell: true`
+- "Standalone" → `shell: false`
 
 ### Handling Multiple Views
 
@@ -339,7 +342,7 @@ mkdir -p product/sections/[section-id]
 Then validate the directory was created:
 ```bash
 if [ ! -d "product/sections/[section-id]" ]; then
-  echo "Error: Failed to create directory product/sections/[section-id]."
+  echo "Error: product/sections/[section-id]/ - Directory creation failed. Check write permissions."
   exit 1
 fi
 ```

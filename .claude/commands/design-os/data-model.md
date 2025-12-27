@@ -91,7 +91,7 @@ mkdir -p product/data-model
 Then validate the directory was created:
 ```bash
 if [ ! -d "product/data-model" ]; then
-  echo "Error: Failed to create directory product/data-model."
+  echo "Error: product/data-model/ - Directory creation failed. Check write permissions."
   exit 1
 fi
 ```
