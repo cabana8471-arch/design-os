@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useLayoutEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { AlertTriangle, X } from 'lucide-react'
 import { loadProductData } from '@/lib/product-loader'
@@ -27,8 +27,10 @@ export function PhaseWarningBanner() {
   const productName = productData.overview?.name || 'default-product'
   const storageKey = getStorageKey(productName)
 
-  // Check localStorage on mount
-  useEffect(() => {
+  // Check localStorage on mount - use useLayoutEffect to prevent flash
+  // useLayoutEffect runs synchronously after DOM mutations but before paint,
+  // ensuring the banner state is correct before the user sees anything
+  useLayoutEffect(() => {
     const dismissed = localStorage.getItem(storageKey) === 'true'
     setIsDismissed(dismissed)
   }, [storageKey])

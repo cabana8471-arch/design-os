@@ -1,6 +1,7 @@
-import { Suspense, useMemo, useState, useRef, useCallback, useEffect } from 'react'
+import { Suspense, useMemo, useState, useRef, useCallback, useEffect, Component } from 'react'
+import type { ErrorInfo, ReactNode } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Maximize2, GripVertical, Layout, Smartphone, Tablet, Monitor } from 'lucide-react'
+import { ArrowLeft, Maximize2, GripVertical, Layout, Smartphone, Tablet, Monitor, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { loadScreenDesignComponent, sectionUsesShell } from '@/lib/section-loader'
@@ -8,6 +9,71 @@ import { loadAppShell, hasShellComponents } from '@/lib/shell-loader'
 import { loadProductData } from '@/lib/product-loader'
 import { getNavigationCategories, defaultUser } from '@/shell/navigation-config'
 import React from 'react'
+
+/**
+ * Error boundary for screen design components.
+ * Catches runtime errors (e.g., from prop type mismatches) and displays
+ * a friendly error message instead of crashing the entire preview.
+ */
+interface ScreenDesignErrorBoundaryProps {
+  children: ReactNode
+  screenDesignName?: string
+}
+
+interface ScreenDesignErrorBoundaryState {
+  hasError: boolean
+  error: Error | null
+}
+
+class ScreenDesignErrorBoundary extends Component<ScreenDesignErrorBoundaryProps, ScreenDesignErrorBoundaryState> {
+  constructor(props: ScreenDesignErrorBoundaryProps) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
+
+  static getDerivedStateFromError(error: Error): ScreenDesignErrorBoundaryState {
+    return { hasError: true, error }
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    if (import.meta.env.DEV) {
+      console.error('[ScreenDesignErrorBoundary] Component error:', error)
+      console.error('[ScreenDesignErrorBoundary] Component stack:', errorInfo.componentStack)
+    }
+  }
+
+  render(): ReactNode {
+    if (this.state.hasError) {
+      return (
+        <div className="h-full flex items-center justify-center p-8 bg-red-50 dark:bg-red-950/20">
+          <div className="max-w-md text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 dark:text-red-400 mx-auto mb-4" strokeWidth={1.5} />
+            <h2 className="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">
+              Screen Design Error
+            </h2>
+            <p className="text-sm text-red-600 dark:text-red-300 mb-4">
+              {this.props.screenDesignName
+                ? `The component "${this.props.screenDesignName}" encountered an error while rendering.`
+                : 'A screen design component encountered an error while rendering.'}
+            </p>
+            {import.meta.env.DEV && this.state.error && (
+              <details className="text-left bg-red-100 dark:bg-red-900/30 rounded p-3">
+                <summary className="text-xs font-medium text-red-700 dark:text-red-300 cursor-pointer">
+                  Error Details (DEV only)
+                </summary>
+                <pre className="mt-2 text-xs text-red-600 dark:text-red-400 overflow-auto">
+                  {this.state.error.message}
+                </pre>
+              </details>
+            )}
+          </div>
+        </div>
+      )
+    }
+
+    return this.props.children
+  }
+}
 
 const MIN_WIDTH = 320
 const DEFAULT_WIDTH_PERCENT = 100
@@ -45,7 +111,8 @@ export function ScreenDesignPage() {
       const minPercent = (MIN_WIDTH / containerWidth) * 100
       newWidthPercent = Math.max(minPercent, Math.min(100, newWidthPercent))
 
-      setWidthPercent(newWidthPercent)
+      // Round to avoid floating point precision issues in width calculations
+      setWidthPercent(Math.round(newWidthPercent))
     }
 
     const handleMouseUp = () => {
@@ -386,7 +453,9 @@ export function ScreenDesignFullscreen() {
         }
       >
         <AppShellComponent>
-          <ScreenDesignComponent />
+          <ScreenDesignErrorBoundary screenDesignName={screenDesignName}>
+            <ScreenDesignComponent />
+          </ScreenDesignErrorBoundary>
         </AppShellComponent>
       </Suspense>
     )
@@ -401,7 +470,9 @@ export function ScreenDesignFullscreen() {
         </div>
       }
     >
-      <ScreenDesignComponent />
+      <ScreenDesignErrorBoundary screenDesignName={screenDesignName}>
+        <ScreenDesignComponent />
+      </ScreenDesignErrorBoundary>
     </Suspense>
   )
 }

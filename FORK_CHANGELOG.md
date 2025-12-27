@@ -6,7 +6,53 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-27 10:30] BATCH 1 Command Fixes: Validation, Fallbacks & Cross-Command Workflow
+## [2025-12-27 09:00] BATCH 2 Source Code Fixes: Error Logging, Flash Prevention & Type Safety
+
+### Description
+
+Implementation of BATCH 2 fixes from the analysis plan (quiet-seeking-firefly.md). This batch focuses on improving source code quality with better error logging in development, preventing UI flashes, and adding runtime error handling for screen design components.
+
+### Modified Files
+
+| File | Modification |
+|------|--------------|
+| `src/lib/section-loader.ts` | **Line 161-166:** Added DEV-mode error logging in catch block. Errors are now logged to console with `[section-loader]` prefix when `import.meta.env.DEV` is true. |
+| `src/lib/data-model-loader.ts` | **Line 73-78:** Added DEV-mode error logging in catch block. Errors are now logged to console with `[data-model-loader]` prefix when `import.meta.env.DEV` is true. |
+| `src/lib/shell-loader.ts` | **Line 80-85:** Added DEV-mode error logging in catch block. Errors are now logged to console with `[shell-loader]` prefix when `import.meta.env.DEV` is true. |
+| `src/components/PhaseWarningBanner.tsx` | **Lines 1, 30-36:** Changed `useEffect` to `useLayoutEffect` for checking localStorage. This prevents potential flash where banner briefly appears/disappears before settling to correct state. |
+| `src/components/ScreenDesignPage.tsx` | **Lines 1-76:** Added `ScreenDesignErrorBoundary` class component that catches runtime errors from screen design components (e.g., prop type mismatches). Shows friendly error UI with DEV-only error details. **Line 49:** Added `Math.round()` to width calculations to prevent floating point precision issues. **Lines 456-458, 473-475:** Wrapped `ScreenDesignComponent` with error boundary in both shell and non-shell render paths. |
+| `src/shell/navigation-config.ts` | **Verified:** Documentation was already enhanced in previous P3 fix (comprehensive JSDoc explaining placeholder pattern). No additional changes needed. |
+
+### Issues Addressed (from analysis plan)
+
+| Issue # | Category | Title | Resolution |
+|---------|----------|-------|------------|
+| S1 | Moderate | DEV-mode error logging in catch blocks | Added `if (import.meta.env.DEV) console.error()` to 3 loader files |
+| S2 | Moderate | PhaseWarningBanner flash prevention | Changed `useEffect` to `useLayoutEffect` for synchronous localStorage check |
+| S3 | Moderate | Navigation config documentation | Already resolved in previous fix (verified) |
+| s1 | Minor | Width resize edge case | Added `Math.round()` to prevent floating point precision issues |
+| s2 | Minor | Component props type safety | Added `ScreenDesignErrorBoundary` to catch and display runtime errors gracefully |
+
+### Statistics
+
+- **Files modified:** 5 (3 loaders + 2 components)
+- **Moderate fixes:** 3 (S1, S2, S3)
+- **Minor fixes:** 2 (s1, s2)
+- **New error handling:** ScreenDesignErrorBoundary class component
+- **Flash prevention:** useLayoutEffect for synchronous state initialization
+- **DEV-mode logging:** Added to all catch blocks in loader files
+
+### Verification
+
+- TypeScript compilation passes without errors
+- Error logging only appears in development mode
+- PhaseWarningBanner no longer flashes on mount
+- Screen design errors are caught and displayed gracefully
+- Width calculations are now rounded to integers
+
+---
+
+## [2025-12-27 08:30] BATCH 1 Command Fixes: Validation, Fallbacks & Cross-Command Workflow
 
 ### Description
 

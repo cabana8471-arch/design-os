@@ -70,7 +70,10 @@ export function parseDataModel(md: string): DataModel | null {
     }
 
     return { entities, relationships }
-  } catch {
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.error('[data-model-loader] Failed to parse data-model.md:', error)
+    }
     return null
   }
 }

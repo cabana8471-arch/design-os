@@ -77,7 +77,10 @@ export function parseShellSpec(md: string): ShellSpec | null {
       navigationItems,
       layoutPattern,
     }
-  } catch {
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.error('[shell-loader] Failed to parse shell spec.md:', error)
+    }
     return null
   }
 }

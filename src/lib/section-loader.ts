@@ -158,7 +158,10 @@ export function parseSpec(md: string): ParsedSpec | null {
     const useShell = !shellDisabled
 
     return { title, overview, userFlows, uiRequirements, useShell }
-  } catch {
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.error('[section-loader] Failed to parse spec.md:', error)
+    }
     return null
   }
 }
