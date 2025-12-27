@@ -187,6 +187,41 @@ When assembling prompts during `/export-product`:
 
 This allows tracking of template versions and documenting breaking changes.
 
+## Version Update Policy
+
+When modifying templates, follow these guidelines for version updates:
+
+### When to Update Versions
+
+| Change Type | Version Bump | Examples |
+|-------------|--------------|----------|
+| **Major** | v1.0.0 → v2.0.0 | Removing required variables, restructuring prompt format, changing template assembly order |
+| **Minor** | v1.0.0 → v1.1.0 | Adding new sections, new variables, expanding guidance content |
+| **Patch** | v1.0.0 → v1.0.1 | Fixing typos, clarifying wording, improving formatting |
+
+### Update Process
+
+1. **Before modifying:** Check current version in template's first line (`<!-- v1.0.0 -->`)
+2. **Determine bump type:** Use the table above to decide major/minor/patch
+3. **Update version comment:** Change `<!-- v1.0.0 -->` to new version
+4. **Document changes:** Add entry to this README or CHANGELOG if significant
+5. **Test exports:** Run `/export-product` to verify templates assemble correctly
+
+### Breaking Change Checklist
+
+Before making a major version bump, verify:
+- [ ] All commands using this template are updated
+- [ ] Variable substitutions still work
+- [ ] Export output is validated
+- [ ] Documentation reflects the changes
+
+### Version Synchronization
+
+When updating shared templates in `common/`:
+- All commands using that template automatically get the update
+- Consider whether section-specific overrides need updates too
+- Document any divergence between common and section variants
+
 ## Customizing Templates
 
 To modify prompt generation, edit the appropriate template file:

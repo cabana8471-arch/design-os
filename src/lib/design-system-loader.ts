@@ -59,7 +59,10 @@ function validateColorTokens(colors: unknown, path: string): colors is { primary
       if (import.meta.env.DEV) {
         console.warn(`[design-system-loader] Color "${key}: ${value}" at ${path} is not a valid Tailwind color. Valid colors: ${[...VALID_TAILWIND_COLORS].join(', ')}`)
       }
-      // Don't return false here - just warn, as custom colors might be intentional
+      // @TODO: Consider adding support for custom colors defined in @theme { --color-* } blocks.
+      // For now, we warn but accept the value to allow experimentation with custom colors.
+      // To enforce strict validation, uncomment the return false below:
+      // return false
     }
   }
 

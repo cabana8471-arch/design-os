@@ -134,8 +134,11 @@ After creating the file, verify all required markdown sections exist:
 
 **Validation Script:**
 
+> **Note:** This script uses `grep -E` for extended regex. On systems where this isn't available, use `egrep` as an alternative (they are functionally equivalent).
+
 ```bash
 # Check for required sections
+# Note: Uses grep -E (extended regex). On older systems, use egrep instead.
 CONTENT=$(cat product/data-model/data-model.md)
 
 # Check for # Data Model

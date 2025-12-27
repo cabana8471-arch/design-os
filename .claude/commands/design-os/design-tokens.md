@@ -208,6 +208,13 @@ Before proceeding, verify each combination passes minimum contrast requirements 
 - [ ] Secondary text (`[secondary]-200` on `[secondary]-900`) — Should have 4.5:1 contrast
 - [ ] Border visibility (`[neutral]-700` on `[neutral]-900`) — Should be distinguishable
 
+**Interactive State Validation (Both Modes):**
+- [ ] **Disabled elements** (`[neutral]-400` text/icons) — Should have lower contrast (2.5:1-3:1) to indicate non-interactive state
+- [ ] **Hover states** — Should have visible change from default (background shift or text color change)
+- [ ] **Focus indicators** — Should have 3:1 minimum contrast for visible focus rings (WCAG 2.4.7)
+  - Light mode: `[primary]-500` or darker ring
+  - Dark mode: `[primary]-400` or lighter ring
+
 **Colors Known to Have Dark Mode Issues:**
 - `yellow` (500 and below often too light on dark backgrounds)
 - `lime` (needs 600+ for dark mode visibility)

@@ -39,6 +39,14 @@ Once a section is selected, immediately generate and validate its section-id:
 - "Reports & Analytics" → `reports-and-analytics`
 - "User Settings" → `user-settings`
 
+**Edge Case Examples:**
+- "ABC" → `abc` (all-caps abbreviations become lowercase)
+- "  Spaces  Around  " → `spaces-around` (multiple spaces collapse to single hyphens, trimmed)
+- "&Invoices & Reports" → `invoices-and-reports` (leading `&` removed, internal `&` becomes `-and-`)
+- "Q&A Forum" → `q-and-a-forum` (single letters preserved around `&`)
+- "Reports..." → `reports` (trailing punctuation removed)
+- "100% Complete" → `100-complete` (special chars removed, numbers preserved)
+
 **Validate against roadmap:**
 
 ```bash

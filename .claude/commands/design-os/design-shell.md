@@ -461,20 +461,22 @@ Use these specific shades for shell UI elements:
 | Main border | `[neutral]-200` | `[neutral]-800` |
 | Mobile overlay | `black/50` | `black/70` |
 
-**Example Shell Styling:**
+**Example Shell Styling (replace `[primary]` and `[neutral]` with your token colors):**
 ```tsx
-// Sidebar
-<aside className="bg-white dark:bg-stone-900 border-r border-stone-200 dark:border-stone-800">
+// Sidebar - use neutral palette from design tokens
+<aside className="bg-white dark:bg-[neutral]-900 border-r border-[neutral]-200 dark:border-[neutral]-800">
 
-// Active nav item
-<a className="bg-lime-50 dark:bg-lime-950 text-lime-700 dark:text-lime-400">
+// Active nav item - use primary palette from design tokens
+<a className="bg-[primary]-50 dark:bg-[primary]-950 text-[primary]-700 dark:text-[primary]-400">
 
-// Inactive nav item
-<a className="text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800">
+// Inactive nav item - use neutral palette
+<a className="text-[neutral]-600 dark:text-[neutral]-400 hover:bg-[neutral]-100 dark:hover:bg-[neutral]-800">
 
-// User avatar
-<div className="bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200">
+// User avatar - use neutral palette
+<div className="bg-[neutral]-200 dark:bg-[neutral]-700 text-[neutral]-700 dark:text-[neutral]-200">
 ```
+
+**Note:** Replace `[primary]` with your primary color from `colors.json` (e.g., `lime`, `blue`, `indigo`) and `[neutral]` with your neutral color (e.g., `stone`, `slate`, `gray`).
 
 ## Step 10: Confirm Completion
 

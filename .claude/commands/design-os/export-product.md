@@ -1030,6 +1030,24 @@ Create `product-plan/data-model/types.ts` by consolidating types from all sectio
    | No global model, types differ | First section wins | Use the first section's definition (alphabetical order) |
    | No global model, types identical | Dedupe | Use shared definition once |
 
+   **When global data model exists but section type diverges:**
+
+   If a section defines a type that differs from the global data model (different fields, types, or structure):
+   1. Use the global data model definition (it is authoritative)
+   2. Add a JSDoc comment above the type noting the divergence:
+      ```typescript
+      /**
+       * Note: Section [section-id] defines additional/different fields for this type.
+       * Global data model definition is authoritative. Review section types if needed.
+       */
+      ```
+   3. Report the divergence to the user:
+      ```
+      Type divergence detected:
+      - `[TypeName]`: global model used, section [section-id] has different definition
+      Consider updating the global data model or section types for consistency.
+      ```
+
    **When no global data model exists:**
    1. Sort sections alphabetically by section ID
    2. For each conflicting type, use the definition from the first section in sort order

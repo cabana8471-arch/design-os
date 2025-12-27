@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useState, useRef, useCallback, useEffect, Component } from 'react'
+import { Suspense, useMemo, useState, useRef, useCallback, useEffect, Component, lazy } from 'react'
 import type { ErrorInfo, ReactNode } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Maximize2, GripVertical, Layout, Smartphone, Tablet, Monitor, AlertCircle } from 'lucide-react'
@@ -8,7 +8,6 @@ import { loadScreenDesignComponent, sectionUsesShell } from '@/lib/section-loade
 import { loadAppShell, hasShellComponents } from '@/lib/shell-loader'
 import { loadProductData } from '@/lib/product-loader'
 import { getNavigationCategories, defaultUser } from '@/shell/navigation-config'
-import React from 'react'
 
 /**
  * Error boundary for screen design components.
@@ -293,7 +292,7 @@ export function ScreenDesignFullscreen() {
     const loader = loadScreenDesignComponent(sectionId, screenDesignName)
     if (!loader) return null
     // Wrap the loader to handle potential export issues
-    return React.lazy(async () => {
+    return lazy(async () => {
       try {
         const module = await loader()
         if (module && typeof module.default === 'function') {
@@ -341,7 +340,7 @@ export function ScreenDesignFullscreen() {
     }
 
     // Wrap the loader to provide default props to the shell
-    return React.lazy(async () => {
+    return lazy(async () => {
       try {
         // Load module first without type assertion - validate before casting
         const rawModule = await loader()

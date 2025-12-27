@@ -208,6 +208,8 @@ If the Hide button cannot be found or clicked, follow this fallback procedure:
 - PNG format for best quality
 - Consistent viewport dimensions ensure documentation screenshots look uniform
 
+> **Note:** The viewport sizes above are defaults. If your design uses custom breakpoints (e.g., `sm:` at 600px instead of 640px, or a custom `2xl:` at 1536px), adjust the viewport dimensions to match your actual breakpoint values. Check your component's responsive classes to ensure screenshots capture the intended layout at each breakpoint.
+
 When using `browser_take_screenshot`:
 - Set `fullPage: true` to capture the entire page including content below the fold
 - Set viewport size before capturing: `browser_set_viewport_size` with width and height from the table above

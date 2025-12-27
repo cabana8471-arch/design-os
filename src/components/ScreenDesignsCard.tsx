@@ -25,7 +25,7 @@ export function ScreenDesignsCard({ screenDesigns, sectionId }: ScreenDesignsCar
       <CardContent className="p-0">
         <ul className="divide-y divide-stone-200 dark:divide-stone-700">
           {screenDesigns.map((screenDesign) => (
-            <li key={screenDesign.name}>
+            <li key={`${sectionId}-${screenDesign.name}`}>
               <Link
                 to={`/sections/${sectionId}/screen-designs/${screenDesign.name}`}
                 className="flex items-center justify-between gap-4 px-6 py-4 hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors"
