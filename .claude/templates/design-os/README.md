@@ -218,3 +218,152 @@ When `/export-product` runs Step 14 (Generate Prompt Files):
 For detailed implementation instructions, see `.claude/commands/design-os/export-product.md` Step 14, section "Template Assembly Implementation".
 
 Templates are applied consistently across all exports, ensuring uniform prompt quality and structure.
+
+## Whitespace Handling
+
+When assembling templates, follow these whitespace rules:
+
+### Between Templates
+
+- **Single blank line** between concatenated templates
+- Remove extra blank lines from template start/end before joining
+
+### Within Templates
+
+- Preserve internal whitespace exactly as written
+- Markdown formatting depends on correct spacing (lists, code blocks)
+- Don't normalize or reformat template content
+
+### Version Comment Removal
+
+When stripping version comments (`<!-- v1.0.0 -->`):
+
+```
+1. Check if first line matches: <!-- v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)? -->
+2. If match, remove the entire first line (including newline)
+3. Do NOT remove blank lines that follow — they may be intentional
+4. The second line becomes the new first line
+```
+
+**Example:**
+```markdown
+<!-- v1.0.0 -->
+
+## Template Content
+```
+
+After stripping:
+```markdown
+
+## Template Content
+```
+
+The blank line is preserved because it provides visual separation in the assembled prompt.
+
+### Trailing Newlines
+
+- Each template should end with exactly one newline (`\n`)
+- The final assembled prompt should end with one newline
+- Avoid multiple trailing blank lines
+
+## Export File Creation Order
+
+During `/export-product` Step 14, files are created in this specific order:
+
+### 1. Directory Structure (created first)
+
+```
+product-plan/
+├── prompts/
+├── instructions/
+│   └── incremental/
+├── design-system/
+├── data-model/
+├── shell/
+│   └── components/
+├── sections/
+│   └── [section-id]/
+│       └── components/
+└── design-guidance/
+```
+
+### 2. Prompt Files (assembly order matters)
+
+| Order | File | Assembled From |
+|-------|------|----------------|
+| 1 | `prompts/one-shot-prompt.md` | See "One-Shot Prompt Assembly Order" above |
+| 2 | `prompts/section-prompt.md` | See "Section Prompt Assembly Order" above |
+
+### 3. Instruction Files
+
+| Order | File | Source |
+|-------|------|--------|
+| 1 | `instructions/one-shot-instructions.md` | All milestones combined |
+| 2 | `instructions/incremental/01-foundation.md` | Foundation milestone |
+| 3+ | `instructions/incremental/[NN]-[section-id].md` | Section milestones (02, 03, etc.) |
+
+### 4. Design Guidance
+
+| Order | File | Source |
+|-------|------|--------|
+| 1 | `design-guidance/frontend-design.md` | `.claude/skills/frontend-design/SKILL.md` |
+
+### 5. Supporting Files
+
+Copied in any order (no dependencies):
+- `product-overview.md`
+- `design-system/colors.json`
+- `design-system/typography.json`
+- `data-model/types.ts`
+- `data-model/sample-data.json`
+- `shell/components/*.tsx`
+- `sections/[id]/components/*.tsx`
+- `sections/[id]/sample-data.json`
+- `sections/[id]/types.ts`
+
+### Why Order Matters
+
+1. **Directories first** — Files can't be written to non-existent directories
+2. **Prompts before instructions** — Prompts reference instruction files by path
+3. **Foundation before sections** — Section milestones reference foundation
+4. **Design guidance early** — Referenced in prompts
+
+## Skill Validation Script (Standardized)
+
+Commands that use the frontend-design skill should validate it consistently:
+
+```bash
+#!/bin/bash
+# Validate frontend-design skill file
+
+SKILL_FILE=".claude/skills/frontend-design/SKILL.md"
+MIN_CONTENT_LENGTH=100
+
+# Check file exists
+if [ ! -f "$SKILL_FILE" ]; then
+  echo "Error: SKILL.md - File not found at $SKILL_FILE"
+  exit 1
+fi
+
+# Check file has content (excluding frontmatter)
+CONTENT_LENGTH=$(sed '1{/^---$/!q;};1,/^---$/d' "$SKILL_FILE" | wc -c | tr -d ' ')
+
+if [ "$CONTENT_LENGTH" -lt "$MIN_CONTENT_LENGTH" ]; then
+  echo "Warning: SKILL.md - Insufficient content ($CONTENT_LENGTH chars < $MIN_CONTENT_LENGTH required)"
+  echo "Proceeding with basic design principles..."
+  exit 0  # Warn but continue
+fi
+
+echo "Skill file valid ($CONTENT_LENGTH chars)"
+exit 0
+```
+
+### Validation Behavior
+
+| Condition | Result | Message |
+|-----------|--------|---------|
+| File missing | STOP or WARN | "Error: SKILL.md - File not found..." |
+| File empty or < 100 chars | WARN | "Warning: SKILL.md - Insufficient content..." |
+| File valid | Continue | "Skill file valid..." |
+
+Commands may offer to continue with fallback guidance when skill file is missing.

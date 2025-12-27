@@ -490,6 +490,39 @@ The Design OS application itself uses a "Refined Utility" aesthetic:
 - **Cards**: Minimal borders (1px), subtle shadows, generous padding
 - **Motion**: Subtle fade-ins (200ms), no bouncy animations
 
+### Icon Stroke Width Convention
+
+Lucide React icons use intentionally varied stroke widths for visual hierarchy:
+
+| Stroke Width | Use Case | Examples |
+|--------------|----------|----------|
+| **1.5** (default) | Standard icons, navigation, actions | ArrowLeft, ChevronRight, Layout, Download |
+| **2** | Smaller icons (w-3/w-4), interactive elements | X button, GripVertical, AlertTriangle |
+| **2.5** | Status indicators, emphasis, completion marks | Check marks, Step indicators |
+| **3** | Tiny icons (w-2.5), maximum visibility | Tiny check marks in checkboxes |
+
+**Rationale:**
+- Thinner strokes (1.5) for larger icons maintain visual balance
+- Thicker strokes (2-3) for smaller icons ensure visibility and legibility
+- Status icons use heavier weights to draw attention
+
+**Example Usage:**
+```tsx
+// Standard 5x5 icon - use 1.5
+<Layout className="w-5 h-5" strokeWidth={1.5} />
+
+// Small 4x4 icon in button - use 2
+<X className="w-4 h-4" strokeWidth={2} />
+
+// Status indicator - use 2.5
+<Check className="w-3.5 h-3.5" strokeWidth={2.5} />
+
+// Tiny checkbox mark - use 3
+<Check className="w-2.5 h-2.5" strokeWidth={3} />
+```
+
+This pattern is intentional and should NOT be normalized to a single value.
+
 ---
 
 ## Standardized Prerequisite Checks
@@ -599,6 +632,80 @@ When creating section IDs from section titles, follow these standardized rules:
 - "Q&A Forum" → `q-and-a-forum`
 
 This ensures consistent path naming across all commands that reference sections.
+
+### Question Asking Patterns
+
+Commands should ask users questions in a consistent, predictable way:
+
+**Question Format:**
+
+```markdown
+**[Category]:**
+1. [Specific question]?
+2. [Another specific question]?
+```
+
+**Categories by Command Type:**
+
+| Command Type | Typical Questions |
+|--------------|-------------------|
+| Vision/Planning | Product goals, target audience, key differentiators |
+| Data Model | Entity relationships, required vs. optional fields |
+| Design | Color preferences, layout style, responsive priorities |
+| Section | Feature scope, edge cases, integration points |
+| Export | Target framework, authentication approach, deployment |
+
+**Question Timing:**
+
+| When | Question Pattern |
+|------|------------------|
+| Before starting | Clarify ambiguous requirements |
+| At decision points | Offer options with recommendations |
+| On validation failure | Explain issue and ask how to proceed |
+| Before overwriting | Confirm destructive operations |
+
+**Answer Handling:**
+
+1. Accept short answers (yes/no, option letters, brief phrases)
+2. Provide sensible defaults when possible
+3. Don't re-ask questions already answered in conversation context
+4. Document decisions made for future reference
+
+### Viewport Dimensions (Standardized)
+
+All commands referencing viewport sizes must use these consistent dimensions:
+
+| Viewport | Width | Height | Use Case |
+|----------|-------|--------|----------|
+| Desktop (default) | 1280px | 800px | Standard documentation, screenshots |
+| Mobile | 375px | 667px | Mobile-first testing, responsive checks |
+| Tablet | 768px | 1024px | Tablet variants, medium breakpoints |
+
+**Responsive Breakpoints:**
+
+| Breakpoint | Width Range | Tailwind Class |
+|------------|-------------|----------------|
+| Mobile | < 640px | (default) |
+| Tablet | 640-1024px | `sm:`, `md:` |
+| Desktop | > 1024px | `lg:`, `xl:` |
+
+**Command-Specific Usage:**
+
+| Command | Viewport Usage |
+|---------|----------------|
+| `/screenshot-design` | Desktop 1280x800 default, capture all viewports as needed |
+| `/design-screen` | Build mobile-first, test at all breakpoints |
+| `/design-shell` | Design for all breakpoints, desktop is primary layout |
+| `/export-product` | Verification checklist includes 375px, 768px, 1024px, 1920px |
+
+**Screenshot Naming Convention:**
+
+```
+[view-name].png           # Desktop (default)
+[view-name]-mobile.png    # Mobile viewport
+[view-name]-tablet.png    # Tablet viewport
+[view-name]-dark.png      # Dark mode variant
+```
 
 ---
 

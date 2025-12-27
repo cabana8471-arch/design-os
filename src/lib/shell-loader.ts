@@ -142,11 +142,20 @@ export function parseShellSpec(md: string): ShellSpec | null {
 
 /**
  * Check if shell components exist
+ *
+ * Note: The DEV-mode logging below is intentional and NOT dead code.
+ * It helps debug shell component discovery issues during development,
+ * especially when AppShell.tsx exists but isn't being detected due to
+ * path mismatches or import.meta.glob timing issues.
+ *
+ * The logging only runs in development mode (import.meta.env.DEV) and
+ * is stripped from production builds by Vite.
  */
 export function hasShellComponents(): boolean {
   // Check if AppShell.tsx exists
   const exists = '/src/shell/components/AppShell.tsx' in shellComponentModules
-  // Debug: log available shell components (development only)
+  // DEV-only: Log shell component discovery for debugging path resolution issues
+  // Justification: Helps diagnose why shell components aren't detected when expected
   if (import.meta.env.DEV) {
     console.log('[Shell] hasShellComponents check:', {
       exists,
