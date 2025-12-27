@@ -4,6 +4,100 @@
 
 import type { DesignSystem, ColorTokens, TypographyTokens } from '@/types/product'
 
+// Valid Tailwind v4 color palette names
+const VALID_TAILWIND_COLORS = new Set([
+  'red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal',
+  'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink',
+  'rose', 'slate', 'gray', 'zinc', 'neutral', 'stone'
+])
+
+/**
+ * Validate that a color name is a valid Tailwind v4 palette color
+ */
+function isValidTailwindColor(color: string): boolean {
+  return VALID_TAILWIND_COLORS.has(color.toLowerCase())
+}
+
+/**
+ * Validate color tokens structure and values
+ * Returns true if valid, logs warning and returns false if malformed
+ */
+function validateColorTokens(colors: unknown, path: string): colors is { primary: string; secondary: string; neutral: string } {
+  if (colors === null || colors === undefined) {
+    if (import.meta.env.DEV) {
+      console.warn(`[design-system-loader] Colors file at ${path} is null or undefined`)
+    }
+    return false
+  }
+
+  if (typeof colors !== 'object' || Array.isArray(colors)) {
+    if (import.meta.env.DEV) {
+      console.warn(`[design-system-loader] Colors file at ${path} is not an object (got ${Array.isArray(colors) ? 'array' : typeof colors})`)
+    }
+    return false
+  }
+
+  const colorObj = colors as Record<string, unknown>
+
+  // Check required fields exist
+  if (!colorObj.primary || !colorObj.secondary || !colorObj.neutral) {
+    if (import.meta.env.DEV) {
+      console.warn(`[design-system-loader] Colors file at ${path} missing required fields (primary, secondary, neutral)`)
+    }
+    return false
+  }
+
+  // Validate each color is a valid Tailwind color
+  for (const [key, value] of Object.entries(colorObj)) {
+    if (typeof value !== 'string') {
+      if (import.meta.env.DEV) {
+        console.warn(`[design-system-loader] Color "${key}" at ${path} is not a string`)
+      }
+      return false
+    }
+    if (!isValidTailwindColor(value)) {
+      if (import.meta.env.DEV) {
+        console.warn(`[design-system-loader] Color "${key}: ${value}" at ${path} is not a valid Tailwind color. Valid colors: ${[...VALID_TAILWIND_COLORS].join(', ')}`)
+      }
+      // Don't return false here - just warn, as custom colors might be intentional
+    }
+  }
+
+  return true
+}
+
+/**
+ * Validate typography tokens structure
+ * Returns true if valid, logs warning and returns false if malformed
+ */
+function validateTypographyTokens(typography: unknown, path: string): typography is { heading: string; body: string; mono?: string } {
+  if (typography === null || typography === undefined) {
+    if (import.meta.env.DEV) {
+      console.warn(`[design-system-loader] Typography file at ${path} is null or undefined`)
+    }
+    return false
+  }
+
+  if (typeof typography !== 'object' || Array.isArray(typography)) {
+    if (import.meta.env.DEV) {
+      console.warn(`[design-system-loader] Typography file at ${path} is not an object (got ${Array.isArray(typography) ? 'array' : typeof typography})`)
+    }
+    return false
+  }
+
+  const typographyObj = typography as Record<string, unknown>
+
+  // Check required fields exist
+  if (!typographyObj.heading || !typographyObj.body) {
+    if (import.meta.env.DEV) {
+      console.warn(`[design-system-loader] Typography file at ${path} missing required fields (heading, body)`)
+    }
+    return false
+  }
+
+  return true
+}
+
 // Load JSON files from product/design-system at build time
 const designSystemFiles = import.meta.glob('/product/design-system/*.json', {
   eager: true,
@@ -20,11 +114,12 @@ const designSystemFiles = import.meta.glob('/product/design-system/*.json', {
  * }
  */
 export function loadColorTokens(): ColorTokens | null {
-  const colorsModule = designSystemFiles['/product/design-system/colors.json']
+  const path = '/product/design-system/colors.json'
+  const colorsModule = designSystemFiles[path]
   if (!colorsModule?.default) return null
 
   const colors = colorsModule.default
-  if (!colors.primary || !colors.secondary || !colors.neutral) {
+  if (!validateColorTokens(colors, path)) {
     return null
   }
 
@@ -46,11 +141,12 @@ export function loadColorTokens(): ColorTokens | null {
  * }
  */
 export function loadTypographyTokens(): TypographyTokens | null {
-  const typographyModule = designSystemFiles['/product/design-system/typography.json']
+  const path = '/product/design-system/typography.json'
+  const typographyModule = designSystemFiles[path]
   if (!typographyModule?.default) return null
 
   const typography = typographyModule.default
-  if (!typography.heading || !typography.body) {
+  if (!validateTypographyTokens(typography, path)) {
     return null
   }
 

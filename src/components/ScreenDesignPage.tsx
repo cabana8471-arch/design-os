@@ -90,6 +90,8 @@ export function ScreenDesignPage() {
   const section = productData.roadmap?.sections.find((s) => s.id === sectionId)
 
   // Handle resize drag
+  // Dependencies: [] - empty because we only use refs (containerRef, isDragging) which are stable
+  // and setWidthPercent which is a state setter (stable by React guarantee)
   const handleMouseDown = useCallback(() => {
     isDragging.current = true
 

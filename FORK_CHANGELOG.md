@@ -6,6 +6,72 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-27 15:30] MEDIUM PRIORITY P2 Fixes: Documentation Clarity, Validation Improvements & Code Consistency
+
+### Description
+
+Implementation of 24 MEDIUM PRIORITY (P2) fixes from the analysis plan (deep-tickling-simon.md). These fixes address documentation clarity, validation improvements, consistent error logging patterns, and code quality improvements across commands and source code.
+
+### Modified Files
+
+| File | Modification |
+|------|--------------|
+| `.claude/commands/design-os/product-vision.md` | Added pre-creation validation table and checklist before file creation. Updated directory error message format. |
+| `.claude/commands/design-os/product-roadmap.md` | Clarified orphaned file handling responsibility - agent MUST check for orphans after roadmap modifications. Added automatic detection script. |
+| `.claude/commands/design-os/data-model.md` | Enhanced entity name regex validation to check PascalCase format. Added plural name detection with warnings. |
+| `.claude/commands/design-os/design-tokens.md` | Added mono font default detection criteria. Integrated font weight validation into main workflow with verification message. |
+| `.claude/commands/design-os/design-shell.md` | Replaced generic fallback guidance with detailed design principles (visual hierarchy, spacing system, component patterns, responsive breakpoints, dark mode). Updated ShellPreview example with realistic section names. |
+| `.claude/commands/design-os/shape-section.md` | Added explicit cross-references to related commands in multi-view workflow section. Added "Related Documentation" links. |
+| `.claude/commands/design-os/sample-data.md` | Replaced subjective validation checklist with actionable Python validation scripts for JSON structure, _meta validation, and data consistency checks. |
+| `.claude/commands/design-os/design-screen.md` | Rewrote import path section with clear path resolution explanation and "Why @/../product/" documentation. Added detailed fallback design principles (matching design-shell.md). |
+| `.claude/commands/design-os/screenshot-design.md` | Added Playwright MCP tool names table with exact tool names and purposes. Added comprehensive hide button failure handling with fallback procedure. |
+| `.claude/commands/design-os/export-product.md` | Standardized version regex patterns in table format with consistent `[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?` pattern. Added comprehensive zip validation with corruption check and expected files verification. |
+| `src/lib/design-system-loader.ts` | Added `VALID_TAILWIND_COLORS` set with all Tailwind v4 palette names. Added `isValidTailwindColor()`, `validateColorTokens()`, and `validateTypographyTokens()` functions with DEV-mode logging. |
+| `src/lib/shell-loader.ts` | Added validation warnings to `parseShellSpec()` matching section-loader.ts pattern. Now warns about missing Overview, Navigation Structure, and Layout Pattern sections. |
+| `src/shell/navigation-config.ts` | Added documentation about prop matching with shell components. Added `isValidUser()` validation function for defensive type checking. |
+| `src/components/ShellDesignPage.tsx` | Removed unnecessary `import React from 'react'`. Changed `React.lazy()` to `lazy()`. Added useCallback dependency comment explaining why deps array is empty. |
+| `src/components/ScreenDesignPage.tsx` | Added useCallback dependency comment explaining why deps array is empty. |
+
+### Issues Addressed (from analysis plan)
+
+| Issue # | Category | File | Title | Resolution |
+|---------|----------|------|-------|------------|
+| P2-1 | Command | product-vision.md | Validation not tied to file creation workflow | Added pre-creation validation table |
+| P2-2 | Command | product-roadmap.md | Orphaned file handling responsibility unclear | Clarified agent responsibility with detection script |
+| P2-3 | Command | data-model.md | Plural names accepted, regex validation incomplete | Added PascalCase validation and plural detection |
+| P2-4 | Command | design-tokens.md | Font weight validation not in main flow, mono default vague | Added integrated workflow validation |
+| P2-5 | Command | design-shell.md | Fallback guidance too generic, ShellPreview uses placeholders | Added detailed design principles, realistic examples |
+| P2-6 | Command | shape-section.md | Multi-view workflow split across files | Added explicit cross-references |
+| P2-7 | Command | sample-data.md | Validation checklist not actionable | Added Python validation scripts |
+| P2-8 | Command | design-screen.md | Import path confusing, skill validation duplicated | Rewrote import section, added fallback guidance |
+| P2-9 | Command | screenshot-design.md | Playwright tool names unclear, hide button failure handling missing | Added tool names table and failure procedure |
+| P2-10 | Command | export-product.md | Version regex inconsistent, zip validation incomplete | Standardized regex, added zip validation |
+| P2-11 | Source | All loaders | Inconsistent error logging patterns | Added logging to design-system-loader.ts, consistent warnings in shell-loader.ts |
+| P2-12 | Source | ShellDesignPage.tsx, ScreenDesignPage.tsx | useCallback missing dependency comments | Added explanatory comments |
+| P2-13 | Source | navigation-config.ts | Stub could cause prop mismatch | Added isValidUser() validation function |
+| P2-14 | Source | design-system-loader.ts | Color validation doesn't check Tailwind names | Added VALID_TAILWIND_COLORS set and validation |
+| P2-15 | Source | shell-loader.ts | Regex fallback behavior inconsistent | Added validation warnings matching section-loader.ts |
+| P2-16 | Source | ShellDesignPage.tsx | Unnecessary React import | Removed import, use lazy() directly |
+
+### Statistics
+
+- **Files modified:** 15 (5 source code, 10 commands)
+- **Command fixes:** 10 (P2-1 through P2-10)
+- **Source code fixes:** 6 (P2-11 through P2-16)
+- **New validation functions:** 4 (isValidTailwindColor, validateColorTokens, validateTypographyTokens, isValidUser)
+- **New documentation sections:** 6 (cross-references, import paths, tool names, failure handling, regex patterns, zip validation)
+
+### Verification
+
+- TypeScript compilation passes without errors
+- All loaders now have consistent DEV-mode warning patterns
+- Tailwind color validation warns about non-standard colors
+- useCallback dependencies are documented for maintainability
+- Navigation config has defensive validation
+- Commands have clearer, actionable validation steps
+
+---
+
 ## [2025-12-27 12:15] HIGH PRIORITY P1 Fixes: Validation, Error Handling & Command Improvements
 
 ### Description

@@ -148,10 +148,23 @@ if ! echo "$CONTENT" | grep -q "^## Entities"; then
   echo "Warning: Missing '## Entities' section"
 fi
 
-# Check for at least one ### EntityName subsection
-if ! echo "$CONTENT" | grep -E -q "^### [A-Z]"; then
-  echo "Warning: Missing entity subsections (expected '### EntityName' format)"
+# Check for at least one ### EntityName subsection (PascalCase, no spaces, alphanumeric only)
+if ! echo "$CONTENT" | grep -E -q "^### [A-Z][a-zA-Z0-9]*$"; then
+  echo "Warning: Missing entity subsections (expected '### EntityName' in PascalCase format)"
 fi
+
+# Validate all entity names follow naming rules
+echo "$CONTENT" | grep -E "^### " | while read -r line; do
+  entity_name=$(echo "$line" | sed 's/^### //')
+  # Check for valid PascalCase: starts with uppercase, alphanumeric only
+  if [[ ! "$entity_name" =~ ^[A-Z][a-zA-Z0-9]*$ ]]; then
+    echo "Warning: Entity '$entity_name' doesn't follow PascalCase naming (expected format: EntityName)"
+  fi
+  # Check for plural form (ends in 's' but not 'ss' like 'Address')
+  if [[ "$entity_name" =~ s$ ]] && [[ ! "$entity_name" =~ ss$ ]] && [[ ! "$entity_name" =~ us$ ]]; then
+    echo "Warning: Entity '$entity_name' appears to be plural. Consider using singular form (e.g., '${entity_name%s}')."
+  fi
+done
 
 # Check for ## Relationships
 if ! echo "$CONTENT" | grep -q "^## Relationships"; then

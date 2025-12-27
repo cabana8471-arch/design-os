@@ -107,6 +107,16 @@ Before assembling prompts, verify all templates have valid version comments at l
 
 **Version Comment Pattern:** `<!-- v#.#.# -->` or `<!-- v#.#.#-suffix -->`
 
+**Standardized Regex Patterns:**
+
+All version regex patterns should follow this standardized format:
+
+| Context | Pattern | Description |
+|---------|---------|-------------|
+| **Bash validation** | `^<!-- v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)? -->$` | Match version at line start with optional suffix |
+| **Template stripping** | `^<!-- v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)? -->\n?` | Strip version and optional newline |
+| **Validation check** | `<!-- v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)? -->` | Find any remaining version comments |
+
 Valid examples:
 - `<!-- v1.0.0 -->`
 - `<!-- v1.2.0-section -->`
@@ -116,12 +126,15 @@ Valid examples:
 
 ```bash
 # Check each template has a version comment on line 1
+VERSION_PATTERN='^<!-- v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)? -->$'
+
 for template in .claude/templates/design-os/common/*.md .claude/templates/design-os/one-shot/*.md .claude/templates/design-os/section/*.md; do
   if [ -f "$template" ]; then
     first_line=$(head -1 "$template")
-    if [[ ! "$first_line" =~ ^'<!--'[[:space:]]*v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?[[:space:]]*'-->'$ ]]; then
+    if [[ ! "$first_line" =~ $VERSION_PATTERN ]]; then
       echo "Warning: Template missing valid version comment: $template"
       echo "  First line: $first_line"
+      echo "  Expected format: <!-- v1.0.0 --> or <!-- v1.0.0-suffix -->"
     fi
   fi
 done
@@ -2312,14 +2325,54 @@ rm -f product-plan.zip
 # Create the zip file
 cd . && zip -r product-plan.zip product-plan/
 
-# Verify zip was created
+# Verify zip was created and is valid
 if [ -f "product-plan.zip" ]; then
   zip_size=$(du -h product-plan.zip | cut -f1)
-  echo "Zip archive created successfully: product-plan.zip ($zip_size)"
+  echo "Zip archive created: product-plan.zip ($zip_size)"
 else
-  echo "Warning: Zip creation may have failed. Check product-plan/ folder."
+  echo "Error: Zip file not created. Check product-plan/ folder."
 fi
 ```
+
+### Validate Zip Contents
+
+After creating the zip, verify it contains the expected structure:
+
+```bash
+# Validate zip is not corrupted
+if ! unzip -t product-plan.zip > /dev/null 2>&1; then
+  echo "Error: product-plan.zip - Zip file is corrupted. Recreating..."
+  rm -f product-plan.zip
+  zip -r product-plan.zip product-plan/
+fi
+
+# Check zip contains expected files
+EXPECTED_FILES=(
+  "product-plan/README.md"
+  "product-plan/product-overview.md"
+  "product-plan/prompts/one-shot-prompt.md"
+)
+
+for expected in "${EXPECTED_FILES[@]}"; do
+  if ! unzip -l product-plan.zip | grep -q "$expected"; then
+    echo "Warning: Zip missing expected file: $expected"
+  fi
+done
+
+# Report zip contents summary
+file_count=$(unzip -l product-plan.zip | tail -1 | awk '{print $2}')
+echo "Zip contains $file_count files"
+```
+
+**Validation Criteria:**
+
+| Check | Pass Criteria | On Failure |
+|-------|---------------|------------|
+| Zip exists | `product-plan.zip` file present | Retry zip creation |
+| Zip not empty | File size > 0 bytes | Retry zip creation |
+| Zip not corrupted | `unzip -t` passes | Delete and recreate |
+| Contains README | README.md in zip listing | Warning only |
+| Contains prompts | prompts/ directory present | Warning only |
 
 ### Zip Cleanup Behavior
 

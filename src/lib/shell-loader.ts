@@ -71,10 +71,19 @@ const shellPreviewModules = import.meta.glob('/src/shell/*.tsx') as Record<
 export function parseShellSpec(md: string): ShellSpec | null {
   if (!md || !md.trim()) return null
 
+  // Track validation warnings (reported in DEV mode) - consistent with section-loader.ts
+  const warnings: string[] = []
+
   try {
     // Extract overview
     const overviewMatch = md.match(/## Overview\s*\n+([\s\S]*?)(?=\n## |\n#[^#]|$)/)
     const overview = overviewMatch?.[1]?.trim() || ''
+
+    if (!overviewMatch) {
+      warnings.push('Missing "## Overview" section')
+    } else if (!overview) {
+      warnings.push('"## Overview" section is empty')
+    }
 
     // Extract navigation items
     const navSection = md.match(/## Navigation Structure\s*\n+([\s\S]*?)(?=\n## |\n#[^#]|$)/)
@@ -90,9 +99,27 @@ export function parseShellSpec(md: string): ShellSpec | null {
       }
     }
 
+    if (!navSection) {
+      warnings.push('Missing "## Navigation Structure" section')
+    } else if (navigationItems.length === 0) {
+      warnings.push('"## Navigation Structure" section has no bullet items (expected "- Nav Item → Section")')
+    }
+
     // Extract layout pattern
     const layoutMatch = md.match(/## Layout Pattern\s*\n+([\s\S]*?)(?=\n## |\n#[^#]|$)/)
     const layoutPattern = layoutMatch?.[1]?.trim() || ''
+
+    if (!layoutMatch) {
+      warnings.push('Missing "## Layout Pattern" section')
+    } else if (!layoutPattern) {
+      warnings.push('"## Layout Pattern" section is empty')
+    }
+
+    // Report validation warnings in DEV mode - consistent with section-loader.ts
+    if (import.meta.env.DEV && warnings.length > 0) {
+      console.warn('[shell-loader] spec.md validation:')
+      warnings.forEach(w => console.warn(`  - ${w}`))
+    }
 
     // Return null if we couldn't parse anything meaningful
     if (!overview && navigationItems.length === 0 && !layoutPattern) {

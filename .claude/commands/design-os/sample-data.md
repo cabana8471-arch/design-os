@@ -208,21 +208,95 @@ After creating data.json, you MUST perform the following validations to ensure d
 
 ### Validate Data Structure
 
-After creating data.json, verify that the file was created correctly:
+After creating data.json, verify that the file was created correctly using these **actionable validation steps**:
 
-1. **Check file exists:** Verify `product/sections/[section-id]/data.json` exists
-2. **Validate `_meta` structure:**
-   - [ ] `_meta` object exists at top level
-   - [ ] `_meta.models` is an object with descriptions for each data collection
-   - [ ] `_meta.relationships` is an array with plain-language relationship descriptions
-   - [ ] All data model keys in `_meta.models` match the actual data keys below
-3. **Check data consistency:**
-   - [ ] All records have consistent field names
-   - [ ] All required fields are present in all records
-   - [ ] Data types match across records (no inconsistent typing)
-4. **Verify content quality:**
-   - [ ] Sample values are realistic and believable
-   - [ ] Edge cases are included (empty arrays, long text, various statuses)
+**1. Check file exists and is valid JSON:**
+```bash
+# Check file exists
+if [ ! -f "product/sections/[section-id]/data.json" ]; then
+  echo "Error: data.json - File not found."
+  exit 1
+fi
+
+# Validate JSON syntax
+if ! python3 -c "import json; json.load(open('product/sections/[section-id]/data.json'))" 2>/dev/null; then
+  echo "Error: data.json - Invalid JSON syntax. Check for missing commas or brackets."
+  exit 1
+fi
+```
+
+**2. Validate `_meta` structure (MANDATORY):**
+```bash
+# Check _meta exists and has required fields
+python3 << 'EOF'
+import json
+data = json.load(open('product/sections/[section-id]/data.json'))
+
+errors = []
+
+# Check _meta exists
+if '_meta' not in data:
+    errors.append("Missing '_meta' object at top level")
+else:
+    meta = data['_meta']
+
+    # Check _meta.models
+    if 'models' not in meta:
+        errors.append("Missing '_meta.models' object")
+    elif not isinstance(meta['models'], dict):
+        errors.append("'_meta.models' must be an object, not " + type(meta['models']).__name__)
+    elif len(meta['models']) == 0:
+        errors.append("'_meta.models' is empty - add model descriptions")
+
+    # Check _meta.relationships
+    if 'relationships' not in meta:
+        errors.append("Missing '_meta.relationships' array")
+    elif not isinstance(meta['relationships'], list):
+        errors.append("'_meta.relationships' must be an array")
+
+    # Verify model keys match data keys
+    if 'models' in meta and isinstance(meta['models'], dict):
+        model_keys = set(meta['models'].keys())
+        data_keys = set(k for k in data.keys() if k != '_meta')
+        missing = data_keys - model_keys
+        if missing:
+            errors.append(f"'_meta.models' missing descriptions for: {', '.join(missing)}")
+
+for error in errors:
+    print(f"Validation Error: {error}")
+exit(1 if errors else 0)
+EOF
+```
+
+**3. Check data consistency:**
+```bash
+python3 << 'EOF'
+import json
+data = json.load(open('product/sections/[section-id]/data.json'))
+
+for key, records in data.items():
+    if key == '_meta' or not isinstance(records, list) or len(records) == 0:
+        continue
+
+    # Get field names from first record
+    expected_fields = set(records[0].keys())
+
+    for i, record in enumerate(records[1:], start=2):
+        actual_fields = set(record.keys())
+        missing = expected_fields - actual_fields
+        extra = actual_fields - expected_fields
+        if missing:
+            print(f"Warning: {key}[{i}] missing fields: {missing}")
+        if extra:
+            print(f"Note: {key}[{i}] has extra fields: {extra}")
+EOF
+```
+
+**4. Verify content quality (checklist):**
+- [ ] At least 5 records exist for main entity (for realistic list display)
+- [ ] At least one status/enum field shows multiple values (e.g., 'draft', 'sent', 'paid')
+- [ ] At least one record has a long description (50+ chars) for text overflow testing
+- [ ] No placeholder values like "Test 123", "Lorem ipsum", or "Sample X"
 
 **If validation fails:**
 

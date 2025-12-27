@@ -8,12 +8,21 @@ Before proceeding, verify that you have access to the Playwright MCP tool.
 
 ### Tool Availability Check
 
-Look for any of these tool names in your available tools:
-- `browser_take_screenshot`
-- `mcp__playwright__browser_take_screenshot`
-- `playwright_screenshot`
+The Playwright MCP provides browser automation tools. Check for these **exact tool names** in your available tools list:
 
-**How to check:** The AI agent should check its available tool list. If any Playwright-related browser/screenshot tool is available, proceed. If not, show the installation message below.
+**Primary Tools (from @playwright/mcp):**
+| Tool Name | Purpose |
+|-----------|---------|
+| `mcp__playwright__browser_navigate` | Navigate to a URL |
+| `mcp__playwright__browser_take_screenshot` | Capture screenshot |
+| `mcp__playwright__browser_click` | Click elements |
+| `mcp__playwright__browser_set_viewport_size` | Set viewport dimensions |
+
+**Alternative Tool Names (older versions):**
+- `browser_take_screenshot` — May appear without `mcp__playwright__` prefix
+- `playwright_screenshot` — Deprecated, use `browser_take_screenshot`
+
+**How to check:** The AI agent should examine its available tool list. If ANY Playwright browser tool is available (with or without the `mcp__playwright__` prefix), proceed. If no browser automation tools are found, show the installation message below.
 
 ### If Playwright MCP is NOT Available
 
@@ -118,10 +127,43 @@ If the page shows a 404 or blank screen, check:
 3. The component has a default export
 
 1. First, use `browser_navigate` to go to the screen design URL
-2. Wait for the page to fully load
+2. Wait for the page to fully load (at least 2-3 seconds for fonts and images)
 3. **Hide the Design OS preview header** — Click the "Hide" link (with `data-hide-header` attribute). This is the Design OS preview chrome, separate from the product's shell navigation.
-   - If the Hide button cannot be found, proceed without hiding.
 4. Use `browser_take_screenshot` to capture the page (without the navigation bar)
+
+### Hide Button Failure Handling
+
+If the Hide button cannot be found or clicked, follow this fallback procedure:
+
+**Possible failure reasons:**
+| Symptom | Likely Cause | Action |
+|---------|--------------|--------|
+| Element not found | Wrong selector | Try `[data-hide-header]` or text "Hide" |
+| Click doesn't work | Element obscured | Wait longer for page load |
+| No header visible | Already hidden or fullscreen route | Proceed without clicking |
+
+**Fallback Procedure:**
+
+1. **Try alternative selectors:**
+   ```
+   Selectors to try (in order):
+   1. [data-hide-header]
+   2. button:has-text("Hide")
+   3. a:has-text("Hide")
+   ```
+
+2. **If all selectors fail:**
+   - Check if you're on the `/fullscreen` variant of the URL (no header shown)
+   - If on fullscreen URL, the header is already hidden — proceed to screenshot
+
+3. **If click fails but element exists:**
+   - Wait 2 more seconds for animations to complete
+   - Retry the click once
+
+4. **Final fallback:**
+   - Proceed with screenshot capture
+   - Note in the output: "Screenshot captured with Design OS header visible (Hide button not found)"
+   - The screenshot is still usable; user can crop or retake later
 
 **Screenshot specifications:**
 

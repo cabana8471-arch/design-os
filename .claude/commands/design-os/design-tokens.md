@@ -80,6 +80,37 @@ My suggestions for [Product Name]:
 
 What do you prefer?"
 
+### Mono Font Default Detection
+
+If the user doesn't specify a mono font, detect this scenario and apply the default:
+
+**Detection criteria (any of these indicates no mono font specified):**
+- User says "I don't need a mono font"
+- User says "skip mono" or similar
+- User only specifies heading and body fonts
+- User's response doesn't mention any mono font option
+
+**When no mono font is specified:**
+```
+"I'll use IBM Plex Mono as the default mono font. This ensures code blocks and technical content display correctly. If you'd prefer a different option, just let me know."
+```
+
+Then set `"mono": "IBM Plex Mono"` in typography.json.
+
+### Font Weight Validation (Integrated)
+
+After the user selects fonts, verify all required weights are available:
+
+"Let me verify the fonts will work with all UI elements:
+
+**[Heading Font]:** Checking for weights 400, 500, 600, 700...
+**[Body Font]:** Checking for weights 400, 500, 600...
+**[Mono Font]:** Checking for weights 400, 500...
+
+All weights are available. ✓
+
+(If any weights are missing, suggest an alternative font with full weight support.)"
+
 ## Step 5: Preview Colors in Light and Dark Mode
 
 Before finalizing, help the user visualize how their color choices will look in both light and dark mode:

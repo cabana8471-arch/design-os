@@ -41,12 +41,33 @@ Use AskUserQuestion with options:
 - "Continue with basic design principles" — Proceed using fallback guidance
 - "Stop — I'll add the skill file first" — END COMMAND
 
-Track user's choice - if continuing without skill file, use fallback design principles:
-- Create clean, functional interfaces with clear visual hierarchy
-- Use consistent spacing and alignment
-- Apply the design tokens (colors, typography) thoughtfully
-- Ensure responsive design and dark mode support
-- Focus on usability over decoration
+Track user's choice - if continuing without skill file, use these **fallback design principles**:
+
+**Visual Hierarchy:**
+- Use 1.5-2rem (24-32px) for main headings
+- Use 0.875-1rem (14-16px) for body text
+- Create clear distinction between primary, secondary, and tertiary elements
+
+**Spacing System:**
+- Use 8px increments for padding and margins (8, 16, 24, 32, 48, 64)
+- Maintain consistent gutter widths (16px on mobile, 24px on tablet, 32px on desktop)
+- Apply generous whitespace around primary actions
+
+**Component Patterns:**
+- Buttons: 40-44px height for primary actions, 32-36px for secondary
+- Cards: 16-24px padding, subtle shadows or borders
+- Tables: 12-16px cell padding, alternating row colors for readability
+
+**Responsive Breakpoints:**
+- Mobile: < 640px (single column, stacked layouts)
+- Tablet: 640-1024px (two columns, condensed tables)
+- Desktop: > 1024px (multi-column, full tables)
+
+**Dark Mode:**
+- Backgrounds: stone-900 to stone-950
+- Text: stone-100 to stone-300
+- Borders: stone-700 to stone-800
+- Increase contrast for interactive elements
 
 ### Identify Target Section
 
@@ -325,26 +346,34 @@ The component MUST:
 - Accept callback props for all actions
 - Be fully self-contained and portable
 
-### Import Path Transformation
+### Import Path Guidelines
 
-During development in Design OS, components use aliased import paths like `@/../product/sections/[section-id]/types`. During the export process (`/export-product`), these paths are automatically transformed to relative paths for portability.
+Components in Design OS use relative import paths. Here's how imports work for different file types:
 
-| Development Path (Design OS) | Export Path (Portable) |
-|------------------------------|------------------------|
-| `@/../product/sections/[section-id]/types` | `../types` |
-| `@/../product/sections/[section-id]/data.json` | `../data.json` |
-| `./[SubComponent]` | `./[SubComponent]` (unchanged) |
+| File Type | Import From Component | Example |
+|-----------|----------------------|---------|
+| **Types** (types.ts in product/) | Relative path from component | `import type { InvoiceListProps } from '@/../product/sections/invoices/types'` |
+| **Sub-components** (in same directory) | Relative path | `import { StatusBadge } from './StatusBadge'` |
+| **UI components** (shared library) | Alias path | `import { Button } from '@/components/ui/button'` |
 
-**Why this matters:**
-- Development paths use the `@/` alias to work within Design OS's directory structure
-- Exported components need relative paths to be copy-paste portable
-- The transformation is automatic — no manual changes needed
+**Path Resolution:**
+- `@/` resolves to `src/` (TypeScript path alias)
+- `@/../product/` resolves to the `product/` directory (for types.ts access)
+- Relative paths (e.g., `./StatusBadge`) stay within the section's component folder
 
-**Example:**
+**Why `@/../product/`?**
+- Components live in `src/sections/[section-id]/components/`
+- Types live in `product/sections/[section-id]/types.ts`
+- The `@/../product/` pattern navigates from `src/` up to root, then into `product/`
+
+**Example with actual paths:**
 
 ```tsx
-// Note: During export, this path will be transformed to '../types' for portability
-import type { InvoiceListProps } from '@/../product/sections/[section-id]/types'
+// Component location: src/sections/invoices/components/InvoiceList.tsx
+// Types location: product/sections/invoices/types.ts
+
+// Import types using the @/../product/ pattern
+import type { InvoiceListProps } from '@/../product/sections/invoices/types'
 
 export function InvoiceList({
   invoices,

@@ -69,9 +69,47 @@ export function getNavigationCategories(_activeSectionId?: string): NavigationCa
 /**
  * Default user for shell preview.
  * Override this when you design your shell.
+ *
+ * Note: When using with shell components (AppShell, UserMenu), ensure the
+ * component's expected props match this interface. If the shell component
+ * expects additional fields (e.g., avatarUrl), they should be optional.
  */
 export const defaultUser: User = {
   id: 'default',
   name: 'Demo User',
   email: 'demo@example.com',
+}
+
+/**
+ * Validate that a user object has the required properties for shell components.
+ * Use this when passing user data to shell components to catch mismatches early.
+ *
+ * @param user - The user object to validate
+ * @returns true if valid, false otherwise (with console warning in DEV)
+ */
+export function isValidUser(user: unknown): user is User {
+  if (user === null || user === undefined) {
+    if (import.meta.env.DEV) {
+      console.warn('[navigation-config] User object is null or undefined')
+    }
+    return false
+  }
+
+  if (typeof user !== 'object') {
+    if (import.meta.env.DEV) {
+      console.warn(`[navigation-config] User must be an object, got ${typeof user}`)
+    }
+    return false
+  }
+
+  const u = user as Record<string, unknown>
+
+  if (typeof u.id !== 'string' || typeof u.name !== 'string' || typeof u.email !== 'string') {
+    if (import.meta.env.DEV) {
+      console.warn('[navigation-config] User object missing required fields (id, name, email as strings)')
+    }
+    return false
+  }
+
+  return true
 }

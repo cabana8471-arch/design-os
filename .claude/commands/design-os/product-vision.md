@@ -94,6 +94,19 @@ The product name is critical because:
 
 Once the user approves (product name was validated in Step 3):
 
+### Pre-Creation Validation
+
+**Before writing the file, verify all required content exists:**
+
+| Content | Required | Validation |
+|---------|----------|------------|
+| Product name | Yes | Non-empty, non-generic (see Step 3 criteria) |
+| Description | Yes | 1-3 sentences, non-empty |
+| Problems | Yes | At least 1 problem with solution |
+| Features | Yes | At least 3 features |
+
+If any required content is missing, return to Step 2/3 to gather it before proceeding.
+
 ### Create Directory
 
 First, ensure the product directory exists:
@@ -104,7 +117,7 @@ mkdir -p product
 Then validate the directory was created:
 ```bash
 if [ ! -d "product" ]; then
-  echo "Error: Failed to create directory product."
+  echo "Error: product - Directory creation failed. Check write permissions."
   exit 1
 fi
 ```

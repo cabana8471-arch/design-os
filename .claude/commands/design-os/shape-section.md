@@ -238,27 +238,27 @@ This ensures `/design-screen` and `/sample-data` commands know to create compone
 
 When a section has multiple views, here's how they flow through the Design OS commands:
 
-**1. `/shape-section` (You are here)**
+**1. `/shape-section` (You are here)** — See: `.claude/commands/design-os/shape-section.md`
 - Define all views in the Views section of the spec
 - Specify which data each view needs
 - Document transitions between views
 
-**2. `/sample-data`**
+**2. `/sample-data`** — See: `.claude/commands/design-os/sample-data.md` (Section "Multi-View Data Sharing")
 - Creates a single `data.json` with data for ALL views
 - Creates `types.ts` with Props interfaces for EACH view (e.g., `ListViewProps`, `DetailViewProps`)
 - Props for each view receive only the data they need
 
-**3. `/design-screen`**
+**3. `/design-screen`** — See: `.claude/commands/design-os/design-screen.md` (Section "Multi-View Sections")
 - Run once per view — the command will ask which view to create
 - Each view becomes a separate component file
 - All views share the same `types.ts` and can reference the same entities
 - Preview wrappers are created for each view independently
 
-**4. `/screenshot-design`**
+**4. `/screenshot-design`** — See: `.claude/commands/design-os/screenshot-design.md`
 - Run once per view to capture screenshots
 - Each screenshot is saved with the view name (e.g., `invoice-list.png`, `invoice-detail.png`)
 
-**5. Shell navigation**
+**5. Shell navigation** — See: `.claude/commands/design-os/design-shell.md` (Section "Multi-View Navigation Routing")
 - All views share the same shell (if `shell: true`)
 - The shell shows the section name; view switching happens within the section
 - Transitions use callbacks (e.g., `onView` opens detail view)
@@ -267,6 +267,10 @@ When a section has multiple views, here's how they flow through the Design OS co
 - When navigating to `/sections/[section-id]`, the **first view listed in the spec** loads by default
 - Other views can be accessed directly via `/sections/[section-id]/screen-designs/[view-name]`
 - Order your views with the primary/list view first, followed by secondary views (detail, edit, etc.)
+
+**Related Documentation:**
+- [agents.md](../../agents.md) — Section "Command Quick Reference" shows file outputs per command
+- [agents.md](../../agents.md) — Section "File Structure" shows where multi-view files are stored
 
 Iterate until the user is satisfied. Don't add features that weren't discussed. Don't leave out features that were discussed.
 

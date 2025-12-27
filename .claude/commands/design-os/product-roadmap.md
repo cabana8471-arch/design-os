@@ -149,15 +149,21 @@ When users manually edit `/product/product-roadmap.md`:
 
 ### Handling Orphaned Files
 
-When you rename or remove sections from the roadmap, previously created files may become "orphaned" — they exist on disk but are no longer referenced by the roadmap. Here's how to handle them:
+When sections are renamed or removed from the roadmap, previously created files may become "orphaned" — they exist on disk but are no longer referenced by the roadmap.
 
-**1. Identify orphaned files:**
+**Who is responsible:** The agent executing this command MUST check for orphans after any roadmap modification and present options to the user. This is NOT optional.
+
+**1. After any roadmap change, automatically identify orphaned files:**
 ```bash
-# List all section directories
-ls product/sections/
-ls src/sections/
+# Get section IDs from roadmap
+ROADMAP_SECTIONS=$(grep -E "^### [0-9]+\." product/product-roadmap.md | sed 's/### [0-9]*\. //' | tr '[:upper:]' '[:lower:]' | sed 's/ /-/g' | sed 's/&/-and-/g')
 
-# Compare against sections in product-roadmap.md
+# List actual section directories
+PRODUCT_SECTIONS=$(ls -d product/sections/*/ 2>/dev/null | xargs -n1 basename)
+SRC_SECTIONS=$(ls -d src/sections/*/ 2>/dev/null | xargs -n1 basename)
+
+# Find orphans (directories that exist but aren't in roadmap)
+echo "Checking for orphaned sections..."
 ```
 
 **2. For renamed sections:**

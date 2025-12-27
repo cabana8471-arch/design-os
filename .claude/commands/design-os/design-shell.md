@@ -61,12 +61,33 @@ Use AskUserQuestion with options:
 - "Continue with basic design principles" — Proceed using fallback guidance
 - "Stop — I'll add the skill file first" — END COMMAND
 
-Track user's choice - if continuing without skill file, use fallback design principles:
-- Create clean, functional interfaces with clear visual hierarchy
-- Use consistent spacing and alignment
-- Apply the design tokens (colors, typography) thoughtfully
-- Ensure responsive design and dark mode support
-- Focus on usability over decoration
+Track user's choice - if continuing without skill file, use these **fallback design principles**:
+
+**Visual Hierarchy:**
+- Use 1.5-2rem (24-32px) for main headings
+- Use 0.875-1rem (14-16px) for body text
+- Create clear distinction between primary, secondary, and tertiary elements
+
+**Spacing System:**
+- Use 8px increments for padding and margins (8, 16, 24, 32, 48, 64)
+- Maintain consistent gutter widths (16px on mobile, 24px on tablet, 32px on desktop)
+- Apply generous whitespace around primary actions
+
+**Component Patterns:**
+- Buttons: 40-44px height for primary actions, 32-36px for secondary
+- Nav items: 12-16px vertical padding, clear hover states
+- Cards: 16-24px padding, subtle shadows or borders
+
+**Responsive Breakpoints:**
+- Mobile: < 640px (single column, stacked nav)
+- Tablet: 640-1024px (condensed sidebar or collapsible nav)
+- Desktop: > 1024px (full sidebar, multi-column layouts)
+
+**Dark Mode:**
+- Backgrounds: stone-900 to stone-950
+- Text: stone-100 to stone-300
+- Borders: stone-700 to stone-800
+- Increase contrast for interactive elements
 
 ### Check Optional Enhancements
 
@@ -332,11 +353,11 @@ import { AppShell } from './components/AppShell'
 
 export default function ShellPreview() {
   // Navigation items use REAL section names from the product roadmap
-  // User menu and other chrome use placeholder mock data
+  // Replace these with actual section titles and IDs from product-roadmap.md
   const navigationItems = [
-    { label: '[Section 1 from roadmap]', href: '/section-1', isActive: true },
-    { label: '[Section 2 from roadmap]', href: '/section-2' },
-    { label: '[Section 3 from roadmap]', href: '/section-3' },
+    { label: 'Dashboard', href: '/sections/dashboard', isActive: true },
+    { label: 'Invoices', href: '/sections/invoice-management' },
+    { label: 'Reports', href: '/sections/reports-and-analytics' },
   ]
 
   // User menu uses placeholder data — not from sections
@@ -363,6 +384,8 @@ export default function ShellPreview() {
   )
 }
 ```
+
+**Important:** When creating ShellPreview.tsx, replace the example navigation items above with the ACTUAL section titles and IDs from the user's `product/product-roadmap.md`. The section IDs should follow the standard transformation rules (lowercase, hyphens instead of spaces).
 
 **Important:**
 - **Navigation items** should use the REAL section names from `product/product-roadmap.md`

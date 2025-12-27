@@ -1,10 +1,9 @@
-import { Suspense, useMemo, useState, useRef, useCallback, useEffect } from 'react'
+import { Suspense, useMemo, useState, useRef, useCallback, useEffect, lazy } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, PanelLeft, Maximize2, GripVertical, Smartphone, Tablet, Monitor } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { loadShellPreview } from '@/lib/shell-loader'
-import React from 'react'
 
 const MIN_WIDTH = 320
 const DEFAULT_WIDTH_PERCENT = 100
@@ -16,6 +15,8 @@ export function ShellDesignPage() {
   const isDragging = useRef(false)
 
   // Handle resize drag
+  // Dependencies: [] - empty because we only use refs (containerRef, isDragging) which are stable
+  // and setWidthPercent which is a state setter (stable by React guarantee)
   const handleMouseDown = useCallback(() => {
     isDragging.current = true
 
@@ -184,7 +185,7 @@ export function ShellDesignFullscreen() {
 
   const ShellPreviewComponent = useMemo(() => {
     if (!shellPreviewLoader) return null
-    return React.lazy(shellPreviewLoader)
+    return lazy(shellPreviewLoader)
   }, [shellPreviewLoader])
 
   // Sync theme with parent window
