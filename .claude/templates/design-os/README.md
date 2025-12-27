@@ -92,6 +92,8 @@ Section templates use placeholder variables that users must replace:
 
 ## How Prompts Are Assembled
 
+> **Source of Truth:** The authoritative template assembly order is defined in `/export-product` Step 14. This section provides a summary for quick reference. If there's any discrepancy, export-product.md takes precedence.
+
 ### One-Shot Prompt Assembly Order
 
 1. `one-shot/preamble.md` — Title and introduction

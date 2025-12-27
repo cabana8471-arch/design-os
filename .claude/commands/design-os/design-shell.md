@@ -409,6 +409,37 @@ then update the shell navigation to match.
 
 **Important:** When creating ShellPreview.tsx, replace the example navigation items above with the ACTUAL section titles and IDs from the user's `product/product-roadmap.md`. The section IDs should follow the standard transformation rules (lowercase, hyphens instead of spaces).
 
+**Extracting Section IDs from Roadmap:**
+
+Use this script to generate navigation items from `product/product-roadmap.md`:
+
+```bash
+# Extract sections and generate navigation items
+if [ -f "product/product-roadmap.md" ]; then
+  echo "// Navigation items extracted from product-roadmap.md"
+  echo "const navigationItems = ["
+
+  # Extract section titles (### N. Title format)
+  grep -E "^### [0-9]+\." product/product-roadmap.md | \
+    sed 's/^### [0-9]*\. //' | \
+    while read title; do
+      # Apply section ID transformation rules from agents.md
+      id=$(echo "$title" | \
+        tr '[:upper:]' '[:lower:]' | \
+        sed 's/&/-and-/g' | \
+        tr ' ' '-' | \
+        tr -cd '[:alnum:]-' | \
+        sed 's/^-//' | \
+        sed 's/-$//')
+      echo "  { label: '$title', href: '/sections/$id' },"
+    done
+
+  echo "]"
+else
+  echo "// product-roadmap.md not found - using placeholders"
+fi
+```
+
 **Important:**
 - **Navigation items** should use the REAL section names from `product/product-roadmap.md` (or placeholders if none exist)
 - **User menu, notifications, and other chrome** should use placeholder mock data

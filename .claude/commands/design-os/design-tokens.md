@@ -84,32 +84,62 @@ What do you prefer?"
 
 If the user doesn't specify a mono font, detect this scenario and apply the default:
 
+**Detection Priority Order:**
+
+| Priority | User Response Pattern | Action | Rationale |
+|----------|----------------------|--------|-----------|
+| 1 | Explicit font name (e.g., "JetBrains Mono") | USE USER CHOICE | Direct selection takes precedence |
+| 2 | Explicit skip ("skip mono", "default is fine", "doesn't matter") | USE IBM Plex Mono | User explicitly defers to default |
+| 3 | Only heading/body mentioned, no mono context | USE IBM Plex Mono + NOTIFY | Implicit skip, inform user |
+| 4 | Mentions "mono", "code", "monospace" without specific font | ASK for clarification | User is thinking about it but hasn't decided |
+| 5 | Ambiguous or unclear | ASK user directly | Cannot determine intent |
+
 **Detection Algorithm:**
 
 ```
 function detectMonoFontChoice(userResponse):
-  # Step 1: Check for explicit skip
-  if contains(userResponse, ["skip mono", "don't need mono", "no mono", "skip the mono"]):
-    return USE_DEFAULT
-
-  # Step 2: Check for explicit mono font selection
+  # Step 1: Check for explicit mono font selection (HIGHEST PRIORITY)
   MONO_FONTS = ["IBM Plex Mono", "JetBrains Mono", "Fira Code",
-                "Source Code Pro", "Roboto Mono", "Ubuntu Mono"]
+                "Source Code Pro", "Roboto Mono", "Ubuntu Mono",
+                "Inconsolata", "Monaco", "Consolas", "Cascadia Code"]
   for font in MONO_FONTS:
     if contains(userResponse, font):
       return FONT_SELECTED(font)
 
-  # Step 3: Check if only heading/body mentioned
-  mentions_heading = contains(userResponse, ["heading", "title", "h1", "h2"])
-  mentions_body = contains(userResponse, ["body", "paragraph", "text"])
-  mentions_mono = contains(userResponse, ["mono", "code", "technical"])
-
-  if (mentions_heading or mentions_body) and not mentions_mono:
+  # Step 2: Check for explicit skip/default acceptance
+  SKIP_PATTERNS = ["skip mono", "don't need mono", "no mono", "skip the mono",
+                   "default is fine", "default mono", "doesn't matter",
+                   "I'll use the default", "whatever for mono", "any mono"]
+  if contains_any(userResponse, SKIP_PATTERNS):
     return USE_DEFAULT
 
-  # Step 4: If ambiguous, ask for clarification
+  # Step 3: Check for implicit mono interest (needs clarification)
+  MONO_INTEREST_PATTERNS = ["mono", "code", "monospace", "terminal",
+                             "code blocks", "technical content", "syntax"]
+  if contains_any(userResponse, MONO_INTEREST_PATTERNS):
+    # User is thinking about mono but hasn't specified - ASK
+    return ASK_USER
+
+  # Step 4: Check if only heading/body mentioned (implicit skip)
+  mentions_heading = contains(userResponse, ["heading", "title", "h1", "h2"])
+  mentions_body = contains(userResponse, ["body", "paragraph", "text"])
+
+  if (mentions_heading or mentions_body):
+    return USE_DEFAULT_WITH_NOTIFICATION
+
+  # Step 5: If nothing matched, ask for clarification
   return ASK_USER
 ```
+
+**Edge Cases Handled:**
+
+| User Says | Detected As | Action |
+|-----------|-------------|--------|
+| "I need a mono font for code" | Mono interest without font | ASK for specific font |
+| "Just heading and body for now" | Implicit skip | USE_DEFAULT + notify |
+| "Default mono is fine" | Explicit skip | USE_DEFAULT |
+| "JetBrains Mono" | Explicit selection | FONT_SELECTED |
+| "I'm not sure about mono" | Ambiguous | ASK user |
 
 **Detection criteria (any of these indicates no mono font specified):**
 - User says "I don't need a mono font"

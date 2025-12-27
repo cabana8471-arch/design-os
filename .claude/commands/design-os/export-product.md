@@ -74,9 +74,16 @@ Please complete these first."
 
 **END COMMAND** — Do not proceed to Step 2. The export cannot continue without these files.
 
-### Validate Template Files Exist
+### Validate Template Files Exist (Boilerplate Integrity Check)
 
 Before proceeding, verify all 12 required template files exist. If any are missing, STOP and report.
+
+> **What this validates:** These are boilerplate files that ship with Design OS, NOT user-created files. This check ensures the installation is complete and uncorrupted.
+>
+> **If validation fails:**
+> - **Likely cause:** Incomplete clone, accidental deletion, or corrupted installation
+> - **Resolution:** Re-clone the Design OS boilerplate from the source repository
+> - **Not a user error:** Users don't create these files — they come with the template
 
 > **Severity Levels:**
 > - **File existence** → STOP if missing (cannot proceed without templates)
@@ -1546,10 +1553,11 @@ This algorithm describes the template assembly process. When implementing, follo
 2. FOR each templatePath in templateOrder:
    a. Read file content from templatePath
    b. If file doesn't exist → STOP with error "Missing template file: [path]"
-   c. Strip version comment from top of content:
-      - Match pattern: /^<!--\s*v[\d.]+([-\w]*)\s*-->\n?/
-      - This handles versions like v1.0.0, v1.2.0-section, v2.0.0-beta
-      - Remove the matched portion
+   c. Strip ALL leading HTML comments from top of content:
+      - Match pattern: /^(<!--[\s\S]*?-->\s*\n?)+/
+      - This removes all consecutive HTML comments at the start (version, usage notes, etc.)
+      - Handles: `<!-- v1.0.0 -->`, `<!-- Usage: ... -->`, `<!-- Note: ... -->`
+      - Remove all matched comments and trailing whitespace
    d. If result is not empty, append "\n\n" (blank line separator)
    e. Append stripped content to result
 

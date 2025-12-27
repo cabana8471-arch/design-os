@@ -16,14 +16,24 @@
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
   /*
-   * P2 Gap Fix: Centralized Product Typography
-   * These CSS custom properties provide centralized font management for the product shell
-   * based on the design tokens in product/design-system/typography.json
+   * Product Typography Placeholders
+   *
+   * IMPORTANT: These are FALLBACK values only. They will be overridden by
+   * design tokens from /product/design-system/typography.json when a product
+   * defines its own fonts.
+   *
+   * Per SKILL.md guidelines, avoid using these generic fonts in actual designs:
+   * - "Inter", "Roboto", "Arial" are explicitly discouraged
+   * - "Space Grotesk" is mentioned as a common choice to avoid
+   *
+   * The system-ui fallbacks ensure the shell renders correctly before
+   * product-specific fonts are loaded.
+   *
    * Ref: Section 3.5 Content Area - "Typography follows design tokens"
    */
-  --font-product-heading: "Space Grotesk", system-ui, sans-serif;
-  --font-product-body: "Inter", system-ui, sans-serif;
-  --font-product-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-product-heading: var(--product-font-heading, system-ui, sans-serif);
+  --font-product-body: var(--product-font-body, system-ui, sans-serif);
+  --font-product-mono: var(--product-font-mono, ui-monospace, monospace);
 }
 
 /* Shadcn theme integration */

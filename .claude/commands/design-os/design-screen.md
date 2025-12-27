@@ -757,6 +757,17 @@ Screen design components use the `@/` path alias for imports. Before creating co
 }
 ```
 
+> **How `@/../product/` works:**
+>
+> The `@/../product/` pattern is NOT a separate alias — it combines the `@/` alias with relative path navigation:
+> 1. `@/` resolves to `./src/`
+> 2. `../` navigates up from `src/` to the project root
+> 3. `product/` enters the product directory
+>
+> **Result:** `@/../product/sections/invoices/types` → `./src/../product/sections/invoices/types` → `./product/sections/invoices/types`
+>
+> This pattern requires only the standard `@/*` alias configuration — no additional paths needed.
+
 **Import patterns used in screen designs:**
 | Pattern | Resolves To | Use Case |
 |---------|-------------|----------|

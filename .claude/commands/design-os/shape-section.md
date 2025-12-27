@@ -154,6 +154,36 @@ A complete shell consists of three parts:
 SPEC_EXISTS=$([ -f "product/shell/spec.md" ] && echo "yes" || echo "no")
 SHELL_EXISTS=$([ -f "src/shell/components/AppShell.tsx" ] && echo "yes" || echo "no")
 PREVIEW_EXISTS=$([ -f "src/shell/ShellPreview.tsx" ] && echo "yes" || echo "no")
+
+# Determine state and message
+if [ "$SPEC_EXISTS" = "yes" ] && [ "$SHELL_EXISTS" = "yes" ] && [ "$PREVIEW_EXISTS" = "yes" ]; then
+  STATUS="Complete"
+  MESSAGE="Your application shell is fully designed and ready to use."
+elif [ "$SPEC_EXISTS" = "yes" ] && [ "$SHELL_EXISTS" = "yes" ] && [ "$PREVIEW_EXISTS" = "no" ]; then
+  STATUS="Missing preview"
+  MESSAGE="Shell spec and components exist but preview is missing. Run /design-shell to regenerate."
+elif [ "$SPEC_EXISTS" = "yes" ] && [ "$SHELL_EXISTS" = "no" ] && [ "$PREVIEW_EXISTS" = "yes" ]; then
+  STATUS="Orphaned preview"
+  MESSAGE="Spec and preview exist but main component is missing. Run /design-shell to regenerate."
+elif [ "$SPEC_EXISTS" = "yes" ] && [ "$SHELL_EXISTS" = "no" ] && [ "$PREVIEW_EXISTS" = "no" ]; then
+  STATUS="Spec only"
+  MESSAGE="A shell spec exists but components haven't been generated yet. Run /design-shell to complete."
+elif [ "$SPEC_EXISTS" = "no" ] && [ "$SHELL_EXISTS" = "yes" ] && [ "$PREVIEW_EXISTS" = "yes" ]; then
+  STATUS="Components only"
+  MESSAGE="Shell components exist but no specification. Continue using existing components, or run /design-shell to add documentation."
+elif [ "$SPEC_EXISTS" = "no" ] && [ "$SHELL_EXISTS" = "yes" ] && [ "$PREVIEW_EXISTS" = "no" ]; then
+  STATUS="Partial components"
+  MESSAGE="AppShell.tsx exists but preview and spec are missing. Run /design-shell to create a complete shell."
+elif [ "$SPEC_EXISTS" = "no" ] && [ "$SHELL_EXISTS" = "no" ] && [ "$PREVIEW_EXISTS" = "yes" ]; then
+  STATUS="Orphaned preview"
+  MESSAGE="ShellPreview.tsx exists alone — an unusual state. Run /design-shell to create a proper shell."
+else
+  STATUS="No shell"
+  MESSAGE="No shell has been designed yet. You can still choose 'Inside app shell' — design it later with /design-shell."
+fi
+
+echo "Shell status: $STATUS"
+echo "$MESSAGE"
 ```
 
 | Spec | Components | Preview | Status | Message |

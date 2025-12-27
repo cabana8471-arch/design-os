@@ -1,4 +1,5 @@
 <!-- v1.1.0 -->
+<!-- Usage: Include in both one-shot and section prompts for model selection guidance -->
 
 ## Suggested Model Usage
 

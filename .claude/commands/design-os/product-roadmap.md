@@ -151,7 +151,15 @@ When users manually edit `/product/product-roadmap.md`:
 
 When sections are renamed or removed from the roadmap, previously created files may become "orphaned" — they exist on disk but are no longer referenced by the roadmap.
 
-**Who is responsible:** The agent executing this command MUST check for orphans after any roadmap modification and present options to the user. This is NOT optional.
+**Agent Responsibilities (Mandatory vs. Requires Consent):**
+
+| Action | Mandatory? | Notes |
+|--------|------------|-------|
+| Check for orphans after roadmap change | **MANDATORY** | Always run detection script automatically |
+| Report orphans to user | **MANDATORY** | Present findings with AskUserQuestion |
+| Execute cleanup (delete/rename/archive) | **REQUIRES CONSENT** | Never execute without explicit user approval |
+
+**Who is responsible:** The agent executing this command MUST check for orphans after any roadmap modification and present options to the user. Detection is automatic and NOT optional; cleanup execution requires explicit user consent.
 
 **1. After any roadmap change, automatically identify orphaned files:**
 ```bash

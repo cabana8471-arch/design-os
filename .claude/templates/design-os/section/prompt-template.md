@@ -6,6 +6,8 @@ Please carefully read and analyze the following files:
 
 1. **@product-plan/product-overview.md** — Product summary for overall context
 2. **@product-plan/instructions/incremental/NN-SECTION_ID.md** — Specific instructions for this section
+   <!-- Variable pattern: NN = milestone number (e.g., 02), SECTION_ID = folder name (e.g., invoices) -->
+   <!-- Combined example: 02-invoices.md, 03-reports-and-analytics.md -->
 
 Also review the section assets:
 - **@product-plan/design-guidance/frontend-design.md** — Design principles and guidance

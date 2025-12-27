@@ -6,6 +6,61 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-27 22:15] Residual Issues Fix: 13 Remaining Problems from Deep Analysis
+
+### Description
+Final cleanup of 13 residual issues identified through comprehensive codebase analysis. These issues remained after previous fix iterations and address font contradictions, incomplete algorithms, documentation gaps, and template consistency.
+
+### Modified Files
+| File | Modification |
+|------|--------------|
+| `src/index.css` | Replaced hardcoded fonts (Space Grotesk, Inter) with CSS variable fallbacks to avoid SKILL.md contradiction |
+| `.claude/commands/design-os/design-tokens.md` | Added priority order table and edge cases to mono font detection algorithm |
+| `.claude/commands/design-os/product-roadmap.md` | Added responsibility table clarifying mandatory detection vs consent-required execution |
+| `.claude/commands/design-os/shape-section.md` | Added complete shell status detection script with all 8 state conditions |
+| `.claude/commands/design-os/export-product.md` | Clarified template validation as boilerplate integrity check; updated regex to strip all HTML comments |
+| `.claude/commands/design-os/design-screen.md` | Documented how @/../product/ path alias works (not a separate alias) |
+| `.claude/commands/design-os/design-shell.md` | Added section ID extraction script for ShellPreview navigation items |
+| `.claude/commands/design-os/sample-data.md` | Standardized error messages to use "Error:" prefix per agents.md |
+| `.claude/templates/design-os/README.md` | Added source-of-truth cross-reference for template assembly order |
+| `.claude/templates/design-os/one-shot/preamble.md` | Replaced manual substitution note with auto-substitution comment |
+| `.claude/templates/design-os/common/model-guidance.md` | Added usage comment for consistency |
+| `.claude/templates/design-os/section/prompt-template.md` | Added clarifying comment for NN-SECTION_ID variable pattern |
+
+### Issues Resolved
+| # | Severity | Issue | Resolution |
+|---|----------|-------|------------|
+| P0-1 | Critical | Hardcoded fonts contradict SKILL.md | Replaced with CSS variable fallbacks |
+| P0-2 | Critical | Mono font detection incomplete | Added priority order and edge cases |
+| P1-1 | High | Orphan handling ambiguity | Added responsibility table |
+| P1-2 | High | Shell status detection gap | Added complete 8-state detection script |
+| P1-3 | High | Template validation unreachable | Clarified as boilerplate integrity check |
+| P2-1 | Medium | Path alias undocumented | Explained @/../product/ resolution |
+| P2-2 | Medium | Redundant substitution note | Replaced with auto-substitution comment |
+| P2-3 | Medium | Regex strips only version | Updated to strip all leading HTML comments |
+| P2-4 | Medium | Duplicate assembly order docs | Added cross-reference to source of truth |
+| P2-5 | Medium | No section ID extraction script | Added extraction script for navigation |
+| P3-1 | Low | Inconsistent error format | Standardized to "Error:" prefix |
+| P3-2 | Low | Missing usage comment | Added usage comment |
+| P3-3 | Low | Variable pattern unclear | Added clarifying comment |
+
+### Statistics
+- Files modified: 12
+- P0 issues addressed: 2
+- P1 issues addressed: 3
+- P2 issues addressed: 5
+- P3 issues addressed: 3
+- Total new documentation: ~160 lines
+
+### Verification
+- Font variables now use proper CSS fallback pattern
+- Mono font detection covers all edge cases with priority order
+- Shell status detection handles all 8 possible states
+- Path alias documentation explains resolution mechanism
+- Template comments consistent across all files
+
+---
+
 ## [2025-12-27 22:30] Comprehensive Analysis Fixes: Commands, Templates & Documentation
 
 ### Description

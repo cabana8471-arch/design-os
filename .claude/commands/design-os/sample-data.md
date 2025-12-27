@@ -25,14 +25,14 @@ fi
 
 | Condition | Action |
 |-----------|--------|
-| Directory doesn't exist | Show error: "Missing: product/sections/[section-id]/. Run /shape-section to create it." |
-| Directory exists, spec.md missing | Show error: "Directory product/sections/[section-id]/ exists but spec.md is missing. Run /shape-section to create the specification." |
+| Directory doesn't exist | Show error: "Error: product/sections/[section-id]/ - Directory not found. Run /shape-section to create it." |
+| Directory exists, spec.md missing | Show error: "Error: spec.md - File not found in product/sections/[section-id]/. Run /shape-section to create the specification." |
 | Directory exists, spec.md exists | Continue to Step 2 |
 
 **If the spec doesn't exist:**
 
 ```
-Missing: product/sections/[section-id]/spec.md. Run /shape-section to create it.
+Error: spec.md - File not found at product/sections/[section-id]/spec.md. Run /shape-section to create it.
 ```
 
 **If directory exists but spec.md was deleted (edge case):**
