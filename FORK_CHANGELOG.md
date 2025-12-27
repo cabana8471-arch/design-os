@@ -6,7 +6,52 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-27 01:45] High Priority P1 Fixes: Documentation, Validation & Code Quality
+## [2025-12-27 16:45] Medium Priority P2 Fixes (Batch 2): Runtime Logging, Algorithm Clarity & Export Documentation
+
+### Description
+
+Implementation of remaining MEDIUM priority (P2) fixes from the analysis plan. These fixes improve runtime debugging, clarify algorithm documentation, and add explicit export exclusion rules for preview wrappers.
+
+### Modified Files
+
+| File | Modification |
+|------|--------------|
+| `src/components/ScreenDesignPage.tsx` | **Line 195:** Changed iframe title from generic "Screen Design Preview" to descriptive `${section?.title \|\| sectionId} - ${screenDesignName} Screen Design`. **Lines 283-298:** Fixed ShellComponentProps interface to match NavigationCategory type structure (nested items array). |
+| `src/lib/section-loader.ts` | **Lines 199-229:** Enhanced `loadScreenDesignComponent()` with DEV-mode logging that shows the expected path and lists available paths for the section when a component is not found. |
+| `.claude/commands/design-os/export-product.md` | **Lines 1230-1270:** Rewrote "Template Assembly Algorithm" from mixed pseudo-code to clear numbered steps with explicit input/output documentation. **Lines 684-698:** Added "Preview Wrappers are NOT Exported" section with table explaining what files to copy vs exclude. **Lines 792-817:** Expanded "Handling Type Conflicts" with decision table and explicit fallback steps when no global data model exists. |
+
+### Issues Addressed (from analysis plan)
+
+| Issue # | Title | Resolution |
+|---------|-------|------------|
+| P2-31 | Iframe Title Not Descriptive | Changed title to include section name and screen design name |
+| P2-32 | Missing Import Path Validation at Runtime | Added DEV-mode console.warn with expected path and available alternatives |
+| P2-33 | README.md References Wrong Line Numbers | Already fixed in P0-2 (verified Step 14 references are correct) |
+| P2-34 | Pseudo-Code Algorithm Not Executable | Rewrote as numbered steps with clear input/output documentation |
+| P2-35 | Preview Wrappers Not Explicitly Excluded in Export | Added explicit table and warning about preview wrappers |
+| P2-36 | Data Model Consolidation Conflict Resolution Unclear | Added decision table and step-by-step fallback logic |
+| P2-37 | Error Boundary Missing în Router | Already addressed in P3-36 (ERROR BOUNDARY NOTE exists) |
+
+### Statistics
+
+- **Files modified:** 3
+- **Code improvements:** 2 (descriptive iframe title, DEV-mode logging with alternatives)
+- **Documentation improvements:** 3 (algorithm clarity, preview wrapper exclusion, conflict resolution)
+- **Issues already resolved:** 2 (P2-33 in P0-2, P2-37 in P3-36)
+- **Total issues addressed:** 7 P2 medium priority issues
+
+### Verification
+
+- Iframe titles now include section and screen design context for accessibility
+- Missing component errors in DEV mode show helpful path suggestions
+- Template assembly algorithm is now a clear numbered procedure
+- Preview wrappers are explicitly documented as non-exportable
+- Type conflict resolution has clear decision tree and fallback behavior
+- ShellComponentProps interface matches actual NavigationCategory structure
+
+---
+
+## [2025-12-27 07:30] High Priority P1 Fixes: Documentation, Validation & Code Quality
 
 ### Description
 

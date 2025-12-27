@@ -202,13 +202,30 @@ export function getSectionScreenshots(sectionId: string): ScreenshotInfo[] {
  * Returns a lazy-load function that resolves to the component module.
  * The component accepts Record<string, unknown> props since actual
  * prop types are defined per-component in types.ts.
+ *
+ * @param sectionId - The section folder name (e.g., "invoices")
+ * @param screenDesignName - The component file name without extension (e.g., "InvoiceList")
+ * @returns A lazy-load function or null if component not found
  */
 export function loadScreenDesignComponent(
   sectionId: string,
   screenDesignName: string
 ): (() => Promise<{ default: ComponentType<Record<string, unknown>> }>) | null {
   const path = `/src/sections/${sectionId}/${screenDesignName}.tsx`
-  return screenDesignModules[path] || null
+  const loader = screenDesignModules[path]
+
+  if (!loader && import.meta.env.DEV) {
+    console.warn(
+      `[section-loader] Screen design component not found: ${path}\n` +
+        `Available paths for section "${sectionId}":\n` +
+        Object.keys(screenDesignModules)
+          .filter((p) => p.includes(`/src/sections/${sectionId}/`))
+          .map((p) => `  - ${p}`)
+          .join('\n') || '  (none)'
+    )
+  }
+
+  return loader || null
 }
 
 /**

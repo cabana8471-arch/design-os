@@ -681,6 +681,22 @@ For each section, copy from `src/sections/[section-id]/components/` to `product-
 - Remove Design OS-specific imports
 - Keep only the exportable components (not preview wrappers)
 
+**IMPORTANT: Preview Wrappers are NOT Exported**
+
+The `src/sections/[section-id]/` folder contains two types of files:
+
+| Location | Type | Exported? | Purpose |
+|----------|------|-----------|---------|
+| `components/*.tsx` | Exportable components | ✅ Yes | Props-based UI components for production use |
+| `*.tsx` (root level) | Preview wrappers | ❌ No | Design OS preview files that load sample data |
+
+Preview wrappers (files like `InvoiceListView.tsx` at the root of a section folder) are **Design OS-only** files. They:
+- Import sample data from `data.json`
+- Pass data to exportable components for preview
+- Are NOT portable and should NEVER be copied to the export package
+
+**Only copy files from the `components/` subdirectory**, not from the section root.
+
 ### Import Path Transformation Table
 
 When copying components to the export package, transform all import paths to relative paths for portability:
@@ -774,9 +790,31 @@ Create `product-plan/data-model/types.ts` by consolidating types from all sectio
    - Combine into a single consolidated types file
 
    **Handling Type Conflicts:**
-   - If the same type name appears in multiple sections with different definitions, the global data model (`/product/data-model/data-model.md`) is authoritative
-   - If no global data model exists, use the first section's definition and add a comment noting the conflict
-   - Report conflicts to the user: "Type `[TypeName]` is defined differently in [Section A] and [Section B]. Using [resolution]."
+
+   When the same type name appears in multiple sections with different definitions:
+
+   | Scenario | Resolution | Action |
+   |----------|------------|--------|
+   | Global data model exists | Global model is authoritative | Use the definition from `/product/data-model/data-model.md` |
+   | No global model, types differ | First section wins | Use the first section's definition (alphabetical order) |
+   | No global model, types identical | Dedupe | Use shared definition once |
+
+   **When no global data model exists:**
+   1. Sort sections alphabetically by section ID
+   2. For each conflicting type, use the definition from the first section in sort order
+   3. Add a JSDoc comment above the type noting the conflict:
+      ```typescript
+      /**
+       * Note: This type is defined differently in sections [section-a] and [section-b].
+       * Using definition from [section-a]. Review and consolidate if needed.
+       */
+      ```
+   4. Report all conflicts to the user with this message format:
+      ```
+      Type conflicts detected (no global data model):
+      - `[TypeName]`: defined in [section-a] (USED), [section-b] (SKIPPED)
+      Consider running /data-model to create a global data model for consistency.
+      ```
 
 3. **Add JSDoc comments:**
    - Include descriptions from the global data model
@@ -1227,45 +1265,47 @@ For each prompt, follow this assembly pattern:
 4. Substitute any variables (e.g., [Product Name])
 5. Write the final assembled prompt to `product-plan/prompts/`
 
-#### Template Assembly Algorithm (Pseudo-Code)
+#### Template Assembly Algorithm
+
+This algorithm describes the template assembly process. When implementing, follow these steps in order:
+
+**Input:**
+- `templateOrder` — Array of file paths to templates (in concatenation order)
+- `variables` — Object mapping placeholder strings to their values
+  - For one-shot: `{ "[Product Name]": "My Product" }`
+  - For section: `{ "SECTION_NAME": "Invoices", "SECTION_ID": "invoices", "NN": "02" }`
+
+**Process:**
 
 ```
-FUNCTION assemblePrompt(templateOrder, variables):
-    result = ""
+1. Initialize empty result string
 
-    FOR EACH templatePath IN templateOrder:
-        // Step 1: Read template file
-        content = readFile(templatePath)
-        IF content IS NULL:
-            STOP("Missing template file: " + templatePath)
+2. FOR each templatePath in templateOrder:
+   a. Read file content from templatePath
+   b. If file doesn't exist → STOP with error "Missing template file: [path]"
+   c. Strip version comment from top of content:
+      - Match pattern: /^<!--\s*v[\d.]+\s*-->\n?/
+      - Remove the matched portion
+   d. If result is not empty, append "\n\n" (blank line separator)
+   e. Append stripped content to result
 
-        // Step 2: Strip version comment from top
-        // Regex: /^<!--\s*v[\d.]+\s*-->\n?/
-        content = content.replace(/^<!--\s*v[\d.]+\s*-->\n?/, "")
+3. FOR each (placeholder, value) in variables:
+   a. Replace ALL occurrences of placeholder with value in result
 
-        // Step 3: Append to result with separator
-        IF result IS NOT EMPTY:
-            result += "\n\n"  // Blank line between templates
-        result += content
-    END FOR
+4. Validate no unsubstituted variables remain:
+   - Check for: "[Product Name]", "SECTION_NAME", "SECTION_ID", or standalone "NN"
+   - Pattern: /\[Product Name\]|SECTION_NAME|SECTION_ID|\bNN\b/
+   - If found → STOP with error listing unsubstituted variables
 
-    // Step 4: Substitute variables
-    FOR EACH (key, value) IN variables:
-        result = result.replaceAll(key, value)
-    END FOR
+5. Validate no version comments remain:
+   - Pattern: /<!--\s*v[\d.]+\s*-->/
+   - If found → STOP with error "Version comments not fully stripped"
 
-    // Step 5: Validate no unsubstituted variables remain
-    // Regex: /\[Product Name\]|SECTION_NAME|SECTION_ID|\bNN\b/
-    IF result.matches(/\[Product Name\]|SECTION_NAME|SECTION_ID|\bNN\b/):
-        STOP("Unsubstituted variables remain in output")
-
-    // Step 6: Validate no version comments remain
-    IF result.matches(/<!--\s*v[\d.]+\s*-->/):
-        STOP("Version comments remain in output")
-
-    RETURN result
-END FUNCTION
+6. Return assembled result
 ```
+
+**Output:**
+- Assembled prompt string ready to write to `product-plan/prompts/`
 
 #### Template Assembly Implementation
 

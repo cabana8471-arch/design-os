@@ -192,7 +192,7 @@ export function ScreenDesignPage() {
           <iframe
             src={`/sections/${sectionId}/screen-designs/${screenDesignName}/fullscreen`}
             className="w-full h-full border-0"
-            title="Screen Design Preview"
+            title={`${section?.title || sectionId} - ${screenDesignName} Screen Design`}
           />
         </div>
 
@@ -279,11 +279,20 @@ export function ScreenDesignFullscreen() {
          * Type for shell component props.
          * AppShell components accept navigation categories, user info, and callbacks.
          * Using a specific interface instead of Record<string, unknown> for better type safety.
+         *
+         * NavigationCategory structure:
+         * - id: string - unique category identifier
+         * - label: string - display name
+         * - items: NavigationItem[] - list of navigation items with id, label, href, icon?
          */
         interface ShellComponentProps {
           children?: React.ReactNode
-          categories?: Array<{ label: string; href: string; isActive?: boolean }>
-          user?: { name: string; email?: string; avatarUrl?: string }
+          categories?: Array<{
+            id: string
+            label: string
+            items: Array<{ id: string; label: string; href: string; icon?: string }>
+          }>
+          user?: { id: string; name: string; email: string; avatar?: string }
           onNavigate?: (href: string) => void
           onLogout?: () => void
         }
