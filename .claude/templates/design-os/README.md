@@ -25,6 +25,71 @@ design-os/
     └── tdd-workflow.md              # Section TDD (component isolation, props testing, edge cases)
 ```
 
+## Template Dependencies
+
+Templates have dependencies that must be satisfied for correct prompt assembly:
+
+### Dependency Graph
+
+```
+common/top-rules.md
+├── (no dependencies)
+
+common/reporting-protocol.md
+├── (no dependencies)
+
+common/model-guidance.md
+├── (no dependencies)
+
+common/verification-checklist.md
+├── (no dependencies)
+
+common/clarifying-questions.md
+├── Requires: Product overview context
+└── Used by: one-shot prompts only
+
+common/tdd-workflow.md
+├── Requires: Foundation milestone instructions
+└── Used by: one-shot prompts only
+
+section/preamble.md
+├── Requires: SECTION_NAME, SECTION_ID, NN variables
+└── Must be filled in by user before use
+
+section/prompt-template.md
+├── Requires: SECTION_ID for file paths
+└── Depends on: section/preamble.md (for variable definitions)
+
+section/clarifying-questions.md
+├── Assumes: Auth and tech stack already decided
+└── Used by: section prompts only (NOT one-shot)
+
+section/tdd-workflow.md
+├── Assumes: Foundation milestone complete
+└── Used by: section prompts only
+```
+
+### Cross-Template References
+
+| Template | References |
+|----------|-----------|
+| `one-shot/prompt-template.md` | References files in `product-plan/` structure |
+| `section/prompt-template.md` | References section-specific files only |
+| `common/tdd-workflow.md` | References `01-foundation.md` instructions |
+| `section/tdd-workflow.md` | References section `tests.md` and `sample-data.json` |
+
+### Variable Substitution
+
+Section templates use placeholder variables that users must replace:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `SECTION_NAME` | Human-readable section title | "Invoice Management" |
+| `SECTION_ID` | URL-safe section identifier | "invoice-management" |
+| `NN` | Two-digit milestone number | "02", "03", etc. |
+
+---
+
 ## How Prompts Are Assembled
 
 ### One-Shot Prompt Assembly Order
@@ -113,6 +178,12 @@ When assembling prompts during `/export-product`:
 - **Major (v2.0.0):** Breaking changes to prompt structure or required variables
 - **Minor (v1.1.0):** New content additions that don't break existing integrations
 - **Patch (v1.0.1):** Fixes, clarifications, or minor wording improvements
+
+**Version suffix convention:**
+- **`-section`:** Section-specific variant of a common template (e.g., `v1.2.0-section`)
+  - Used when section templates diverge from common templates
+  - Example: `section/tdd-workflow.md` may use `v1.2.0-section` while `common/tdd-workflow.md` uses `v1.2.0`
+- **No suffix:** Standard template version
 
 This allows tracking of template versions and documenting breaking changes.
 
