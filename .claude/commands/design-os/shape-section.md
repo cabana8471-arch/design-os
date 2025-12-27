@@ -216,6 +216,11 @@ When a section has multiple views, here's how they flow through the Design OS co
 - The shell shows the section name; view switching happens within the section
 - Transitions use callbacks (e.g., `onView` opens detail view)
 
+**6. Default View (Routing)**
+- When navigating to `/sections/[section-id]`, the **first view listed in the spec** loads by default
+- Other views can be accessed directly via `/sections/[section-id]/screen-designs/[view-name]`
+- Order your views with the primary/list view first, followed by secondary views (detail, edit, etc.)
+
 Iterate until the user is satisfied. Don't add features that weren't discussed. Don't leave out features that were discussed.
 
 ## Step 7: Create the Spec File

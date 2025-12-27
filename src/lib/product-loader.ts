@@ -97,7 +97,10 @@ export function parseProductOverview(md: string): ProductOverview | null {
     }
 
     return { name, description, problems, features }
-  } catch {
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.error('[product-loader] Failed to parse product-overview.md:', error)
+    }
     return null
   }
 }
@@ -146,7 +149,10 @@ export function parseProductRoadmap(md: string): ProductRoadmap | null {
     }
 
     return { sections }
-  } catch {
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.error('[product-loader] Failed to parse product-roadmap.md:', error)
+    }
     return null
   }
 }

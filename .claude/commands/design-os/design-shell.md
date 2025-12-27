@@ -196,6 +196,40 @@ Then create `/product/shell/spec.md`:
 [Any additional design decisions or notes]
 ```
 
+## Multi-View Navigation Routing
+
+When a section has multiple views (e.g., ListView and DetailView), here's how routing works:
+
+### Default Route Behavior
+
+When navigating to `/sections/[section-id]`:
+- The **first view defined in the spec** becomes the default view
+- Example: If spec lists "ListView" then "DetailView", ListView loads by default
+
+### View-Specific Routes
+
+For direct navigation to specific views:
+- `/sections/[section-id]/screen-designs/[view-name]` — Loads a specific view
+- Example: `/sections/invoice-management/screen-designs/invoice-detail`
+
+### Navigation Between Views
+
+Views should NOT include internal routing logic. Instead:
+- Use callback props (e.g., `onView`, `onBack`) to signal navigation intent
+- The shell or parent application handles actual route changes
+- This keeps components portable and testable
+
+**Example navigation pattern:**
+```tsx
+// In ListView - signal intent to navigate
+<button onClick={() => onView?.(item.id)}>View Details</button>
+
+// In DetailView - signal intent to go back
+<button onClick={() => onBack?.()}>Back to List</button>
+```
+
+The shell receives these callbacks and performs actual navigation (which may vary by framework).
+
 ## Step 7: Create Shell Components
 
 Create the shell components at `src/shell/components/`:

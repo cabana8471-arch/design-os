@@ -275,7 +275,19 @@ export function ScreenDesignFullscreen() {
     return React.lazy(async () => {
       try {
         const module = await loader() as Record<string, unknown>
-        const ShellComponent = (module?.default || module?.AppShell) as React.ComponentType<Record<string, unknown>>
+        /**
+         * Type for shell component props.
+         * AppShell components accept navigation categories, user info, and callbacks.
+         * Using a specific interface instead of Record<string, unknown> for better type safety.
+         */
+        interface ShellComponentProps {
+          children?: React.ReactNode
+          categories?: Array<{ label: string; href: string; isActive?: boolean }>
+          user?: { name: string; email?: string; avatarUrl?: string }
+          onNavigate?: (href: string) => void
+          onLogout?: () => void
+        }
+        const ShellComponent = (module?.default || module?.AppShell) as React.ComponentType<ShellComponentProps>
 
         if (typeof ShellComponent !== 'function') {
           if (import.meta.env.DEV) {

@@ -49,6 +49,9 @@ Before proceeding, verify all 12 required template files exist. If any are missi
 - `.claude/templates/design-os/section/clarifying-questions.md`
 - `.claude/templates/design-os/section/tdd-workflow.md`
 
+**Required skill file:**
+- `.claude/skills/frontend-design/SKILL.md` — Design guidance (copied to export in Step 7)
+
 **If any template is missing:**
 
 STOP and report: "Missing template file: `.claude/templates/design-os/[path]`. Cannot generate prompts without all templates. Please restore the missing file."
@@ -599,8 +602,10 @@ Before proceeding with export, validate that all components are portable and fol
 If shell components exist at `src/shell/components/`, validate each file:
 
 1. **Check imports:**
-   - [ ] No `import data from '@/../product/...'` statements
-   - [ ] No direct imports of `.json` files
+   - [ ] No static data imports: `import data from '@/../product/...'`
+   - [ ] No dynamic data imports: `import('@/../product/...')` or `await import('@/../product/...')`
+   - [ ] No CommonJS data imports: `require('@/../product/...')`
+   - [ ] No direct imports of `.json` files (static, dynamic, or require)
    - [ ] Only imports from external libraries or relative component files
 
 2. **Check component structure:**
@@ -614,8 +619,10 @@ If shell components exist at `src/shell/components/`, validate each file:
 For each section, validate all component files in `src/sections/[section-id]/components/`:
 
 1. **Check imports:**
-   - [ ] No `import data from '@/../product/...'` statements
-   - [ ] No direct imports of `.json` files
+   - [ ] No static data imports: `import data from '@/../product/...'`
+   - [ ] No dynamic data imports: `import('@/../product/...')` or `await import('@/../product/...')`
+   - [ ] No CommonJS data imports: `require('@/../product/...')`
+   - [ ] No direct imports of `.json` files (static, dynamic, or require)
    - [ ] Types imported from `@/../product/sections/[section-id]/types` (these will be transformed to `../types`)
 
 2. **Check component structure:**
@@ -670,10 +677,31 @@ Copy from `src/shell/components/` to `product-plan/shell/components/`:
 
 For each section, copy from `src/sections/[section-id]/components/` to `product-plan/sections/[section-id]/components/`:
 
-- Transform import paths:
-  - `@/../product/sections/[section-id]/types` → `../types`
+- Transform import paths according to the table below
 - Remove Design OS-specific imports
 - Keep only the exportable components (not preview wrappers)
+
+### Import Path Transformation Table
+
+When copying components to the export package, transform all import paths to relative paths for portability:
+
+| Design OS Path | Exported Path | Notes |
+|----------------|---------------|-------|
+| `@/../product/sections/[section-id]/types` | `../types` | Type imports become relative |
+| `@/../product/sections/[section-id]/data.json` | ❌ Remove | Data should come via props |
+| `@/components/ui/*` | ❌ Remove or inline | UI components need to be included or replaced |
+| `@/lib/*` | ❌ Remove or inline | Utilities need to be included or replaced |
+| `./[ComponentName]` | `./[ComponentName]` | Relative imports stay unchanged |
+| `../[ComponentName]` | `../[ComponentName]` | Relative imports stay unchanged |
+| `react`, `lucide-react`, etc. | Unchanged | External library imports stay as-is |
+
+**Key transformation rules:**
+
+1. **Types** — Transform `@/../product/...` paths to relative `../types`
+2. **Data imports** — Must be removed (validation should catch these in Step 8)
+3. **Design OS imports** — `@/components/*`, `@/lib/*` must be removed or inlined
+4. **Relative imports** — Keep unchanged (they're already portable)
+5. **External libraries** — Keep unchanged (standard npm packages)
 
 ### Types Files
 

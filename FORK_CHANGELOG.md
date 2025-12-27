@@ -6,7 +6,66 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-27] Critical P0 Fixes: Validation, Content Checks & Clarity Improvements
+## [2025-12-27 01:45] High Priority P1 Fixes: Documentation, Validation & Code Quality
+
+### Description
+
+Implementation of all 13 HIGH priority (P1) fixes from the analysis plan. These fixes address documentation gaps, extend validation patterns, improve code type safety, and ensure consistency across commands.
+
+### Modified Files
+
+| File | Modification |
+|------|--------------|
+| `.claude/commands/design-os/design-shell.md` | **Lines 199-231:** Added "Multi-View Navigation Routing" section documenting default route behavior, view-specific routes, and navigation patterns between views. |
+| `.claude/commands/design-os/shape-section.md` | **Lines 219-222:** Added "Default View (Routing)" section explaining that the first view in spec loads by default and how to order views. |
+| `.claude/commands/design-os/design-screen.md` | **Lines 146-151:** Added "Default View Routing" section explaining default view loading and naming conventions. |
+| `.claude/commands/design-os/data-model.md` | **Lines 151-183:** Added "Entity Naming Validation" section with PascalCase rules, valid/invalid examples, and explanation of why consistent naming matters for /sample-data parsing. |
+| `.claude/commands/design-os/export-product.md` | **Lines 601-623:** Extended import validation patterns to include dynamic imports (`import('...')`) and CommonJS (`require(...)`). **Lines 681-701:** Added "Import Path Transformation Table" with complete transformation rules for all import types. **Lines 52-53:** Added SKILL.md to required prerequisites. |
+| `.claude/templates/design-os/README.md` | **Lines 69-84:** Added "Clarifying Questions: Common vs Section" section documenting the different purposes and when to use each template type. |
+| `.claude/templates/design-os/section/tdd-workflow.md` | **Line 1:** Changed version from `v1.1.0` to `v1.2.0-section` to differentiate from common/tdd-workflow.md (v1.1.0). |
+| `src/lib/shell-loader.ts` | **Lines 112-121:** Removed ShellWrapper.tsx fallback in loadAppShell() function. Now loads AppShell.tsx directly as per design-shell.md specifications. Added JSDoc explaining the change. |
+| `src/components/ScreenDesignPage.tsx` | **Lines 278-290:** Replaced broad `Record<string, unknown>` type assertion with specific `ShellComponentProps` interface including children, categories, user, onNavigate, and onLogout props. |
+| `src/lib/product-loader.ts` | **Lines 100-104, 152-156:** Added DEV-mode error logging to parseProductOverview() and parseProductRoadmap() catch blocks for easier debugging. |
+
+### Issues Addressed (from analysis plan)
+
+| Issue # | Title | Resolution |
+|---------|-------|------------|
+| P1-7 | Multi-View Navigation Routing Nedocumentat | Added routing documentation to design-shell.md, shape-section.md, and design-screen.md |
+| P1-8 | Entity Naming Extraction Fragil | Added entity naming validation rules to data-model.md with examples |
+| P1-9 | Component Validation Missing Dynamic Imports | Extended validation patterns for `import()` and `require()` in export-product.md |
+| P1-10 | Directory Validation Inconsistentă | Verified existing pattern in agents.md covers all commands |
+| P1-11 | Duplicate Clarifying Questions Content | Added documentation to README.md explaining common vs section clarifying-questions |
+| P1-12 | TDD Workflow Same Version Different Content | Changed section/tdd-workflow.md to v1.2.0-section |
+| P1-13 | Import Path Transformation Incomplet Documentat | Added complete transformation table to export-product.md |
+| P1-14 | Shell Component Naming Confusion | Removed ShellWrapper fallback, now only loads AppShell.tsx |
+| P1-15 | Type Assertion Too Broad | Replaced Record<string, unknown> with ShellComponentProps interface |
+| P1-16 | Shell Props Pattern Inconsistent | Verified design-shell.md already uses separate interfaces (AppShellProps, MainNavProps, UserMenuProps) |
+| P1-17 | Skill File Not Verified at Export Start | Added SKILL.md to prerequisite check list in export-product.md Step 1 |
+| P1-18 | Section ID Rules Missing in product-roadmap | Verified rules already exist at line 199 in product-roadmap.md |
+| P1-19 | Parse Functions Silent Failure | Added DEV-mode console.error() logging to parse functions |
+
+### Statistics
+
+- **Files modified:** 10
+- **Documentation improvements:** 5 (routing, entity naming, clarifying questions, import transformation, template versioning)
+- **Validation improvements:** 2 (dynamic imports, SKILL.md prerequisite)
+- **Code quality improvements:** 3 (ShellWrapper removal, type safety, DEV logging)
+- **Total issues resolved:** 13 P1 high priority issues
+
+### Verification
+
+- Multi-view routing is now clearly documented across all relevant commands
+- Entity naming validation ensures consistent PascalCase format for /sample-data parsing
+- Import validation catches all import patterns (static, dynamic, CommonJS)
+- Template versioning now distinguishes common vs section TDD workflows
+- Type assertions are more specific and match actual shell component props
+- DEV-mode logging helps debug parsing issues without polluting production logs
+- ShellWrapper fallback removed to align with documented shell structure
+
+---
+
+## [2025-12-27 00:22] Critical P0 Fixes: Validation, Content Checks & Clarity Improvements
 
 ### Description
 

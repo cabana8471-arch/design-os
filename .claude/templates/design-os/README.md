@@ -66,6 +66,23 @@ The section prompt uses specialized templates that differ from the one-shot vers
 
 This distinction matters because section prompts are used after Foundation is complete, so they assume auth and core infrastructure already exist. They focus on integrating new functionality rather than building from scratch.
 
+### Clarifying Questions: Common vs Section
+
+**`common/clarifying-questions.md` (v1.0.0)**
+- Used in **one-shot prompts** for full product implementation
+- Asks about: Authentication, user modeling, tech stack, backend logic
+- Purpose: Establish foundational decisions before building anything
+
+**`section/clarifying-questions.md` (v1.1.0)**
+- Used in **section-specific prompts** for incremental implementation
+- Asks about: Data relationships, integration points, section permissions, navigation
+- Purpose: Integrate a new section into an already-running codebase
+- Assumes: Auth, tech stack, and user modeling already decided (from Foundation milestone)
+
+**When to use which:**
+- Building from scratch → Use common/ templates (one-shot prompt)
+- Adding features to existing app → Use section/ templates (section prompt)
+
 ## Template Versioning
 
 Each template includes a version comment at the top (e.g., `<!-- v1.0.0 -->`):

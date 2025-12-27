@@ -1,5 +1,6 @@
-<!-- v1.1.0 -->
+<!-- v1.2.0-section -->
 <!-- Usage: Include in section-specific prompts for incremental implementation -->
+<!-- Note: Version differs from common/tdd-workflow.md (v1.1.0) to distinguish the two workflows -->
 
 ## Implementation Approach
 

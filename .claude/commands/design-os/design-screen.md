@@ -143,6 +143,13 @@ src/sections/[section-id]/
 - Sub-components can be shared across views (import from `./[SubComponent]`)
 - Run `/design-screen` once per view — the command asks which view to create
 
+### Default View Routing
+
+When navigating to `/sections/[section-id]`:
+- The **first view listed in the spec** is the default view
+- Other views are accessed via `/sections/[section-id]/screen-designs/[view-name]`
+- Name your primary view first (e.g., "ListView" before "DetailView")
+
 **See also:** `/shape-section` documents the full multi-view workflow from spec to screenshot
 
 ## Step 5: Read Frontend Design Guidance

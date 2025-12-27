@@ -148,6 +148,40 @@ Next step: Run `/design-tokens` to choose your color palette and typography."
 - The implementation agent will extend this with additional fields as needed
 - Entity names should be singular (User, Invoice, Project — not Users, Invoices)
 
+### Entity Naming Validation
+
+Entity names must follow a consistent format for proper parsing by `/sample-data` and other commands:
+
+**Required Format:** `### EntityName`
+
+**Entity Naming Rules:**
+1. **PascalCase** — First letter of each word capitalized (e.g., `User`, `Invoice`, `ProjectMember`)
+2. **Singular form** — Use `Invoice` not `Invoices`
+3. **No spaces** — Use `ProjectMember` not `Project Member`
+4. **No special characters** — Only alphanumeric characters
+5. **Descriptive but concise** — `Invoice` is better than `Inv` or `CustomerInvoiceDocument`
+
+**Valid Examples:**
+```markdown
+### User
+### Invoice
+### ProjectMember
+### PaymentTransaction
+```
+
+**Invalid Examples (avoid these):**
+```markdown
+### users              # lowercase, plural
+### Project Member     # contains space
+### invoice-item       # contains hyphen
+### Inv                # too abbreviated
+```
+
+**Why this matters:**
+- `/sample-data` extracts entity names from `### EntityName` headings
+- Consistent naming ensures types.ts interfaces are generated correctly
+- PascalCase matches TypeScript interface naming conventions
+
 ### Entity Relationship Format
 
 Relationships should follow a consistent format that clearly communicates cardinality and direction:

@@ -111,16 +111,12 @@ export function loadShellComponent(
 
 /**
  * Load AppShell component that can wrap content
- * First tries to load ShellWrapper (designed for wrapping arbitrary content)
- * Falls back to AppShell if ShellWrapper doesn't exist
+ *
+ * Note: This function loads AppShell.tsx directly. The previous ShellWrapper.tsx
+ * fallback was removed to align with the documented shell component structure
+ * (AppShell.tsx, MainNav.tsx, UserMenu.tsx) per design-shell.md specifications.
  */
 export function loadAppShell(): (() => Promise<{ default: ComponentType<{ children?: ReactNode }> }>) | null {
-  // First try ShellWrapper - a component specifically designed to wrap content
-  const wrapperPath = '/src/shell/components/ShellWrapper.tsx'
-  if (wrapperPath in shellComponentModules) {
-    return shellComponentModules[wrapperPath] as (() => Promise<{ default: ComponentType<{ children?: ReactNode }> }>)
-  }
-  // Fall back to AppShell
   const path = '/src/shell/components/AppShell.tsx'
   return shellComponentModules[path] as (() => Promise<{ default: ComponentType<{ children?: ReactNode }> }>) || null
 }
