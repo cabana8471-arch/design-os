@@ -503,6 +503,58 @@ Verify that Props interfaces in types.ts correctly reference entity types:
 
 This bidirectional check prevents subtle bugs where types and data diverge.
 
+### Multi-View Props Interface Validation
+
+For sections with multiple views (defined in the spec's `## Views` section), verify that `types.ts` contains Props interfaces for EACH view:
+
+**1. Extract views from spec.md:**
+
+```bash
+# Count views defined in spec
+VIEW_COUNT=$(grep -E '^- [A-Z]' product/sections/[section-id]/spec.md | wc -l)
+echo "Found $VIEW_COUNT views in spec.md"
+```
+
+**2. Verify Props interfaces exist for each view:**
+
+For each view extracted from `## Views` section (e.g., `ListView`, `DetailView`, `CreateForm`), verify a corresponding Props interface exists in `types.ts`:
+
+| View Name | Expected Props Interface |
+|-----------|-------------------------|
+| `ListView` | `ListViewProps` |
+| `DetailView` | `DetailViewProps` |
+| `CreateForm` | `CreateFormProps` |
+
+**3. Validation script:**
+
+```bash
+# Check each view has a Props interface
+SPEC_FILE="product/sections/[section-id]/spec.md"
+TYPES_FILE="product/sections/[section-id]/types.ts"
+
+# Extract view names from spec
+VIEWS=$(grep -E '^- [A-Z][a-zA-Z]+' "$SPEC_FILE" | sed 's/^- //' | cut -d' ' -f1)
+
+for VIEW in $VIEWS; do
+  PROPS_NAME="${VIEW}Props"
+  if ! grep -q "export interface $PROPS_NAME" "$TYPES_FILE"; then
+    echo "Warning: Missing Props interface '$PROPS_NAME' for view '$VIEW'"
+  fi
+done
+```
+
+**4. If Props interfaces are missing:**
+
+```
+Warning: types.ts is missing Props interfaces for some views defined in spec.md:
+- Missing: DetailViewProps (for DetailView)
+- Missing: CreateFormProps (for CreateForm)
+
+Each view component needs a Props interface. Please add them to types.ts before running /design-screen.
+```
+
+This validation ensures that all views have properly typed props before screen design creation.
+
 ## Step 7: Generate TypeScript Types
 
 After creating data.json, generate `product/sections/[section-id]/types.ts` based on the data structure.

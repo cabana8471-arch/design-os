@@ -287,13 +287,22 @@ export function loadScreenDesignComponent(
   const loader = screenDesignModules[path]
 
   if (!loader && import.meta.env.DEV) {
+    const MAX_PATHS_SHOWN = 10
+    const availablePaths = Object.keys(screenDesignModules)
+      .filter((p) => p.includes(`/src/sections/${sectionId}/`))
+    const totalCount = availablePaths.length
+    const shownPaths = availablePaths.slice(0, MAX_PATHS_SHOWN)
+    const remaining = totalCount - shownPaths.length
+
+    let pathsMessage = shownPaths.map((p) => `  - ${p}`).join('\n') || '  (none)'
+    if (remaining > 0) {
+      pathsMessage += `\n  ... and ${remaining} more`
+    }
+
     console.warn(
       `[section-loader] Screen design component not found: ${path}\n` +
-        `Available paths for section "${sectionId}":\n` +
-        Object.keys(screenDesignModules)
-          .filter((p) => p.includes(`/src/sections/${sectionId}/`))
-          .map((p) => `  - ${p}`)
-          .join('\n') || '  (none)'
+        `Available paths for section "${sectionId}" (${totalCount} total):\n` +
+        pathsMessage
     )
   }
 

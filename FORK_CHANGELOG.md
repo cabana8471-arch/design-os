@@ -6,7 +6,58 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-27 21:30] Critical & High Priority Fixes: Command Improvements & Documentation
+## [2025-12-27 20:15] Medium Priority P2 Fixes: Validation, Documentation & Code Quality
+
+### Description
+Implementation of 12 MEDIUM PRIORITY (P2) fixes from the analysis plan. These fixes address validation gaps in command workflows, documentation clarity, and React code quality improvements.
+
+### Modified Files
+| File | Modification |
+|------|--------------|
+| `.claude/commands/design-os/product-vision.md` | Added Step 4 "Cross-Validate with Existing Roadmap" section to detect product name inconsistencies between product-overview.md and existing product-roadmap.md |
+| `.claude/commands/design-os/design-tokens.md` | Enhanced "Font Weight Validation" with detailed verification instructions including Google Fonts URL pattern, required weights table, and common font availability reference |
+| `.claude/commands/design-os/sample-data.md` | Added "Multi-View Props Interface Validation" section with extraction steps, Props naming convention, and validation script for multi-view sections |
+| `.claude/commands/design-os/design-screen.md` | Added "Extract and Validate Section ID" section to verify section-id from spec path matches selected section. Replaced duplicated fallback design principles with reference to design-shell.md Step 1 |
+| `.claude/commands/design-os/export-product.md` | Added explicit "Variable Substitution for section-prompt.md" table clarifying which variables to substitute vs. leave as placeholders |
+| `src/components/ScreenDesignPage.tsx` | Fixed unsafe type assertion at line 346 - now validates module structure before casting to Record<string, unknown> |
+| `src/components/ThemeToggle.tsx` | Wrapped isDark calculation in useMemo to avoid calling window.matchMedia() on every render |
+| `src/lib/section-loader.ts` | Limited DEV logging output to max 10 paths with "... and N more" summary |
+| `src/components/ExportPage.tsx` | Fixed array index as React key - now uses stable key based on title and item |
+| `src/components/DataModelPage.tsx` | Fixed array index as React key - entities use entity.name, relationships use relationship text |
+| `agents.md` | Expanded vague docs/ reference with specific file list and descriptions |
+
+### Gaps Resolved
+- **P2-1:** product-vision.md no cross-validation with existing roadmap → Added validation step
+- **P2-2:** design-tokens.md Google Font weight verification missing → Added verification instructions
+- **P2-3:** sample-data.md multi-view props validation missing → Added Props interface validation
+- **P2-4:** design-screen.md section ID not extracted from spec path → Added extraction and validation
+- **P2-5:** export-product.md section prompt variable substitution order unclear → Added explicit table
+- **P2-6:** ScreenDesignPage.tsx unsafe type assertion → Fixed with pre-cast validation
+- **P2-7:** ThemeToggle.tsx window.matchMedia called every render → Wrapped in useMemo
+- **P2-8:** section-loader.ts DEV logging output unbounded → Limited to 10 paths max
+- **P2-9:** ExportPage.tsx using array index as React key → Fixed with stable identifier
+- **P2-10:** DataModelPage.tsx using array index as React key → Fixed with stable identifiers
+- **P2-11:** Fallback design principles duplicated → Replaced with reference to design-shell.md
+- **P2-12:** agents.md docs/ directory reference vague → Added specific file list
+
+### Statistics
+- Files modified: 11 (4 source code, 6 commands, 1 documentation)
+- P2 issues addressed: 12 (all fixed)
+- React code quality improvements: 4 (type safety, memoization, key stability)
+- Documentation/validation improvements: 8
+
+### Verification
+- ✅ All P2 medium priority issues resolved
+- ✅ Type safety improved in ScreenDesignPage.tsx
+- ✅ React key warnings resolved in ExportPage and DataModelPage
+- ✅ Performance optimization in ThemeToggle.tsx
+- ✅ DEV logging bounded in section-loader.ts
+- ✅ Command documentation enhanced with validation steps
+- ✅ Duplicate content removed via reference
+
+---
+
+## [2025-12-27 19:30] Critical & High Priority Fixes: Command Improvements & Documentation
 
 ### Description
 Implementation of CRITICAL PRIORITY (P0) and HIGH PRIORITY (P1) fixes from the analysis plan. These fixes address runtime errors, type safety issues, command workflow gaps, and documentation clarity improvements.

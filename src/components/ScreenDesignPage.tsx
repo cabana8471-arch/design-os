@@ -343,15 +343,19 @@ export function ScreenDesignFullscreen() {
     // Wrap the loader to provide default props to the shell
     return React.lazy(async () => {
       try {
-        const module = await loader() as Record<string, unknown>
+        // Load module first without type assertion - validate before casting
+        const rawModule = await loader()
 
-        // Validate module structure before type casting
-        if (!module) {
+        // Validate module exists and is an object before type assertion
+        if (!rawModule || typeof rawModule !== 'object') {
           if (import.meta.env.DEV) {
-            console.warn('[ScreenDesignFullscreen] AppShell module is null or undefined')
+            console.warn('[ScreenDesignFullscreen] AppShell module is null, undefined, or not an object')
           }
           return { default: ({ children }: { children?: React.ReactNode }) => <>{children}</> }
         }
+
+        // Safe to cast now - we've validated it's a non-null object
+        const module = rawModule as Record<string, unknown>
 
         // Check for valid export (default or named AppShell)
         const rawComponent = module.default ?? module.AppShell

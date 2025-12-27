@@ -41,39 +41,53 @@ Use AskUserQuestion with options:
 - "Continue with basic design principles" — Proceed using fallback guidance
 - "Stop — I'll add the skill file first" — END COMMAND
 
-Track user's choice - if continuing without skill file, use these **fallback design principles**:
+Track user's choice - if continuing without skill file, use the **fallback design principles** defined in `/design-shell` Step 1.
 
-**Visual Hierarchy:**
-- Use 1.5-2rem (24-32px) for main headings
-- Use 0.875-1rem (14-16px) for body text
-- Create clear distinction between primary, secondary, and tertiary elements
-
-**Spacing System:**
-- Use 8px increments for padding and margins (8, 16, 24, 32, 48, 64)
-- Maintain consistent gutter widths (16px on mobile, 24px on tablet, 32px on desktop)
-- Apply generous whitespace around primary actions
-
-**Component Patterns:**
-- Buttons: 40-44px height for primary actions, 32-36px for secondary
-- Cards: 16-24px padding, subtle shadows or borders
-- Tables: 12-16px cell padding, alternating row colors for readability
-
-**Responsive Breakpoints:**
-- Mobile: < 640px (single column, stacked layouts)
-- Tablet: 640-1024px (two columns, condensed tables)
-- Desktop: > 1024px (multi-column, full tables)
-
-**Dark Mode:**
-- Backgrounds: stone-900 to stone-950
-- Text: stone-100 to stone-300
-- Borders: stone-700 to stone-800
-- Increase contrast for interactive elements
+> **Note:** The fallback design principles (Visual Hierarchy, Spacing System, Component Patterns, Responsive Breakpoints, Dark Mode) are defined in `.claude/commands/design-os/design-shell.md` Step 1. This avoids duplication and ensures consistency between shell and screen design commands.
 
 ### Identify Target Section
 
 Read `/product/product-roadmap.md` to get the list of available sections.
 
 If there's only one section, auto-select it. If there are multiple sections, use the AskUserQuestion tool to ask which section the user wants to create a screen design for.
+
+### Extract and Validate Section ID
+
+After selecting a section, extract and validate the section ID from the spec path:
+
+**1. Extract section-id from spec path:**
+
+```bash
+# Given spec path: product/sections/invoices/spec.md
+# Extract section-id: invoices
+SPEC_PATH="product/sections/[section-id]/spec.md"
+SECTION_ID=$(echo "$SPEC_PATH" | sed 's|product/sections/||' | sed 's|/spec.md||')
+echo "Extracted section-id: $SECTION_ID"
+```
+
+**2. Verify section-id matches selected section:**
+
+Compare the extracted section-id with the section selected from the roadmap:
+
+| Source | Section ID |
+|--------|------------|
+| From roadmap selection | `[selected-section-id]` |
+| From spec path | `[extracted-section-id]` |
+
+**3. If IDs don't match:**
+
+```
+Warning: Section ID mismatch detected.
+- Selected from roadmap: "[selected-section-id]"
+- Extracted from spec path: "[extracted-section-id]"
+
+This may indicate a file was moved or renamed. Please verify you're working with the correct section.
+```
+
+Use AskUserQuestion with options:
+- "Continue with roadmap section" — Use the section ID from roadmap
+- "Continue with spec path section" — Use the section ID from file path
+- "Cancel — I'll verify the files first" — END COMMAND
 
 ### Verify Section Files
 

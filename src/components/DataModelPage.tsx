@@ -47,9 +47,9 @@ export function DataModelPage() {
                     <p className="text-stone-500 dark:text-stone-400">No entities defined.</p>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {dataModel.entities.map((entity, index) => (
+                      {dataModel.entities.map((entity) => (
                         <div
-                          key={index}
+                          key={entity.name}
                           className="bg-stone-50 dark:bg-stone-800/50 rounded-lg p-4"
                         >
                           <h3 className="font-semibold text-stone-900 dark:text-stone-100 mb-1">
@@ -80,8 +80,8 @@ export function DataModelPage() {
                     <p className="text-stone-500 dark:text-stone-400">No relationships defined.</p>
                   ) : (
                     <ul className="space-y-2">
-                      {dataModel.relationships.map((relationship, index) => (
-                        <li key={index} className="flex items-start gap-3">
+                      {dataModel.relationships.map((relationship) => (
+                        <li key={relationship} className="flex items-start gap-3">
                           <span className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-500 mt-2 shrink-0" />
                           <span className="text-stone-700 dark:text-stone-300">
                             {relationship}

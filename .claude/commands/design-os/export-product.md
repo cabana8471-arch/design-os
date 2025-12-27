@@ -1580,6 +1580,22 @@ The templates are designed to be concatenated in a specific order. Do NOT reorde
 7. `section/clarifying-questions.md` — Clarifying questions (section-specific)
 8. `common/verification-checklist.md` — Final verification checklist
 
+**Variable Substitution for section-prompt.md:**
+
+Unlike one-shot-prompt.md, section-prompt.md is a **template** that users fill in for each section. The substitution rules are:
+
+| Variable | Substitute During Export? | Reason |
+|----------|--------------------------|--------|
+| `[Product Name]` | ✅ YES — from product-overview.md | Same for all sections |
+| `SECTION_NAME` | ❌ NO — leave as placeholder | User fills in (e.g., "Invoices") |
+| `SECTION_ID` | ❌ NO — leave as placeholder | User fills in (e.g., "invoices") |
+| `NN` | ❌ NO — leave as placeholder | User fills in (e.g., "02", "03") |
+
+This means when assembling section-prompt.md:
+1. Read the product name from `product/product-overview.md`
+2. Replace all `[Product Name]` occurrences with the actual product name
+3. Leave `SECTION_NAME`, `SECTION_ID`, and `NN` unchanged for user substitution
+
 **4. Version Comment Handling**
 - Strip all version comments from the top of each template before concatenating
 - Version formats: `<!-- v1.0.0 -->`, `<!-- v1.2.0-section -->`, etc.

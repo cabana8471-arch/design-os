@@ -94,6 +94,36 @@ The product name is critical because:
 
 Once the user approves (product name was validated in Step 3):
 
+### Cross-Validate with Existing Roadmap
+
+Before creating the file, check if a product-roadmap.md already exists:
+
+```bash
+if [ -f "product/product-roadmap.md" ]; then
+  echo "Existing roadmap found"
+fi
+```
+
+**If product-roadmap.md exists:**
+
+1. Extract the product name from the existing roadmap (look for `# ` heading)
+2. Compare with the new product name being saved
+
+**If names don't match:**
+
+```
+Warning: A product-roadmap.md already exists with a different product name.
+- Existing roadmap references: "[Existing Name]"
+- New product vision uses: "[New Name]"
+
+This inconsistency may cause confusion. Would you like to:
+1. Update the new product vision to match the existing name
+2. Keep the new name (you'll need to update the roadmap manually)
+3. Cancel and review both files first
+```
+
+Use AskUserQuestion with these options. This prevents silent inconsistencies between product files.
+
 ### Pre-Creation Validation
 
 **Before writing the file, verify all required content exists:**

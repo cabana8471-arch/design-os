@@ -137,6 +137,31 @@ If the algorithm reaches `ASK_USER`, use AskUserQuestion:
 
 After the user selects fonts, verify all required weights are available:
 
+**How to Verify Font Weights:**
+
+1. **Google Fonts API Check:** Visit `https://fonts.google.com/specimen/[Font+Name]` (replace spaces with `+`)
+   - Example: `https://fonts.google.com/specimen/DM+Sans`
+   - The page shows all available weights in the "Styles" section
+
+2. **Required Weights by Usage:**
+   | Font Type | Required Weights | Why Needed |
+   |-----------|------------------|------------|
+   | Heading | 400, 500, 600, 700 | Normal, medium, semibold headings, bold emphasis |
+   | Body | 400, 500, 600 | Normal text, medium buttons, semibold labels |
+   | Mono | 400, 500 | Code blocks, highlighted syntax |
+
+3. **Common Font Weight Availability:**
+   | Font | Available Weights |
+   |------|-------------------|
+   | Inter | 100-900 (variable) ✓ |
+   | DM Sans | 400, 500, 600, 700 ✓ |
+   | Poppins | 100-900 ✓ |
+   | JetBrains Mono | 100-800 ✓ |
+   | Fira Code | 300-700 ✓ |
+   | Source Sans 3 | 200-900 ✓ |
+
+**Verification Message:**
+
 "Let me verify the fonts will work with all UI elements:
 
 **[Heading Font]:** Checking for weights 400, 500, 600, 700...

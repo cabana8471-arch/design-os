@@ -23,7 +23,7 @@
  * - Key: 'theme'
  * - Values: 'light' | 'dark' | 'system'
  */
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Moon, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -72,7 +72,14 @@ export function ThemeToggle() {
     })
   }
 
-  const isDark = theme === 'dark' || (theme === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  // Memoize isDark to avoid calling window.matchMedia on every render
+  const isDark = useMemo(() => {
+    if (theme === 'dark') return true
+    if (theme === 'system' && typeof window !== 'undefined') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches
+    }
+    return false
+  }, [theme])
 
   return (
     <Button

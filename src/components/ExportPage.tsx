@@ -303,8 +303,8 @@ function ExportItem({ title, description, items }: ExportItemProps) {
       <h4 className="font-medium text-stone-900 dark:text-stone-100 mb-1">{title}</h4>
       <p className="text-xs text-stone-500 dark:text-stone-400 mb-3">{description}</p>
       <ul className="text-sm text-stone-600 dark:text-stone-400 space-y-1">
-        {items.map((item, index) => (
-          <li key={index} className="flex items-center gap-2">
+        {items.map((item) => (
+          <li key={`${title}-${item}`} className="flex items-center gap-2">
             <span className="w-1 h-1 rounded-full bg-stone-400 dark:bg-stone-500" />
             {item}
           </li>
