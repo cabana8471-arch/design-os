@@ -8,11 +8,39 @@ import { loadDesignSystem, hasDesignSystem } from './design-system-loader'
 import { loadShellInfo, hasShell } from './shell-loader'
 
 // Load markdown files from /product/ directory at build time
+// Note: import.meta.glob with eager:true loads all matching files at build time.
+// Files are loaded as raw strings; validation happens in parse functions.
 const productFiles = import.meta.glob('/product/*.md', {
   query: '?raw',
   import: 'default',
   eager: true,
 }) as Record<string, string>
+
+/**
+ * Validate that loaded markdown content is a non-empty string
+ * Returns true if valid, logs warning and returns false if malformed
+ */
+function validateMarkdownContent(content: unknown, path: string): content is string {
+  if (content === null || content === undefined) {
+    if (import.meta.env.DEV) {
+      console.warn(`[product-loader] File at ${path} is null or undefined`)
+    }
+    return false
+  }
+  if (typeof content !== 'string') {
+    if (import.meta.env.DEV) {
+      console.warn(`[product-loader] File at ${path} is not a string (got ${typeof content})`)
+    }
+    return false
+  }
+  if (content.trim().length === 0) {
+    if (import.meta.env.DEV) {
+      console.warn(`[product-loader] File at ${path} is empty`)
+    }
+    return false
+  }
+  return true
+}
 
 // Load zip files from root directory at build time
 const exportZipFiles = import.meta.glob('/product-plan.zip', {
@@ -161,12 +189,19 @@ export function parseProductRoadmap(md: string): ProductRoadmap | null {
  * Load all product data from markdown files and other sources
  */
 export function loadProductData(): ProductData {
-  const overviewContent = productFiles['/product/product-overview.md']
-  const roadmapContent = productFiles['/product/product-roadmap.md']
+  const overviewPath = '/product/product-overview.md'
+  const roadmapPath = '/product/product-roadmap.md'
+
+  const overviewContent = productFiles[overviewPath]
+  const roadmapContent = productFiles[roadmapPath]
+
+  // Validate content before parsing
+  const validOverview = validateMarkdownContent(overviewContent, overviewPath) ? overviewContent : null
+  const validRoadmap = validateMarkdownContent(roadmapContent, roadmapPath) ? roadmapContent : null
 
   return {
-    overview: overviewContent ? parseProductOverview(overviewContent) : null,
-    roadmap: roadmapContent ? parseProductRoadmap(roadmapContent) : null,
+    overview: validOverview ? parseProductOverview(validOverview) : null,
+    roadmap: validRoadmap ? parseProductRoadmap(validRoadmap) : null,
     dataModel: loadDataModel(),
     designSystem: loadDesignSystem(),
     shell: loadShellInfo(),

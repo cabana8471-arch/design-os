@@ -5,11 +5,39 @@
 import type { DataModel, Entity } from '@/types/product'
 
 // Load data model markdown file at build time
+// Note: import.meta.glob with eager:true loads all matching files at build time.
+// Files are loaded as raw strings; validation happens in parse functions.
 const dataModelFiles = import.meta.glob('/product/data-model/*.md', {
   query: '?raw',
   import: 'default',
   eager: true,
 }) as Record<string, string>
+
+/**
+ * Validate that loaded markdown content is a non-empty string
+ * Returns true if valid, logs warning and returns false if malformed
+ */
+function validateDataModelContent(content: unknown, path: string): content is string {
+  if (content === null || content === undefined) {
+    if (import.meta.env.DEV) {
+      console.warn(`[data-model-loader] File at ${path} is null or undefined`)
+    }
+    return false
+  }
+  if (typeof content !== 'string') {
+    if (import.meta.env.DEV) {
+      console.warn(`[data-model-loader] File at ${path} is not a string (got ${typeof content})`)
+    }
+    return false
+  }
+  if (content.trim().length === 0) {
+    if (import.meta.env.DEV) {
+      console.warn(`[data-model-loader] File at ${path} is empty`)
+    }
+    return false
+  }
+  return true
+}
 
 /**
  * Parse data-model.md content into DataModel structure
@@ -82,8 +110,15 @@ export function parseDataModel(md: string): DataModel | null {
  * Load the data model from markdown file
  */
 export function loadDataModel(): DataModel | null {
-  const content = dataModelFiles['/product/data-model/data-model.md']
-  return content ? parseDataModel(content) : null
+  const path = '/product/data-model/data-model.md'
+  const content = dataModelFiles[path]
+
+  // Validate content before parsing
+  if (!validateDataModelContent(content, path)) {
+    return null
+  }
+
+  return parseDataModel(content)
 }
 
 /**

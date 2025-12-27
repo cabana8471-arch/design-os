@@ -6,11 +6,39 @@ import type { ShellSpec, ShellInfo } from '@/types/product'
 import type { ComponentType, ReactNode } from 'react'
 
 // Load shell spec markdown file at build time
+// Note: import.meta.glob with eager:true loads all matching files at build time.
+// Files are loaded as raw strings; validation happens in parse functions.
 const shellSpecFiles = import.meta.glob('/product/shell/*.md', {
   query: '?raw',
   import: 'default',
   eager: true,
 }) as Record<string, string>
+
+/**
+ * Validate that loaded markdown content is a non-empty string
+ * Returns true if valid, logs warning and returns false if malformed
+ */
+function validateShellSpecContent(content: unknown, path: string): content is string {
+  if (content === null || content === undefined) {
+    if (import.meta.env.DEV) {
+      console.warn(`[shell-loader] File at ${path} is null or undefined`)
+    }
+    return false
+  }
+  if (typeof content !== 'string') {
+    if (import.meta.env.DEV) {
+      console.warn(`[shell-loader] File at ${path} is not a string (got ${typeof content})`)
+    }
+    return false
+  }
+  if (content.trim().length === 0) {
+    if (import.meta.env.DEV) {
+      console.warn(`[shell-loader] File at ${path} is empty`)
+    }
+    return false
+  }
+  return true
+}
 
 // Load shell components lazily
 const shellComponentModules = import.meta.glob('/src/shell/components/*.tsx') as Record<
@@ -153,8 +181,12 @@ export function loadShellPreview(): (() => Promise<{ default: ComponentType }>) 
  * Load the complete shell info
  */
 export function loadShellInfo(): ShellInfo | null {
-  const specContent = shellSpecFiles['/product/shell/spec.md']
-  const spec = specContent ? parseShellSpec(specContent) : null
+  const specPath = '/product/shell/spec.md'
+  const specContent = shellSpecFiles[specPath]
+
+  // Validate content before parsing
+  const validSpec = validateShellSpecContent(specContent, specPath) ? specContent : null
+  const spec = validSpec ? parseShellSpec(validSpec) : null
   const hasComponents = hasShellComponents()
 
   // Return null if neither spec nor components exist

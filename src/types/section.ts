@@ -4,6 +4,13 @@
 
 export interface SectionData {
   sectionId: string
+  /**
+   * Whether any artifacts exist for this section.
+   * true = at least one of spec, data, screenDesigns, or screenshots exists
+   * false = section ID was requested but no artifacts found
+   * This helps distinguish "not loaded" vs "loaded but empty" states.
+   */
+  exists: boolean
   spec: string | null
   specParsed: ParsedSpec | null
   data: Record<string, unknown> | null

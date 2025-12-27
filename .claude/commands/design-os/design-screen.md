@@ -4,13 +4,59 @@ You are helping the user create a screen design for a section of their product. 
 
 ## Step 1: Check Prerequisites
 
-First, identify the target section and verify that `spec.md`, `data.json`, and `types.ts` all exist.
+First, identify the target section and verify that all required files exist.
+
+### Validate Design Guidance (Skill File)
+
+Check that the frontend-design skill file exists and has meaningful content:
+
+```bash
+# Check file exists
+if [ ! -f ".claude/skills/frontend-design/SKILL.md" ]; then
+  echo "Warning: SKILL.md - File not found at .claude/skills/frontend-design/SKILL.md"
+fi
+
+# Check file has meaningful content (>100 characters after frontmatter)
+CONTENT_LENGTH=$(sed '/^---$/,/^---$/d' .claude/skills/frontend-design/SKILL.md | tr -d '[:space:]' | wc -c)
+if [ "$CONTENT_LENGTH" -lt 100 ]; then
+  echo "Warning: SKILL.md - Insufficient content (< 100 chars). Add meaningful design guidance."
+fi
+```
+
+**If the file is missing or has insufficient content:**
+
+Show a warning and offer to continue with fallback guidance:
+
+```
+Note: The frontend-design skill file at `.claude/skills/frontend-design/SKILL.md` is missing or empty.
+
+Without this guidance, the screen design may be more generic. You can:
+1. Continue anyway — I'll use basic design principles (results may be less distinctive)
+2. Stop here — Add the skill file first for better design quality
+
+The skill file provides guidance on creating distinctive, production-grade interfaces.
+```
+
+Use AskUserQuestion with options:
+- "Continue with basic design principles" — Proceed using fallback guidance
+- "Stop — I'll add the skill file first" — END COMMAND
+
+Track user's choice - if continuing without skill file, use fallback design principles:
+- Create clean, functional interfaces with clear visual hierarchy
+- Use consistent spacing and alignment
+- Apply the design tokens (colors, typography) thoughtfully
+- Ensure responsive design and dark mode support
+- Focus on usability over decoration
+
+### Identify Target Section
 
 Read `/product/product-roadmap.md` to get the list of available sections.
 
 If there's only one section, auto-select it. If there are multiple sections, use the AskUserQuestion tool to ask which section the user wants to create a screen design for.
 
-Then verify all required files exist:
+### Verify Section Files
+
+Verify all required files exist for the selected section:
 
 - `product/sections/[section-id]/spec.md`
 - `product/sections/[section-id]/data.json`
@@ -20,17 +66,17 @@ If any file is missing, show a specific error message:
 
 **If `spec.md` doesn't exist:**
 ```
-Missing: product/sections/[section-id]/spec.md. Run /shape-section to create it.
+Error: spec.md - File not found at product/sections/[section-id]/spec.md. Run /shape-section to create it.
 ```
 
 **If `data.json` doesn't exist:**
 ```
-Missing: product/sections/[section-id]/data.json. Run /sample-data to create it.
+Error: data.json - File not found at product/sections/[section-id]/data.json. Run /sample-data to create it.
 ```
 
 **If `types.ts` doesn't exist:**
 ```
-Missing: product/sections/[section-id]/types.ts. Run /sample-data to create it.
+Error: types.ts - File not found at product/sections/[section-id]/types.ts. Run /sample-data to create it.
 ```
 
 Stop here if any required file is missing.
@@ -62,11 +108,68 @@ Read and analyze all three files:
 2. **data.json** - Understand the data structure and sample content
 3. **types.ts** - Understand the TypeScript interfaces and available callbacks
 
-Identify what views are needed based on the spec. Common patterns:
+Identify what views are needed by extracting them from the spec.
 
-- List/dashboard view (showing multiple items)
-- Detail view (showing a single item)
-- Form/create view (for adding/editing)
+### Views Extraction from spec.md
+
+The `## Views` section in spec.md defines all views for a section. Extract views using this format:
+
+**Expected spec.md format:**
+
+```markdown
+## Views
+- ListView — Shows all items in a table with filtering
+- DetailView — Displays single item details with edit capability
+- CreateForm — Modal form for adding new items
+```
+
+**Extraction rules:**
+
+1. Look for `## Views` section in spec.md
+2. Each line starting with `- ` defines one view
+3. Parse format: `- [ViewName] — [Description]` (em-dash separator)
+4. If no `## Views` section exists, treat as single-view section (default view name derived from section title)
+
+**Parsing algorithm:**
+
+```
+views = []
+in_views_section = false
+
+for line in spec_lines:
+  if line matches "## Views":
+    in_views_section = true
+  elif line matches "## " and in_views_section:
+    break  # Next section started
+  elif in_views_section and line.startswith("- "):
+    # Parse: "- ViewName — Description"
+    parts = line[2:].split(" — ", 1)
+    view_name = parts[0].strip()
+    description = parts[1].strip() if len(parts) > 1 else ""
+    views.append({ name: view_name, description: description })
+
+if len(views) == 0:
+  # Single-view section - derive name from section title
+  views.append({ name: sectionTitle + "View", description: "Main view" })
+```
+
+**Common view patterns:**
+
+| Pattern | Views | Use Case |
+|---------|-------|----------|
+| Single view | `[SectionName]View` | Simple sections (settings, about page) |
+| List + Detail | `ListView`, `DetailView` | CRUD for a single entity |
+| List + Detail + Form | `ListView`, `DetailView`, `CreateForm` | Full CRUD operations |
+| Dashboard + Settings | `DashboardView`, `SettingsView` | Section with config |
+
+**Validation:**
+
+If the `## Views` section exists but has no valid entries:
+```
+Warning: spec.md has a ## Views section but no views could be parsed.
+Expected format: "- ViewName — Description"
+Proceeding as single-view section.
+```
 
 ## Step 4: Clarify the Screen Design Scope
 
@@ -175,66 +278,11 @@ When navigating to `/sections/[section-id]`:
 
 **See also:** `/shape-section` documents the full multi-view workflow from spec to screenshot
 
-## Step 5: Read Frontend Design Guidance
+## Step 5: Apply Frontend Design Guidance
 
-Before creating the screen design, read the `frontend-design` skill guidance to ensure high-quality design output.
+Before creating the screen design, apply the design guidance (validated in Step 1) to ensure high-quality design output.
 
-### Validate Skill File Exists and Has Content
-
-First, check that the frontend-design skill file exists at `.claude/skills/frontend-design/SKILL.md` and contains meaningful content.
-
-**Validation Steps:**
-
-1. **Check file exists:**
-   ```bash
-   if [ ! -f ".claude/skills/frontend-design/SKILL.md" ]; then
-     echo "Missing: .claude/skills/frontend-design/SKILL.md"
-     exit 1
-   fi
-   ```
-
-2. **Check file has meaningful content (>100 characters after frontmatter):**
-   ```bash
-   # Count content length excluding frontmatter and blank lines
-   CONTENT_LENGTH=$(sed '/^---$/,/^---$/d' .claude/skills/frontend-design/SKILL.md | tr -d '[:space:]' | wc -c)
-   if [ "$CONTENT_LENGTH" -lt 100 ]; then
-     echo "The skill file exists but appears to be empty or contains only frontmatter."
-     exit 1
-   fi
-   ```
-
-**If the file is missing or has insufficient content:**
-
-Show a warning and offer to continue with fallback guidance:
-
-```
-Note: The frontend-design skill file at `.claude/skills/frontend-design/SKILL.md` is missing or empty.
-
-Without this guidance, the screen design may be more generic. You can:
-1. Continue anyway — I'll use basic design principles (results may be less distinctive)
-2. Stop here — Add the skill file first for better design quality
-
-The skill file provides guidance on creating distinctive, production-grade interfaces that avoid common "AI-generated" aesthetics.
-```
-
-Use AskUserQuestion with options:
-- "Continue with basic design principles" — Proceed to Step 6 using fallback guidance
-- "Stop — I'll add the skill file first" — END COMMAND
-
-**If user chooses to continue without the skill file:**
-
-Use these fallback design principles:
-- Create clean, functional interfaces with clear visual hierarchy
-- Use consistent spacing and alignment
-- Apply the design tokens (colors, typography) thoughtfully
-- Ensure responsive design and dark mode support
-- Focus on usability over decoration
-
-Note: Results will be functional but may lack the distinctive character that the frontend-design skill provides.
-
-### Read Design Guidance
-
-**Read the file `.claude/skills/frontend-design/SKILL.md` now.** Follow its guidance for creating distinctive, production-grade interfaces.
+**If the skill file was validated in Step 1, read it now:** `.claude/skills/frontend-design/SKILL.md`
 
 ### Key Design Principles to Follow
 
@@ -244,6 +292,8 @@ From the frontend-design skill:
 - Apply thoughtful spacing and typography choices
 - Implement meaningful interactions and animations
 - Ensure accessibility and responsive design throughout
+
+**If user chose to continue without the skill file in Step 1**, use the fallback design principles noted earlier.
 
 ## Step 6: Create the Props-Based Component
 

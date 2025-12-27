@@ -6,7 +6,65 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-27 10:30] CRITICAL P0 Fixes: Runtime Errors, Type Safety & Command Conflicts
+## [2025-12-27 12:15] HIGH PRIORITY P1 Fixes: Validation, Error Handling & Command Improvements
+
+### Description
+
+Implementation of 9 HIGH PRIORITY (P1) fixes from the analysis plan (deep-tickling-simon.md). These fixes address validation gaps, error handling improvements, and command workflow optimizations for more robust operation.
+
+### Modified Files
+
+| File | Modification |
+|------|--------------|
+| `src/lib/section-loader.ts` | Added `validateDataFileContent()` function for validating glob-loaded data.json content. Updated `loadSectionData()` to validate before using. Added `exists` flag calculation. Added validation mode to `parseSpec()` with DEV-mode warnings for missing sections. |
+| `src/lib/product-loader.ts` | Added `validateMarkdownContent()` function for validating glob-loaded markdown content. Updated `loadProductData()` to validate content before parsing. |
+| `src/lib/shell-loader.ts` | Added `validateShellSpecContent()` function for validating glob-loaded shell spec content. Updated `loadShellInfo()` to validate content before parsing. |
+| `src/lib/data-model-loader.ts` | Added `validateDataModelContent()` function for validating glob-loaded data model content. Updated `loadDataModel()` to validate content before parsing. |
+| `src/types/section.ts` | Added `exists: boolean` flag to `SectionData` interface with JSDoc documentation explaining the distinction between "not loaded" vs "loaded but empty". |
+| `src/components/ScreenDesignPage.tsx` | Improved type casting validation: now validates module exists and has valid export before casting. Added explicit null checks before type assertion. Changed theme sync polling from 100ms to 250ms for better performance. |
+| `src/components/ShellDesignPage.tsx` | Changed theme sync polling from 100ms to 250ms for better performance. |
+| `.claude/commands/design-os/design-shell.md` | Moved skill file validation from Step 5 to Step 1 (Prerequisites). Added validation script and fallback guidance. Simplified Step 5 to reference validation done in Step 1. |
+| `.claude/commands/design-os/design-screen.md` | Moved skill file validation from Step 5 to Step 1 (Prerequisites). Added "Views Extraction from spec.md" section with explicit format documentation, parsing algorithm, and validation rules. Simplified Step 5 to reference validation done in Step 1. |
+| `.claude/commands/design-os/shape-section.md` | Moved section ID validation from Step 7 to Step 2 (immediately after section selection). Added explicit Section ID Generation Rules in Step 2. Removed duplicate validation from Step 7. |
+| `.claude/commands/design-os/export-product.md` | Added max depth (10 levels) and stopping conditions to recursive component validation. Added "Recursion Limits and Stopping Conditions" table. Added pseudocode for depth tracking. Added circular import detection and handling. |
+
+### Issues Addressed (from analysis plan)
+
+| Issue # | Category | File | Title | Resolution |
+|---------|----------|------|-------|------------|
+| P1-1 | Source | All loaders | import.meta.glob() no error handling for malformed JSON | Added validation functions to all 4 loaders with DEV-mode warnings |
+| P1-2 | Source | ScreenDesignPage.tsx | Type casting before export validation | Added explicit module and export validation before type cast |
+| P1-3 | Source | SectionPage.tsx | Can't distinguish "not loaded" vs "loaded but empty" | Added `exists` flag to SectionData interface |
+| P1-4 | Source | section-loader.ts | Regex parsing silently produces empty data | Added validation mode with DEV warnings for missing sections |
+| P1-5 | Source | ScreenDesignPage.tsx, ShellDesignPage.tsx | 100ms polling with no debouncing | Increased interval from 100ms to 250ms |
+| P1-6 | Command | design-shell.md, design-screen.md | Skill file validated after prerequisites | Moved validation to Step 1 (Prerequisites) |
+| P1-7 | Command | shape-section.md | Section ID validated after user approval | Moved validation to Step 2 (after section selection) |
+| P1-8 | Command | export-product.md | Component validation recursion has no stopping condition | Added max depth (10), cycle detection, and stopping rules |
+| P1-9 | Command | design-screen.md | Views in spec extraction not documented | Added explicit "Views Extraction from spec.md" documentation |
+
+### Statistics
+
+- **Files modified:** 11 (7 source code, 4 commands)
+- **Source code fixes:** 5 (P1-1 through P1-5)
+- **Command fixes:** 4 (P1-6 through P1-9)
+- **New validation functions:** 4 (one per loader)
+- **New documentation sections:** 3 (Views Extraction, Recursion Limits, Section ID validation)
+- **Performance improvement:** Theme sync polling reduced from 10 calls/sec to 4 calls/sec
+
+### Verification
+
+- TypeScript compilation passes without errors (`npx tsc --noEmit`)
+- All loaders now validate content before parsing with DEV-mode warnings
+- SectionData.exists flag enables distinguishing empty vs non-existent sections
+- ScreenDesignPage validates module structure before unsafe type casts
+- Skill file validation happens upfront in prerequisites (fail fast)
+- Section ID validation prevents orphaned specifications
+- Component validation recursion is bounded and handles cycles
+- Views extraction format is explicitly documented with parsing algorithm
+
+---
+
+## [2025-12-27 09:48] CRITICAL P0 Fixes: Runtime Errors, Type Safety & Command Conflicts
 
 ### Description
 

@@ -342,6 +342,32 @@ export function ScreenDesignFullscreen() {
     return React.lazy(async () => {
       try {
         const module = await loader() as Record<string, unknown>
+
+        // Validate module structure before type casting
+        if (!module) {
+          if (import.meta.env.DEV) {
+            console.warn('[ScreenDesignFullscreen] AppShell module is null or undefined')
+          }
+          return { default: ({ children }: { children?: React.ReactNode }) => <>{children}</> }
+        }
+
+        // Check for valid export (default or named AppShell)
+        const rawComponent = module.default ?? module.AppShell
+        if (!rawComponent) {
+          if (import.meta.env.DEV) {
+            console.warn('[ScreenDesignFullscreen] AppShell module has no default or AppShell export')
+          }
+          return { default: ({ children }: { children?: React.ReactNode }) => <>{children}</> }
+        }
+
+        // Validate it's a function before casting
+        if (typeof rawComponent !== 'function') {
+          if (import.meta.env.DEV) {
+            console.warn(`[ScreenDesignFullscreen] AppShell export is not a function (got ${typeof rawComponent})`)
+          }
+          return { default: ({ children }: { children?: React.ReactNode }) => <>{children}</> }
+        }
+
         /**
          * Type for shell component props.
          * AppShell components accept navigation categories, user info, and callbacks.
@@ -363,14 +389,9 @@ export function ScreenDesignFullscreen() {
           onNavigate?: (href: string) => void
           onLogout?: () => void
         }
-        const ShellComponent = (module?.default || module?.AppShell) as React.ComponentType<ShellComponentProps>
 
-        if (typeof ShellComponent !== 'function') {
-          if (import.meta.env.DEV) {
-            console.warn('[ScreenDesignFullscreen] AppShell does not have a valid export')
-          }
-          return { default: ({ children }: { children?: React.ReactNode }) => <>{children}</> }
-        }
+        // Safe to cast now - we've validated it's a function
+        const ShellComponent = rawComponent as React.ComponentType<ShellComponentProps>
 
         // Create a wrapper that provides default props to the shell
         const ShellWrapper = ({ children }: { children?: React.ReactNode }) => {
@@ -426,7 +447,8 @@ export function ScreenDesignFullscreen() {
     window.addEventListener('storage', handleStorageChange)
 
     // Also poll for changes since storage event doesn't fire in same window
-    const interval = setInterval(applyTheme, 100)
+    // Using 250ms interval to balance responsiveness with performance
+    const interval = setInterval(applyTheme, 250)
 
     return () => {
       window.removeEventListener('storage', handleStorageChange)

@@ -22,9 +22,51 @@ If there's only one section, auto-select it. If there are multiple sections, use
 
 Present the available sections as options.
 
+### Validate Section ID
+
+Once a section is selected, immediately generate and validate its section-id:
+
+**Section ID Generation Rules:**
+1. Convert to lowercase
+2. Replace spaces with hyphens
+3. Replace "&" with "-and-"
+4. Remove special characters except hyphens
+5. Cannot start or end with hyphen
+6. Maximum 50 characters
+
+**Examples:**
+- "Invoice Management" → `invoice-management`
+- "Reports & Analytics" → `reports-and-analytics`
+- "User Settings" → `user-settings`
+
+**Validate against roadmap:**
+
+```bash
+# Extract section titles from roadmap
+section_titles=$(grep -E '^### [0-9]+\.' product/product-roadmap.md | sed 's/### [0-9]*\. //')
+
+# Generate expected IDs and compare with selected section
+```
+
+**If section title doesn't match any roadmap section:**
+
+```
+Error: The section "[selected-title]" doesn't match any section in product-roadmap.md.
+
+Existing roadmap sections:
+- [section-1-title]
+- [section-2-title]
+
+Did you mean one of these?
+```
+
+Use AskUserQuestion with options from existing roadmap sections.
+
+This validation ensures we don't create orphaned specifications for non-existent sections.
+
 ### Check for Existing Specification
 
-After identifying the target section, check if a spec already exists at `product/sections/[section-id]/spec.md`.
+After validating the section ID, check if a spec already exists at `product/sections/[section-id]/spec.md`.
 
 **If spec.md already exists:**
 
@@ -249,7 +291,7 @@ fi
 
 ### Create the Specification File
 
-Then create the file at `product/sections/[section-id]/spec.md` with this exact format:
+Use the section-id validated in Step 2 to create the file at `product/sections/[section-id]/spec.md` with this exact format:
 
 ```markdown
 # [Section Title] Specification
@@ -281,60 +323,7 @@ Then create the file at `product/sections/[section-id]/spec.md` with this exact 
 **Important:**
 - Set `shell: true` if the section should display inside the app shell (this is the default)
 - Set `shell: false` if the section should display as a standalone page without the shell
-
-### Section ID Generation Rules
-
-The `section-id` is generated from the section title following these rules:
-
-1. Convert to lowercase
-2. Replace spaces with hyphens
-3. Replace "&" with "-and-"
-4. Remove special characters except hyphens
-5. Cannot start or end with hyphen
-6. Maximum 50 characters
-
-**Examples:**
-- "Invoice Management" → `invoice-management`
-- "Reports & Analytics" → `reports-and-analytics`
-- "User Settings" → `user-settings`
-
-### Validate Section ID Against Roadmap
-
-After generating the section ID, verify it matches a section title from the roadmap:
-
-1. **Read the roadmap:** Extract section titles from `/product/product-roadmap.md`
-2. **Generate expected IDs:** Apply the Section ID Generation Rules to each title
-3. **Compare:** Verify the generated ID matches one of the expected IDs
-
-**Validation Script (conceptual):**
-
-```bash
-# Extract section titles from roadmap
-# Each section is formatted as: ### N. [Section Title]
-section_titles=$(grep -E '^### [0-9]+\.' product/product-roadmap.md | sed 's/### [0-9]*\. //')
-
-# For each title, generate the expected section ID
-# Compare with the ID you're about to create
-```
-
-**If ID doesn't match any roadmap section:**
-
-```
-Warning: The section ID '[generated-id]' doesn't match any section in product-roadmap.md.
-
-Existing roadmap sections:
-- [section-1-title] → [section-1-id]
-- [section-2-title] → [section-2-id]
-
-Did you mean one of these? Or would you like to add this as a new section to the roadmap?
-```
-
-Use AskUserQuestion with options:
-- "[Match 1] — Use existing section" — Continue with the matching ID
-- "[Match 2] — Use existing section" — Continue with the matching ID
-- "This is a new section — Add to roadmap" — Add to roadmap, then continue
-
-This validation ensures section IDs stay consistent between the roadmap and section specifications.
+- The section-id was already validated against the roadmap in Step 2
 
 ## Step 8: Confirm and Next Steps
 

@@ -18,9 +18,31 @@ const specFiles = import.meta.glob('/product/sections/*/spec.md', {
 }) as Record<string, string>
 
 // Load data.json files from product/sections at build time
+// Note: import.meta.glob with eager:true loads all matching files at build time.
+// Malformed JSON will cause build errors, but missing keys are handled gracefully.
 const dataFiles = import.meta.glob('/product/sections/*/data.json', {
   eager: true,
 }) as Record<string, { default: Record<string, unknown> }>
+
+/**
+ * Validate that loaded data.json content has expected structure
+ * Returns true if valid, logs warning and returns false if malformed
+ */
+function validateDataFileContent(data: unknown, path: string): data is Record<string, unknown> {
+  if (data === null || data === undefined) {
+    if (import.meta.env.DEV) {
+      console.warn(`[section-loader] Data file at ${path} is null or undefined`)
+    }
+    return false
+  }
+  if (typeof data !== 'object' || Array.isArray(data)) {
+    if (import.meta.env.DEV) {
+      console.warn(`[section-loader] Data file at ${path} is not an object (got ${Array.isArray(data) ? 'array' : typeof data})`)
+    }
+    return false
+  }
+  return true
+}
 
 /**
  * Load screen design components from src/sections lazily
@@ -98,18 +120,34 @@ function extractScreenshotName(path: string): string | null {
  *
  * ## Configuration (optional)
  * - shell: false (to disable app shell wrapping for this section's screen designs)
+ *
+ * Validation mode: In development, logs warnings when expected sections are missing or empty.
+ * This helps catch malformed spec files that would silently produce empty data.
  */
 export function parseSpec(md: string): ParsedSpec | null {
   if (!md || !md.trim()) return null
+
+  // Track validation warnings (reported in DEV mode)
+  const warnings: string[] = []
 
   try {
     // Extract title from first # heading
     const titleMatch = md.match(/^#\s+(.+)$/m)
     const title = titleMatch?.[1]?.trim() || 'Section Specification'
 
+    if (!titleMatch) {
+      warnings.push('Missing top-level # heading (using default title)')
+    }
+
     // Extract overview - content between ## Overview and next ##
     const overviewMatch = md.match(/## Overview\s*\n+([\s\S]*?)(?=\n## |\n#[^#]|$)/)
     const overview = overviewMatch?.[1]?.trim() || ''
+
+    if (!overviewMatch) {
+      warnings.push('Missing "## Overview" section')
+    } else if (!overview) {
+      warnings.push('"## Overview" section is empty')
+    }
 
     // Extract user flows - bullet list after ## User Flows
     const userFlowsSection = md.match(/## User Flows\s*\n+([\s\S]*?)(?=\n## |\n#[^#]|$)/)
@@ -125,6 +163,12 @@ export function parseSpec(md: string): ParsedSpec | null {
       }
     }
 
+    if (!userFlowsSection) {
+      warnings.push('Missing "## User Flows" section')
+    } else if (userFlows.length === 0) {
+      warnings.push('"## User Flows" section has no bullet items (expected "- Flow name")')
+    }
+
     // Extract UI requirements - bullet list after ## UI Requirements
     const uiReqSection = md.match(/## UI Requirements\s*\n+([\s\S]*?)(?=\n## |\n#[^#]|$)/)
     const uiRequirements: string[] = []
@@ -137,6 +181,18 @@ export function parseSpec(md: string): ParsedSpec | null {
           uiRequirements.push(trimmed.slice(2).trim())
         }
       }
+    }
+
+    if (!uiReqSection) {
+      warnings.push('Missing "## UI Requirements" section')
+    } else if (uiRequirements.length === 0) {
+      warnings.push('"## UI Requirements" section has no bullet items (expected "- Requirement")')
+    }
+
+    // Report validation warnings in DEV mode
+    if (import.meta.env.DEV && warnings.length > 0) {
+      console.warn(`[section-loader] spec.md validation (${title}):`)
+      warnings.forEach(w => console.warn(`  - ${w}`))
     }
 
     // Extract configuration - check for shell: false
@@ -253,15 +309,30 @@ export function loadSectionData(sectionId: string): SectionData {
 
   const specContent = specFiles[specPath] || null
   const dataModule = dataFiles[dataPath]
-  const data = dataModule?.default || null
+
+  // Validate data.json content before using
+  let data: Record<string, unknown> | null = null
+  if (dataModule?.default) {
+    if (validateDataFileContent(dataModule.default, dataPath)) {
+      data = dataModule.default
+    }
+  }
+
+  const screenDesigns = getSectionScreenDesigns(sectionId)
+  const screenshots = getSectionScreenshots(sectionId)
+
+  // Determine if any artifacts exist for this section
+  // This helps distinguish "section not found" from "section exists but is empty"
+  const exists = !!(specContent || data || screenDesigns.length > 0 || screenshots.length > 0)
 
   return {
     sectionId,
+    exists,
     spec: specContent,
     specParsed: specContent ? parseSpec(specContent) : null,
     data,
-    screenDesigns: getSectionScreenDesigns(sectionId),
-    screenshots: getSectionScreenshots(sectionId),
+    screenDesigns,
+    screenshots,
   }
 }
 

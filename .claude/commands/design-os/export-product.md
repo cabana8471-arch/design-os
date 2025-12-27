@@ -752,7 +752,16 @@ For each section, validate all component files in `src/sections/[section-id]/com
 
 ### Validate Sub-Components (Recursive)
 
-Components may import other components. Validate the full dependency tree:
+Components may import other components. Validate the full dependency tree with a **maximum depth of 10 levels** to prevent infinite loops from circular imports.
+
+**Recursion Limits and Stopping Conditions:**
+
+| Condition | Action |
+|-----------|--------|
+| Max depth reached (10 levels) | Stop recursion, warn user |
+| Component already visited in current path | Circular import detected, report error |
+| No more local imports | Stop recursion (base case) |
+| Import file doesn't exist | Report missing dependency, stop branch |
 
 **Step 1: Build dependency graph**
 
@@ -766,12 +775,36 @@ for component in src/sections/*/components/*.tsx; do
 done
 ```
 
-**Step 2: Validate all imported components**
+**Step 2: Validate all imported components (with depth tracking)**
 
 For each component referenced in imports:
-1. Check if the imported file exists in `components/`
-2. Apply the same validation rules (no data imports, props-based, etc.)
-3. Recursively check that component's imports
+1. Check if current depth > 10 → Stop with warning: "Max recursion depth reached. Component tree may be too deep or contain cycles."
+2. Check if component is already in the current validation path → Circular import detected, report error
+3. Check if the imported file exists in `components/`
+4. Apply the same validation rules (no data imports, props-based, etc.)
+5. Recursively check that component's imports (increment depth counter)
+
+**Recursion Implementation:**
+
+```
+function validateComponent(path, depth = 0, visited = []):
+  if depth > 10:
+    warn "Max recursion depth (10) reached at: {path}"
+    return  # Stop this branch
+
+  if path in visited:
+    error "Circular import detected: {visited} -> {path}"
+    return  # Circular dependency
+
+  visited.append(path)
+
+  # Validate this component's imports
+  for import in getLocalImports(path):
+    validateComponent(import, depth + 1, visited.copy())
+
+  # Validate this component's portability
+  checkPortability(path)
+```
 
 **Step 3: Report missing sub-components**
 
@@ -800,7 +833,19 @@ Error: Sub-component validation failed:
 Fix the sub-component before export.
 ```
 
-This ensures the entire component tree is portable, not just the top-level components.
+**Step 5: Handle circular imports**
+
+If circular imports are detected:
+
+```
+Error: Circular import detected in component tree:
+  InvoiceList.tsx → InvoiceCard.tsx → InvoiceRow.tsx → InvoiceList.tsx
+
+Circular imports prevent proper validation and may cause issues in the target codebase.
+Please refactor components to remove the circular dependency.
+```
+
+This ensures the entire component tree is portable, not just the top-level components, while preventing infinite loops during validation.
 
 ### If Validation Passes
 

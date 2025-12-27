@@ -213,7 +213,8 @@ export function ShellDesignFullscreen() {
     window.addEventListener('storage', handleStorageChange)
 
     // Also poll for changes since storage event doesn't fire in same window
-    const interval = setInterval(applyTheme, 100)
+    // Using 250ms interval to balance responsiveness with performance
+    const interval = setInterval(applyTheme, 250)
 
     return () => {
       window.removeEventListener('storage', handleStorageChange)

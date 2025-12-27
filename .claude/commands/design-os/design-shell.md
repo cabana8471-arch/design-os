@@ -9,20 +9,66 @@ First, verify prerequisites exist:
 1. Read `/product/product-overview.md` — Product name and description
 2. Read `/product/product-roadmap.md` — Sections for navigation
 3. Check if `/product/design-system/colors.json` and `/product/design-system/typography.json` exist
+4. Check if `.claude/skills/frontend-design/SKILL.md` exists and has content
 
-If either file is missing, show a specific error message:
+If any required file is missing, show a specific error message:
 
 **If `/product/product-overview.md` is missing:**
 ```
-Missing: product/product-overview.md. Run /product-vision to create it.
+Error: product-overview.md - File not found. Run /product-vision to create it.
 ```
 
 **If `/product/product-roadmap.md` is missing:**
 ```
-Missing: product/product-roadmap.md. Run /product-roadmap to create it.
+Error: product-roadmap.md - File not found. Run /product-roadmap to create it.
 ```
 
 Stop here if any required file is missing.
+
+### Validate Design Guidance (Skill File)
+
+Check that the frontend-design skill file exists and has meaningful content:
+
+```bash
+# Check file exists
+if [ ! -f ".claude/skills/frontend-design/SKILL.md" ]; then
+  echo "Warning: SKILL.md - File not found at .claude/skills/frontend-design/SKILL.md"
+  exit 1
+fi
+
+# Check file has meaningful content (>100 characters after frontmatter)
+CONTENT_LENGTH=$(sed '/^---$/,/^---$/d' .claude/skills/frontend-design/SKILL.md | tr -d '[:space:]' | wc -c)
+if [ "$CONTENT_LENGTH" -lt 100 ]; then
+  echo "Warning: SKILL.md - Insufficient content (< 100 chars). Add meaningful design guidance."
+fi
+```
+
+**If the file is missing or has insufficient content:**
+
+Show a warning and offer to continue with fallback guidance:
+
+```
+Note: The frontend-design skill file at `.claude/skills/frontend-design/SKILL.md` is missing or empty.
+
+Without this guidance, the shell design may be more generic. You can:
+1. Continue anyway — I'll use basic design principles (results may be less distinctive)
+2. Stop here — Add the skill file first for better design quality
+
+The skill file provides guidance on creating distinctive, production-grade interfaces.
+```
+
+Use AskUserQuestion with options:
+- "Continue with basic design principles" — Proceed using fallback guidance
+- "Stop — I'll add the skill file first" — END COMMAND
+
+Track user's choice - if continuing without skill file, use fallback design principles:
+- Create clean, functional interfaces with clear visual hierarchy
+- Use consistent spacing and alignment
+- Apply the design tokens (colors, typography) thoughtfully
+- Ensure responsive design and dark mode support
+- Focus on usability over decoration
+
+### Check Optional Enhancements
 
 If design tokens are missing, show a warning but continue:
 
@@ -93,70 +139,19 @@ Does this match what you had in mind?"
 
 Iterate until approved.
 
-## Step 5: Read Design Guidance
+## Step 5: Apply Design Guidance
 
-Before creating the shell specification and components, read the design guidance to ensure the shell has distinctive, production-grade aesthetics.
+Before creating the shell specification and components, apply the design guidance (validated in Step 1) to ensure the shell has distinctive, production-grade aesthetics.
 
-### Validate Skill File Exists and Has Content
+**If the skill file was validated in Step 1, read it now:** `.claude/skills/frontend-design/SKILL.md`
 
-First, check that the frontend-design skill file exists at `.claude/skills/frontend-design/SKILL.md` and contains meaningful content.
-
-**Validation Steps:**
-
-1. **Check file exists:**
-   ```bash
-   if [ ! -f ".claude/skills/frontend-design/SKILL.md" ]; then
-     echo "Missing: .claude/skills/frontend-design/SKILL.md"
-     exit 1
-   fi
-   ```
-
-2. **Check file has meaningful content (>100 characters after frontmatter):**
-   ```bash
-   # Count content length excluding frontmatter and blank lines
-   CONTENT_LENGTH=$(sed '/^---$/,/^---$/d' .claude/skills/frontend-design/SKILL.md | tr -d '[:space:]' | wc -c)
-   if [ "$CONTENT_LENGTH" -lt 100 ]; then
-     echo "The skill file exists but appears to be empty or contains only frontmatter."
-     exit 1
-   fi
-   ```
-
-**If the file is missing or has insufficient content:**
-
-Show a warning and offer to continue with fallback guidance:
-
-```
-Note: The frontend-design skill file at `.claude/skills/frontend-design/SKILL.md` is missing or empty.
-
-Without this guidance, the shell design may be more generic. You can:
-1. Continue anyway — I'll use basic design principles (results may be less distinctive)
-2. Stop here — Add the skill file first for better design quality
-
-The skill file provides guidance on creating distinctive, production-grade interfaces that avoid common "AI-generated" aesthetics.
-```
-
-Use AskUserQuestion with options:
-- "Continue with basic design principles" — Proceed to Step 6 using fallback guidance
-- "Stop — I'll add the skill file first" — END COMMAND
-
-**If user chooses to continue without the skill file:**
-
-Use these fallback design principles:
-- Create clean, functional interfaces with clear visual hierarchy
-- Use consistent spacing and alignment
-- Apply the design tokens (colors, typography) thoughtfully
-- Ensure responsive design and dark mode support
-- Focus on usability over decoration
-
-Note: Results will be functional but may lack the distinctive character that the frontend-design skill provides.
-
-### Read Design Guidance
-
-**Read the file `.claude/skills/frontend-design/SKILL.md` now.** Apply the following guidance:
+Apply the following guidance:
 - Creating distinctive UI that avoids generic "AI slop" aesthetics
 - Choosing bold design directions and unexpected layouts
 - Applying thoughtful typography and color choices
 - Using motion and transitions effectively
+
+**If user chose to continue without the skill file in Step 1**, use the fallback design principles noted earlier.
 
 This guidance applies to both the shell specification and shell components — the shell is a critical user-facing interface that should reflect your product's distinctive visual identity.
 
