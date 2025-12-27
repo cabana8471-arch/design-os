@@ -89,6 +89,8 @@ Use AskUserQuestion with options:
 - "Continue with spec path section" — Use the section ID from file path
 - "Cancel — I'll verify the files first" — END COMMAND
 
+> **See also:** `agents.md` → "Section ID Generation Rules" for the standardized section ID format.
+
 ### Verify Section Files
 
 Verify all required files exist for the selected section:
@@ -495,9 +497,10 @@ Use specific shades for each UI element type to ensure consistency:
 </span>
 
 // Card with neutral styling
-<div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
-  <p className="text-stone-900 dark:text-stone-100">Primary text</p>
-  <p className="text-stone-600 dark:text-stone-400">Secondary text</p>
+// Note: Replace [neutral] with your neutral color from design tokens (e.g., stone, slate, gray)
+<div className="bg-white dark:bg-[neutral]-900 border border-[neutral]-200 dark:border-[neutral]-800">
+  <p className="text-[neutral]-900 dark:text-[neutral]-100">Primary text</p>
+  <p className="text-[neutral]-600 dark:text-[neutral]-400">Secondary text</p>
 </div>
 ```
 

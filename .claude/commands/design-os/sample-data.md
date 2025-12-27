@@ -532,11 +532,13 @@ For each view extracted from `## Views` section (e.g., `ListView`, `DetailView`,
 SPEC_FILE="product/sections/[section-id]/spec.md"
 TYPES_FILE="product/sections/[section-id]/types.ts"
 
-# Extract view names from spec
-VIEWS=$(grep -E '^- [A-Z][a-zA-Z]+' "$SPEC_FILE" | sed 's/^- //' | cut -d' ' -f1)
+# Extract view names from spec (handles multi-word names like "Edit Form")
+# View format in spec: "- ViewName — Description" or "- EditForm — Description"
+# Note: View names should be PascalCase (e.g., "EditForm" not "Edit Form")
 
-for VIEW in $VIEWS; do
-  PROPS_NAME="${VIEW}Props"
+grep -E '^- [A-Z]' "$SPEC_FILE" | sed 's/^- //' | sed 's/ *[—-].*$//' | sed 's/ *$//' | while read -r VIEW; do
+  # Remove any spaces in view name for Props interface (e.g., "Edit Form" → "EditFormProps")
+  PROPS_NAME="$(echo "$VIEW" | tr -d ' ')Props"
   if ! grep -q "export interface $PROPS_NAME" "$TYPES_FILE"; then
     echo "Warning: Missing Props interface '$PROPS_NAME' for view '$VIEW'"
   fi

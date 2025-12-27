@@ -295,6 +295,33 @@ After stripping:
 
 The blank line is preserved because it provides visual separation in the assembled prompt.
 
+### Usage Comments (Optional)
+
+Templates may include an optional usage comment after the version comment to explain where the template is used:
+
+```markdown
+<!-- v1.0.0 -->
+<!-- Usage: Include in one-shot prompts for full product implementation -->
+
+## Template Content
+```
+
+**Usage comment guidelines:**
+
+- **Format:** `<!-- Usage: [context description] -->`
+- **Location:** Must be on line 2 (immediately after version comment)
+- **Purpose:** Helps maintainers understand the template's intended context
+- **Stripping:** Usage comments are stripped during template assembly (same as version comments)
+
+**Currently used in:**
+
+| Template | Usage Context |
+|----------|---------------|
+| `common/tdd-workflow.md` | One-shot prompts for full product implementation |
+| `section/tdd-workflow.md` | Section-specific prompts for incremental implementation |
+
+Usage comments are optional but recommended for templates that have context-specific variations.
+
 ### Trailing Newlines
 
 - Each template should end with exactly one newline (`\n`)

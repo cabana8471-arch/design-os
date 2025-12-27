@@ -76,7 +76,11 @@ Please complete these first."
 
 ### Validate Template Files Exist
 
-Before proceeding, verify all 12 required template files exist. If any are missing, STOP and report:
+Before proceeding, verify all 12 required template files exist. If any are missing, STOP and report.
+
+> **Severity Levels:**
+> - **File existence** → STOP if missing (cannot proceed without templates)
+> - **Version comments** → WARNING if missing (proceed but warn for maintenance)
 
 **Required templates:**
 - `.claude/templates/design-os/common/top-rules.md`
@@ -799,25 +803,35 @@ For each component referenced in imports:
 
 **Recursion Implementation:**
 
+> **Comprehensive Error Reporting:** This function collects errors as it traverses the component tree. When an error is encountered (circular import, max depth, missing component), it logs the error but continues checking other branches. All errors are reported together at the end of validation, not stopped at the first failure.
+
 ```
-function validateComponent(path, depth = 0, visited = []):
+function validateComponent(path, depth = 0, visited = [], errors = []):
   if depth > 10:
-    warn "Max recursion depth (10) reached at: {path}"
-    return  # Stop this branch
+    errors.append("Max recursion depth (10) reached at: {path}")
+    return errors  # Stop this branch, but continue others
 
   if path in visited:
-    error "Circular import detected: {visited} -> {path}"
-    return  # Circular dependency
+    errors.append("Circular import detected: {visited} -> {path}")
+    return errors  # Circular dependency, continue other branches
 
   visited.append(path)
 
   # Validate this component's imports
   for import in getLocalImports(path):
-    validateComponent(import, depth + 1, visited.copy())
+    validateComponent(import, depth + 1, visited.copy(), errors)
 
   # Validate this component's portability
-  checkPortability(path)
+  portabilityErrors = checkPortability(path)
+  errors.extend(portabilityErrors)
+
+  return errors
 ```
+
+**Validation Behavior:**
+- Collect ALL validation errors before reporting
+- Continue checking other components even if one has issues
+- Report comprehensive summary at the end
 
 **Step 3: Report missing sub-components**
 
@@ -1569,6 +1583,16 @@ When assembling templates, follow these specific steps:
 **2. Variable Substitution**
 For one-shot prompts, substitute:
 - `[Product Name]` → The actual product name from `product-overview.md`
+
+**Extracting Product Name:**
+```bash
+# Get the product name from the first level-1 heading in product-overview.md
+PRODUCT_NAME=$(head -1 product/product-overview.md | sed 's/^# //')
+```
+
+The product name is the text from the first `# ` heading in `product/product-overview.md`.
+- Example: `# InvoiceApp` → Product Name = "InvoiceApp"
+- If no level-1 heading exists, STOP and warn: "Cannot extract product name. product-overview.md must start with a `# Product Name` heading."
 
 For section prompts, substitute:
 - `SECTION_NAME` → Human-readable section name (e.g., "Invoices", "Project Dashboard")
