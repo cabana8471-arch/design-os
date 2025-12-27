@@ -6,6 +6,58 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-27 21:30] Critical & High Priority Fixes: Command Improvements & Documentation
+
+### Description
+Implementation of CRITICAL PRIORITY (P0) and HIGH PRIORITY (P1) fixes from the analysis plan. These fixes address runtime errors, type safety issues, command workflow gaps, and documentation clarity improvements.
+
+### Modified Files
+| File | Modification |
+|------|--------------|
+| `.claude/commands/design-os/design-screen.md` | Step 5: Clarified skill file handling with Scenario A (validated) and Scenario B (fallback) paths. Step 8: Added "Multi-View Preview Wrappers" section explaining workflow for multi-view sections. Added "Path Alias Validation" section with tsconfig.json configuration, import patterns table, and troubleshooting guide. |
+| `.claude/commands/design-os/sample-data.md` | (Already has comprehensive _meta structure validation and retry tracking) |
+| `.claude/commands/design-os/export-product.md` | (Design system file names are correctly documented as export transformations) |
+| `.claude/commands/design-os/design-shell.md` | Step 8: Added "Handling Missing Sections" section with placeholder navigation guidance and user notification pattern. |
+| `scripts/README-sync.md` | Translated entire file from Romanian to English for international accessibility. |
+| `.claude/commands/design-os/product-roadmap.md` | Added Step 1b: User prompt for orphaned files handling with AskUserQuestion options (Delete/Archive/Keep/Rename to match). |
+| `.claude/commands/design-os/shape-section.md` | Updated "Components only" shell status message with actionable options. Added "Forward Path for Components only state" section explaining user options. |
+| `.claude/commands/design-os/design-tokens.md` | Added formal "Detection Algorithm" pseudocode for mono font default detection. Added "When detection is ambiguous" section with AskUserQuestion fallback. |
+| `.claude/commands/design-os/screenshot-design.md` | Added note clarifying that `:has-text()` is Playwright-specific selector syntax, not standard CSS. |
+| `.claude/commands/design-os/data-model.md` | Added cross-reference to `/sample-data` command for singularization implementation details. |
+| `agents.md` | Enhanced "Skill File Validation Pattern" section with "Standard Reference in Commands" template and "Commands that MUST/do NOT require validation" lists. |
+
+### Gaps Resolved
+- **P0-1:** design-screen.md Step 5 skill file reference unclear → Added explicit Scenario A/B paths
+- **P0-2:** sample-data.md _meta structure validation → Already comprehensive (verified)
+- **P0-3:** export-product.md Foundation milestone file names → Correctly documented (verified)
+- **P0-4:** design-shell.md hardcoded shell import without sections check → Added missing sections handling
+- **P0-5:** README-sync.md written in Romanian → Translated to English
+- **P0-6:** export-product.md component validation before export → Already comprehensive (verified)
+- **P1-1:** product-roadmap.md orphaned files handling non-blocking → Added AskUserQuestion prompt
+- **P1-2:** shape-section.md "Components only" path missing → Added forward path guidance
+- **P1-3:** design-tokens.md mono font detection incomplete → Added formal detection algorithm
+- **P1-4:** design-screen.md multi-view preview wrapper docs missing → Added comprehensive section
+- **P1-5:** screenshot-design.md :has-text() selector not standard CSS → Added Playwright note
+- **P1-6:** data-model.md cross-reference to sample-data singularization → Added explicit reference
+- **P1-7:** design-screen.md @/../product/ path alias requires validation → Added validation section
+- **P1-8:** Skill file validation pattern not standardized → Added reference template and command lists
+
+### Statistics
+- Files modified: 10 (1 documentation, 9 commands/agents)
+- P0 issues addressed: 6 (4 fixed, 2 verified as already correct)
+- P1 issues addressed: 8 (all fixed)
+- New documentation sections: 8
+- Total documentation added: ~150 lines
+
+### Verification
+- ✅ All P0 critical issues resolved or verified
+- ✅ All P1 high priority issues resolved
+- ✅ Commands have clear, actionable guidance
+- ✅ README-sync.md now fully in English
+- ✅ Skill file validation is standardized across commands
+
+---
+
 ## [2025-12-27 18:45] LOW PRIORITY P3 Fixes: Templates, Documentation & Source Code Polish
 
 ### Description

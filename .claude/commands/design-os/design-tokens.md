@@ -84,6 +84,33 @@ What do you prefer?"
 
 If the user doesn't specify a mono font, detect this scenario and apply the default:
 
+**Detection Algorithm:**
+
+```
+function detectMonoFontChoice(userResponse):
+  # Step 1: Check for explicit skip
+  if contains(userResponse, ["skip mono", "don't need mono", "no mono", "skip the mono"]):
+    return USE_DEFAULT
+
+  # Step 2: Check for explicit mono font selection
+  MONO_FONTS = ["IBM Plex Mono", "JetBrains Mono", "Fira Code",
+                "Source Code Pro", "Roboto Mono", "Ubuntu Mono"]
+  for font in MONO_FONTS:
+    if contains(userResponse, font):
+      return FONT_SELECTED(font)
+
+  # Step 3: Check if only heading/body mentioned
+  mentions_heading = contains(userResponse, ["heading", "title", "h1", "h2"])
+  mentions_body = contains(userResponse, ["body", "paragraph", "text"])
+  mentions_mono = contains(userResponse, ["mono", "code", "technical"])
+
+  if (mentions_heading or mentions_body) and not mentions_mono:
+    return USE_DEFAULT
+
+  # Step 4: If ambiguous, ask for clarification
+  return ASK_USER
+```
+
 **Detection criteria (any of these indicates no mono font specified):**
 - User says "I don't need a mono font"
 - User says "skip mono" or similar
@@ -96,6 +123,15 @@ If the user doesn't specify a mono font, detect this scenario and apply the defa
 ```
 
 Then set `"mono": "IBM Plex Mono"` in typography.json.
+
+**When detection is ambiguous:**
+If the algorithm reaches `ASK_USER`, use AskUserQuestion:
+```
+"For the mono font (used in code blocks and technical content), would you like to:
+- Use the default (IBM Plex Mono)
+- Choose a specific mono font
+- Skip if your product doesn't need code display"
+```
 
 ### Font Weight Validation (Integrated)
 

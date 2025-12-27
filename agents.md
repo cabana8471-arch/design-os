@@ -446,6 +446,33 @@ If the skill file is missing or empty, commands should:
 
 This ensures commands don't fail completely when the skill file is missing, while still encouraging its use for better results.
 
+**Standard Reference in Commands:**
+
+Commands that use the skill file should include this validation as an early step (typically Step 1):
+
+```markdown
+## Step 1: Validate Skill File
+
+Before creating screen designs, validate the frontend-design skill file:
+
+1. Check if `.claude/skills/frontend-design/SKILL.md` exists
+2. Verify it has at least 100 characters of content
+3. If valid, proceed to use it in [Step N where design is applied]
+4. If missing/empty, ask user: "Continue with basic design principles?"
+
+See: agents.md → "Skill File Validation Pattern" for the standard validation script.
+```
+
+**Commands that MUST validate the skill file:**
+- `/design-shell` — Before creating AppShell, MainNav, UserMenu components
+- `/design-screen` — Before creating section screen design components
+
+**Commands that do NOT require skill file validation:**
+- `/product-vision`, `/product-roadmap`, `/data-model` — No visual design created
+- `/sample-data` — Data only, no visual components
+- `/screenshot-design` — Captures existing designs, doesn't create new ones
+- `/export-product` — Packages existing components, doesn't create new ones
+
 ---
 
 ## Design System Scope

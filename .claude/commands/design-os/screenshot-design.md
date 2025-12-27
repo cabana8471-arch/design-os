@@ -152,6 +152,8 @@ If the Hide button cannot be found or clicked, follow this fallback procedure:
    3. a:has-text("Hide")
    ```
 
+   > **Note:** The `:has-text()` pseudo-selector is **Playwright-specific syntax**, not standard CSS. It's used by Playwright MCP's `browser_click` tool to select elements containing specific text. Standard CSS does not support `:has-text()`. When using Playwright MCP, these selectors work directly with `browser_click`.
+
 2. **If all selectors fail:**
    - Check if you're on the `/fullscreen` variant of the URL (no header shown)
    - If on fullscreen URL, the header is already hidden — proceed to screenshot

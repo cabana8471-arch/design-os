@@ -385,10 +385,32 @@ export default function ShellPreview() {
 }
 ```
 
+### Handling Missing Sections
+
+**If `/product/product-roadmap.md` doesn't exist or has no sections:**
+
+The shell can still be created with placeholder navigation items:
+
+```tsx
+// Placeholder navigation when no sections exist yet
+const navigationItems = [
+  { label: 'Home', href: '/', isActive: true },
+  { label: 'Section 1', href: '/sections/section-1' },
+  { label: 'Section 2', href: '/sections/section-2' },
+]
+```
+
+Inform the user:
+```
+Note: No sections defined in product-roadmap.md yet.
+I'm using placeholder navigation items. Run /product-roadmap to define your sections,
+then update the shell navigation to match.
+```
+
 **Important:** When creating ShellPreview.tsx, replace the example navigation items above with the ACTUAL section titles and IDs from the user's `product/product-roadmap.md`. The section IDs should follow the standard transformation rules (lowercase, hyphens instead of spaces).
 
 **Important:**
-- **Navigation items** should use the REAL section names from `product/product-roadmap.md`
+- **Navigation items** should use the REAL section names from `product/product-roadmap.md` (or placeholders if none exist)
 - **User menu, notifications, and other chrome** should use placeholder mock data
 - Do NOT import data from section folders — this ensures the shell preview works even if no sections have been designed yet
 

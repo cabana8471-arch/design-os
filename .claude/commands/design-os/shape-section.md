@@ -152,10 +152,21 @@ PREVIEW_EXISTS=$([ -f "src/shell/ShellPreview.tsx" ] && echo "yes" || echo "no")
 | yes | yes | no | Missing preview | "Shell spec and components exist but preview is missing. Run `/design-shell` to regenerate." |
 | yes | no | yes | Orphaned preview | "Spec and preview exist but main component is missing. Run `/design-shell` to regenerate." |
 | yes | no | no | Spec only | "A shell spec exists but components haven't been generated yet. Run `/design-shell` to complete." |
-| no | yes | yes | Components only | "Shell components exist but no specification. Consider running `/design-shell` to document design decisions." |
+| no | yes | yes | Components only | "Shell components exist but no specification. You can: (1) Continue using existing components, or (2) Run `/design-shell` to regenerate with a documented specification." |
 | no | yes | no | Partial components | "AppShell.tsx exists but preview and spec are missing. Run `/design-shell` to create a complete shell." |
 | no | no | yes | Orphaned preview | "ShellPreview.tsx exists alone — an unusual state. Run `/design-shell` to create a proper shell." |
 | no | no | no | No shell | "No shell has been designed yet. You can still choose 'Inside app shell' — design it later with `/design-shell`." |
+
+**Forward Path for "Components only" state:**
+
+When shell components exist without a spec, the user has two valid options:
+1. **Continue as-is** — The shell will work without a spec. However, design decisions aren't documented.
+2. **Run `/design-shell`** — This will:
+   - Create `product/shell/spec.md` documenting the shell design
+   - Optionally regenerate components if the user wants changes
+   - Create `src/shell/ShellPreview.tsx` for viewing the shell
+
+If the user is satisfied with the existing components, they can proceed without running `/design-shell`. The spec is optional for functionality but recommended for documentation.
 
 **Report shell status to user:**
 

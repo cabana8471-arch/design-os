@@ -248,6 +248,8 @@ If entity names in the data model appear to be plural:
 
 This ensures TypeScript interfaces follow standard naming conventions while allowing flexibility in the data model.
 
+**Cross-Reference:** For detailed implementation of auto-singularization, see `/sample-data` command which applies these rules when generating `types.ts` from the data model.
+
 ### Entity Naming Validation
 
 Entity names must follow a consistent format for proper parsing by `/sample-data` and other commands:

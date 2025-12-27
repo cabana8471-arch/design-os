@@ -166,6 +166,27 @@ SRC_SECTIONS=$(ls -d src/sections/*/ 2>/dev/null | xargs -n1 basename)
 echo "Checking for orphaned sections..."
 ```
 
+**1b. If orphans are detected, ask the user how to handle them:**
+
+Use the AskUserQuestion tool with the following options:
+
+```
+I found orphaned section(s) that are no longer in the roadmap:
+- [orphan-section-1] (has spec.md, data.json, screen designs)
+- [orphan-section-2] (has spec.md only)
+
+How would you like to handle these?
+```
+
+Options:
+- "Delete them" — Permanently remove orphaned directories
+- "Archive them" — Move to `_archive/` folder for safekeeping
+- "Keep them" — Leave as-is (they won't appear in navigation)
+- "Rename to match" — I made a typo, let me specify the correct section name
+
+**If user chooses "Rename to match":**
+Ask for the mapping: "Which roadmap section should `[orphan-name]` be renamed to?"
+
 **2. For renamed sections:**
 - **Rename directories** to match the new section ID:
   ```bash

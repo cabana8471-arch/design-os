@@ -303,18 +303,28 @@ When navigating to `/sections/[section-id]`:
 
 Before creating the screen design, apply the design guidance (validated in Step 1) to ensure high-quality design output.
 
-**If the skill file was validated in Step 1, read it now:** `.claude/skills/frontend-design/SKILL.md`
+### Design Guidance Application
+
+**Scenario A: Skill file was validated in Step 1**
+
+If the skill file passed validation in Step 1, invoke the `frontend-design` skill now:
+
+1. Use the `Skill` tool with `skill: "frontend-design"` to apply design guidance
+2. Alternatively, read `.claude/skills/frontend-design/SKILL.md` directly
+3. Apply the guidance from the skill file to inform your design decisions
+
+**Scenario B: User chose to continue without skill file in Step 1**
+
+If the user chose to continue without the skill file, use the **fallback design principles** defined in Step 1 (Visual Hierarchy, Spacing System, Component Patterns, Responsive Breakpoints, Dark Mode).
 
 ### Key Design Principles to Follow
 
-From the frontend-design skill:
+Regardless of which scenario applies, ensure the screen design follows these principles:
 - Create distinctive, non-generic interfaces that avoid common AI design patterns
 - Use creative layouts with strong visual hierarchy
 - Apply thoughtful spacing and typography choices
 - Implement meaningful interactions and animations
 - Ensure accessibility and responsive design throughout
-
-**If user chose to continue without the skill file in Step 1**, use the fallback design principles noted earlier.
 
 ## Step 6: Create the Props-Based Component
 
@@ -583,6 +593,36 @@ The preview wrapper:
 - Is NOT exported to the user's codebase - it's only for Design OS
 - **Will render inside the shell** if one has been designed
 
+### Multi-View Preview Wrappers
+
+For sections with multiple views (defined in the spec's `## Views` section), you need to create a separate preview wrapper for each view.
+
+**Workflow for multi-view sections:**
+1. Run `/design-screen` for the first view (e.g., "List view")
+   - Creates: `src/sections/[section-id]/InvoiceListView.tsx` (preview wrapper)
+   - Creates: `src/sections/[section-id]/components/InvoiceList.tsx` (exportable component)
+2. Run `/design-screen` again for the second view (e.g., "Detail view")
+   - Creates: `src/sections/[section-id]/InvoiceDetailView.tsx` (preview wrapper)
+   - Creates: `src/sections/[section-id]/components/InvoiceDetail.tsx` (exportable component)
+3. Repeat for each additional view
+
+**File structure after multiple views:**
+```
+src/sections/invoices/
+├── InvoiceListView.tsx       ← Preview wrapper for list view
+├── InvoiceDetailView.tsx     ← Preview wrapper for detail view
+└── components/
+    ├── InvoiceList.tsx       ← Exportable component
+    ├── InvoiceDetail.tsx     ← Exportable component
+    ├── InvoiceRow.tsx        ← Shared sub-component
+    └── index.ts              ← Exports all components
+```
+
+**Each preview wrapper is independent:**
+- Uses the same `data.json` (shared sample data)
+- Passes relevant data to its specific component
+- Can reference other views via callbacks (e.g., `onViewDetail` navigates to detail view)
+
 ## Step 9: Create Component Index
 
 Create an index file at `src/sections/[section-id]/components/index.ts` to cleanly export all components.
@@ -683,3 +723,47 @@ If the spec indicates additional views are needed:
 - Sub-components should also be props-based for maximum portability
 - Apply design tokens when available for consistent branding
 - Screen designs render inside the shell when viewed in Design OS (if shell exists)
+
+### Path Alias Validation (`@/` and `@/../`)
+
+Screen design components use the `@/` path alias for imports. Before creating components, verify the alias is configured:
+
+**Expected tsconfig.json configuration:**
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+**Import patterns used in screen designs:**
+| Pattern | Resolves To | Use Case |
+|---------|-------------|----------|
+| `@/components/ui/button` | `./src/components/ui/button` | UI components |
+| `@/lib/utils` | `./src/lib/utils` | Utilities |
+| `@/../product/sections/[id]/types` | `./product/sections/[id]/types` | Section types |
+| `@/../product/sections/[id]/data.json` | `./product/sections/[id]/data.json` | Sample data (preview only) |
+
+**Troubleshooting:**
+
+| Issue | Symptom | Fix |
+|-------|---------|-----|
+| Missing path alias | `Cannot find module '@/...'` | Add `paths` to tsconfig.json |
+| Wrong baseUrl | Imports resolve incorrectly | Set `baseUrl: "."` in tsconfig.json |
+| Vite not resolving | Works in IDE but fails at runtime | Check `vite.config.ts` has matching alias |
+
+**Vite alias configuration (if needed):**
+```ts
+// vite.config.ts
+export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+})
+```
