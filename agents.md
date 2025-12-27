@@ -392,11 +392,13 @@ The **frontend-design** skill provides comprehensive guidance for creating disti
 Commands that create user-facing components reference the frontend-design skill to ensure design quality:
 
 1. **`/design-shell`** — Creates application shell components
-   - Step 5: Read `.claude/skills/frontend-design/SKILL.md` before creating AppShell, MainNav, UserMenu components
+   - Step 1: Validates `.claude/skills/frontend-design/SKILL.md` exists and has meaningful content (>100 chars)
+   - Step 5: Applies the design guidance when creating AppShell, MainNav, UserMenu components
    - Ensures shell has distinctive, branded aesthetics matching the product vision
 
 2. **`/design-screen`** — Creates section screen designs
-   - Step 5: Read `.claude/skills/frontend-design/SKILL.md` before creating screen components
+   - Step 1: Validates `.claude/skills/frontend-design/SKILL.md` exists and has meaningful content (>100 chars)
+   - Step 5: Applies the design guidance when creating screen components
    - Ensures consistent, distinctive design quality across all sections
 
 ### Design Guidance Hierarchy

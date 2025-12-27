@@ -88,9 +88,9 @@ Start the dev server yourself using Bash. Do NOT ask the user if the server is r
 **First, check if a dev server is already running:**
 
 ```bash
-# Check if dev server is already running on port 5173 (Vite default)
-if lsof -i :5173 > /dev/null 2>&1; then
-  echo "Dev server already running on port 5173"
+# Check if dev server is already running on port 3000 (configured in vite.config.ts)
+if lsof -i :3000 > /dev/null 2>&1; then
+  echo "Dev server already running on port 3000"
   # Set flag: DEV_SERVER_PREEXISTING=true
 else
   echo "Starting dev server..."
@@ -107,7 +107,7 @@ fi
 
 **Verify server is ready:**
 
-After the check/startup, verify `http://localhost:5173` returns a response before navigating to the screen design URL. If using port 3000 instead (older configs), check that port.
+After the check/startup, verify `http://localhost:3000` returns a response before navigating to the screen design URL.
 
 ## Step 3: Capture the Screenshot
 
