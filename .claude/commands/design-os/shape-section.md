@@ -308,7 +308,7 @@ When a section has multiple views, here's how they flow through the Design OS co
 - All views share the same `types.ts` and can reference the same entities
 - Preview wrappers are created for each view independently
 
-**4. `/screenshot-design`** — See: `.claude/commands/design-os/screenshot-design.md`
+**4. `/screenshot-design`** — See: `.claude/commands/design-os/screenshot-design.md` (Section "Step 3: Capture the Screenshot")
 - Run once per view to capture screenshots
 - Each screenshot is saved with the view name (e.g., `invoice-list.png`, `invoice-detail.png`)
 

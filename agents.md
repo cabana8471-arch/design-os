@@ -648,6 +648,39 @@ For `data.json` files specifically:
 - Verify `_meta.relationships` is an array
 - Ensure all model names match actual data keys
 
+### Recovery Pattern (If Steps Fail)
+
+Commands should provide recovery guidance when critical steps fail:
+
+**Quick Recovery Notes (for inline use):**
+```markdown
+> **Recovery:** If this step fails, [specific action]. Check [what to check].
+```
+
+**Standard Recovery Actions:**
+
+| Failure Type | Recovery Action |
+|--------------|-----------------|
+| File creation fails | Check write permissions: `ls -la [parent-dir]/` |
+| Directory missing | Create directory: `mkdir -p [path]` |
+| Validation fails | Review error message, fix issues, re-run step |
+| JSON parse error | Validate syntax: paste content into a JSON validator |
+| Import error | Check file exists and path is correct |
+
+**Full Recovery Section (for complex commands):**
+
+For commands with multiple steps that can fail (like `/export-product`), include a dedicated "Rollback / Recovery" section at the end covering:
+1. Pre-command backups (if applicable)
+2. Partial failure cleanup
+3. Resume instructions
+4. Git-based recovery options
+
+**Commands with dedicated recovery sections:**
+- `/export-product` — Full rollback/recovery section (Step 15)
+
+**Commands with inline recovery notes:**
+- All other commands should include brief `> **Recovery:**` notes for critical file operations
+
 ### Section ID Generation Rules
 
 When creating section IDs from section titles, follow these standardized rules:
@@ -666,6 +699,38 @@ When creating section IDs from section titles, follow these standardized rules:
 - "Q&A Forum" → `q-and-a-forum`
 
 This ensures consistent path naming across all commands that reference sections.
+
+### Variable Naming Conventions
+
+Commands use two distinct variable notation styles for different contexts:
+
+| Notation | Context | Example |
+|----------|---------|---------|
+| `[variable-name]` | Placeholder in documentation/paths | `product/sections/[section-id]/spec.md` |
+| `VARIABLE_NAME` | Bash variable in scripts | `SECTION_ID=$(echo "$path" \| sed ...)` |
+
+**When to use each:**
+
+- **Brackets `[...]`** — Use in documentation, file paths, and templates where the value will be substituted by the reader/user
+- **Uppercase** — Use in bash scripts where the value is assigned and referenced programmatically
+
+**Example transformation:**
+```markdown
+# Documentation (placeholder)
+The spec is at: product/sections/[section-id]/spec.md
+
+# Bash script (variable)
+SECTION_ID="invoices"
+SPEC_PATH="product/sections/${SECTION_ID}/spec.md"
+```
+
+**Common variables:**
+
+| Placeholder | Bash Variable | Description |
+|-------------|---------------|-------------|
+| `[section-id]` | `SECTION_ID` | Section folder name (e.g., `invoices`) |
+| `[view-name]` | `VIEW_NAME` | Screen design name (e.g., `InvoiceList`) |
+| `[product-name]` | `PRODUCT_NAME` | Product name from overview |
 
 ### Question Asking Patterns
 
@@ -704,6 +769,37 @@ Commands should ask users questions in a consistent, predictable way:
 2. Provide sensible defaults when possible
 3. Don't re-ask questions already answered in conversation context
 4. Document decisions made for future reference
+
+### Retry Pattern (Standardized)
+
+Commands that involve validation loops should follow this consistent retry pattern:
+
+**Retry Tracking Format:**
+```
+[Attempt 1/3] Validating [component]...
+[Attempt 2/3] Validating [component]...
+[Attempt 3/3 - FINAL] Validating [component]...
+```
+
+**Retry Behavior:**
+
+| Attempt | Action |
+|---------|--------|
+| 1/3 | Run validation, report errors, offer fix guidance |
+| 2/3 | Re-validate after user fixes, report remaining errors |
+| 3/3 - FINAL | Last attempt, fail with complete error summary if unsuccessful |
+
+**Commands that use retry pattern:**
+- `/sample-data` — JSON structure and _meta validation
+- `/design-tokens` — Font availability and weight validation
+- `/design-screen` — Component import and props validation
+- `/export-product` — Template and component validation
+
+**After 3 failed attempts:**
+```
+Error: Validation failed after 3 attempts.
+Please review the errors above and fix manually before retrying.
+```
 
 ### Viewport Dimensions (Standardized)
 

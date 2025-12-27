@@ -6,6 +6,40 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-28 00:15] Final Polish: 5 Minor Documentation Improvements
+
+### Description
+Final polish pass after comprehensive critical analysis. Addressed 5 LOW priority documentation improvements identified during codebase review. These are cosmetic/documentation polish items that enhance clarity and consistency.
+
+### Modified Files
+| File | Modification |
+|------|--------------|
+| `.claude/templates/design-os/section/prompt-template.md` | **Line 8:** Removed inline HTML comments (lines 9-10), replaced with cleaner inline example `(e.g., \`02-invoices.md\`)`. |
+| `agents.md` | **Lines 708-737:** Added "Retry Pattern (Standardized)" section documenting `[Attempt N/3]` format, retry behavior table, and commands that use retries. |
+| `agents.md` | **Lines 670-700:** Added "Variable Naming Conventions" section clarifying `[placeholder]` vs `VARIABLE_NAME` notation with examples. |
+| `agents.md` | **Lines 651-682:** Added "Recovery Pattern (If Steps Fail)" section with quick recovery notes format, standard recovery actions table, and guidance for complex commands. |
+| `.claude/commands/design-os/shape-section.md` | **Line 311:** Added section reference to screenshot-design.md cross-reference for consistency. |
+
+### Issues Resolved
+| # | Severity | Issue | Resolution |
+|---|----------|-------|------------|
+| 1 | Low | Recovery procedures only documented in export-product.md | Added "Recovery Pattern" section to agents.md with standardized guidance |
+| 2 | Low | HTML comments in section/prompt-template.md appear in generated prompts | Removed HTML comments, replaced with inline example |
+| 3 | Low | Retry behavior not standardized across commands | Added "Retry Pattern (Standardized)" section to agents.md |
+| 4 | Low | Some cross-references missing section names | Added section name to shape-section.md line 311 |
+| 5 | Low | Variable naming conventions undocumented | Added "Variable Naming Conventions" section to agents.md |
+
+### Statistics
+- Files modified: 3 (agents.md, section/prompt-template.md, shape-section.md)
+- Low priority issues addressed: 5
+- New documentation sections: 3
+
+### Production Status
+- **Documentation Polish:** COMPLETE
+- **Codebase Status:** PRODUCTION READY
+
+---
+
 ## [2025-12-27 23:45] Critical Analysis: Port Consistency & Documentation Alignment
 
 ### Description
