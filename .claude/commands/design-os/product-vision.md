@@ -167,6 +167,55 @@ if [[ ! "$first_line" =~ ^#\  ]]; then
 fi
 ```
 
+### Validate Required Sections
+
+After creating the file, verify all required markdown sections exist:
+
+**Required sections:**
+- `## Description` — Product description
+- `## Problems & Solutions` — At least one `### Problem N:` subsection
+- `## Key Features` — Feature list
+
+**Validation Script:**
+
+```bash
+# Check for required sections
+CONTENT=$(cat product/product-overview.md)
+
+# Check for ## Description
+if ! echo "$CONTENT" | grep -q "^## Description"; then
+  echo "Warning: Missing '## Description' section"
+fi
+
+# Check for ## Problems & Solutions
+if ! echo "$CONTENT" | grep -q "^## Problems & Solutions"; then
+  echo "Warning: Missing '## Problems & Solutions' section"
+fi
+
+# Check for at least one ### Problem subsection
+if ! echo "$CONTENT" | grep -q "^### Problem"; then
+  echo "Warning: Missing problem subsections (expected '### Problem 1:', '### Problem 2:', etc.)"
+fi
+
+# Check for ## Key Features
+if ! echo "$CONTENT" | grep -q "^## Key Features"; then
+  echo "Warning: Missing '## Key Features' section"
+fi
+```
+
+**If any section is missing:**
+
+```
+Warning: product-overview.md is missing required section(s):
+- [list missing sections]
+
+The file may not display correctly in Design OS. Would you like me to fix the formatting?
+```
+
+Use AskUserQuestion with options:
+- "Yes, fix the formatting" — Regenerate with correct sections
+- "No, continue as is" — Proceed (user will fix manually)
+
 If validation fails, report to user and offer to recreate the file.
 
 ## Step 5: Confirm Completion

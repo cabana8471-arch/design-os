@@ -143,6 +143,29 @@ src/sections/[section-id]/
 - Sub-components can be shared across views (import from `./[SubComponent]`)
 - Run `/design-screen` once per view — the command asks which view to create
 
+### Multi-View Workflow (Cross-Command Reference)
+
+When working with sections that have multiple views, here's how the commands work together:
+
+| Step | Command | What It Does for Multi-View Sections |
+|------|---------|--------------------------------------|
+| 1 | `/shape-section` | Defines all views in the `## Views` section of `spec.md` |
+| 2 | `/sample-data` | Creates data for ALL views in a single `data.json`, creates Props interfaces for EACH view in `types.ts` |
+| 3 | `/design-screen` | Run N times (once per view). Each run creates one component + preview wrapper |
+| 4 | `/screenshot-design` | Run N times (once per view). Each run captures one screenshot |
+| 5 | `/export-product` | Exports ALL view components together with their shared types |
+
+**Workflow Tips:**
+- Check the spec's `## Views` section to know how many views exist
+- Track which views have been created (check `src/sections/[id]/components/`)
+- Complete all views before running `/screenshot-design`
+- If you add a new view to the spec later, run `/sample-data` again to update `types.ts`
+
+**Common Issues:**
+- **Missing view in types.ts:** Re-run `/sample-data` to regenerate Props interfaces
+- **View component exists but no preview:** Create the preview wrapper manually or re-run `/design-screen`
+- **Inconsistent styling between views:** Use shared sub-components and import them in all views
+
 ### Default View Routing
 
 When navigating to `/sections/[section-id]`:
@@ -180,15 +203,34 @@ First, check that the frontend-design skill file exists at `.claude/skills/front
    fi
    ```
 
-**If the file is missing:**
+**If the file is missing or has insufficient content:**
 
-STOP and inform the user: "The frontend-design skill file is required for creating distinctive UI. Please ensure `.claude/skills/frontend-design/SKILL.md` exists."
+Show a warning and offer to continue with fallback guidance:
 
-**If the file exists but has insufficient content:**
+```
+Note: The frontend-design skill file at `.claude/skills/frontend-design/SKILL.md` is missing or empty.
 
-STOP and inform the user: "The frontend-design skill file exists but appears to be empty or contains only frontmatter. Please ensure `.claude/skills/frontend-design/SKILL.md` has meaningful design guidance content (at least 100 characters)."
+Without this guidance, the screen design may be more generic. You can:
+1. Continue anyway — I'll use basic design principles (results may be less distinctive)
+2. Stop here — Add the skill file first for better design quality
 
-**END COMMAND** — Do not proceed to Step 6. The skill file with meaningful content is required for creating distinctive, production-grade screen designs.
+The skill file provides guidance on creating distinctive, production-grade interfaces that avoid common "AI-generated" aesthetics.
+```
+
+Use AskUserQuestion with options:
+- "Continue with basic design principles" — Proceed to Step 6 using fallback guidance
+- "Stop — I'll add the skill file first" — END COMMAND
+
+**If user chooses to continue without the skill file:**
+
+Use these fallback design principles:
+- Create clean, functional interfaces with clear visual hierarchy
+- Use consistent spacing and alignment
+- Apply the design tokens (colors, typography) thoughtfully
+- Ensure responsive design and dark mode support
+- Focus on usability over decoration
+
+Note: Results will be functional but may lack the distinctive character that the frontend-design skill provides.
 
 ### Read Design Guidance
 

@@ -352,6 +352,40 @@ When creating screen designs, follow this hierarchy:
 
 Both must be followed for production-ready screen designs. Technical requirements ensure portability and consistency; aesthetic guidance ensures distinctive, memorable design.
 
+### Skill File Validation Pattern
+
+Commands that reference the frontend-design skill (`/design-shell`, `/design-screen`) must validate the skill file before use:
+
+**Validation Steps:**
+
+1. **Check existence:** Verify `.claude/skills/frontend-design/SKILL.md` exists
+2. **Check content:** File must have at least 100 characters of meaningful content (excluding frontmatter)
+3. **Check structure:** File should contain design guidance sections
+
+**Validation Script:**
+
+```bash
+# Check skill file exists and has content
+SKILL_FILE=".claude/skills/frontend-design/SKILL.md"
+
+if [ ! -f "$SKILL_FILE" ]; then
+  echo "Skill file missing"
+elif [ $(wc -c < "$SKILL_FILE") -lt 100 ]; then
+  echo "Skill file has insufficient content"
+else
+  echo "Skill file valid"
+fi
+```
+
+**Fallback Behavior:**
+
+If the skill file is missing or empty, commands should:
+1. Warn the user (design may be more generic)
+2. Offer to continue with basic design principles
+3. Proceed with fallback guidance if user approves
+
+This ensures commands don't fail completely when the skill file is missing, while still encouraging its use for better results.
+
 ---
 
 ## Design System Scope
@@ -425,6 +459,38 @@ I don't see [file description] at [path]. Please run [prerequisite command] firs
 ```
 Note: [Feature] hasn't been defined yet. I'll proceed with [default approach], but for [reason], consider running [command] first.
 ```
+
+### Error Message Format Standard
+
+All commands must use consistent error message formatting:
+
+**Pattern:** `Error: [Component] - [Issue]. [Action to fix].`
+
+**Examples:**
+
+| Component | Issue | Action | Full Message |
+|-----------|-------|--------|--------------|
+| product-overview.md | File not found | Run /product-vision | `Error: product-overview.md - File not found. Run /product-vision to create it.` |
+| data.json | Invalid JSON syntax | Check file for syntax errors | `Error: data.json - Invalid JSON syntax. Check the file for missing commas or brackets.` |
+| AppShell.tsx | Missing default export | Add export default statement | `Error: AppShell.tsx - Missing default export. Add 'export default AppShell' at the end of the file.` |
+| SKILL.md | Insufficient content | Add design guidance | `Error: SKILL.md - Insufficient content (< 100 chars). Add meaningful design guidance.` |
+
+**Severity Levels:**
+
+| Level | Prefix | Behavior |
+|-------|--------|----------|
+| Error | `Error:` | STOP command, require user action |
+| Warning | `Warning:` | Continue with fallback, inform user |
+| Note | `Note:` | Informational, no action required |
+
+**Format Consistency:**
+- Always start with the level prefix (`Error:`, `Warning:`, `Note:`)
+- Include the component/file name after the prefix
+- Use a hyphen to separate the component from the issue
+- End with a clear action the user can take
+- Use periods to terminate sentences
+
+This ensures users can quickly understand what went wrong and how to fix it.
 
 ### Directory Creation Pattern
 

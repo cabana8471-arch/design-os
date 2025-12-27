@@ -6,7 +6,70 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-27 09:15] Low Priority P3 Fixes: Documentation, Edge Cases & Code Clarity
+## [2025-12-27 10:30] BATCH 1 Command Fixes: Validation, Fallbacks & Cross-Command Workflow
+
+### Description
+
+Implementation of BATCH 1 fixes from the analysis plan (quiet-seeking-firefly.md). This batch focuses on improving command robustness with better validation, graceful fallbacks, and clearer cross-command workflows. All fixes are in the `.claude/commands/design-os/` directory.
+
+### Modified Files
+
+| File | Modification |
+|------|--------------|
+| `.claude/commands/design-os/design-shell.md` | Added frontend-design skill fallback mechanism. Commands now offer to continue with basic design principles if SKILL.md is missing/empty instead of blocking. |
+| `.claude/commands/design-os/design-screen.md` | Added frontend-design skill fallback mechanism (matching design-shell.md). Added multi-view workflow cross-reference table showing how commands work together for sections with multiple views. |
+| `.claude/commands/design-os/export-product.md` | Added shell prerequisite check with INCLUDE_SHELL flag. Added template version comment validation. Added sub-component validation (recursive). Added rollback/recovery section. Added README product name substitution instruction. |
+| `.claude/commands/design-os/sample-data.md` | Enhanced retry mechanism with explicit tracking format ("[Attempt 1/3]", "[Attempt 2/3]", "[Attempt 3/3 - FINAL]"). |
+| `.claude/commands/design-os/shape-section.md` | Added section ID validation against roadmap. Expanded shell status table from 4 to 8 states (all combinations of spec/components/preview). Added view count tracking and multi-view section reminder. |
+| `.claude/commands/design-os/product-vision.md` | Added markdown section validation (checks for ## Description, ## Problems & Solutions, ## Key Features). |
+| `.claude/commands/design-os/data-model.md` | Added markdown section validation (checks for # Data Model, ## Entities, ## Relationships). |
+| `.claude/commands/design-os/screenshot-design.md` | Enhanced Playwright MCP check with tool availability verification and graceful degradation (manual screenshot alternative). |
+| `agents.md` | Added Error Message Format Standard with severity levels (Error/Warning/Note). Added Skill File Validation Pattern for commands that use frontend-design skill. |
+
+### Issues Addressed (from analysis plan)
+
+| Issue # | Category | Title | Resolution |
+|---------|----------|-------|------------|
+| C1 | Critical | Frontend-design skill fallback | Added fallback mechanism with basic design principles option |
+| C2 | Critical | Export prerequisite validation | Added shell component check with INCLUDE_SHELL flag |
+| C3 | Critical | Sample-data retry mechanism | Added explicit "[Attempt N/3]" tracking format |
+| C4 | Critical | Section ID validation consistency | Added roadmap cross-reference validation |
+| C5 | Critical | Template version validation | Added version comment pattern check |
+| C6 | Critical | View count validation | Added multi-view section reminder and tracking |
+| C7 | Critical | Export rollback mechanism | Added comprehensive rollback/recovery section |
+| M1 | Moderate | Consistent error messages | Added standard format pattern to agents.md |
+| M2 | Moderate | Shell status documentation | Expanded to all 8 possible states |
+| M3 | Moderate | Markdown format validation | Added section validation to product-vision.md and data-model.md |
+| M4 | Moderate | Font weight validation | Already implemented (verified) |
+| M5 | Moderate | Sub-component validation | Added recursive component dependency check |
+| M6 | Moderate | Playwright MCP handling | Added graceful degradation with manual alternative |
+| M7 | Moderate | Skill file validation pattern | Added shared pattern to agents.md |
+| M8 | Moderate | Entity naming cross-reference | Already implemented (verified) |
+| M9 | Moderate | Multiple views workflow | Added cross-command reference table |
+| m1-m7 | Minor | Various path/naming fixes | Most already implemented; added README substitution |
+
+### Statistics
+
+- **Files modified:** 10 (9 commands + agents.md)
+- **Critical fixes:** 7
+- **Moderate fixes:** 9
+- **Minor fixes:** 7
+- **New validation patterns:** 5 (skill file, markdown sections, template versions, sub-components, section IDs)
+- **New fallback mechanisms:** 3 (skill file, shell components, Playwright MCP)
+- **Documentation improvements:** 4 (shell states, multi-view workflow, error format, rollback)
+
+### Verification
+
+- Commands no longer block when optional resources are missing (skill file, shell)
+- Retry mechanisms have explicit tracking for debugging
+- Section IDs are validated against roadmap to prevent mismatches
+- Multi-view sections have clear workflow documentation
+- Export has rollback instructions for recovery
+- Error messages follow consistent format pattern
+
+---
+
+## [2025-12-27 08:00] Low Priority P3 Fixes: Documentation, Edge Cases & Code Clarity
 
 ### Description
 

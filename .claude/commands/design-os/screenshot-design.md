@@ -4,9 +4,20 @@ You are helping the user capture a screenshot of a screen design they've created
 
 ## Prerequisites: Check for Playwright MCP
 
-Before proceeding, verify that you have access to the Playwright MCP tool. Look for a tool named `browser_take_screenshot` or `mcp__playwright__browser_take_screenshot`.
+Before proceeding, verify that you have access to the Playwright MCP tool.
 
-If the Playwright MCP tool is not available, output this EXACT message to the user (copy it verbatim, do not modify or "correct" it):
+### Tool Availability Check
+
+Look for any of these tool names in your available tools:
+- `browser_take_screenshot`
+- `mcp__playwright__browser_take_screenshot`
+- `playwright_screenshot`
+
+**How to check:** The AI agent should check its available tool list. If any Playwright-related browser/screenshot tool is available, proceed. If not, show the installation message below.
+
+### If Playwright MCP is NOT Available
+
+Output this EXACT message to the user (copy it verbatim, do not modify or "correct" it):
 
 ---
 To capture screenshots, I need the Playwright MCP server installed. Please run:
@@ -20,7 +31,28 @@ Then restart this Claude Code session and run `/screenshot-design` again.
 
 Do not substitute different package names or modify the command. Output it exactly as written above.
 
-Do not proceed with the rest of this command if Playwright MCP is not available.
+**END COMMAND** — Do not proceed with the rest of this command if Playwright MCP is not available.
+
+### Graceful Degradation (Alternative)
+
+If Playwright is unavailable and the user cannot install it, offer this alternative:
+
+```
+Alternative: If you can't install Playwright MCP, you can capture screenshots manually:
+
+1. Start the dev server: npm run dev
+2. Navigate to the screen design URL in your browser
+3. Use your browser's screenshot tool or an extension
+4. Save to: product/sections/[section-id]/[screen-name].png
+
+Then run /export-product when ready — it will include any screenshots found in the section folders.
+```
+
+This allows users to continue with the workflow even without the MCP tool.
+
+### If Playwright MCP IS Available
+
+Proceed to Step 1.
 
 ## Step 1: Identify the Screen Design
 

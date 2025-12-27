@@ -23,7 +23,42 @@ Verify the minimum requirements exist:
 - `/product/data-model/data-model.md` — Global data model
 - `/product/design-system/colors.json` — Color tokens
 - `/product/design-system/typography.json` — Typography tokens
+
+**Shell Components (optional but recommended):**
 - `src/shell/components/AppShell.tsx` — Application shell
+
+**Shell Prerequisite Check:**
+
+Check if shell components exist before proceeding:
+
+```bash
+if [ ! -f "src/shell/components/AppShell.tsx" ]; then
+  echo "Shell components not found"
+fi
+```
+
+| Shell Status | Action |
+|--------------|--------|
+| Shell components exist | Include shell in export (Step 8-9 will validate and copy) |
+| Shell components missing | Show warning, offer to proceed without shell |
+
+**If shell is missing:**
+
+```
+Note: Shell components haven't been created yet at src/shell/components/.
+
+You can:
+1. Proceed without shell — The export will not include shell components
+2. Stop and create shell first — Run /design-shell to create the application shell
+
+Most products benefit from a shell for consistent navigation. However, if your product doesn't need a shell (e.g., single-page app, embedded widget), you can proceed without it.
+```
+
+Use AskUserQuestion with options:
+- "Proceed without shell (Recommended if shell not needed)" — Continue export, skip shell steps
+- "Stop — I'll create the shell first" — END COMMAND
+
+Track the user's choice with a `INCLUDE_SHELL` flag for Steps 8-9.
 
 **If any required file is missing:**
 
@@ -65,6 +100,48 @@ Before proceeding, verify all 12 required template files exist. If any are missi
 STOP and report: "Missing template file: `.claude/templates/design-os/[path]`. Cannot generate prompts without all templates. Please restore the missing file."
 
 **END COMMAND** — Do not proceed to Step 2 if any template is missing.
+
+### Validate Template Version Comments
+
+Before assembling prompts, verify all templates have valid version comments at line 1:
+
+**Version Comment Pattern:** `<!-- v#.#.# -->` or `<!-- v#.#.#-suffix -->`
+
+Valid examples:
+- `<!-- v1.0.0 -->`
+- `<!-- v1.2.0-section -->`
+- `<!-- v2.0.0-beta -->`
+
+**Validation Script:**
+
+```bash
+# Check each template has a version comment on line 1
+for template in .claude/templates/design-os/common/*.md .claude/templates/design-os/one-shot/*.md .claude/templates/design-os/section/*.md; do
+  if [ -f "$template" ]; then
+    first_line=$(head -1 "$template")
+    if [[ ! "$first_line" =~ ^'<!--'[[:space:]]*v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?[[:space:]]*'-->'$ ]]; then
+      echo "Warning: Template missing valid version comment: $template"
+      echo "  First line: $first_line"
+    fi
+  fi
+done
+```
+
+**If a template is missing a version comment:**
+
+Show warning but continue:
+
+```
+Warning: Some templates are missing version comments:
+- [template-path]: Missing or invalid version comment
+
+Templates should have a version comment on line 1 (e.g., <!-- v1.0.0 -->).
+This helps track template changes across exports.
+
+Proceeding with export, but consider adding version comments for future maintenance.
+```
+
+Version comments are stripped during template assembly (Step 14), so missing version comments don't break the export — but they make template maintenance harder.
 
 ### Validate File Content (Not Just Existence)
 
@@ -639,6 +716,8 @@ Before proceeding with export, validate that all components are portable and fol
 
 ### Validate Shell Components
 
+**Skip this section if `INCLUDE_SHELL` is false** (user chose to proceed without shell in Step 1).
+
 If shell components exist at `src/shell/components/`, validate each file:
 
 1. **Check imports:**
@@ -670,6 +749,58 @@ For each section, validate all component files in `src/sections/[section-id]/com
    - [ ] All callbacks are optional and use optional chaining: `onAction?.()`
    - [ ] No state management code (useState, useContext, etc.)
    - [ ] No routing logic or navigation calls
+
+### Validate Sub-Components (Recursive)
+
+Components may import other components. Validate the full dependency tree:
+
+**Step 1: Build dependency graph**
+
+For each component file, extract its local imports:
+
+```bash
+# Find components imported by each file
+for component in src/sections/*/components/*.tsx; do
+  # Extract imports like: import { Button } from './Button'
+  grep -E "^import.*from '\\./" "$component" | sed "s/.*from '\\.\\/\\([^']*\\)'.*/\\1/"
+done
+```
+
+**Step 2: Validate all imported components**
+
+For each component referenced in imports:
+1. Check if the imported file exists in `components/`
+2. Apply the same validation rules (no data imports, props-based, etc.)
+3. Recursively check that component's imports
+
+**Step 3: Report missing sub-components**
+
+If a component imports another component that doesn't exist:
+
+```
+Error: Component dependency missing:
+- InvoiceList.tsx imports './InvoiceCard' but InvoiceCard.tsx doesn't exist
+
+Please ensure all sub-components are created before export.
+```
+
+**Step 4: Validate sub-component portability**
+
+All sub-components must also pass the portability checks:
+- No data imports
+- Props-based architecture
+- No state management or routing
+
+If a sub-component fails validation, report it along with its parent:
+
+```
+Error: Sub-component validation failed:
+- InvoiceCard.tsx (imported by InvoiceList.tsx) - imports data directly
+
+Fix the sub-component before export.
+```
+
+This ensures the entire component tree is portable, not just the top-level components.
 
 ### If Validation Passes
 
@@ -706,6 +837,8 @@ Continue to Step 9 with confidence.
 ## Step 9: Copy and Transform Components
 
 ### Shell Components
+
+**Skip this section if `INCLUDE_SHELL` is false** (user chose to proceed without shell in Step 1).
 
 Copy from `src/shell/components/` to `product-plan/shell/components/`:
 
@@ -1925,7 +2058,14 @@ Before considering this implementation complete, verify:
 
 ## Step 15: Generate README.md
 
-Create `product-plan/README.md`:
+Create `product-plan/README.md` with the actual product name substituted:
+
+**Important:** Replace all `[Product Name]` placeholders with the actual product name from `product-overview.md` before writing the file.
+
+```bash
+# Get the product name from product-overview.md (first line after "# ")
+PRODUCT_NAME=$(head -1 product/product-overview.md | sed 's/^# //')
+```
 
 ```markdown
 # [Product Name] — Design Handoff
@@ -2195,6 +2335,86 @@ The components are props-based and portable — they accept data and callbacks, 
 - Sample data files are for testing before real APIs are built
 - The export is self-contained — no dependencies on Design OS
 - Components are portable — they work with any React setup
+
+### Rollback / Recovery
+
+If the export process fails or produces unexpected results, here's how to recover:
+
+**Before Starting Export (Recommended):**
+
+Create a backup of any existing export before starting a new one:
+
+```bash
+# Backup existing export folder
+if [ -d "product-plan" ]; then
+  mv product-plan product-plan-backup-$(date +%Y%m%d-%H%M%S)
+fi
+
+# Backup existing zip file
+if [ -f "product-plan.zip" ]; then
+  mv product-plan.zip product-plan-backup-$(date +%Y%m%d-%H%M%S).zip
+fi
+```
+
+**If Export Fails Mid-Process:**
+
+1. **Delete the partial export:**
+   ```bash
+   rm -rf product-plan/
+   rm -f product-plan.zip
+   ```
+
+2. **Fix the issue** (usually a validation error from Step 1 or Step 8)
+
+3. **Re-run `/export-product`** — the command is idempotent and will recreate everything
+
+**If Export Completes But Has Issues:**
+
+| Problem | Solution |
+|---------|----------|
+| Missing components | Check Step 8-9 logs for validation failures. Re-run export after fixing component issues. |
+| Wrong import paths | Check Step 9 path transformations. May need to manually fix paths in copied files. |
+| Missing screenshots | Run `/screenshot-design` for each section, then re-run export. |
+| Corrupt prompts | Check template files in `.claude/templates/design-os/`. Restore from git if needed. |
+| Zip file corrupt | Delete `product-plan.zip` and recreate manually: `zip -r product-plan.zip product-plan/` |
+
+**Restore from Backup:**
+
+If you have a backup and need to restore:
+
+```bash
+# Remove failed export
+rm -rf product-plan/
+rm -f product-plan.zip
+
+# Restore from backup
+mv product-plan-backup-[timestamp] product-plan
+mv product-plan-backup-[timestamp].zip product-plan.zip
+```
+
+**Git-Based Recovery:**
+
+If the export folder is tracked in git:
+
+```bash
+# Discard all changes to product-plan/
+git checkout -- product-plan/
+
+# Or restore specific files
+git checkout HEAD -- product-plan/prompts/one-shot-prompt.md
+```
+
+**When to Start Fresh:**
+
+Sometimes it's easier to delete everything and regenerate:
+
+```bash
+rm -rf product-plan/
+rm -f product-plan.zip
+# Then re-run /export-product
+```
+
+The export process is designed to be repeatable — running it multiple times will produce the same output (given the same source files).
 
 ### Progress Reporting
 

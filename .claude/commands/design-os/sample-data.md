@@ -240,41 +240,62 @@ Validation has failed 3 times. Please review the data model at product/data-mode
 
 This prevents infinite regeneration loops when there's a fundamental misunderstanding about the data model structure.
 
-### Retry Loop Behavior (Agent Instructions)
+### Retry State Tracking (Agent Instructions)
 
-**Important:** This is guidance for AI agent behavior — the agent must mentally track retry attempts.
+**Important:** This is guidance for AI agent behavior — the agent must explicitly track and report retry attempts.
 
-**Retry behavior:**
+**Retry Reporting Format:**
 
-1. **First attempt:** Generate data.json and run validation (Steps 5-6)
-2. **On validation failure:** Note this is attempt 1 of 3, explain the issue, and regenerate
-3. **On second failure:** Note this is attempt 2 of 3, explain the issue, and regenerate
-4. **On third failure:** STOP with the error message below — do not attempt a 4th time
-
-The maximum of 3 attempts prevents infinite loops when there's a fundamental data model issue.
-
-**Flow diagram:**
+When retrying, always include the attempt number in your response:
 
 ```
-[Generate data.json] → [Validate] → Pass → [Generate types.ts] → [Complete]
-                            ↓
-                          Fail
-                            ↓
-                      [Track attempt #]
-                            ↓
-                 ┌─────────────────────┐
-                 │ Attempt < 3?        │
-                 └─────────────────────┘
-                    ↓ Yes         ↓ No
-            [Report & Retry]  [STOP with error]
-                    ↓
-            [Return to Generate]
+[Attempt 1/3] Generating data.json...
+[Validation passed/failed]
+
+[Attempt 2/3] Regenerating data.json to fix: [specific issue]...
+[Validation passed/failed]
+
+[Attempt 3/3 - FINAL] Regenerating data.json to fix: [specific issue]...
+[Validation passed/failed]
 ```
 
-**Key points:**
-- The AI agent tracks retry attempts during command execution
-- Each retry should address the specific validation failure identified
+**Retry Behavior:**
+
+1. **First attempt (Attempt 1/3):** Generate data.json and run validation (Steps 5-6)
+   - If validation passes → Proceed to Step 7
+   - If validation fails → Report the specific issue and retry
+
+2. **Second attempt (Attempt 2/3):** Regenerate data.json addressing the specific failure
+   - Explicitly state what you're fixing
+   - Re-run validation
+
+3. **Third attempt (Attempt 3/3 - FINAL):** Last chance to fix the issue
+   - If validation still fails → STOP with the error message below
+   - Do NOT attempt a 4th time
+
+**Flow Diagram:**
+
+```
+[Attempt 1/3: Generate] → [Validate] → Pass → [Step 7: Generate types.ts]
+                              ↓
+                            Fail
+                              ↓
+[Attempt 2/3: Fix issue] → [Validate] → Pass → [Step 7: Generate types.ts]
+                              ↓
+                            Fail
+                              ↓
+[Attempt 3/3: Final fix] → [Validate] → Pass → [Step 7: Generate types.ts]
+                              ↓
+                            Fail
+                              ↓
+                     [STOP with error message]
+```
+
+**Key Points:**
+- Always report the current attempt number (e.g., "Attempt 2/3")
+- Explain what specific issue you're fixing on each retry
 - After 3 failed attempts, stop and ask user to review the data model manually
+- The maximum of 3 attempts prevents infinite loops when there's a fundamental data model issue
 
 ### Validate Entity Name Consistency
 

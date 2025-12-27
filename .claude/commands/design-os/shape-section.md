@@ -104,19 +104,24 @@ SHELL_EXISTS=$([ -f "src/shell/components/AppShell.tsx" ] && echo "yes" || echo 
 PREVIEW_EXISTS=$([ -f "src/shell/ShellPreview.tsx" ] && echo "yes" || echo "no")
 ```
 
-| Spec | Components | Preview | Status |
-|------|------------|---------|--------|
-| yes | yes | yes | Shell complete |
-| yes | no | no | Spec only (run `/design-shell` to complete) |
-| no | yes | yes | Components exist but no spec (unusual) |
-| no | no | no | No shell designed |
+| Spec | Components | Preview | Status | Message |
+|------|------------|---------|--------|---------|
+| yes | yes | yes | Complete | "Your application shell is fully designed and ready to use." |
+| yes | yes | no | Missing preview | "Shell spec and components exist but preview is missing. Run `/design-shell` to regenerate." |
+| yes | no | yes | Orphaned preview | "Spec and preview exist but main component is missing. Run `/design-shell` to regenerate." |
+| yes | no | no | Spec only | "A shell spec exists but components haven't been generated yet. Run `/design-shell` to complete." |
+| no | yes | yes | Components only | "Shell components exist but no specification. Consider running `/design-shell` to document design decisions." |
+| no | yes | no | Partial components | "AppShell.tsx exists but preview and spec are missing. Run `/design-shell` to create a complete shell." |
+| no | no | yes | Orphaned preview | "ShellPreview.tsx exists alone — an unusual state. Run `/design-shell` to create a proper shell." |
+| no | no | no | No shell | "No shell has been designed yet. You can still choose 'Inside app shell' — design it later with `/design-shell`." |
 
 **Report shell status to user:**
 
-- **Complete:** "Your application shell is fully designed and ready to use."
-- **Spec only:** "A shell spec exists but components haven't been generated yet. Run `/design-shell` to complete the shell."
-- **Components only (unusual):** "Shell components exist at `src/shell/` but there's no specification at `product/shell/spec.md`. This is an unusual state. Run `/design-shell` to create a proper specification that documents your shell design decisions."
-- **No shell:** (inform before asking, as below)
+Based on the table above, report the appropriate message. The most common states are:
+- **Complete** (yes/yes/yes) — Ideal state, shell is ready
+- **No shell** (no/no/no) — Normal for new projects, shell can be designed later
+- **Spec only** (yes/no/no) — Spec was written but `/design-shell` wasn't completed
+- **Components only** (no/yes/yes) — Components were created manually or spec was deleted
 
 If shell components exist but spec.md doesn't exist, inform the user:
 ```
@@ -293,6 +298,44 @@ The `section-id` is generated from the section title following these rules:
 - "Reports & Analytics" → `reports-and-analytics`
 - "User Settings" → `user-settings`
 
+### Validate Section ID Against Roadmap
+
+After generating the section ID, verify it matches a section title from the roadmap:
+
+1. **Read the roadmap:** Extract section titles from `/product/product-roadmap.md`
+2. **Generate expected IDs:** Apply the Section ID Generation Rules to each title
+3. **Compare:** Verify the generated ID matches one of the expected IDs
+
+**Validation Script (conceptual):**
+
+```bash
+# Extract section titles from roadmap
+# Each section is formatted as: ### N. [Section Title]
+section_titles=$(grep -E '^### [0-9]+\.' product/product-roadmap.md | sed 's/### [0-9]*\. //')
+
+# For each title, generate the expected section ID
+# Compare with the ID you're about to create
+```
+
+**If ID doesn't match any roadmap section:**
+
+```
+Warning: The section ID '[generated-id]' doesn't match any section in product-roadmap.md.
+
+Existing roadmap sections:
+- [section-1-title] → [section-1-id]
+- [section-2-title] → [section-2-id]
+
+Did you mean one of these? Or would you like to add this as a new section to the roadmap?
+```
+
+Use AskUserQuestion with options:
+- "[Match 1] — Use existing section" — Continue with the matching ID
+- "[Match 2] — Use existing section" — Continue with the matching ID
+- "This is a new section — Add to roadmap" — Add to roadmap, then continue
+
+This validation ensures section IDs stay consistent between the roadmap and section specifications.
+
 ## Step 8: Confirm and Next Steps
 
 Let the user know:
@@ -300,6 +343,43 @@ Let the user know:
 "I've created the specification at `product/sections/[section-id]/spec.md`.
 
 You can review the spec on the section page. When you're ready, run `/sample-data` to create sample data for this section."
+
+### Multi-View Section Reminder
+
+If the spec includes multiple views, remind the user of the workflow:
+
+**For single-view sections:**
+No additional guidance needed.
+
+**For multi-view sections (2+ views):**
+
+```
+This section has [N] views defined:
+1. [View 1 Name] — [Description]
+2. [View 2 Name] — [Description]
+...
+
+After running /sample-data, you'll need to run /design-screen [N] times — once for each view.
+Each run will create a separate component file for that view.
+```
+
+This reminder helps users understand that multi-view sections require multiple `/design-screen` runs.
+
+### View Count Tracking
+
+The spec's `## Views` section defines how many screen design files will be created. Track this count:
+
+| Views in Spec | Screen Design Files Expected |
+|---------------|------------------------------|
+| 0 (single view) | 1 file: `[SectionId]View.tsx` |
+| 2+ views | N files: `[View1Name].tsx`, `[View2Name].tsx`, etc. |
+
+When the user later runs `/design-screen`, the command will:
+1. Read the spec to identify available views
+2. Ask which view to design (if multiple)
+3. Create the corresponding component file
+
+After all views are designed, use `/screenshot-design` to capture each one.
 
 ## Important Notes
 

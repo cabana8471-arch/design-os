@@ -123,6 +123,55 @@ Then create the file at `/product/data-model/data-model.md` with this format:
 
 **Important:** Keep descriptions minimal — focus on what each entity represents, not every field it contains. Leave room for the implementation agent to extend the model.
 
+### Validate Required Sections
+
+After creating the file, verify all required markdown sections exist:
+
+**Required sections:**
+- `# Data Model` — Main heading
+- `## Entities` — At least one `### EntityName` subsection
+- `## Relationships` — Relationship list
+
+**Validation Script:**
+
+```bash
+# Check for required sections
+CONTENT=$(cat product/data-model/data-model.md)
+
+# Check for # Data Model
+if ! echo "$CONTENT" | grep -q "^# Data Model"; then
+  echo "Warning: Missing '# Data Model' heading"
+fi
+
+# Check for ## Entities
+if ! echo "$CONTENT" | grep -q "^## Entities"; then
+  echo "Warning: Missing '## Entities' section"
+fi
+
+# Check for at least one ### EntityName subsection
+if ! echo "$CONTENT" | grep -E -q "^### [A-Z]"; then
+  echo "Warning: Missing entity subsections (expected '### EntityName' format)"
+fi
+
+# Check for ## Relationships
+if ! echo "$CONTENT" | grep -q "^## Relationships"; then
+  echo "Warning: Missing '## Relationships' section"
+fi
+```
+
+**If any section is missing:**
+
+```
+Warning: data-model.md is missing required section(s):
+- [list missing sections]
+
+The file may not be parsed correctly by /sample-data. Would you like me to fix the formatting?
+```
+
+Use AskUserQuestion with options:
+- "Yes, fix the formatting" — Regenerate with correct sections
+- "No, continue as is" — Proceed (user will fix manually)
+
 ## Step 6: Confirm Completion
 
 Let the user know:
