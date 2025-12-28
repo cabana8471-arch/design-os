@@ -12,6 +12,58 @@ Missing: product/product-roadmap.md. Run /product-roadmap to create it.
 
 Stop here if the roadmap doesn't exist.
 
+## Step 1.5: Load Product Context
+
+Read `/product/product-overview.md` to understand the product context and scope.
+
+### Extract Product Scope
+
+Check if the product overview contains a scope indicator (set by `/product-vision`):
+
+- Look for keywords like "MVP", "Standard", "Enterprise", or "Comprehensive" in the description or features
+- If explicitly stated, record the scope level
+
+**Scope Levels and Their Impact:**
+
+| Scope          | Section Complexity | Feature Suggestions                              |
+| -------------- | ------------------ | ------------------------------------------------ |
+| **MVP**        | Core features only | Minimal views (1-2), essential actions           |
+| **Standard**   | Full feature set   | Multiple views (2-4), common patterns            |
+| **Enterprise** | Comprehensive      | All views, advanced features, admin capabilities |
+
+**Apply Scope to Section Design:**
+
+When the scope is MVP:
+
+- Suggest simpler layouts (single view, basic list)
+- Focus on core user flows only
+- Recommend fewer UI patterns
+
+When the scope is Standard:
+
+- Suggest standard patterns (list + detail views)
+- Include common features (filtering, search)
+- Recommend moderate complexity
+
+When the scope is Enterprise:
+
+- Suggest comprehensive patterns (list + detail + forms + settings)
+- Include advanced features (bulk operations, analytics, export)
+- Recommend full feature set
+
+**Display Context:**
+
+Show the user what context was loaded:
+
+```
+Product Context Loaded:
+- **Product:** [Product Name]
+- **Scope:** [MVP/Standard/Enterprise or "Not specified"]
+- **Description:** [First sentence of description]
+
+I'll tailor the section specification to match this scope level.
+```
+
 ## Step 2: Identify the Target Section
 
 Read `/product/product-roadmap.md` to get the list of available sections.
@@ -27,6 +79,7 @@ Present the available sections as options.
 Once a section is selected, immediately generate and validate its section-id:
 
 **Section ID Generation Rules:**
+
 1. Convert to lowercase
 2. Replace spaces with hyphens
 3. Replace "&" with "-and-"
@@ -35,13 +88,15 @@ Once a section is selected, immediately generate and validate its section-id:
 6. Maximum 50 characters
 
 **Examples:**
+
 - "Invoice Management" → `invoice-management`
 - "Reports & Analytics" → `reports-and-analytics`
 - "User Settings" → `user-settings`
 
 **Edge Case Examples:**
+
 - "ABC" → `abc` (all-caps abbreviations become lowercase)
-- "  Spaces  Around  " → `spaces-around` (multiple spaces collapse to single hyphens, trimmed)
+- " Spaces Around " → `spaces-around` (multiple spaces collapse to single hyphens, trimmed)
 - "&Invoices & Reports" → `invoices-and-reports` (leading `&` removed, internal `&` becomes `-and-`)
 - "Q&A Forum" → `q-and-a-forum` (single letters preserved around `&`)
 - "Reports..." → `reports` (trailing punctuation removed)
@@ -87,20 +142,24 @@ What would you like to do?"
 ```
 
 Use AskUserQuestion with options:
+
 - "Update existing spec" — Preserve existing content, modify specific sections
 - "Start fresh" — Replace the existing spec entirely
 - "View current spec" — Read and display the current specification first
 
 **If user chooses "Update existing spec":**
+
 - Read the current spec.md
 - Ask which parts they want to modify
 - Update only those sections, preserving the rest
 
 **If user chooses "Start fresh":**
+
 - Warn: "This will replace your existing specification. Any manual edits will be lost. Are you sure?"
 - If confirmed, proceed with the normal flow starting from Step 3
 
 **If user chooses "View current spec":**
+
 - Display the current spec content
 - Ask what they'd like to do next
 
@@ -116,6 +175,96 @@ Do you have any notes or ideas about what this section should include? Share any
 
 Wait for their response. The user may provide raw notes or ask to proceed with questions.
 
+## Step 3.5: AI-Generated Feature Suggestions
+
+After receiving the user's initial input, dynamically generate feature suggestions based on:
+
+1. **The section title and description** (from roadmap)
+2. **The product scope** (from Step 1.5)
+3. **The user's initial notes** (from Step 3)
+
+### Generate Section-Specific Suggestions
+
+Analyze the section type and generate relevant feature suggestions:
+
+```
+Based on **[Section Title]** and your [Product Scope] scope, here are features commonly found in similar sections:
+
+**Core Features (essential for this section):**
+- [ ] [Dynamically generated based on section type]
+- [ ] [Dynamically generated]
+- [ ] [Dynamically generated]
+
+**Standard Features (recommended for most products):**
+- [ ] [Dynamically generated]
+- [ ] [Dynamically generated]
+
+**Advanced Features (for comprehensive implementations):**
+- [ ] [Dynamically generated]
+- [ ] [Dynamically generated]
+
+Which features are relevant for your **[Section Title]**? Select all that apply, or describe additional features.
+```
+
+### Example Suggestions by Section Type
+
+| Section Type        | Core Features                      | Standard Features                | Advanced Features                 |
+| ------------------- | ---------------------------------- | -------------------------------- | --------------------------------- |
+| **List/Management** | View list, Add item, Delete item   | Filter, Search, Sort             | Bulk operations, Export, Import   |
+| **Dashboard**       | Key metrics, Charts, Summary cards | Date range selection, Drill-down | Custom widgets, Real-time updates |
+| **Settings**        | View settings, Edit settings, Save | Categories, Reset to defaults    | Audit log, Permissions            |
+| **Detail View**     | View details, Edit, Delete         | Related items, History           | Versioning, Comments, Attachments |
+| **Forms**           | Input fields, Validation, Submit   | Multi-step, Autosave             | Conditional fields, Templates     |
+| **Reports**         | View reports, Basic filters        | Date ranges, Export PDF/CSV      | Scheduled reports, Custom queries |
+
+### Scope-Aware Suggestions
+
+Adjust suggestions based on the product scope (from Step 1.5):
+
+| Scope          | Suggested Feature Set                |
+| -------------- | ------------------------------------ |
+| **MVP**        | Core features only — keep it minimal |
+| **Standard**   | Core + Standard features             |
+| **Enterprise** | Core + Standard + Advanced features  |
+
+**Example for MVP scope:**
+
+```
+Since your product scope is **MVP**, I recommend focusing on just the core features:
+
+- [ ] View [items] in a list
+- [ ] Add new [item]
+- [ ] View [item] details
+- [ ] Delete [item]
+
+We can always add more features later. Does this scope feel right?
+```
+
+**Example for Enterprise scope:**
+
+```
+Since your product scope is **Enterprise**, you may want the full feature set:
+
+**Core:** View, Add, Edit, Delete [items]
+**Standard:** Filter, Search, Sort, Export
+**Advanced:** Bulk operations, Audit log, Role-based permissions
+
+Which of these are priorities for this section?
+```
+
+### Record Feature Selections
+
+Track which features the user selects for use in the spec:
+
+```
+SECTION_FEATURES:
+  core: [list of selected core features]
+  standard: [list of selected standard features]
+  advanced: [list of selected advanced features]
+```
+
+This ensures the spec in Step 6/7 reflects the user's actual selections.
+
 ## Step 4: Ask Clarifying Questions
 
 Use the AskUserQuestion tool to ask 4-6 targeted questions to define:
@@ -127,6 +276,7 @@ Use the AskUserQuestion tool to ask 4-6 targeted questions to define:
 - **Scope boundaries** - What should be explicitly excluded?
 
 Example questions (adapt based on their input and the section):
+
 - "What are the main actions a user can take in this section?"
 - "What information needs to be displayed on the primary view?"
 - "Walk me through the main user flow - what happens step by step?"
@@ -136,6 +286,55 @@ Example questions (adapt based on their input and the section):
 
 Ask questions one or two at a time, conversationally. Focus on user experience and interface requirements - no backend or database details.
 
+### Step 4.5: Layout Pattern Preferences
+
+After understanding the content requirements, explicitly ask about layout patterns for different screen sizes. Use AskUserQuestion with predefined options:
+
+**Question 1: Desktop Layout Pattern**
+
+"What layout pattern should the **desktop** version use?"
+
+Options (present as predefined choices):
+
+- **Table + Drawer** — Data table with columns; clicking a row opens a drawer with details. Best for: data-heavy lists, admin panels, records management.
+- **Card Grid** — Visual cards arranged in a grid; each card shows key info with quick actions. Best for: visual content, portfolios, product catalogs.
+- **Split View** — Master list on the left, detail panel on the right (always visible). Best for: email clients, messaging, content management.
+- **Full-Page Detail** — List view navigates to a separate full-page detail view. Best for: complex details, document editing, workflows.
+
+**Question 2: Mobile/Tablet Layout Pattern**
+
+"What layout pattern should the **mobile and tablet** version use?"
+
+Options (present as predefined choices):
+
+- **Card Stack** — Vertical scrolling cards; tap a card to expand details or navigate. Best for: touch-friendly browsing, visual content.
+- **Compact List** — Minimal list items showing essential info; tap for bottom sheet or page. Best for: data lists, efficient navigation.
+- **Bottom Sheet** — List items open a swipe-up sheet with full details. Best for: quick preview, moderate detail depth.
+- **Accordion** — List items expand inline to show details. Best for: FAQ-style content, simple details.
+
+**Question 3: Responsive Behavior**
+
+"How should the layouts relate to each other?"
+
+Options:
+
+- **Same pattern, adapted** — Use the same layout type, just scaled for screen size. Simpler code, consistent experience.
+- **Different patterns** — Use the optimal pattern for each screen size (e.g., table on desktop, cards on mobile). Better UX, more work.
+- **Mobile-first progressive** — Start with mobile layout, progressively enhance for larger screens. Best for mobile-dominant user base.
+
+### Record Layout Choices
+
+Store the user's answers for use in Step 6 (Draft) and Step 7 (Spec):
+
+```
+LAYOUT_PREFERENCES:
+  desktop: [user's choice]
+  mobile_tablet: [user's choice]
+  responsive_behavior: [user's choice]
+```
+
+These choices will be documented in the spec.md and used by `/design-screen` when creating components.
+
 ## Step 5: Ask About Shell Configuration
 
 Check if a shell design has been created for this project by checking for all shell files:
@@ -143,6 +342,7 @@ Check if a shell design has been created for this project by checking for all sh
 **Check for existing shell (comprehensive check):**
 
 A complete shell consists of three parts:
+
 1. `product/shell/spec.md` — Shell specification (design decisions)
 2. `src/shell/components/AppShell.tsx` — Main shell component
 3. `src/shell/ShellPreview.tsx` — Preview wrapper
@@ -186,20 +386,21 @@ echo "Shell status: $STATUS"
 echo "$MESSAGE"
 ```
 
-| Spec | Components | Preview | Status | Message |
-|------|------------|---------|--------|---------|
-| yes | yes | yes | Complete | "Your application shell is fully designed and ready to use." |
-| yes | yes | no | Missing preview | "Shell spec and components exist but preview is missing. Run `/design-shell` to regenerate." |
-| yes | no | yes | Orphaned preview | "Spec and preview exist but main component is missing. Run `/design-shell` to regenerate." |
-| yes | no | no | Spec only | "A shell spec exists but components haven't been generated yet. Run `/design-shell` to complete." |
-| no | yes | yes | Components only | "Shell components exist but no specification. You can: (1) Continue using existing components, or (2) Run `/design-shell` to regenerate with a documented specification." |
-| no | yes | no | Partial components | "AppShell.tsx exists but preview and spec are missing. Run `/design-shell` to create a complete shell." |
-| no | no | yes | Orphaned preview | "ShellPreview.tsx exists alone — an unusual state. Run `/design-shell` to create a proper shell." |
-| no | no | no | No shell | "No shell has been designed yet. You can still choose 'Inside app shell' — design it later with `/design-shell`." |
+| Spec | Components | Preview | Status             | Message                                                                                                                                                                   |
+| ---- | ---------- | ------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| yes  | yes        | yes     | Complete           | "Your application shell is fully designed and ready to use."                                                                                                              |
+| yes  | yes        | no      | Missing preview    | "Shell spec and components exist but preview is missing. Run `/design-shell` to regenerate."                                                                              |
+| yes  | no         | yes     | Orphaned preview   | "Spec and preview exist but main component is missing. Run `/design-shell` to regenerate."                                                                                |
+| yes  | no         | no      | Spec only          | "A shell spec exists but components haven't been generated yet. Run `/design-shell` to complete."                                                                         |
+| no   | yes        | yes     | Components only    | "Shell components exist but no specification. You can: (1) Continue using existing components, or (2) Run `/design-shell` to regenerate with a documented specification." |
+| no   | yes        | no      | Partial components | "AppShell.tsx exists but preview and spec are missing. Run `/design-shell` to create a complete shell."                                                                   |
+| no   | no         | yes     | Orphaned preview   | "ShellPreview.tsx exists alone — an unusual state. Run `/design-shell` to create a proper shell."                                                                         |
+| no   | no         | no      | No shell           | "No shell has been designed yet. You can still choose 'Inside app shell' — design it later with `/design-shell`."                                                         |
 
 **Forward Path for "Components only" state:**
 
 When shell components exist without a spec, the user has two valid options:
+
 1. **Continue as-is** — The shell will work without a spec. However, design decisions aren't documented.
 2. **Run `/design-shell`** — This will:
    - Create `product/shell/spec.md` documenting the shell design
@@ -212,16 +413,16 @@ If the user is satisfied with the existing components, they can proceed without 
 
 Based on the detection table above, report the appropriate message for ALL 8 possible states:
 
-| State | Message to User |
-|-------|-----------------|
-| **Complete** (yes/yes/yes) | "Your application shell is fully designed and ready to use." |
-| **Missing preview** (yes/yes/no) | "Shell spec and components exist, but ShellPreview.tsx is missing. Run `/design-shell` to regenerate the preview wrapper." |
-| **Orphaned preview** (yes/no/yes) | "Spec and preview exist but AppShell.tsx is missing. Run `/design-shell` to regenerate the components." |
-| **Spec only** (yes/no/no) | "A shell spec exists but components haven't been generated. Run `/design-shell` to complete the shell design." |
-| **Components only** (no/yes/yes) | "Shell components exist but the specification is missing. The shell will work, but consider running `/design-shell` to document the design decisions." |
-| **Partial components** (no/yes/no) | "AppShell.tsx exists but ShellPreview.tsx and spec are missing. Run `/design-shell` to create a complete shell." |
-| **Orphaned preview** (no/no/yes) | "Only ShellPreview.tsx exists — this is an unusual state. Run `/design-shell` to create a proper shell with spec and components." |
-| **No shell** (no/no/no) | "No shell has been designed yet. You can still choose 'Inside app shell' — the shell can be designed later with `/design-shell`." |
+| State                              | Message to User                                                                                                                                        |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Complete** (yes/yes/yes)         | "Your application shell is fully designed and ready to use."                                                                                           |
+| **Missing preview** (yes/yes/no)   | "Shell spec and components exist, but ShellPreview.tsx is missing. Run `/design-shell` to regenerate the preview wrapper."                             |
+| **Orphaned preview** (yes/no/yes)  | "Spec and preview exist but AppShell.tsx is missing. Run `/design-shell` to regenerate the components."                                                |
+| **Spec only** (yes/no/no)          | "A shell spec exists but components haven't been generated. Run `/design-shell` to complete the shell design."                                         |
+| **Components only** (no/yes/yes)   | "Shell components exist but the specification is missing. The shell will work, but consider running `/design-shell` to document the design decisions." |
+| **Partial components** (no/yes/no) | "AppShell.tsx exists but ShellPreview.tsx and spec are missing. Run `/design-shell` to create a complete shell."                                       |
+| **Orphaned preview** (no/no/yes)   | "Only ShellPreview.tsx exists — this is an unusual state. Run `/design-shell` to create a proper shell with spec and components."                      |
+| **No shell** (no/no/no)            | "No shell has been designed yet. You can still choose 'Inside app shell' — the shell can be designed later with `/design-shell`."                      |
 
 **Use the appropriate message based on the detected state.** Most common states are Complete and No shell.
 
@@ -234,10 +435,12 @@ Based on the detection table above, report the appropriate message for ALL 8 pos
 Most sections use the app shell, but some pages like public-facing views, landing pages, or embedded widgets should be standalone."
 
 Use AskUserQuestion with options:
+
 - "Inside app shell (Recommended)" - The default for most in-app sections
 - "Standalone (no shell)" - For public pages, landing pages, or embeds
 
 **Note:** Even if no shell design exists yet, the user should still make this choice:
+
 - If they choose "Inside app shell", set `shell: true` — it will use the shell once it's designed later
 - If they choose "Standalone", set `shell: false` — this is a deliberate design decision for public or embedded pages
 
@@ -253,28 +456,38 @@ Once you have enough information, present a draft specification:
 [2-3 sentence summary of what this section does]
 
 **User Flows:**
+
 - [Flow 1]
 - [Flow 2]
 - [Flow 3]
 
 **UI Requirements:**
+
 - [Requirement 1]
 - [Requirement 2]
 - [Requirement 3]
 
 **Views:**
 [If multiple views were discussed, list them explicitly:]
+
 - [View 1] — [Brief description, e.g., "List view showing all items"]
 - [View 2] — [Brief description, e.g., "Detail view for single item"]
 - [View 3] — [Brief description, e.g., "Create/edit form modal"]
 
 [If only one view, omit this section]
 
+**Layout Patterns:**
+
+- Desktop: [Table + Drawer / Card Grid / Split View / Full-Page Detail]
+- Mobile/Tablet: [Card Stack / Compact List / Bottom Sheet / Accordion]
+- Responsive: [Same pattern, adapted / Different patterns / Mobile-first progressive]
+
 **Display:** [Inside app shell / Standalone]
 
 Does this capture everything? Would you like to adjust anything?"
 
 **Note:** When writing the final spec file (Step 7), transform the Display choice:
+
 - "Inside app shell" → `shell: true`
 - "Standalone" → `shell: false`
 
@@ -293,36 +506,43 @@ This ensures `/design-screen` and `/sample-data` commands know to create compone
 When a section has multiple views, here's how they flow through the Design OS commands:
 
 **1. `/shape-section` (You are here)** — See: `.claude/commands/design-os/shape-section.md`
+
 - Define all views in the Views section of the spec
 - Specify which data each view needs
 - Document transitions between views
 
 **2. `/sample-data`** — See: `.claude/commands/design-os/sample-data.md` (Section "Multi-View Data Sharing")
+
 - Creates a single `data.json` with data for ALL views
 - Creates `types.ts` with Props interfaces for EACH view (e.g., `ListViewProps`, `DetailViewProps`)
 - Props for each view receive only the data they need
 
 **3. `/design-screen`** — See: `.claude/commands/design-os/design-screen.md` (Section "Multi-View Sections")
+
 - Run once per view — the command will ask which view to create
 - Each view becomes a separate component file
 - All views share the same `types.ts` and can reference the same entities
 - Preview wrappers are created for each view independently
 
 **4. `/screenshot-design`** — See: `.claude/commands/design-os/screenshot-design.md` (Section "Step 3: Capture the Screenshot")
+
 - Run once per view to capture screenshots
 - Each screenshot is saved with the view name (e.g., `invoice-list.png`, `invoice-detail.png`)
 
 **5. Shell navigation** — See: `.claude/commands/design-os/design-shell.md` (Section "Multi-View Navigation Routing")
+
 - All views share the same shell (if `shell: true`)
 - The shell shows the section name; view switching happens within the section
 - Transitions use callbacks (e.g., `onView` opens detail view)
 
 **6. Default View (Routing)**
+
 - When navigating to `/sections/[section-id]`, the **first view listed in the spec** loads by default
 - Other views can be accessed directly via `/sections/[section-id]/screen-designs/[view-name]`
 - Order your views with the primary/list view first, followed by secondary views (detail, edit, etc.)
 
 **Related Documentation:**
+
 - [agents.md](../../agents.md) — Section "Command Quick Reference" shows file outputs per command
 - [agents.md](../../agents.md) — Section "File Structure" shows where multi-view files are stored
 
@@ -335,11 +555,13 @@ Once the user approves:
 ### Create Directory
 
 First, ensure the directory exists by creating it if needed:
+
 ```bash
 mkdir -p product/sections/[section-id]
 ```
 
 Then validate the directory was created:
+
 ```bash
 if [ ! -d "product/sections/[section-id]" ]; then
   echo "Error: product/sections/[section-id]/ - Directory creation failed. Check write permissions."
@@ -355,30 +577,45 @@ Use the section-id validated in Step 2 to create the file at `product/sections/[
 # [Section Title] Specification
 
 ## Overview
+
 [The finalized 2-3 sentence description]
 
 ## User Flows
+
 - [Flow 1]
 - [Flow 2]
 - [Flow 3]
-[Add all flows discussed]
+  [Add all flows discussed]
 
 ## UI Requirements
+
 - [Requirement 1]
 - [Requirement 2]
 - [Requirement 3]
-[Add all requirements discussed]
+  [Add all requirements discussed]
 
 ## Views
+
 [Only include this section if multiple views were discussed]
+
 - [View 1] — [Brief description]
 - [View 2] — [Brief description]
 
+## Layout Patterns
+
+[From Step 4.5 layout preferences]
+
+- **Desktop:** [Table + Drawer / Card Grid / Split View / Full-Page Detail]
+- **Mobile/Tablet:** [Card Stack / Compact List / Bottom Sheet / Accordion]
+- **Responsive Behavior:** [Same pattern, adapted / Different patterns / Mobile-first progressive]
+
 ## Configuration
+
 - shell: [true/false]
 ```
 
 **Important:**
+
 - Set `shell: true` if the section should display inside the app shell (this is the default)
 - Set `shell: false` if the section should display as a standalone page without the shell
 - The section-id was already validated against the roadmap in Step 2
@@ -416,12 +653,13 @@ This reminder helps users understand that multi-view sections require multiple `
 
 The spec's `## Views` section defines how many screen design files will be created. Track this count:
 
-| Views in Spec | Screen Design Files Expected |
-|---------------|------------------------------|
-| 0 (single view) | 1 file: `[SectionId]View.tsx` |
-| 2+ views | N files: `[View1Name].tsx`, `[View2Name].tsx`, etc. |
+| Views in Spec   | Screen Design Files Expected                        |
+| --------------- | --------------------------------------------------- |
+| 0 (single view) | 1 file: `[SectionId]View.tsx`                       |
+| 2+ views        | N files: `[View1Name].tsx`, `[View2Name].tsx`, etc. |
 
 When the user later runs `/design-screen`, the command will:
+
 1. Read the spec to identify available views
 2. Ask which view to design (if multiple)
 3. Create the corresponding component file

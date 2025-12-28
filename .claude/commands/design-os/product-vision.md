@@ -21,9 +21,11 @@ After receiving their input, use the AskUserQuestion tool to ask 3-5 targeted qu
 - **The main features** that make this possible
 
 **Important:** If the user hasn't already provided a product name, ask them:
+
 - "What would you like to call this product? (A short, memorable name)"
 
 Other example clarifying questions (adapt based on their input):
+
 - "Who is the primary user of this product? Can you describe them?"
 - "What's the single biggest pain point you're addressing?"
 - "How do people currently solve this problem without your product?"
@@ -31,6 +33,90 @@ Other example clarifying questions (adapt based on their input):
 - "What are the 3-5 most essential features?"
 
 Ask questions one or two at a time, and engage conversationally.
+
+## Step 2.5: Product Scope and AI-Generated Suggestions
+
+After understanding the user's basic product idea, explicitly ask about scope and provide dynamic suggestions.
+
+### Question 1: Product Scope
+
+Use AskUserQuestion with predefined options:
+
+**"What scope are you targeting for this product?"**
+
+Options:
+
+- **MVP (Minimum Viable Product)** — Core features only. Focus on solving the main problem with minimal complexity. Best for: validating ideas quickly, limited resources.
+- **Standard** — Full feature set for primary use cases. Covers main user flows and common scenarios. Best for: most production products.
+- **Enterprise / Comprehensive** — All features plus advanced capabilities (analytics, admin panels, integrations). Best for: mature products, B2B SaaS, complex workflows.
+
+Record the choice for use throughout the planning process:
+
+```
+PRODUCT_SCOPE: [MVP / Standard / Enterprise]
+```
+
+### AI-Generated Feature Suggestions
+
+Based on the user's description, dynamically analyze the product type and generate relevant feature suggestions.
+
+**Process:**
+
+1. **Identify the product type** from the description (e.g., SaaS dashboard, e-commerce, CRM, portfolio, monitoring tool, etc.)
+
+2. **Generate 6-10 relevant feature suggestions** organized by priority:
+
+```
+Based on your description, I identified this as a **[detected product type]** application.
+
+Here are features commonly found in similar products:
+
+**Core Features (most products include these):**
+- [ ] [Dynamically generated based on product type]
+- [ ] [Dynamically generated]
+- [ ] [Dynamically generated]
+
+**Standard Features (recommended for full products):**
+- [ ] [Dynamically generated]
+- [ ] [Dynamically generated]
+- [ ] [Dynamically generated]
+
+**Advanced Features (for enterprise/comprehensive scope):**
+- [ ] [Dynamically generated]
+- [ ] [Dynamically generated]
+
+Which of these are relevant to your product? Select all that apply, or describe additional features.
+```
+
+3. **Tailor suggestions based on scope:**
+   - **MVP scope:** Emphasize only Core Features
+   - **Standard scope:** Include Core + Standard Features
+   - **Enterprise scope:** Include all categories
+
+**Example Suggestions by Product Type:**
+
+| Product Type          | Core Features                                       | Standard Features                       | Advanced Features                               |
+| --------------------- | --------------------------------------------------- | --------------------------------------- | ----------------------------------------------- |
+| **Dashboard/SaaS**    | User authentication, Data visualization, Basic CRUD | Filters & search, Export, Notifications | Role-based access, Audit logs, API              |
+| **E-commerce**        | Product catalog, Cart, Checkout                     | User accounts, Order history, Reviews   | Inventory management, Analytics, Multi-currency |
+| **CRM**               | Contact management, Notes, Activities               | Pipeline stages, Tags/filters, Search   | Automation, Integrations, Reporting             |
+| **Monitoring Tool**   | Status dashboard, Agent list, Alerts                | Filtering, History, Remote actions      | Multi-tenant, API, Advanced analytics           |
+| **Portfolio/Content** | Project display, About page, Contact                | Categories, Search, Case studies        | Blog, CMS, Analytics                            |
+
+**Note:** These are examples. Always generate suggestions dynamically based on the actual product description, not just the category.
+
+### Record Feature Selections
+
+Track which features the user selects for use in Step 3:
+
+```
+SELECTED_FEATURES:
+  core: [list of selected core features]
+  standard: [list of selected standard features]
+  advanced: [list of selected advanced features]
+```
+
+This ensures the draft in Step 3 reflects the user's actual selections, not just their initial description.
 
 ## Step 3: Present Draft and Refine
 
@@ -42,10 +128,12 @@ Once you have enough information, present a draft summary:
 [Draft 1-3 sentence description]
 
 **Problems & Solutions:**
+
 1. [Problem] → [Solution]
 2. [Problem] → [Solution]
 
 **Key Features:**
+
 - Feature 1
 - Feature 2
 - Feature 3
@@ -66,14 +154,15 @@ Iterate until the user is satisfied.
 
 **Product Name Validation Criteria:**
 
-| Criterion | Rule | Example |
-|-----------|------|---------|
-| Length | 2-50 characters | "OK" (2) to "Enterprise Resource Planning Dashboard" (40) |
-| Not generic | Reject placeholders | "My App", "Untitled", "New Project", "App", "Test" |
-| Meaningful | Describes the product | "InvoiceFlow", "TaskMaster", "HealthSync" |
-| No special chars | Letters, numbers, spaces, hyphens only | "Project 42" (OK), "App@v2" (reject) |
+| Criterion        | Rule                                   | Example                                                   |
+| ---------------- | -------------------------------------- | --------------------------------------------------------- |
+| Length           | 2-50 characters                        | "OK" (2) to "Enterprise Resource Planning Dashboard" (40) |
+| Not generic      | Reject placeholders                    | "My App", "Untitled", "New Project", "App", "Test"        |
+| Meaningful       | Describes the product                  | "InvoiceFlow", "TaskMaster", "HealthSync"                 |
+| No special chars | Letters, numbers, spaces, hyphens only | "Project 42" (OK), "App@v2" (reject)                      |
 
 **Generic names to reject:**
+
 - "My App", "My Project", "My Product"
 - "Untitled", "Untitled App", "New App"
 - "App", "Project", "Product" (single generic words)
@@ -81,11 +170,13 @@ Iterate until the user is satisfied.
 - "[Placeholder]", "TBD", "TODO"
 
 If the user provides a generic name:
+
 ```
 "'[name]' seems like a placeholder. Your product name will appear throughout the design and export — what would you like to call it?"
 ```
 
 The product name is critical because:
+
 - It becomes the `# [Product Name]` heading in the markdown file
 - It displays as the main title in Design OS
 - It's referenced throughout the export process
@@ -128,23 +219,25 @@ Use AskUserQuestion with these options. This prevents silent inconsistencies bet
 
 **Before writing the file, verify all required content exists:**
 
-| Content | Required | Validation |
-|---------|----------|------------|
-| Product name | Yes | Non-empty, non-generic (see Step 3 criteria) |
-| Description | Yes | 1-3 sentences, non-empty |
-| Problems | Yes | At least 1 problem with solution |
-| Features | Yes | At least 3 features |
+| Content      | Required | Validation                                   |
+| ------------ | -------- | -------------------------------------------- |
+| Product name | Yes      | Non-empty, non-generic (see Step 3 criteria) |
+| Description  | Yes      | 1-3 sentences, non-empty                     |
+| Problems     | Yes      | At least 1 problem with solution             |
+| Features     | Yes      | At least 3 features                          |
 
 If any required content is missing, return to Step 2/3 to gather it before proceeding.
 
 ### Create Directory
 
 First, ensure the product directory exists:
+
 ```bash
 mkdir -p product
 ```
 
 Then validate the directory was created:
+
 ```bash
 if [ ! -d "product" ]; then
   echo "Error: product - Directory creation failed. Check write permissions."
@@ -160,23 +253,27 @@ Then create the file at `/product/product-overview.md` with this exact format:
 # [Product Name]
 
 ## Description
+
 [The finalized 1-3 sentence description]
 
 ## Problems & Solutions
 
 ### Problem 1: [Problem Title]
+
 [How the product solves it in 1-2 sentences]
 
 ### Problem 2: [Problem Title]
+
 [How the product solves it in 1-2 sentences]
 
 [Add more as needed, up to 5]
 
 ## Key Features
+
 - [Feature 1]
 - [Feature 2]
 - [Feature 3]
-[Add more as needed]
+  [Add more as needed]
 ```
 
 **Important:** The `# [Product Name]` heading at the top is required - this is what displays as the card title in the app.
@@ -193,6 +290,7 @@ fi
 ```
 
 Also verify the file contains expected content:
+
 - Check that the file is not empty
 - Verify the first line starts with `# ` (the product name heading)
 
@@ -215,6 +313,7 @@ fi
 After creating the file, verify all required markdown sections exist:
 
 **Required sections:**
+
 - `## Description` — Product description
 - `## Problems & Solutions` — At least one `### Problem N:` subsection
 - `## Key Features` — Feature list
@@ -256,6 +355,7 @@ The file may not display correctly in Design OS. Would you like me to fix the fo
 ```
 
 Use AskUserQuestion with options:
+
 - "Yes, fix the formatting" — Regenerate with correct sections
 - "No, continue as is" — Proceed (user will fix manually)
 

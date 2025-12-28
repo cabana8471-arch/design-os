@@ -6,47 +6,170 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-28 11:20] Workflow Enhancement: Comprehensive Questioning & Language Standardization
+
+### Description
+
+Major workflow enhancement addressing three key areas: **Language Consistency** (all generated files in English regardless of conversation language), **Comprehensive Questioning** (predefined options for design decisions, AI-generated feature suggestions), and **Cross-Section Design Direction** (persistent design preferences across all commands).
+
+### Key Improvements
+
+#### 1. Language Requirement (English Output Only)
+
+All generated files must now be in English, regardless of the conversation language. When updating existing files with non-English content, content is translated first, then modifications are applied.
+
+#### 2. Product Scope & AI-Generated Suggestions
+
+- **`/product-vision`** now asks about Product Scope (MVP/Standard/Enterprise)
+- Dynamically generates feature suggestions based on product type
+- Tailors suggestions to match the selected scope level
+
+#### 3. Design Direction Preferences (Integrated in `/design-shell`)
+
+- **Aesthetic Tone**: Professional, Modern, Minimal, Playful, Technical
+- **Animation Style**: None, Subtle, Standard, Rich
+- **Information Density**: Compact, Comfortable, Spacious
+- **Responsive Priority**: Desktop-first, Mobile-first, Balanced
+- Creates `product/design-system/design-direction.md` for consistency across sections
+
+#### 4. Layout Pattern Choices for Desktop & Mobile
+
+- **`/shape-section`** now asks separately about desktop and mobile layouts
+- Desktop options: Table + Drawer, Card Grid, Split View, Full-Page Detail
+- Mobile options: Card Stack, Compact List, Bottom Sheet, Accordion
+- Responsive behavior: Same pattern adapted, Different patterns, Mobile-first progressive
+
+#### 5. Sample Data Preferences
+
+- **`/sample-data`** now asks about data volume (Minimal/Standard/Comprehensive)
+- Edge cases selection: Empty states, Long content, Extreme values, Unicode & special characters
+
+#### 6. Product Context Propagation
+
+- **`/shape-section`** now reads product scope from `/product-vision`
+- AI generates section-specific feature suggestions based on scope level
+- MVP scope → minimal features, Enterprise scope → comprehensive features
+
+### Modified Files
+
+| File                                              | Modification                                                                                                           |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `agents.md`                                       | Added "Language Requirement" section after "Understanding Design OS Context"                                           |
+| `.claude/templates/design-os/common/top-rules.md` | Added Rule 4: ENGLISH OUTPUT ONLY (including translation on update)                                                    |
+| `.claude/commands/design-os/product-vision.md`    | Added Step 2.5: Product Scope + AI-Generated Feature Suggestions                                                       |
+| `.claude/commands/design-os/design-shell.md`      | Added Step 3.5: Design Direction Preferences with predefined options                                                   |
+| `.claude/commands/design-os/shape-section.md`     | Added Step 1.5: Load Product Context, Step 3.5: AI-Generated Section Suggestions, Step 4.5: Layout Pattern Preferences |
+| `.claude/commands/design-os/sample-data.md`       | Added Step 3.5: Sample Data Preferences (Volume + Edge Cases)                                                          |
+| `.claude/commands/design-os/design-screen.md`     | Enhanced Step 2: Parse Design Direction with detailed preference tables, Added Layout Patterns extraction              |
+
+### New Predefined Question Patterns
+
+| Command           | Questions Added                                                                |
+| ----------------- | ------------------------------------------------------------------------------ |
+| `/product-vision` | Product Scope (MVP/Standard/Enterprise), Feature selection with AI suggestions |
+| `/design-shell`   | Aesthetic Tone, Animation Style, Information Density, Responsive Priority      |
+| `/shape-section`  | Desktop Layout Pattern, Mobile/Tablet Layout Pattern, Responsive Behavior      |
+| `/sample-data`    | Data Volume, Edge Cases (multi-select)                                         |
+
+### Design Direction Document Schema (Updated)
+
+```markdown
+# Design Direction for [Product Name]
+
+## User Preferences
+
+| Setting             | Choice                                          |
+| ------------------- | ----------------------------------------------- |
+| Aesthetic Tone      | [Professional/Modern/Minimal/Playful/Technical] |
+| Animation Style     | [None/Subtle/Standard/Rich]                     |
+| Information Density | [Compact/Comfortable/Spacious]                  |
+| Responsive Priority | [Desktop-first/Mobile-first/Balanced]           |
+
+## Aesthetic Guidelines
+
+[Based on selected tone]
+
+## Animation Timing
+
+[Based on selected style]
+
+## Spacing Scale
+
+[Based on selected density]
+
+## Responsive Approach
+
+[Based on selected priority]
+```
+
+### Benefits
+
+1. **Consistency**: All files in English, design direction persists across commands
+2. **Quality**: AI suggests features based on product type and scope level
+3. **Efficiency**: Predefined options speed up decision-making
+4. **Flexibility**: Separate desktop/mobile layout choices for optimal responsive design
+5. **Completeness**: Commands generate comprehensive output based on user preferences
+
+### Statistics
+
+- Files modified: 7
+- New questioning steps added: 6
+- Predefined option sets: 15+
+- AI suggestion tables: 4 (by product type, section type)
+
+### Production Status
+
+- **Language Requirement**: ✅ READY
+- **Product Scope & Suggestions**: ✅ READY
+- **Design Direction Preferences**: ✅ READY
+- **Layout Pattern Choices**: ✅ READY
+- **Sample Data Preferences**: ✅ READY
+- **Product Context Propagation**: ✅ READY
+
+---
+
 ## [2025-12-28 10:50] Comprehensive Improvement: Design Consistency & Error Handling
 
 ### Description
+
 Major enhancement focused on two key areas: **Design Consistency** (ensuring visual coherence between shell and all sections) and **Error Handling** (providing clear, actionable feedback when things go wrong). This update introduces the Design Direction document concept, cross-section consistency checks, a complete error infrastructure with LoadResult pattern, and user-visible validation components.
 
 ### New Files Created
 
-| File | Purpose |
-|------|---------|
-| `src/lib/errors.ts` | Error types, utilities, and LoadResult pattern for error propagation |
-| `src/components/ValidationPanel.tsx` | Inline display of validation errors/warnings with recovery commands |
-| `src/components/ScreenDesignMissing.tsx` | Friendly UI when screen design component not found |
+| File                                     | Purpose                                                              |
+| ---------------------------------------- | -------------------------------------------------------------------- |
+| `src/lib/errors.ts`                      | Error types, utilities, and LoadResult pattern for error propagation |
+| `src/components/ValidationPanel.tsx`     | Inline display of validation errors/warnings with recovery commands  |
+| `src/components/ScreenDesignMissing.tsx` | Friendly UI when screen design component not found                   |
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `agents.md` | Added: Error Message Format Standard, Skill Invocation Standard Pattern, Enhanced Fallback Design Guidance, Design Direction Document schema, updated Command Quick Reference table |
-| `.claude/commands/design-os/design-shell.md` | Added Step 6.5 to create `design-direction.md` after shell design |
-| `.claude/commands/design-os/design-screen.md` | Added design direction check in Step 2, cross-section consistency validation in Step 5 |
-| `.claude/commands/design-os/export-product.md` | Added Step 8.5 for design coherence validation (color, spacing, typography consistency) |
-| `.claude/templates/design-os/common/verification-checklist.md` | Added Design Consistency checklist section (7 items) |
-| `.claude/templates/design-os/section/prompt-template.md` | Added reference to `design-direction.md` |
-| `src/components/ErrorBoundary.tsx` | Added context-aware recovery suggestions with ContextRecovery component |
-| `src/lib/section-loader.ts` | Added `loadSectionDataWithValidation()` returning LoadResult with `_meta` validation |
-| `src/lib/shell-loader.ts` | Fixed type error in `parseLayoutVariant()` |
-| `src/test/setup.ts` | Fixed missing `afterEach` import from vitest |
+| File                                                           | Modification                                                                                                                                                                        |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agents.md`                                                    | Added: Error Message Format Standard, Skill Invocation Standard Pattern, Enhanced Fallback Design Guidance, Design Direction Document schema, updated Command Quick Reference table |
+| `.claude/commands/design-os/design-shell.md`                   | Added Step 6.5 to create `design-direction.md` after shell design                                                                                                                   |
+| `.claude/commands/design-os/design-screen.md`                  | Added design direction check in Step 2, cross-section consistency validation in Step 5                                                                                              |
+| `.claude/commands/design-os/export-product.md`                 | Added Step 8.5 for design coherence validation (color, spacing, typography consistency)                                                                                             |
+| `.claude/templates/design-os/common/verification-checklist.md` | Added Design Consistency checklist section (7 items)                                                                                                                                |
+| `.claude/templates/design-os/section/prompt-template.md`       | Added reference to `design-direction.md`                                                                                                                                            |
+| `src/components/ErrorBoundary.tsx`                             | Added context-aware recovery suggestions with ContextRecovery component                                                                                                             |
+| `src/lib/section-loader.ts`                                    | Added `loadSectionDataWithValidation()` returning LoadResult with `_meta` validation                                                                                                |
+| `src/lib/shell-loader.ts`                                      | Fixed type error in `parseLayoutVariant()`                                                                                                                                          |
+| `src/test/setup.ts`                                            | Fixed missing `afterEach` import from vitest                                                                                                                                        |
 
 ### Features Added
 
-| Feature | Description |
-|---------|-------------|
-| **Design Direction Document** | New `product/design-system/design-direction.md` created by `/design-shell` documenting aesthetic decisions |
-| **Cross-Section Consistency** | `/design-screen` checks existing sections and matches color, spacing, typography patterns |
-| **Design Coherence Validation** | `/export-product` validates visual consistency across all sections before export |
-| **Error Infrastructure** | `DesignOSError` type with severity, category, component, message, and recovery actions |
-| **LoadResult Pattern** | Generic pattern for propagating errors through loaders: `{ data, errors, warnings }` |
-| **ValidationPanel Component** | Collapsible panel showing errors/warnings with copy-to-clipboard recovery commands |
-| **ScreenDesignMissing Component** | Shows expected file, available designs, and recovery command when design not found |
-| **Context-Aware Error Boundaries** | Recovery suggestions based on context (section, screen-design, shell, page) |
-| **Enhanced Fallback Guidance** | When skill file unavailable, provides aesthetic tone options and distinctiveness requirements |
+| Feature                            | Description                                                                                                |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Design Direction Document**      | New `product/design-system/design-direction.md` created by `/design-shell` documenting aesthetic decisions |
+| **Cross-Section Consistency**      | `/design-screen` checks existing sections and matches color, spacing, typography patterns                  |
+| **Design Coherence Validation**    | `/export-product` validates visual consistency across all sections before export                           |
+| **Error Infrastructure**           | `DesignOSError` type with severity, category, component, message, and recovery actions                     |
+| **LoadResult Pattern**             | Generic pattern for propagating errors through loaders: `{ data, errors, warnings }`                       |
+| **ValidationPanel Component**      | Collapsible panel showing errors/warnings with copy-to-clipboard recovery commands                         |
+| **ScreenDesignMissing Component**  | Shows expected file, available designs, and recovery command when design not found                         |
+| **Context-Aware Error Boundaries** | Recovery suggestions based on context (section, screen-design, shell, page)                                |
+| **Enhanced Fallback Guidance**     | When skill file unavailable, provides aesthetic tone options and distinctiveness requirements              |
 
 ### Design Consistency System
 
@@ -90,12 +213,14 @@ The new error infrastructure provides:
    - Enhanced ErrorBoundary with context-aware suggestions
 
 ### Statistics
+
 - New files created: 3
 - Files modified: 10
 - New error types defined: 7 categories, 3 severity levels
 - Verification checklist items added: 7
 
 ### Production Status
+
 - **Design Consistency:** READY (full workflow integration)
 - **Error Handling:** READY (infrastructure complete)
 - **Build:** PASSING (all TypeScript errors resolved)
@@ -106,81 +231,84 @@ The new error infrastructure provides:
 ## [2025-12-28 09:30] Major Enhancement: Developer Experience, UX & Infrastructure
 
 ### Description
+
 Comprehensive enhancement of Design OS covering 4 major areas: Developer Experience, Loading & Error States, Accessibility & UX, and New Features. This update adds testing infrastructure, validation layer, skeleton loaders, error boundaries, ARIA support, theme sync optimization, command palette, breadcrumbs, export validation, and pre-commit hooks.
 
 ### New Files Created
 
-| File | Purpose |
-|------|---------|
-| `vitest.config.ts` | Vitest configuration for testing |
-| `src/test/setup.ts` | Test setup with jest-dom |
+| File                                       | Purpose                              |
+| ------------------------------------------ | ------------------------------------ |
+| `vitest.config.ts`                         | Vitest configuration for testing     |
+| `src/test/setup.ts`                        | Test setup with jest-dom             |
 | `src/lib/__tests__/product-loader.test.ts` | Tests for product parsing (10 tests) |
-| `src/lib/__tests__/schemas.test.ts` | Tests for Zod schemas (14 tests) |
-| `src/lib/schemas/product.ts` | Zod schemas for product types |
-| `src/lib/schemas/section.ts` | Zod schemas for section types |
-| `src/lib/schemas/index.ts` | Schema barrel export |
-| `src/components/SkeletonCard.tsx` | Card loading placeholder |
-| `src/components/SkeletonList.tsx` | List loading placeholder |
-| `src/components/LoadingState.tsx` | Full-page loading component |
-| `src/components/ui/progress.tsx` | Progress bar component |
-| `src/components/ErrorBoundary.tsx` | Error boundary with retry |
-| `src/components/CommandPalette.tsx` | ⌘K search/navigation |
-| `src/components/Breadcrumbs.tsx` | Navigation breadcrumbs |
-| `src/lib/export-validator.ts` | Pre-export validation |
-| `.husky/pre-commit` | Pre-commit hook |
+| `src/lib/__tests__/schemas.test.ts`        | Tests for Zod schemas (14 tests)     |
+| `src/lib/schemas/product.ts`               | Zod schemas for product types        |
+| `src/lib/schemas/section.ts`               | Zod schemas for section types        |
+| `src/lib/schemas/index.ts`                 | Schema barrel export                 |
+| `src/components/SkeletonCard.tsx`          | Card loading placeholder             |
+| `src/components/SkeletonList.tsx`          | List loading placeholder             |
+| `src/components/LoadingState.tsx`          | Full-page loading component          |
+| `src/components/ui/progress.tsx`           | Progress bar component               |
+| `src/components/ErrorBoundary.tsx`         | Error boundary with retry            |
+| `src/components/CommandPalette.tsx`        | ⌘K search/navigation                 |
+| `src/components/Breadcrumbs.tsx`           | Navigation breadcrumbs               |
+| `src/lib/export-validator.ts`              | Pre-export validation                |
+| `.husky/pre-commit`                        | Pre-commit hook                      |
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `package.json` | Added dependencies: vitest, zod, cmdk, husky, lint-staged, prettier, tsc-files. Added scripts: test, test:ui, test:coverage, typecheck, prepare. Added lint-staged config. |
-| `src/components/ui/index.ts` | Added progress export |
-| `src/lib/router.tsx` | Added RouteErrorBoundary wrapper to all routes |
-| `src/components/ProductOverviewCard.tsx` | Added ARIA labels (aria-expanded, aria-controls) to collapsibles, aria-hidden to icons |
-| `src/components/SpecCard.tsx` | Added ARIA labels to collapsibles |
-| `src/components/ThemeToggle.tsx` | Added BroadcastChannel for instant theme sync (replaces 250ms polling) |
-| `src/components/ScreenDesignPage.tsx` | Updated theme sync to use BroadcastChannel, removed polling interval |
-| `src/components/AppLayout.tsx` | Added CommandPalette, search button with ⌘K hint |
+| File                                     | Modification                                                                                                                                                               |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `package.json`                           | Added dependencies: vitest, zod, cmdk, husky, lint-staged, prettier, tsc-files. Added scripts: test, test:ui, test:coverage, typecheck, prepare. Added lint-staged config. |
+| `src/components/ui/index.ts`             | Added progress export                                                                                                                                                      |
+| `src/lib/router.tsx`                     | Added RouteErrorBoundary wrapper to all routes                                                                                                                             |
+| `src/components/ProductOverviewCard.tsx` | Added ARIA labels (aria-expanded, aria-controls) to collapsibles, aria-hidden to icons                                                                                     |
+| `src/components/SpecCard.tsx`            | Added ARIA labels to collapsibles                                                                                                                                          |
+| `src/components/ThemeToggle.tsx`         | Added BroadcastChannel for instant theme sync (replaces 250ms polling)                                                                                                     |
+| `src/components/ScreenDesignPage.tsx`    | Updated theme sync to use BroadcastChannel, removed polling interval                                                                                                       |
+| `src/components/AppLayout.tsx`           | Added CommandPalette, search button with ⌘K hint                                                                                                                           |
 
 ### Features Added
 
-| Feature | Description |
-|---------|-------------|
-| **Testing Infrastructure** | Vitest + React Testing Library with 24 passing tests |
-| **Zod Validation** | Runtime validation schemas for ProductOverview, Section, SectionData, etc. |
-| **Skeleton Loaders** | SkeletonCard, SkeletonList, LoadingState components with proper ARIA |
-| **Error Boundaries** | ErrorBoundary, RouteErrorBoundary, ComponentErrorBoundary with retry |
-| **ARIA Accessibility** | aria-expanded, aria-controls on collapsibles; aria-hidden on decorative icons |
-| **Theme Sync** | BroadcastChannel for instant iframe theme sync (was 250ms polling) |
-| **Command Palette** | ⌘K/Ctrl+K to open; navigation to all pages; theme toggle; section search |
-| **Breadcrumbs** | Navigation hierarchy component with home icon |
-| **Export Validation** | Validates product data before export with error/warning/info levels |
-| **Pre-commit Hooks** | Husky + lint-staged for ESLint, TypeScript, Prettier |
+| Feature                    | Description                                                                   |
+| -------------------------- | ----------------------------------------------------------------------------- |
+| **Testing Infrastructure** | Vitest + React Testing Library with 24 passing tests                          |
+| **Zod Validation**         | Runtime validation schemas for ProductOverview, Section, SectionData, etc.    |
+| **Skeleton Loaders**       | SkeletonCard, SkeletonList, LoadingState components with proper ARIA          |
+| **Error Boundaries**       | ErrorBoundary, RouteErrorBoundary, ComponentErrorBoundary with retry          |
+| **ARIA Accessibility**     | aria-expanded, aria-controls on collapsibles; aria-hidden on decorative icons |
+| **Theme Sync**             | BroadcastChannel for instant iframe theme sync (was 250ms polling)            |
+| **Command Palette**        | ⌘K/Ctrl+K to open; navigation to all pages; theme toggle; section search      |
+| **Breadcrumbs**            | Navigation hierarchy component with home icon                                 |
+| **Export Validation**      | Validates product data before export with error/warning/info levels           |
+| **Pre-commit Hooks**       | Husky + lint-staged for ESLint, TypeScript, Prettier                          |
 
 ### Dependencies Added
 
-| Package | Type | Purpose |
-|---------|------|---------|
-| `zod` | dependency | Runtime validation |
-| `cmdk` | dependency | Command palette |
-| `vitest` | devDependency | Test runner |
-| `@vitest/ui` | devDependency | Test UI |
-| `@testing-library/react` | devDependency | Component testing |
-| `@testing-library/jest-dom` | devDependency | DOM matchers |
-| `happy-dom` | devDependency | Test environment |
-| `jsdom` | devDependency | Test environment |
-| `husky` | devDependency | Git hooks |
-| `lint-staged` | devDependency | Staged file linting |
-| `prettier` | devDependency | Code formatting |
-| `tsc-files` | devDependency | Per-file type checking |
+| Package                     | Type          | Purpose                |
+| --------------------------- | ------------- | ---------------------- |
+| `zod`                       | dependency    | Runtime validation     |
+| `cmdk`                      | dependency    | Command palette        |
+| `vitest`                    | devDependency | Test runner            |
+| `@vitest/ui`                | devDependency | Test UI                |
+| `@testing-library/react`    | devDependency | Component testing      |
+| `@testing-library/jest-dom` | devDependency | DOM matchers           |
+| `happy-dom`                 | devDependency | Test environment       |
+| `jsdom`                     | devDependency | Test environment       |
+| `husky`                     | devDependency | Git hooks              |
+| `lint-staged`               | devDependency | Staged file linting    |
+| `prettier`                  | devDependency | Code formatting        |
+| `tsc-files`                 | devDependency | Per-file type checking |
 
 ### Statistics
+
 - New files created: 16
 - Files modified: 8
 - Tests added: 24
 - Dependencies added: 12
 
 ### Production Status
+
 - **Testing:** READY (24 tests passing)
 - **Validation:** READY (Zod schemas)
 - **Accessibility:** IMPROVED (ARIA labels)
@@ -192,32 +320,37 @@ Comprehensive enhancement of Design OS covering 4 major areas: Developer Experie
 ## [2025-12-28 00:15] Final Polish: 5 Minor Documentation Improvements
 
 ### Description
+
 Final polish pass after comprehensive critical analysis. Addressed 5 LOW priority documentation improvements identified during codebase review. These are cosmetic/documentation polish items that enhance clarity and consistency.
 
 ### Modified Files
-| File | Modification |
-|------|--------------|
-| `.claude/templates/design-os/section/prompt-template.md` | **Line 8:** Removed inline HTML comments (lines 9-10), replaced with cleaner inline example `(e.g., \`02-invoices.md\`)`. |
-| `agents.md` | **Lines 708-737:** Added "Retry Pattern (Standardized)" section documenting `[Attempt N/3]` format, retry behavior table, and commands that use retries. |
-| `agents.md` | **Lines 670-700:** Added "Variable Naming Conventions" section clarifying `[placeholder]` vs `VARIABLE_NAME` notation with examples. |
-| `agents.md` | **Lines 651-682:** Added "Recovery Pattern (If Steps Fail)" section with quick recovery notes format, standard recovery actions table, and guidance for complex commands. |
-| `.claude/commands/design-os/shape-section.md` | **Line 311:** Added section reference to screenshot-design.md cross-reference for consistency. |
+
+| File                                                     | Modification                                                                                                                                                              |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/templates/design-os/section/prompt-template.md` | **Line 8:** Removed inline HTML comments (lines 9-10), replaced with cleaner inline example `(e.g., \`02-invoices.md\`)`.                                                 |
+| `agents.md`                                              | **Lines 708-737:** Added "Retry Pattern (Standardized)" section documenting `[Attempt N/3]` format, retry behavior table, and commands that use retries.                  |
+| `agents.md`                                              | **Lines 670-700:** Added "Variable Naming Conventions" section clarifying `[placeholder]` vs `VARIABLE_NAME` notation with examples.                                      |
+| `agents.md`                                              | **Lines 651-682:** Added "Recovery Pattern (If Steps Fail)" section with quick recovery notes format, standard recovery actions table, and guidance for complex commands. |
+| `.claude/commands/design-os/shape-section.md`            | **Line 311:** Added section reference to screenshot-design.md cross-reference for consistency.                                                                            |
 
 ### Issues Resolved
-| # | Severity | Issue | Resolution |
-|---|----------|-------|------------|
-| 1 | Low | Recovery procedures only documented in export-product.md | Added "Recovery Pattern" section to agents.md with standardized guidance |
-| 2 | Low | HTML comments in section/prompt-template.md appear in generated prompts | Removed HTML comments, replaced with inline example |
-| 3 | Low | Retry behavior not standardized across commands | Added "Retry Pattern (Standardized)" section to agents.md |
-| 4 | Low | Some cross-references missing section names | Added section name to shape-section.md line 311 |
-| 5 | Low | Variable naming conventions undocumented | Added "Variable Naming Conventions" section to agents.md |
+
+| #   | Severity | Issue                                                                   | Resolution                                                               |
+| --- | -------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| 1   | Low      | Recovery procedures only documented in export-product.md                | Added "Recovery Pattern" section to agents.md with standardized guidance |
+| 2   | Low      | HTML comments in section/prompt-template.md appear in generated prompts | Removed HTML comments, replaced with inline example                      |
+| 3   | Low      | Retry behavior not standardized across commands                         | Added "Retry Pattern (Standardized)" section to agents.md                |
+| 4   | Low      | Some cross-references missing section names                             | Added section name to shape-section.md line 311                          |
+| 5   | Low      | Variable naming conventions undocumented                                | Added "Variable Naming Conventions" section to agents.md                 |
 
 ### Statistics
+
 - Files modified: 3 (agents.md, section/prompt-template.md, shape-section.md)
 - Low priority issues addressed: 5
 - New documentation sections: 3
 
 ### Production Status
+
 - **Documentation Polish:** COMPLETE
 - **Codebase Status:** PRODUCTION READY
 
@@ -226,41 +359,47 @@ Final polish pass after comprehensive critical analysis. Addressed 5 LOW priorit
 ## [2025-12-27 23:45] Critical Analysis: Port Consistency & Documentation Alignment
 
 ### Description
+
 Comprehensive critical analysis of the entire Design OS boilerplate codebase. Analyzed all 10 command files, 12 templates, agents.md, source code, and cross-referenced with previous fix iterations documented in FORK_CHANGELOG.md. Identified and fixed 2 remaining issues (1 MEDIUM, 1 LOW).
 
 ### Modified Files
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/screenshot-design.md` | **Lines 91-93, 110:** Fixed dev server port detection from 5173 (Vite default) to 3000 (actual configured port in vite.config.ts). Updated comment, lsof check, echo message, and verify URL. |
-| `agents.md` | **Lines 394-402:** Updated skill file integration documentation. Changed "Step 5: Read" to "Step 1: Validates" + "Step 5: Applies" to accurately reflect the actual command workflow after previous fixes moved validation to Step 1. |
+
+| File                                              | Modification                                                                                                                                                                                                                          |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/screenshot-design.md` | **Lines 91-93, 110:** Fixed dev server port detection from 5173 (Vite default) to 3000 (actual configured port in vite.config.ts). Updated comment, lsof check, echo message, and verify URL.                                         |
+| `agents.md`                                       | **Lines 394-402:** Updated skill file integration documentation. Changed "Step 5: Read" to "Step 1: Validates" + "Step 5: Applies" to accurately reflect the actual command workflow after previous fixes moved validation to Step 1. |
 
 ### Issues Resolved
-| # | Severity | Issue | Resolution |
-|---|----------|-------|------------|
-| 1 | Medium | Dev server port detection uses wrong port (5173 instead of 3000) | Updated screenshot-design.md lines 91-93, 110 to use port 3000 matching vite.config.ts |
-| 2 | Low | agents.md skill file references say "Step 5: Read" but validation was moved to Step 1 | Updated to show Step 1 validates, Step 5 applies |
+
+| #   | Severity | Issue                                                                                 | Resolution                                                                             |
+| --- | -------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| 1   | Medium   | Dev server port detection uses wrong port (5173 instead of 3000)                      | Updated screenshot-design.md lines 91-93, 110 to use port 3000 matching vite.config.ts |
+| 2   | Low      | agents.md skill file references say "Step 5: Read" but validation was moved to Step 1 | Updated to show Step 1 validates, Step 5 applies                                       |
 
 ### Verification Performed (No Issues Found)
-| Verification | Result |
-|--------------|--------|
-| Template version section/tdd-workflow.md | ✅ Correct (`v1.2.0-section`) |
-| All docs/ files exist | ✅ All 8 files present |
-| Prerequisite checks standardized | ✅ Consistent across commands |
-| Error message format | ✅ Follows `Error: [Component] - [Issue]. [Action].` |
-| Shell status detection | ✅ All 8 states have messages |
-| _meta validation mandatory | ✅ Python scripts in sample-data.md |
-| Component portability | ✅ Max depth 10, circular import detection |
-| Error boundaries | ✅ Implemented in ScreenDesignPage.tsx |
-| Type safety | ✅ Pre-cast validation in loaders |
-| DEV logging | ✅ Consistent prefix in all loaders |
+
+| Verification                             | Result                                               |
+| ---------------------------------------- | ---------------------------------------------------- |
+| Template version section/tdd-workflow.md | ✅ Correct (`v1.2.0-section`)                        |
+| All docs/ files exist                    | ✅ All 8 files present                               |
+| Prerequisite checks standardized         | ✅ Consistent across commands                        |
+| Error message format                     | ✅ Follows `Error: [Component] - [Issue]. [Action].` |
+| Shell status detection                   | ✅ All 8 states have messages                        |
+| \_meta validation mandatory              | ✅ Python scripts in sample-data.md                  |
+| Component portability                    | ✅ Max depth 10, circular import detection           |
+| Error boundaries                         | ✅ Implemented in ScreenDesignPage.tsx               |
+| Type safety                              | ✅ Pre-cast validation in loaders                    |
+| DEV logging                              | ✅ Consistent prefix in all loaders                  |
 
 ### Statistics
+
 - Files modified: 2
 - Medium priority issues: 1
 - Low priority issues: 1
 - Verifications passed: 10
 
 ### Production Status
+
 - **Port Consistency:** FIXED (matches vite.config.ts)
 - **Documentation Alignment:** FIXED (reflects actual workflow)
 - **Codebase Status:** PRODUCTION READY
@@ -270,40 +409,44 @@ Comprehensive critical analysis of the entire Design OS boilerplate codebase. An
 ## [2025-12-27 22:35] Final Polish: 8 Remaining Issues from Comprehensive Analysis
 
 ### Description
+
 Final batch of 8 polish fixes identified through comprehensive critical analysis. These address documentation gaps, validation improvements, and consistency issues that remained after previous fix iterations.
 
 ### Modified Files
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/shape-section.md` | **Lines 211-226:** Added message templates for ALL 8 shell states (was only 4). **Lines 277-279:** Added shell config transformation note ("Inside app shell" → `shell: true`). **Line 345:** Standardized directory error message format. |
-| `.claude/commands/design-os/design-screen.md` | **Lines 313:** Fixed route casing to PascalCase (`[ViewName]` not `[view-name]`). **Lines 381-382:** Added JSON import row to import path table. **Lines 357:** Standardized directory error message. **Lines 732-753:** Added View Progress Tracking section to report remaining views. |
-| `.claude/commands/design-os/design-tokens.md` | **Lines 158-166:** Enhanced mono font handling - added AskUserQuestion for Priority 3 case to distinguish forgotten vs. intentional skip. **Line 308:** Standardized directory error message. |
-| `.claude/commands/design-os/sample-data.md` | **Lines 301-326:** Added validation item #5 for bidirectional entity naming consistency with data model. **Line 142:** Standardized directory error message. |
-| `.claude/commands/design-os/product-roadmap.md` | **Line 60:** Standardized directory error message format. |
-| `.claude/commands/design-os/data-model.md` | **Line 94:** Standardized directory error message format. |
-| `.claude/commands/design-os/design-shell.md` | **Lines 192, 196:** Standardized directory error messages format. |
-| `.claude/commands/design-os/export-product.md` | **Line 249:** Standardized directory error message format with variable. |
+
+| File                                            | Modification                                                                                                                                                                                                                                                                             |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/shape-section.md`   | **Lines 211-226:** Added message templates for ALL 8 shell states (was only 4). **Lines 277-279:** Added shell config transformation note ("Inside app shell" → `shell: true`). **Line 345:** Standardized directory error message format.                                               |
+| `.claude/commands/design-os/design-screen.md`   | **Lines 313:** Fixed route casing to PascalCase (`[ViewName]` not `[view-name]`). **Lines 381-382:** Added JSON import row to import path table. **Lines 357:** Standardized directory error message. **Lines 732-753:** Added View Progress Tracking section to report remaining views. |
+| `.claude/commands/design-os/design-tokens.md`   | **Lines 158-166:** Enhanced mono font handling - added AskUserQuestion for Priority 3 case to distinguish forgotten vs. intentional skip. **Line 308:** Standardized directory error message.                                                                                            |
+| `.claude/commands/design-os/sample-data.md`     | **Lines 301-326:** Added validation item #5 for bidirectional entity naming consistency with data model. **Line 142:** Standardized directory error message.                                                                                                                             |
+| `.claude/commands/design-os/product-roadmap.md` | **Line 60:** Standardized directory error message format.                                                                                                                                                                                                                                |
+| `.claude/commands/design-os/data-model.md`      | **Line 94:** Standardized directory error message format.                                                                                                                                                                                                                                |
+| `.claude/commands/design-os/design-shell.md`    | **Lines 192, 196:** Standardized directory error messages format.                                                                                                                                                                                                                        |
+| `.claude/commands/design-os/export-product.md`  | **Line 249:** Standardized directory error message format with variable.                                                                                                                                                                                                                 |
 
 ### Issues Resolved
 
-| # | Severity | Issue | Resolution |
-|---|----------|-------|------------|
-| M1 | Medium | Shell state messages incomplete | Added explicit messages for all 8 possible shell states |
-| M2 | Medium | View progress not tracked | Added progress tracking to report remaining views in multi-view sections |
-| M3 | Medium | Mono font detection ambiguous | Added clarifying question for Priority 3 case |
-| L1 | Low | Directory error messages inconsistent | Standardized to `Error: [path]/ - Directory creation failed. Check write permissions.` across 8 files |
-| L2 | Low | Shell config transformation unclear | Added explicit transformation note in draft template |
-| L3 | Low | Route casing inconsistent | Fixed `[view-name]` to `[ViewName]` (PascalCase) |
-| L4 | Low | JSON import undocumented | Added row to import path table |
-| L5 | Low | Bidirectional validation not executed | Added as validation item #5 in Step 6 |
+| #   | Severity | Issue                                 | Resolution                                                                                            |
+| --- | -------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| M1  | Medium   | Shell state messages incomplete       | Added explicit messages for all 8 possible shell states                                               |
+| M2  | Medium   | View progress not tracked             | Added progress tracking to report remaining views in multi-view sections                              |
+| M3  | Medium   | Mono font detection ambiguous         | Added clarifying question for Priority 3 case                                                         |
+| L1  | Low      | Directory error messages inconsistent | Standardized to `Error: [path]/ - Directory creation failed. Check write permissions.` across 8 files |
+| L2  | Low      | Shell config transformation unclear   | Added explicit transformation note in draft template                                                  |
+| L3  | Low      | Route casing inconsistent             | Fixed `[view-name]` to `[ViewName]` (PascalCase)                                                      |
+| L4  | Low      | JSON import undocumented              | Added row to import path table                                                                        |
+| L5  | Low      | Bidirectional validation not executed | Added as validation item #5 in Step 6                                                                 |
 
 ### Statistics
+
 - Files modified: 8
 - Medium priority issues addressed: 3
 - Low priority issues addressed: 5
 - Directory error messages standardized: 8 occurrences across 7 files
 
 ### Verification
+
 - All 8 shell states now have explicit user messages
 - View progress tracking reports remaining views after each `/design-screen` run
 - Mono font selection asks clarifying question when only heading/body mentioned
@@ -314,6 +457,7 @@ Final batch of 8 polish fixes identified through comprehensive critical analysis
 - Bidirectional entity naming validation integrated into Step 6
 
 ### Production Status
+
 - **Shell Guidance:** COMPLETE (all 8 states with messages)
 - **View Tracking:** IMPLEMENTED (progress reporting)
 - **Font Detection:** CLARIFIED (asks user intent)
@@ -326,42 +470,46 @@ Final batch of 8 polish fixes identified through comprehensive critical analysis
 ## [2025-12-27 22:15] Residual Issues Fix: 13 Remaining Problems from Deep Analysis
 
 ### Description
+
 Final cleanup of 13 residual issues identified through comprehensive codebase analysis. These issues remained after previous fix iterations and address font contradictions, incomplete algorithms, documentation gaps, and template consistency.
 
 ### Modified Files
-| File | Modification |
-|------|--------------|
-| `src/index.css` | Replaced hardcoded fonts (Space Grotesk, Inter) with CSS variable fallbacks to avoid SKILL.md contradiction |
-| `.claude/commands/design-os/design-tokens.md` | Added priority order table and edge cases to mono font detection algorithm |
-| `.claude/commands/design-os/product-roadmap.md` | Added responsibility table clarifying mandatory detection vs consent-required execution |
-| `.claude/commands/design-os/shape-section.md` | Added complete shell status detection script with all 8 state conditions |
-| `.claude/commands/design-os/export-product.md` | Clarified template validation as boilerplate integrity check; updated regex to strip all HTML comments |
-| `.claude/commands/design-os/design-screen.md` | Documented how @/../product/ path alias works (not a separate alias) |
-| `.claude/commands/design-os/design-shell.md` | Added section ID extraction script for ShellPreview navigation items |
-| `.claude/commands/design-os/sample-data.md` | Standardized error messages to use "Error:" prefix per agents.md |
-| `.claude/templates/design-os/README.md` | Added source-of-truth cross-reference for template assembly order |
-| `.claude/templates/design-os/one-shot/preamble.md` | Replaced manual substitution note with auto-substitution comment |
-| `.claude/templates/design-os/common/model-guidance.md` | Added usage comment for consistency |
-| `.claude/templates/design-os/section/prompt-template.md` | Added clarifying comment for NN-SECTION_ID variable pattern |
+
+| File                                                     | Modification                                                                                                |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `src/index.css`                                          | Replaced hardcoded fonts (Space Grotesk, Inter) with CSS variable fallbacks to avoid SKILL.md contradiction |
+| `.claude/commands/design-os/design-tokens.md`            | Added priority order table and edge cases to mono font detection algorithm                                  |
+| `.claude/commands/design-os/product-roadmap.md`          | Added responsibility table clarifying mandatory detection vs consent-required execution                     |
+| `.claude/commands/design-os/shape-section.md`            | Added complete shell status detection script with all 8 state conditions                                    |
+| `.claude/commands/design-os/export-product.md`           | Clarified template validation as boilerplate integrity check; updated regex to strip all HTML comments      |
+| `.claude/commands/design-os/design-screen.md`            | Documented how @/../product/ path alias works (not a separate alias)                                        |
+| `.claude/commands/design-os/design-shell.md`             | Added section ID extraction script for ShellPreview navigation items                                        |
+| `.claude/commands/design-os/sample-data.md`              | Standardized error messages to use "Error:" prefix per agents.md                                            |
+| `.claude/templates/design-os/README.md`                  | Added source-of-truth cross-reference for template assembly order                                           |
+| `.claude/templates/design-os/one-shot/preamble.md`       | Replaced manual substitution note with auto-substitution comment                                            |
+| `.claude/templates/design-os/common/model-guidance.md`   | Added usage comment for consistency                                                                         |
+| `.claude/templates/design-os/section/prompt-template.md` | Added clarifying comment for NN-SECTION_ID variable pattern                                                 |
 
 ### Issues Resolved
-| # | Severity | Issue | Resolution |
-|---|----------|-------|------------|
-| P0-1 | Critical | Hardcoded fonts contradict SKILL.md | Replaced with CSS variable fallbacks |
-| P0-2 | Critical | Mono font detection incomplete | Added priority order and edge cases |
-| P1-1 | High | Orphan handling ambiguity | Added responsibility table |
-| P1-2 | High | Shell status detection gap | Added complete 8-state detection script |
-| P1-3 | High | Template validation unreachable | Clarified as boilerplate integrity check |
-| P2-1 | Medium | Path alias undocumented | Explained @/../product/ resolution |
-| P2-2 | Medium | Redundant substitution note | Replaced with auto-substitution comment |
-| P2-3 | Medium | Regex strips only version | Updated to strip all leading HTML comments |
-| P2-4 | Medium | Duplicate assembly order docs | Added cross-reference to source of truth |
-| P2-5 | Medium | No section ID extraction script | Added extraction script for navigation |
-| P3-1 | Low | Inconsistent error format | Standardized to "Error:" prefix |
-| P3-2 | Low | Missing usage comment | Added usage comment |
-| P3-3 | Low | Variable pattern unclear | Added clarifying comment |
+
+| #    | Severity | Issue                               | Resolution                                 |
+| ---- | -------- | ----------------------------------- | ------------------------------------------ |
+| P0-1 | Critical | Hardcoded fonts contradict SKILL.md | Replaced with CSS variable fallbacks       |
+| P0-2 | Critical | Mono font detection incomplete      | Added priority order and edge cases        |
+| P1-1 | High     | Orphan handling ambiguity           | Added responsibility table                 |
+| P1-2 | High     | Shell status detection gap          | Added complete 8-state detection script    |
+| P1-3 | High     | Template validation unreachable     | Clarified as boilerplate integrity check   |
+| P2-1 | Medium   | Path alias undocumented             | Explained @/../product/ resolution         |
+| P2-2 | Medium   | Redundant substitution note         | Replaced with auto-substitution comment    |
+| P2-3 | Medium   | Regex strips only version           | Updated to strip all leading HTML comments |
+| P2-4 | Medium   | Duplicate assembly order docs       | Added cross-reference to source of truth   |
+| P2-5 | Medium   | No section ID extraction script     | Added extraction script for navigation     |
+| P3-1 | Low      | Inconsistent error format           | Standardized to "Error:" prefix            |
+| P3-2 | Low      | Missing usage comment               | Added usage comment                        |
+| P3-3 | Low      | Variable pattern unclear            | Added clarifying comment                   |
 
 ### Statistics
+
 - Files modified: 12
 - P0 issues addressed: 2
 - P1 issues addressed: 3
@@ -370,6 +518,7 @@ Final cleanup of 13 residual issues identified through comprehensive codebase an
 - Total new documentation: ~160 lines
 
 ### Verification
+
 - Font variables now use proper CSS fallback pattern
 - Mono font detection covers all edge cases with priority order
 - Shell status detection handles all 8 possible states
@@ -381,31 +530,35 @@ Final cleanup of 13 residual issues identified through comprehensive codebase an
 ## [2025-12-27 22:30] Comprehensive Analysis Fixes: Commands, Templates & Documentation
 
 ### Description
+
 Implementation of 8 issues identified through comprehensive codebase analysis. Fixes address regex patterns, documentation clarity, cross-references, and consistency across commands.
 
 ### Modified Files
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/sample-data.md` | Fixed multi-view regex to handle multi-word view names using `while read` loop instead of `for` loop, and proper em-dash extraction |
-| `.claude/commands/design-os/product-roadmap.md` | Added note clarifying shell commands (mv, rm -rf) require explicit user confirmation before execution |
-| `.claude/commands/design-os/design-screen.md` | Standardized color notation to use `[neutral]` placeholders instead of literal `stone` colors; added section ID cross-reference |
-| `.claude/commands/design-os/shape-section.md` | Added cross-reference to `agents.md` → "Section ID Generation Rules" |
-| `.claude/commands/design-os/export-product.md` | Added explicit Product Name extraction rule with bash script; clarified template existence vs. version comment severity levels; improved validation pseudocode for comprehensive error collection |
-| `.claude/templates/design-os/README.md` | Added "Usage Comments (Optional)" section documenting the `<!-- Usage: ... -->` pattern |
+
+| File                                            | Modification                                                                                                                                                                                      |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/sample-data.md`     | Fixed multi-view regex to handle multi-word view names using `while read` loop instead of `for` loop, and proper em-dash extraction                                                               |
+| `.claude/commands/design-os/product-roadmap.md` | Added note clarifying shell commands (mv, rm -rf) require explicit user confirmation before execution                                                                                             |
+| `.claude/commands/design-os/design-screen.md`   | Standardized color notation to use `[neutral]` placeholders instead of literal `stone` colors; added section ID cross-reference                                                                   |
+| `.claude/commands/design-os/shape-section.md`   | Added cross-reference to `agents.md` → "Section ID Generation Rules"                                                                                                                              |
+| `.claude/commands/design-os/export-product.md`  | Added explicit Product Name extraction rule with bash script; clarified template existence vs. version comment severity levels; improved validation pseudocode for comprehensive error collection |
+| `.claude/templates/design-os/README.md`         | Added "Usage Comments (Optional)" section documenting the `<!-- Usage: ... -->` pattern                                                                                                           |
 
 ### Issues Resolved
-| # | Severity | Issue | Resolution |
-|---|----------|-------|------------|
-| 1 | P0 | Multi-view regex broken for multi-word names | Fixed regex and loop to handle names like "Edit Form View" |
-| 2 | P1 | Shell commands shown as agent-executable | Added note requiring explicit user confirmation |
-| 3 | P1 | Inconsistent color notation | Standardized on `[neutral]`/`[primary]` placeholders |
-| 4 | P2 | Usage comments pattern undocumented | Added documentation section with format and examples |
-| 5 | P2 | Product name extraction unclear | Added explicit extraction rule with bash script |
-| 6 | P2 | Template required vs warning confusion | Added severity level callout clarifying difference |
-| 7 | P3 | Section ID rules not cross-referenced | Added cross-references in shape-section.md and design-screen.md |
-| 8 | P3 | Circular validation stops early | Updated pseudocode for comprehensive error collection |
+
+| #   | Severity | Issue                                        | Resolution                                                      |
+| --- | -------- | -------------------------------------------- | --------------------------------------------------------------- |
+| 1   | P0       | Multi-view regex broken for multi-word names | Fixed regex and loop to handle names like "Edit Form View"      |
+| 2   | P1       | Shell commands shown as agent-executable     | Added note requiring explicit user confirmation                 |
+| 3   | P1       | Inconsistent color notation                  | Standardized on `[neutral]`/`[primary]` placeholders            |
+| 4   | P2       | Usage comments pattern undocumented          | Added documentation section with format and examples            |
+| 5   | P2       | Product name extraction unclear              | Added explicit extraction rule with bash script                 |
+| 6   | P2       | Template required vs warning confusion       | Added severity level callout clarifying difference              |
+| 7   | P3       | Section ID rules not cross-referenced        | Added cross-references in shape-section.md and design-screen.md |
+| 8   | P3       | Circular validation stops early              | Updated pseudocode for comprehensive error collection           |
 
 ### Statistics
+
 - Files modified: 6 (5 commands, 1 template documentation)
 - P0 issues addressed: 1
 - P1 issues addressed: 2
@@ -414,6 +567,7 @@ Implementation of 8 issues identified through comprehensive codebase analysis. F
 - Total new documentation: ~80 lines
 
 ### Verification
+
 - All regex patterns tested with edge cases
 - Color notation consistent across design-shell.md and design-screen.md
 - Cross-references point to correct agents.md sections
@@ -424,24 +578,27 @@ Implementation of 8 issues identified through comprehensive codebase analysis. F
 ## [2025-12-27 21:00] Low Priority P3 Fixes: Polish, Edge Cases & Minor Improvements
 
 ### Description
+
 Implementation of 10 LOW PRIORITY (P3) fixes from the analysis plan. These fixes address code polish, edge case handling, documentation clarity, and minor improvements for better maintainability.
 
 ### Modified Files
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/design-shell.md` | Replaced hardcoded `stone-`/`lime-` color examples with `[primary]-`/`[neutral]-` placeholders in "Example Shell Styling" section |
-| `.claude/commands/design-os/data-model.md` | Added note about `grep -E` extended regex requirement and `egrep` as alternative |
-| `.claude/commands/design-os/design-tokens.md` | Added "Interactive State Validation" section with disabled elements, hover states, and focus indicators (WCAG 2.4.7 compliance) |
-| `.claude/commands/design-os/shape-section.md` | Added "Edge Case Examples" for section ID generation including all-caps, multiple spaces, leading `&`, trailing punctuation |
-| `.claude/commands/design-os/export-product.md` | Added "When global data model exists but section type diverges" section with JSDoc comment guidance and user reporting format |
-| `.claude/commands/design-os/screenshot-design.md` | Added note about custom breakpoints - adjust viewport dimensions to match actual design breakpoint values |
-| `src/components/SectionPage.tsx` | Fixed React key uniqueness - changed `key={screenDesign.name}` to composite `key={\`${sectionId}-${screenDesign.name}\`}` |
-| `src/components/ScreenDesignsCard.tsx` | Fixed React key uniqueness - changed to composite key pattern matching SectionPage.tsx |
-| `src/lib/design-system-loader.ts` | Added @TODO comment about future custom color support with option to enforce strict validation |
-| `src/components/ScreenDesignPage.tsx` | Removed unnecessary `import React from 'react'` - replaced `React.lazy` with imported `lazy` function |
-| `.claude/templates/design-os/README.md` | Added comprehensive "Version Update Policy" section with update guidelines, process, breaking change checklist, and synchronization rules |
+
+| File                                              | Modification                                                                                                                              |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-shell.md`      | Replaced hardcoded `stone-`/`lime-` color examples with `[primary]-`/`[neutral]-` placeholders in "Example Shell Styling" section         |
+| `.claude/commands/design-os/data-model.md`        | Added note about `grep -E` extended regex requirement and `egrep` as alternative                                                          |
+| `.claude/commands/design-os/design-tokens.md`     | Added "Interactive State Validation" section with disabled elements, hover states, and focus indicators (WCAG 2.4.7 compliance)           |
+| `.claude/commands/design-os/shape-section.md`     | Added "Edge Case Examples" for section ID generation including all-caps, multiple spaces, leading `&`, trailing punctuation               |
+| `.claude/commands/design-os/export-product.md`    | Added "When global data model exists but section type diverges" section with JSDoc comment guidance and user reporting format             |
+| `.claude/commands/design-os/screenshot-design.md` | Added note about custom breakpoints - adjust viewport dimensions to match actual design breakpoint values                                 |
+| `src/components/SectionPage.tsx`                  | Fixed React key uniqueness - changed `key={screenDesign.name}` to composite `key={\`${sectionId}-${screenDesign.name}\`}`                 |
+| `src/components/ScreenDesignsCard.tsx`            | Fixed React key uniqueness - changed to composite key pattern matching SectionPage.tsx                                                    |
+| `src/lib/design-system-loader.ts`                 | Added @TODO comment about future custom color support with option to enforce strict validation                                            |
+| `src/components/ScreenDesignPage.tsx`             | Removed unnecessary `import React from 'react'` - replaced `React.lazy` with imported `lazy` function                                     |
+| `.claude/templates/design-os/README.md`           | Added comprehensive "Version Update Policy" section with update guidelines, process, breaking change checklist, and synchronization rules |
 
 ### Gaps Resolved
+
 - **P3-1:** design-shell.md shell token shades use hardcoded colors → Replaced with `[primary]-`/`[neutral]-` placeholders
 - **P3-2:** data-model.md bash regex assumes extended regex support → Added note about `grep -E` or `egrep`
 - **P3-3:** design-tokens.md contrast validation incomplete → Added disabled, hover, and focus state validation
@@ -454,12 +611,14 @@ Implementation of 10 LOW PRIORITY (P3) fixes from the analysis plan. These fixes
 - **P3-10:** Template README.md version update policy missing → Added comprehensive policy section
 
 ### Statistics
+
 - Files modified: 11 (4 source code, 6 commands, 1 template documentation)
 - P3 issues addressed: 10 (all fixed)
 - React code quality improvements: 3 (key uniqueness in 2 files, import cleanup)
 - Documentation/command improvements: 8
 
 ### Verification
+
 - ✅ All P3 low priority issues resolved
 - ✅ React key uniqueness ensured in screen design lists
 - ✅ Unnecessary React import removed from ScreenDesignPage.tsx
@@ -472,24 +631,27 @@ Implementation of 10 LOW PRIORITY (P3) fixes from the analysis plan. These fixes
 ## [2025-12-27 20:15] Medium Priority P2 Fixes: Validation, Documentation & Code Quality
 
 ### Description
+
 Implementation of 12 MEDIUM PRIORITY (P2) fixes from the analysis plan. These fixes address validation gaps in command workflows, documentation clarity, and React code quality improvements.
 
 ### Modified Files
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/product-vision.md` | Added Step 4 "Cross-Validate with Existing Roadmap" section to detect product name inconsistencies between product-overview.md and existing product-roadmap.md |
-| `.claude/commands/design-os/design-tokens.md` | Enhanced "Font Weight Validation" with detailed verification instructions including Google Fonts URL pattern, required weights table, and common font availability reference |
-| `.claude/commands/design-os/sample-data.md` | Added "Multi-View Props Interface Validation" section with extraction steps, Props naming convention, and validation script for multi-view sections |
-| `.claude/commands/design-os/design-screen.md` | Added "Extract and Validate Section ID" section to verify section-id from spec path matches selected section. Replaced duplicated fallback design principles with reference to design-shell.md Step 1 |
-| `.claude/commands/design-os/export-product.md` | Added explicit "Variable Substitution for section-prompt.md" table clarifying which variables to substitute vs. leave as placeholders |
-| `src/components/ScreenDesignPage.tsx` | Fixed unsafe type assertion at line 346 - now validates module structure before casting to Record<string, unknown> |
-| `src/components/ThemeToggle.tsx` | Wrapped isDark calculation in useMemo to avoid calling window.matchMedia() on every render |
-| `src/lib/section-loader.ts` | Limited DEV logging output to max 10 paths with "... and N more" summary |
-| `src/components/ExportPage.tsx` | Fixed array index as React key - now uses stable key based on title and item |
-| `src/components/DataModelPage.tsx` | Fixed array index as React key - entities use entity.name, relationships use relationship text |
-| `agents.md` | Expanded vague docs/ reference with specific file list and descriptions |
+
+| File                                           | Modification                                                                                                                                                                                          |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/product-vision.md` | Added Step 4 "Cross-Validate with Existing Roadmap" section to detect product name inconsistencies between product-overview.md and existing product-roadmap.md                                        |
+| `.claude/commands/design-os/design-tokens.md`  | Enhanced "Font Weight Validation" with detailed verification instructions including Google Fonts URL pattern, required weights table, and common font availability reference                          |
+| `.claude/commands/design-os/sample-data.md`    | Added "Multi-View Props Interface Validation" section with extraction steps, Props naming convention, and validation script for multi-view sections                                                   |
+| `.claude/commands/design-os/design-screen.md`  | Added "Extract and Validate Section ID" section to verify section-id from spec path matches selected section. Replaced duplicated fallback design principles with reference to design-shell.md Step 1 |
+| `.claude/commands/design-os/export-product.md` | Added explicit "Variable Substitution for section-prompt.md" table clarifying which variables to substitute vs. leave as placeholders                                                                 |
+| `src/components/ScreenDesignPage.tsx`          | Fixed unsafe type assertion at line 346 - now validates module structure before casting to Record<string, unknown>                                                                                    |
+| `src/components/ThemeToggle.tsx`               | Wrapped isDark calculation in useMemo to avoid calling window.matchMedia() on every render                                                                                                            |
+| `src/lib/section-loader.ts`                    | Limited DEV logging output to max 10 paths with "... and N more" summary                                                                                                                              |
+| `src/components/ExportPage.tsx`                | Fixed array index as React key - now uses stable key based on title and item                                                                                                                          |
+| `src/components/DataModelPage.tsx`             | Fixed array index as React key - entities use entity.name, relationships use relationship text                                                                                                        |
+| `agents.md`                                    | Expanded vague docs/ reference with specific file list and descriptions                                                                                                                               |
 
 ### Gaps Resolved
+
 - **P2-1:** product-vision.md no cross-validation with existing roadmap → Added validation step
 - **P2-2:** design-tokens.md Google Font weight verification missing → Added verification instructions
 - **P2-3:** sample-data.md multi-view props validation missing → Added Props interface validation
@@ -504,12 +666,14 @@ Implementation of 12 MEDIUM PRIORITY (P2) fixes from the analysis plan. These fi
 - **P2-12:** agents.md docs/ directory reference vague → Added specific file list
 
 ### Statistics
+
 - Files modified: 11 (4 source code, 6 commands, 1 documentation)
 - P2 issues addressed: 12 (all fixed)
 - React code quality improvements: 4 (type safety, memoization, key stability)
 - Documentation/validation improvements: 8
 
 ### Verification
+
 - ✅ All P2 medium priority issues resolved
 - ✅ Type safety improved in ScreenDesignPage.tsx
 - ✅ React key warnings resolved in ExportPage and DataModelPage
@@ -523,26 +687,29 @@ Implementation of 12 MEDIUM PRIORITY (P2) fixes from the analysis plan. These fi
 ## [2025-12-27 19:30] Critical & High Priority Fixes: Command Improvements & Documentation
 
 ### Description
+
 Implementation of CRITICAL PRIORITY (P0) and HIGH PRIORITY (P1) fixes from the analysis plan. These fixes address runtime errors, type safety issues, command workflow gaps, and documentation clarity improvements.
 
 ### Modified Files
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/design-screen.md` | Step 5: Clarified skill file handling with Scenario A (validated) and Scenario B (fallback) paths. Step 8: Added "Multi-View Preview Wrappers" section explaining workflow for multi-view sections. Added "Path Alias Validation" section with tsconfig.json configuration, import patterns table, and troubleshooting guide. |
-| `.claude/commands/design-os/sample-data.md` | (Already has comprehensive _meta structure validation and retry tracking) |
-| `.claude/commands/design-os/export-product.md` | (Design system file names are correctly documented as export transformations) |
-| `.claude/commands/design-os/design-shell.md` | Step 8: Added "Handling Missing Sections" section with placeholder navigation guidance and user notification pattern. |
-| `scripts/README-sync.md` | Translated entire file from Romanian to English for international accessibility. |
-| `.claude/commands/design-os/product-roadmap.md` | Added Step 1b: User prompt for orphaned files handling with AskUserQuestion options (Delete/Archive/Keep/Rename to match). |
-| `.claude/commands/design-os/shape-section.md` | Updated "Components only" shell status message with actionable options. Added "Forward Path for Components only state" section explaining user options. |
-| `.claude/commands/design-os/design-tokens.md` | Added formal "Detection Algorithm" pseudocode for mono font default detection. Added "When detection is ambiguous" section with AskUserQuestion fallback. |
-| `.claude/commands/design-os/screenshot-design.md` | Added note clarifying that `:has-text()` is Playwright-specific selector syntax, not standard CSS. |
-| `.claude/commands/design-os/data-model.md` | Added cross-reference to `/sample-data` command for singularization implementation details. |
-| `agents.md` | Enhanced "Skill File Validation Pattern" section with "Standard Reference in Commands" template and "Commands that MUST/do NOT require validation" lists. |
+
+| File                                              | Modification                                                                                                                                                                                                                                                                                                                  |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-screen.md`     | Step 5: Clarified skill file handling with Scenario A (validated) and Scenario B (fallback) paths. Step 8: Added "Multi-View Preview Wrappers" section explaining workflow for multi-view sections. Added "Path Alias Validation" section with tsconfig.json configuration, import patterns table, and troubleshooting guide. |
+| `.claude/commands/design-os/sample-data.md`       | (Already has comprehensive \_meta structure validation and retry tracking)                                                                                                                                                                                                                                                    |
+| `.claude/commands/design-os/export-product.md`    | (Design system file names are correctly documented as export transformations)                                                                                                                                                                                                                                                 |
+| `.claude/commands/design-os/design-shell.md`      | Step 8: Added "Handling Missing Sections" section with placeholder navigation guidance and user notification pattern.                                                                                                                                                                                                         |
+| `scripts/README-sync.md`                          | Translated entire file from Romanian to English for international accessibility.                                                                                                                                                                                                                                              |
+| `.claude/commands/design-os/product-roadmap.md`   | Added Step 1b: User prompt for orphaned files handling with AskUserQuestion options (Delete/Archive/Keep/Rename to match).                                                                                                                                                                                                    |
+| `.claude/commands/design-os/shape-section.md`     | Updated "Components only" shell status message with actionable options. Added "Forward Path for Components only state" section explaining user options.                                                                                                                                                                       |
+| `.claude/commands/design-os/design-tokens.md`     | Added formal "Detection Algorithm" pseudocode for mono font default detection. Added "When detection is ambiguous" section with AskUserQuestion fallback.                                                                                                                                                                     |
+| `.claude/commands/design-os/screenshot-design.md` | Added note clarifying that `:has-text()` is Playwright-specific selector syntax, not standard CSS.                                                                                                                                                                                                                            |
+| `.claude/commands/design-os/data-model.md`        | Added cross-reference to `/sample-data` command for singularization implementation details.                                                                                                                                                                                                                                   |
+| `agents.md`                                       | Enhanced "Skill File Validation Pattern" section with "Standard Reference in Commands" template and "Commands that MUST/do NOT require validation" lists.                                                                                                                                                                     |
 
 ### Gaps Resolved
+
 - **P0-1:** design-screen.md Step 5 skill file reference unclear → Added explicit Scenario A/B paths
-- **P0-2:** sample-data.md _meta structure validation → Already comprehensive (verified)
+- **P0-2:** sample-data.md \_meta structure validation → Already comprehensive (verified)
 - **P0-3:** export-product.md Foundation milestone file names → Correctly documented (verified)
 - **P0-4:** design-shell.md hardcoded shell import without sections check → Added missing sections handling
 - **P0-5:** README-sync.md written in Romanian → Translated to English
@@ -557,6 +724,7 @@ Implementation of CRITICAL PRIORITY (P0) and HIGH PRIORITY (P1) fixes from the a
 - **P1-8:** Skill file validation pattern not standardized → Added reference template and command lists
 
 ### Statistics
+
 - Files modified: 10 (1 documentation, 9 commands/agents)
 - P0 issues addressed: 6 (4 fixed, 2 verified as already correct)
 - P1 issues addressed: 8 (all fixed)
@@ -564,6 +732,7 @@ Implementation of CRITICAL PRIORITY (P0) and HIGH PRIORITY (P1) fixes from the a
 - Total documentation added: ~150 lines
 
 ### Verification
+
 - ✅ All P0 critical issues resolved or verified
 - ✅ All P1 high priority issues resolved
 - ✅ Commands have clear, actionable guidance
@@ -580,25 +749,25 @@ Implementation of 28 LOW PRIORITY (P3) fixes from the analysis plan (deep-tickli
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/templates/design-os/common/model-guidance.md` | Updated version to v1.1.0. Added "When to Use Each Model" table with task-specific recommendations. Added "Context Preservation Note" for model switching. |
-| `.claude/templates/design-os/README.md` | Added "Whitespace Handling" section with rules for template assembly (between/within templates, version comment removal, trailing newlines). Added "Export File Creation Order" section with directory structure, prompt files, instruction files, design guidance, and supporting files order. Added "Skill Validation Script (Standardized)" with bash script and behavior table. |
-| `agents.md` | Added "Question Asking Patterns" section with format, categories by command type, timing, and answer handling. Added "Viewport Dimensions (Standardized)" section with dimensions table, responsive breakpoints, command-specific usage, and screenshot naming convention. Added "Icon Stroke Width Convention" section documenting intentional stroke width variation (1.5, 2, 2.5, 3) with rationale and examples. |
-| `src/lib/shell-loader.ts` | Added detailed JSDoc to `hasShellComponents()` explaining why DEV-mode logging is intentional (not dead code). Added justification comments for debug logging that helps diagnose path resolution issues. |
+| File                                                   | Modification                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/templates/design-os/common/model-guidance.md` | Updated version to v1.1.0. Added "When to Use Each Model" table with task-specific recommendations. Added "Context Preservation Note" for model switching.                                                                                                                                                                                                                                                           |
+| `.claude/templates/design-os/README.md`                | Added "Whitespace Handling" section with rules for template assembly (between/within templates, version comment removal, trailing newlines). Added "Export File Creation Order" section with directory structure, prompt files, instruction files, design guidance, and supporting files order. Added "Skill Validation Script (Standardized)" with bash script and behavior table.                                  |
+| `agents.md`                                            | Added "Question Asking Patterns" section with format, categories by command type, timing, and answer handling. Added "Viewport Dimensions (Standardized)" section with dimensions table, responsive breakpoints, command-specific usage, and screenshot naming convention. Added "Icon Stroke Width Convention" section documenting intentional stroke width variation (1.5, 2, 2.5, 3) with rationale and examples. |
+| `src/lib/shell-loader.ts`                              | Added detailed JSDoc to `hasShellComponents()` explaining why DEV-mode logging is intentional (not dead code). Added justification comments for debug logging that helps diagnose path resolution issues.                                                                                                                                                                                                            |
 
 ### Issues Addressed (from analysis plan)
 
-| Issue # | Category | Title | Resolution |
-|---------|----------|-------|------------|
-| P3-T1 | Template | model-guidance.md needs more context | Added task-specific model recommendations table |
-| P3-T2 | Template | Whitespace handling not documented | Added comprehensive whitespace rules section |
-| P3-T3 | Template | Export file creation order unclear | Added explicit creation order with dependencies |
-| P3-T4 | Template | Skill validation scripts not standardized | Added reusable bash validation script |
-| P3-C1 | Command | Question asking patterns unclear | Added patterns with format, timing, and handling |
-| P3-C2 | Command | Viewport dimensions inconsistent | Added standardized dimensions table with command usage |
-| P3-S1 | Source | Dead debug code in shell-loader | Added justification explaining DEV-only logging purpose |
-| P3-S2 | Source | Icon stroke widths inconsistent | Documented intentional variation with rationale |
+| Issue # | Category | Title                                     | Resolution                                              |
+| ------- | -------- | ----------------------------------------- | ------------------------------------------------------- |
+| P3-T1   | Template | model-guidance.md needs more context      | Added task-specific model recommendations table         |
+| P3-T2   | Template | Whitespace handling not documented        | Added comprehensive whitespace rules section            |
+| P3-T3   | Template | Export file creation order unclear        | Added explicit creation order with dependencies         |
+| P3-T4   | Template | Skill validation scripts not standardized | Added reusable bash validation script                   |
+| P3-C1   | Command  | Question asking patterns unclear          | Added patterns with format, timing, and handling        |
+| P3-C2   | Command  | Viewport dimensions inconsistent          | Added standardized dimensions table with command usage  |
+| P3-S1   | Source   | Dead debug code in shell-loader           | Added justification explaining DEV-only logging purpose |
+| P3-S2   | Source   | Icon stroke widths inconsistent           | Documented intentional variation with rationale         |
 
 ### Statistics
 
@@ -628,44 +797,44 @@ Implementation of 24 MEDIUM PRIORITY (P2) fixes from the analysis plan (deep-tic
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/product-vision.md` | Added pre-creation validation table and checklist before file creation. Updated directory error message format. |
-| `.claude/commands/design-os/product-roadmap.md` | Clarified orphaned file handling responsibility - agent MUST check for orphans after roadmap modifications. Added automatic detection script. |
-| `.claude/commands/design-os/data-model.md` | Enhanced entity name regex validation to check PascalCase format. Added plural name detection with warnings. |
-| `.claude/commands/design-os/design-tokens.md` | Added mono font default detection criteria. Integrated font weight validation into main workflow with verification message. |
-| `.claude/commands/design-os/design-shell.md` | Replaced generic fallback guidance with detailed design principles (visual hierarchy, spacing system, component patterns, responsive breakpoints, dark mode). Updated ShellPreview example with realistic section names. |
-| `.claude/commands/design-os/shape-section.md` | Added explicit cross-references to related commands in multi-view workflow section. Added "Related Documentation" links. |
-| `.claude/commands/design-os/sample-data.md` | Replaced subjective validation checklist with actionable Python validation scripts for JSON structure, _meta validation, and data consistency checks. |
-| `.claude/commands/design-os/design-screen.md` | Rewrote import path section with clear path resolution explanation and "Why @/../product/" documentation. Added detailed fallback design principles (matching design-shell.md). |
-| `.claude/commands/design-os/screenshot-design.md` | Added Playwright MCP tool names table with exact tool names and purposes. Added comprehensive hide button failure handling with fallback procedure. |
-| `.claude/commands/design-os/export-product.md` | Standardized version regex patterns in table format with consistent `[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?` pattern. Added comprehensive zip validation with corruption check and expected files verification. |
-| `src/lib/design-system-loader.ts` | Added `VALID_TAILWIND_COLORS` set with all Tailwind v4 palette names. Added `isValidTailwindColor()`, `validateColorTokens()`, and `validateTypographyTokens()` functions with DEV-mode logging. |
-| `src/lib/shell-loader.ts` | Added validation warnings to `parseShellSpec()` matching section-loader.ts pattern. Now warns about missing Overview, Navigation Structure, and Layout Pattern sections. |
-| `src/shell/navigation-config.ts` | Added documentation about prop matching with shell components. Added `isValidUser()` validation function for defensive type checking. |
-| `src/components/ShellDesignPage.tsx` | Removed unnecessary `import React from 'react'`. Changed `React.lazy()` to `lazy()`. Added useCallback dependency comment explaining why deps array is empty. |
-| `src/components/ScreenDesignPage.tsx` | Added useCallback dependency comment explaining why deps array is empty. |
+| File                                              | Modification                                                                                                                                                                                                             |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `.claude/commands/design-os/product-vision.md`    | Added pre-creation validation table and checklist before file creation. Updated directory error message format.                                                                                                          |
+| `.claude/commands/design-os/product-roadmap.md`   | Clarified orphaned file handling responsibility - agent MUST check for orphans after roadmap modifications. Added automatic detection script.                                                                            |
+| `.claude/commands/design-os/data-model.md`        | Enhanced entity name regex validation to check PascalCase format. Added plural name detection with warnings.                                                                                                             |
+| `.claude/commands/design-os/design-tokens.md`     | Added mono font default detection criteria. Integrated font weight validation into main workflow with verification message.                                                                                              |
+| `.claude/commands/design-os/design-shell.md`      | Replaced generic fallback guidance with detailed design principles (visual hierarchy, spacing system, component patterns, responsive breakpoints, dark mode). Updated ShellPreview example with realistic section names. |
+| `.claude/commands/design-os/shape-section.md`     | Added explicit cross-references to related commands in multi-view workflow section. Added "Related Documentation" links.                                                                                                 |
+| `.claude/commands/design-os/sample-data.md`       | Replaced subjective validation checklist with actionable Python validation scripts for JSON structure, \_meta validation, and data consistency checks.                                                                   |
+| `.claude/commands/design-os/design-screen.md`     | Rewrote import path section with clear path resolution explanation and "Why @/../product/" documentation. Added detailed fallback design principles (matching design-shell.md).                                          |
+| `.claude/commands/design-os/screenshot-design.md` | Added Playwright MCP tool names table with exact tool names and purposes. Added comprehensive hide button failure handling with fallback procedure.                                                                      |
+| `.claude/commands/design-os/export-product.md`    | Standardized version regex patterns in table format with consistent `[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?` pattern. Added comprehensive zip validation with corruption check and expected files verification.          |
+| `src/lib/design-system-loader.ts`                 | Added `VALID_TAILWIND_COLORS` set with all Tailwind v4 palette names. Added `isValidTailwindColor()`, `validateColorTokens()`, and `validateTypographyTokens()` functions with DEV-mode logging.                         |
+| `src/lib/shell-loader.ts`                         | Added validation warnings to `parseShellSpec()` matching section-loader.ts pattern. Now warns about missing Overview, Navigation Structure, and Layout Pattern sections.                                                 |
+| `src/shell/navigation-config.ts`                  | Added documentation about prop matching with shell components. Added `isValidUser()` validation function for defensive type checking.                                                                                    |
+| `src/components/ShellDesignPage.tsx`              | Removed unnecessary `import React from 'react'`. Changed `React.lazy()` to `lazy()`. Added useCallback dependency comment explaining why deps array is empty.                                                            |
+| `src/components/ScreenDesignPage.tsx`             | Added useCallback dependency comment explaining why deps array is empty.                                                                                                                                                 |
 
 ### Issues Addressed (from analysis plan)
 
-| Issue # | Category | File | Title | Resolution |
-|---------|----------|------|-------|------------|
-| P2-1 | Command | product-vision.md | Validation not tied to file creation workflow | Added pre-creation validation table |
-| P2-2 | Command | product-roadmap.md | Orphaned file handling responsibility unclear | Clarified agent responsibility with detection script |
-| P2-3 | Command | data-model.md | Plural names accepted, regex validation incomplete | Added PascalCase validation and plural detection |
-| P2-4 | Command | design-tokens.md | Font weight validation not in main flow, mono default vague | Added integrated workflow validation |
-| P2-5 | Command | design-shell.md | Fallback guidance too generic, ShellPreview uses placeholders | Added detailed design principles, realistic examples |
-| P2-6 | Command | shape-section.md | Multi-view workflow split across files | Added explicit cross-references |
-| P2-7 | Command | sample-data.md | Validation checklist not actionable | Added Python validation scripts |
-| P2-8 | Command | design-screen.md | Import path confusing, skill validation duplicated | Rewrote import section, added fallback guidance |
-| P2-9 | Command | screenshot-design.md | Playwright tool names unclear, hide button failure handling missing | Added tool names table and failure procedure |
-| P2-10 | Command | export-product.md | Version regex inconsistent, zip validation incomplete | Standardized regex, added zip validation |
-| P2-11 | Source | All loaders | Inconsistent error logging patterns | Added logging to design-system-loader.ts, consistent warnings in shell-loader.ts |
-| P2-12 | Source | ShellDesignPage.tsx, ScreenDesignPage.tsx | useCallback missing dependency comments | Added explanatory comments |
-| P2-13 | Source | navigation-config.ts | Stub could cause prop mismatch | Added isValidUser() validation function |
-| P2-14 | Source | design-system-loader.ts | Color validation doesn't check Tailwind names | Added VALID_TAILWIND_COLORS set and validation |
-| P2-15 | Source | shell-loader.ts | Regex fallback behavior inconsistent | Added validation warnings matching section-loader.ts |
-| P2-16 | Source | ShellDesignPage.tsx | Unnecessary React import | Removed import, use lazy() directly |
+| Issue # | Category | File                                      | Title                                                               | Resolution                                                                       |
+| ------- | -------- | ----------------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| P2-1    | Command  | product-vision.md                         | Validation not tied to file creation workflow                       | Added pre-creation validation table                                              |
+| P2-2    | Command  | product-roadmap.md                        | Orphaned file handling responsibility unclear                       | Clarified agent responsibility with detection script                             |
+| P2-3    | Command  | data-model.md                             | Plural names accepted, regex validation incomplete                  | Added PascalCase validation and plural detection                                 |
+| P2-4    | Command  | design-tokens.md                          | Font weight validation not in main flow, mono default vague         | Added integrated workflow validation                                             |
+| P2-5    | Command  | design-shell.md                           | Fallback guidance too generic, ShellPreview uses placeholders       | Added detailed design principles, realistic examples                             |
+| P2-6    | Command  | shape-section.md                          | Multi-view workflow split across files                              | Added explicit cross-references                                                  |
+| P2-7    | Command  | sample-data.md                            | Validation checklist not actionable                                 | Added Python validation scripts                                                  |
+| P2-8    | Command  | design-screen.md                          | Import path confusing, skill validation duplicated                  | Rewrote import section, added fallback guidance                                  |
+| P2-9    | Command  | screenshot-design.md                      | Playwright tool names unclear, hide button failure handling missing | Added tool names table and failure procedure                                     |
+| P2-10   | Command  | export-product.md                         | Version regex inconsistent, zip validation incomplete               | Standardized regex, added zip validation                                         |
+| P2-11   | Source   | All loaders                               | Inconsistent error logging patterns                                 | Added logging to design-system-loader.ts, consistent warnings in shell-loader.ts |
+| P2-12   | Source   | ShellDesignPage.tsx, ScreenDesignPage.tsx | useCallback missing dependency comments                             | Added explanatory comments                                                       |
+| P2-13   | Source   | navigation-config.ts                      | Stub could cause prop mismatch                                      | Added isValidUser() validation function                                          |
+| P2-14   | Source   | design-system-loader.ts                   | Color validation doesn't check Tailwind names                       | Added VALID_TAILWIND_COLORS set and validation                                   |
+| P2-15   | Source   | shell-loader.ts                           | Regex fallback behavior inconsistent                                | Added validation warnings matching section-loader.ts                             |
+| P2-16   | Source   | ShellDesignPage.tsx                       | Unnecessary React import                                            | Removed import, use lazy() directly                                              |
 
 ### Statistics
 
@@ -694,33 +863,33 @@ Implementation of 9 HIGH PRIORITY (P1) fixes from the analysis plan (deep-tickli
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `src/lib/section-loader.ts` | Added `validateDataFileContent()` function for validating glob-loaded data.json content. Updated `loadSectionData()` to validate before using. Added `exists` flag calculation. Added validation mode to `parseSpec()` with DEV-mode warnings for missing sections. |
-| `src/lib/product-loader.ts` | Added `validateMarkdownContent()` function for validating glob-loaded markdown content. Updated `loadProductData()` to validate content before parsing. |
-| `src/lib/shell-loader.ts` | Added `validateShellSpecContent()` function for validating glob-loaded shell spec content. Updated `loadShellInfo()` to validate content before parsing. |
-| `src/lib/data-model-loader.ts` | Added `validateDataModelContent()` function for validating glob-loaded data model content. Updated `loadDataModel()` to validate content before parsing. |
-| `src/types/section.ts` | Added `exists: boolean` flag to `SectionData` interface with JSDoc documentation explaining the distinction between "not loaded" vs "loaded but empty". |
-| `src/components/ScreenDesignPage.tsx` | Improved type casting validation: now validates module exists and has valid export before casting. Added explicit null checks before type assertion. Changed theme sync polling from 100ms to 250ms for better performance. |
-| `src/components/ShellDesignPage.tsx` | Changed theme sync polling from 100ms to 250ms for better performance. |
-| `.claude/commands/design-os/design-shell.md` | Moved skill file validation from Step 5 to Step 1 (Prerequisites). Added validation script and fallback guidance. Simplified Step 5 to reference validation done in Step 1. |
-| `.claude/commands/design-os/design-screen.md` | Moved skill file validation from Step 5 to Step 1 (Prerequisites). Added "Views Extraction from spec.md" section with explicit format documentation, parsing algorithm, and validation rules. Simplified Step 5 to reference validation done in Step 1. |
-| `.claude/commands/design-os/shape-section.md` | Moved section ID validation from Step 7 to Step 2 (immediately after section selection). Added explicit Section ID Generation Rules in Step 2. Removed duplicate validation from Step 7. |
-| `.claude/commands/design-os/export-product.md` | Added max depth (10 levels) and stopping conditions to recursive component validation. Added "Recursion Limits and Stopping Conditions" table. Added pseudocode for depth tracking. Added circular import detection and handling. |
+| File                                           | Modification                                                                                                                                                                                                                                                        |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/section-loader.ts`                    | Added `validateDataFileContent()` function for validating glob-loaded data.json content. Updated `loadSectionData()` to validate before using. Added `exists` flag calculation. Added validation mode to `parseSpec()` with DEV-mode warnings for missing sections. |
+| `src/lib/product-loader.ts`                    | Added `validateMarkdownContent()` function for validating glob-loaded markdown content. Updated `loadProductData()` to validate content before parsing.                                                                                                             |
+| `src/lib/shell-loader.ts`                      | Added `validateShellSpecContent()` function for validating glob-loaded shell spec content. Updated `loadShellInfo()` to validate content before parsing.                                                                                                            |
+| `src/lib/data-model-loader.ts`                 | Added `validateDataModelContent()` function for validating glob-loaded data model content. Updated `loadDataModel()` to validate content before parsing.                                                                                                            |
+| `src/types/section.ts`                         | Added `exists: boolean` flag to `SectionData` interface with JSDoc documentation explaining the distinction between "not loaded" vs "loaded but empty".                                                                                                             |
+| `src/components/ScreenDesignPage.tsx`          | Improved type casting validation: now validates module exists and has valid export before casting. Added explicit null checks before type assertion. Changed theme sync polling from 100ms to 250ms for better performance.                                         |
+| `src/components/ShellDesignPage.tsx`           | Changed theme sync polling from 100ms to 250ms for better performance.                                                                                                                                                                                              |
+| `.claude/commands/design-os/design-shell.md`   | Moved skill file validation from Step 5 to Step 1 (Prerequisites). Added validation script and fallback guidance. Simplified Step 5 to reference validation done in Step 1.                                                                                         |
+| `.claude/commands/design-os/design-screen.md`  | Moved skill file validation from Step 5 to Step 1 (Prerequisites). Added "Views Extraction from spec.md" section with explicit format documentation, parsing algorithm, and validation rules. Simplified Step 5 to reference validation done in Step 1.             |
+| `.claude/commands/design-os/shape-section.md`  | Moved section ID validation from Step 7 to Step 2 (immediately after section selection). Added explicit Section ID Generation Rules in Step 2. Removed duplicate validation from Step 7.                                                                            |
+| `.claude/commands/design-os/export-product.md` | Added max depth (10 levels) and stopping conditions to recursive component validation. Added "Recursion Limits and Stopping Conditions" table. Added pseudocode for depth tracking. Added circular import detection and handling.                                   |
 
 ### Issues Addressed (from analysis plan)
 
-| Issue # | Category | File | Title | Resolution |
-|---------|----------|------|-------|------------|
-| P1-1 | Source | All loaders | import.meta.glob() no error handling for malformed JSON | Added validation functions to all 4 loaders with DEV-mode warnings |
-| P1-2 | Source | ScreenDesignPage.tsx | Type casting before export validation | Added explicit module and export validation before type cast |
-| P1-3 | Source | SectionPage.tsx | Can't distinguish "not loaded" vs "loaded but empty" | Added `exists` flag to SectionData interface |
-| P1-4 | Source | section-loader.ts | Regex parsing silently produces empty data | Added validation mode with DEV warnings for missing sections |
-| P1-5 | Source | ScreenDesignPage.tsx, ShellDesignPage.tsx | 100ms polling with no debouncing | Increased interval from 100ms to 250ms |
-| P1-6 | Command | design-shell.md, design-screen.md | Skill file validated after prerequisites | Moved validation to Step 1 (Prerequisites) |
-| P1-7 | Command | shape-section.md | Section ID validated after user approval | Moved validation to Step 2 (after section selection) |
-| P1-8 | Command | export-product.md | Component validation recursion has no stopping condition | Added max depth (10), cycle detection, and stopping rules |
-| P1-9 | Command | design-screen.md | Views in spec extraction not documented | Added explicit "Views Extraction from spec.md" documentation |
+| Issue # | Category | File                                      | Title                                                    | Resolution                                                         |
+| ------- | -------- | ----------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------ |
+| P1-1    | Source   | All loaders                               | import.meta.glob() no error handling for malformed JSON  | Added validation functions to all 4 loaders with DEV-mode warnings |
+| P1-2    | Source   | ScreenDesignPage.tsx                      | Type casting before export validation                    | Added explicit module and export validation before type cast       |
+| P1-3    | Source   | SectionPage.tsx                           | Can't distinguish "not loaded" vs "loaded but empty"     | Added `exists` flag to SectionData interface                       |
+| P1-4    | Source   | section-loader.ts                         | Regex parsing silently produces empty data               | Added validation mode with DEV warnings for missing sections       |
+| P1-5    | Source   | ScreenDesignPage.tsx, ShellDesignPage.tsx | 100ms polling with no debouncing                         | Increased interval from 100ms to 250ms                             |
+| P1-6    | Command  | design-shell.md, design-screen.md         | Skill file validated after prerequisites                 | Moved validation to Step 1 (Prerequisites)                         |
+| P1-7    | Command  | shape-section.md                          | Section ID validated after user approval                 | Moved validation to Step 2 (after section selection)               |
+| P1-8    | Command  | export-product.md                         | Component validation recursion has no stopping condition | Added max depth (10), cycle detection, and stopping rules          |
+| P1-9    | Command  | design-screen.md                          | Views in spec extraction not documented                  | Added explicit "Views Extraction from spec.md" documentation       |
 
 ### Statistics
 
@@ -752,24 +921,24 @@ Implementation of 6 CRITICAL (P0) fixes from the analysis plan (deep-tickling-si
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `src/components/ShellDesignPage.tsx` | **Line 40-41:** Added `Math.round()` to width calculation in resize handler to prevent floating-point display values causing visual glitches. Added comment explaining the fix. |
-| `src/lib/shell-loader.ts` | **Lines 115-143:** Enhanced `loadAppShell()` function with explicit module validation before type assertion. Added documentation explaining type safety approach. Added DEV-mode logging when AppShell.tsx not found. |
-| `.claude/commands/design-os/data-model.md` | **Lines 219-236:** Replaced "Do not auto-singularize" guidance with auto-singularization rules table. Commands now transform plural entity names (Invoices → Invoice) for TypeScript interfaces. |
-| `.claude/commands/design-os/sample-data.md` | **Lines 352-375:** Added "Auto-singularize plural entity names" step and "Auto-Singularization Rules" section with transformation patterns (ies→y, es→'', s→''). Ensures TypeScript interfaces follow naming conventions. |
+| File                                              | Modification                                                                                                                                                                                                                                                                                                                                                                    |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/components/ShellDesignPage.tsx`              | **Line 40-41:** Added `Math.round()` to width calculation in resize handler to prevent floating-point display values causing visual glitches. Added comment explaining the fix.                                                                                                                                                                                                 |
+| `src/lib/shell-loader.ts`                         | **Lines 115-143:** Enhanced `loadAppShell()` function with explicit module validation before type assertion. Added documentation explaining type safety approach. Added DEV-mode logging when AppShell.tsx not found.                                                                                                                                                           |
+| `.claude/commands/design-os/data-model.md`        | **Lines 219-236:** Replaced "Do not auto-singularize" guidance with auto-singularization rules table. Commands now transform plural entity names (Invoices → Invoice) for TypeScript interfaces.                                                                                                                                                                                |
+| `.claude/commands/design-os/sample-data.md`       | **Lines 352-375:** Added "Auto-singularize plural entity names" step and "Auto-Singularization Rules" section with transformation patterns (ies→y, es→'', s→''). Ensures TypeScript interfaces follow naming conventions.                                                                                                                                                       |
 | `.claude/commands/design-os/screenshot-design.md` | **Lines 73-101:** Replaced ambiguous dev server instructions with explicit detection logic. Added bash script to detect pre-existing server before starting. **Lines 224-247:** Updated cleanup step to only kill servers started by the command (using DEV_SERVER_PREEXISTING flag). **Lines 249-259:** Updated Important Notes with correct port (5173) and cleanup behavior. |
 
 ### Issues Addressed (from analysis plan)
 
-| Issue # | Category | File | Title | Resolution |
-|---------|----------|------|-------|------------|
-| P0-1 | Critical | ShellDesignPage.tsx | Missing Math.round() in width calculation | Added `Math.round()` wrapper to prevent floating-point values |
-| P0-2 | Critical | shell-loader.ts | Unsafe type assertion without validation | Added module existence check before type cast, added documentation |
-| P0-3 | Critical | ScreenDesignPage.tsx | Null check after useMemo | Verified: Current implementation is correct (null check inside useMemo is React-compliant) |
-| P0-4 | Critical | ScreenDesignPage.tsx | React.lazy missing return paths | Verified: All code paths already return valid module objects |
-| P0-5 | Critical | data-model.md + sample-data.md | Entity naming singularization conflict | Aligned both commands: allow plural in data-model, auto-singularize in sample-data for types.ts |
-| P0-6 | Critical | screenshot-design.md | Dev server lifecycle ambiguity | Added detection logic before starting server, conditional cleanup based on who started server |
+| Issue # | Category | File                           | Title                                     | Resolution                                                                                      |
+| ------- | -------- | ------------------------------ | ----------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| P0-1    | Critical | ShellDesignPage.tsx            | Missing Math.round() in width calculation | Added `Math.round()` wrapper to prevent floating-point values                                   |
+| P0-2    | Critical | shell-loader.ts                | Unsafe type assertion without validation  | Added module existence check before type cast, added documentation                              |
+| P0-3    | Critical | ScreenDesignPage.tsx           | Null check after useMemo                  | Verified: Current implementation is correct (null check inside useMemo is React-compliant)      |
+| P0-4    | Critical | ScreenDesignPage.tsx           | React.lazy missing return paths           | Verified: All code paths already return valid module objects                                    |
+| P0-5    | Critical | data-model.md + sample-data.md | Entity naming singularization conflict    | Aligned both commands: allow plural in data-model, auto-singularize in sample-data for types.ts |
+| P0-6    | Critical | screenshot-design.md           | Dev server lifecycle ambiguity            | Added detection logic before starting server, conditional cleanup based on who started server   |
 
 ### Statistics
 
@@ -798,25 +967,25 @@ Implementation of BATCH 3 fixes from the analysis plan (quiet-seeking-firefly.md
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `agents.md` | **Lines 125-129:** Added "Note on data.json naming" explaining that source `data.json` becomes `sample-data.json` in export. **Lines 64-99:** Added "Command Quick Reference" section with two tables: "Files Generated Per Command" and "Command Prerequisites". **Lines 209-232:** Expanded product-plan structure to show complete file tree including README.md, tests.md, and sample-data.json at all levels. **Lines 204-207:** Added "Seeing Examples" section with guidance on where to find example outputs. |
-| `.claude/templates/design-os/README.md` | **Lines 117-121:** Added "Version suffix convention" documenting the `-section` suffix pattern (e.g., `v1.2.0-section`). **Lines 28-90:** Added "Template Dependencies" section with dependency graph, cross-template references table, and variable substitution documentation. |
+| File                                    | Modification                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agents.md`                             | **Lines 125-129:** Added "Note on data.json naming" explaining that source `data.json` becomes `sample-data.json` in export. **Lines 64-99:** Added "Command Quick Reference" section with two tables: "Files Generated Per Command" and "Command Prerequisites". **Lines 209-232:** Expanded product-plan structure to show complete file tree including README.md, tests.md, and sample-data.json at all levels. **Lines 204-207:** Added "Seeing Examples" section with guidance on where to find example outputs. |
+| `.claude/templates/design-os/README.md` | **Lines 117-121:** Added "Version suffix convention" documenting the `-section` suffix pattern (e.g., `v1.2.0-section`). **Lines 28-90:** Added "Template Dependencies" section with dependency graph, cross-template references table, and variable substitution documentation.                                                                                                                                                                                                                                      |
 
 ### Issues Addressed (from analysis plan)
 
-| Issue # | Category | Title | Resolution |
-|---------|----------|-------|------------|
-| D1 | Critical | data.json vs sample-data.json naming | Added explicit note explaining source → export naming transformation |
-| D2 | Critical | agents.md file structure incomplete | Expanded product-plan structure to show README.md, tests.md, and complete folder contents |
-| D3 | Critical | product-plan/ generation clarity | Changed comment to "(GENERATED by /export-product)" and added SKILL.md copy note |
-| D4 | Moderate | Template version suffix documentation | Added `-section` suffix convention with examples |
-| D5 | Moderate | Template cross-references | Added complete "Template Dependencies" section with dependency graph |
-| D6 | Moderate | Skill file copy documentation | Added "(copied from SKILL.md in Step 7)" to product-plan structure |
-| D7 | Moderate | Files generated per command table | Added comprehensive table showing all commands and their output files |
-| d1 | Minor | Terminology consistency check | Audited — "Exportable Components" is consistently used as primary term |
-| d2 | Minor | Example files in documentation | Added "Seeing Examples" section with guidance |
-| d3 | Minor | Command prerequisites quick reference | Added "Command Prerequisites" table with Required vs Optional columns |
+| Issue # | Category | Title                                 | Resolution                                                                                |
+| ------- | -------- | ------------------------------------- | ----------------------------------------------------------------------------------------- |
+| D1      | Critical | data.json vs sample-data.json naming  | Added explicit note explaining source → export naming transformation                      |
+| D2      | Critical | agents.md file structure incomplete   | Expanded product-plan structure to show README.md, tests.md, and complete folder contents |
+| D3      | Critical | product-plan/ generation clarity      | Changed comment to "(GENERATED by /export-product)" and added SKILL.md copy note          |
+| D4      | Moderate | Template version suffix documentation | Added `-section` suffix convention with examples                                          |
+| D5      | Moderate | Template cross-references             | Added complete "Template Dependencies" section with dependency graph                      |
+| D6      | Moderate | Skill file copy documentation         | Added "(copied from SKILL.md in Step 7)" to product-plan structure                        |
+| D7      | Moderate | Files generated per command table     | Added comprehensive table showing all commands and their output files                     |
+| d1      | Minor    | Terminology consistency check         | Audited — "Exportable Components" is consistently used as primary term                    |
+| d2      | Minor    | Example files in documentation        | Added "Seeing Examples" section with guidance                                             |
+| d3      | Minor    | Command prerequisites quick reference | Added "Command Prerequisites" table with Required vs Optional columns                     |
 
 ### Statistics
 
@@ -846,24 +1015,24 @@ Implementation of BATCH 2 fixes from the analysis plan (quiet-seeking-firefly.md
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `src/lib/section-loader.ts` | **Line 161-166:** Added DEV-mode error logging in catch block. Errors are now logged to console with `[section-loader]` prefix when `import.meta.env.DEV` is true. |
-| `src/lib/data-model-loader.ts` | **Line 73-78:** Added DEV-mode error logging in catch block. Errors are now logged to console with `[data-model-loader]` prefix when `import.meta.env.DEV` is true. |
-| `src/lib/shell-loader.ts` | **Line 80-85:** Added DEV-mode error logging in catch block. Errors are now logged to console with `[shell-loader]` prefix when `import.meta.env.DEV` is true. |
-| `src/components/PhaseWarningBanner.tsx` | **Lines 1, 30-36:** Changed `useEffect` to `useLayoutEffect` for checking localStorage. This prevents potential flash where banner briefly appears/disappears before settling to correct state. |
-| `src/components/ScreenDesignPage.tsx` | **Lines 1-76:** Added `ScreenDesignErrorBoundary` class component that catches runtime errors from screen design components (e.g., prop type mismatches). Shows friendly error UI with DEV-only error details. **Line 49:** Added `Math.round()` to width calculations to prevent floating point precision issues. **Lines 456-458, 473-475:** Wrapped `ScreenDesignComponent` with error boundary in both shell and non-shell render paths. |
-| `src/shell/navigation-config.ts` | **Verified:** Documentation was already enhanced in previous P3 fix (comprehensive JSDoc explaining placeholder pattern). No additional changes needed. |
+| File                                    | Modification                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/section-loader.ts`             | **Line 161-166:** Added DEV-mode error logging in catch block. Errors are now logged to console with `[section-loader]` prefix when `import.meta.env.DEV` is true.                                                                                                                                                                                                                                                                           |
+| `src/lib/data-model-loader.ts`          | **Line 73-78:** Added DEV-mode error logging in catch block. Errors are now logged to console with `[data-model-loader]` prefix when `import.meta.env.DEV` is true.                                                                                                                                                                                                                                                                          |
+| `src/lib/shell-loader.ts`               | **Line 80-85:** Added DEV-mode error logging in catch block. Errors are now logged to console with `[shell-loader]` prefix when `import.meta.env.DEV` is true.                                                                                                                                                                                                                                                                               |
+| `src/components/PhaseWarningBanner.tsx` | **Lines 1, 30-36:** Changed `useEffect` to `useLayoutEffect` for checking localStorage. This prevents potential flash where banner briefly appears/disappears before settling to correct state.                                                                                                                                                                                                                                              |
+| `src/components/ScreenDesignPage.tsx`   | **Lines 1-76:** Added `ScreenDesignErrorBoundary` class component that catches runtime errors from screen design components (e.g., prop type mismatches). Shows friendly error UI with DEV-only error details. **Line 49:** Added `Math.round()` to width calculations to prevent floating point precision issues. **Lines 456-458, 473-475:** Wrapped `ScreenDesignComponent` with error boundary in both shell and non-shell render paths. |
+| `src/shell/navigation-config.ts`        | **Verified:** Documentation was already enhanced in previous P3 fix (comprehensive JSDoc explaining placeholder pattern). No additional changes needed.                                                                                                                                                                                                                                                                                      |
 
 ### Issues Addressed (from analysis plan)
 
-| Issue # | Category | Title | Resolution |
-|---------|----------|-------|------------|
-| S1 | Moderate | DEV-mode error logging in catch blocks | Added `if (import.meta.env.DEV) console.error()` to 3 loader files |
-| S2 | Moderate | PhaseWarningBanner flash prevention | Changed `useEffect` to `useLayoutEffect` for synchronous localStorage check |
-| S3 | Moderate | Navigation config documentation | Already resolved in previous fix (verified) |
-| s1 | Minor | Width resize edge case | Added `Math.round()` to prevent floating point precision issues |
-| s2 | Minor | Component props type safety | Added `ScreenDesignErrorBoundary` to catch and display runtime errors gracefully |
+| Issue # | Category | Title                                  | Resolution                                                                       |
+| ------- | -------- | -------------------------------------- | -------------------------------------------------------------------------------- |
+| S1      | Moderate | DEV-mode error logging in catch blocks | Added `if (import.meta.env.DEV) console.error()` to 3 loader files               |
+| S2      | Moderate | PhaseWarningBanner flash prevention    | Changed `useEffect` to `useLayoutEffect` for synchronous localStorage check      |
+| S3      | Moderate | Navigation config documentation        | Already resolved in previous fix (verified)                                      |
+| s1      | Minor    | Width resize edge case                 | Added `Math.round()` to prevent floating point precision issues                  |
+| s2      | Minor    | Component props type safety            | Added `ScreenDesignErrorBoundary` to catch and display runtime errors gracefully |
 
 ### Statistics
 
@@ -892,39 +1061,39 @@ Implementation of BATCH 1 fixes from the analysis plan (quiet-seeking-firefly.md
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/design-shell.md` | Added frontend-design skill fallback mechanism. Commands now offer to continue with basic design principles if SKILL.md is missing/empty instead of blocking. |
-| `.claude/commands/design-os/design-screen.md` | Added frontend-design skill fallback mechanism (matching design-shell.md). Added multi-view workflow cross-reference table showing how commands work together for sections with multiple views. |
-| `.claude/commands/design-os/export-product.md` | Added shell prerequisite check with INCLUDE_SHELL flag. Added template version comment validation. Added sub-component validation (recursive). Added rollback/recovery section. Added README product name substitution instruction. |
-| `.claude/commands/design-os/sample-data.md` | Enhanced retry mechanism with explicit tracking format ("[Attempt 1/3]", "[Attempt 2/3]", "[Attempt 3/3 - FINAL]"). |
-| `.claude/commands/design-os/shape-section.md` | Added section ID validation against roadmap. Expanded shell status table from 4 to 8 states (all combinations of spec/components/preview). Added view count tracking and multi-view section reminder. |
-| `.claude/commands/design-os/product-vision.md` | Added markdown section validation (checks for ## Description, ## Problems & Solutions, ## Key Features). |
-| `.claude/commands/design-os/data-model.md` | Added markdown section validation (checks for # Data Model, ## Entities, ## Relationships). |
-| `.claude/commands/design-os/screenshot-design.md` | Enhanced Playwright MCP check with tool availability verification and graceful degradation (manual screenshot alternative). |
-| `agents.md` | Added Error Message Format Standard with severity levels (Error/Warning/Note). Added Skill File Validation Pattern for commands that use frontend-design skill. |
+| File                                              | Modification                                                                                                                                                                                                                        |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-shell.md`      | Added frontend-design skill fallback mechanism. Commands now offer to continue with basic design principles if SKILL.md is missing/empty instead of blocking.                                                                       |
+| `.claude/commands/design-os/design-screen.md`     | Added frontend-design skill fallback mechanism (matching design-shell.md). Added multi-view workflow cross-reference table showing how commands work together for sections with multiple views.                                     |
+| `.claude/commands/design-os/export-product.md`    | Added shell prerequisite check with INCLUDE_SHELL flag. Added template version comment validation. Added sub-component validation (recursive). Added rollback/recovery section. Added README product name substitution instruction. |
+| `.claude/commands/design-os/sample-data.md`       | Enhanced retry mechanism with explicit tracking format ("[Attempt 1/3]", "[Attempt 2/3]", "[Attempt 3/3 - FINAL]").                                                                                                                 |
+| `.claude/commands/design-os/shape-section.md`     | Added section ID validation against roadmap. Expanded shell status table from 4 to 8 states (all combinations of spec/components/preview). Added view count tracking and multi-view section reminder.                               |
+| `.claude/commands/design-os/product-vision.md`    | Added markdown section validation (checks for ## Description, ## Problems & Solutions, ## Key Features).                                                                                                                            |
+| `.claude/commands/design-os/data-model.md`        | Added markdown section validation (checks for # Data Model, ## Entities, ## Relationships).                                                                                                                                         |
+| `.claude/commands/design-os/screenshot-design.md` | Enhanced Playwright MCP check with tool availability verification and graceful degradation (manual screenshot alternative).                                                                                                         |
+| `agents.md`                                       | Added Error Message Format Standard with severity levels (Error/Warning/Note). Added Skill File Validation Pattern for commands that use frontend-design skill.                                                                     |
 
 ### Issues Addressed (from analysis plan)
 
-| Issue # | Category | Title | Resolution |
-|---------|----------|-------|------------|
-| C1 | Critical | Frontend-design skill fallback | Added fallback mechanism with basic design principles option |
-| C2 | Critical | Export prerequisite validation | Added shell component check with INCLUDE_SHELL flag |
-| C3 | Critical | Sample-data retry mechanism | Added explicit "[Attempt N/3]" tracking format |
-| C4 | Critical | Section ID validation consistency | Added roadmap cross-reference validation |
-| C5 | Critical | Template version validation | Added version comment pattern check |
-| C6 | Critical | View count validation | Added multi-view section reminder and tracking |
-| C7 | Critical | Export rollback mechanism | Added comprehensive rollback/recovery section |
-| M1 | Moderate | Consistent error messages | Added standard format pattern to agents.md |
-| M2 | Moderate | Shell status documentation | Expanded to all 8 possible states |
-| M3 | Moderate | Markdown format validation | Added section validation to product-vision.md and data-model.md |
-| M4 | Moderate | Font weight validation | Already implemented (verified) |
-| M5 | Moderate | Sub-component validation | Added recursive component dependency check |
-| M6 | Moderate | Playwright MCP handling | Added graceful degradation with manual alternative |
-| M7 | Moderate | Skill file validation pattern | Added shared pattern to agents.md |
-| M8 | Moderate | Entity naming cross-reference | Already implemented (verified) |
-| M9 | Moderate | Multiple views workflow | Added cross-command reference table |
-| m1-m7 | Minor | Various path/naming fixes | Most already implemented; added README substitution |
+| Issue # | Category | Title                             | Resolution                                                      |
+| ------- | -------- | --------------------------------- | --------------------------------------------------------------- |
+| C1      | Critical | Frontend-design skill fallback    | Added fallback mechanism with basic design principles option    |
+| C2      | Critical | Export prerequisite validation    | Added shell component check with INCLUDE_SHELL flag             |
+| C3      | Critical | Sample-data retry mechanism       | Added explicit "[Attempt N/3]" tracking format                  |
+| C4      | Critical | Section ID validation consistency | Added roadmap cross-reference validation                        |
+| C5      | Critical | Template version validation       | Added version comment pattern check                             |
+| C6      | Critical | View count validation             | Added multi-view section reminder and tracking                  |
+| C7      | Critical | Export rollback mechanism         | Added comprehensive rollback/recovery section                   |
+| M1      | Moderate | Consistent error messages         | Added standard format pattern to agents.md                      |
+| M2      | Moderate | Shell status documentation        | Expanded to all 8 possible states                               |
+| M3      | Moderate | Markdown format validation        | Added section validation to product-vision.md and data-model.md |
+| M4      | Moderate | Font weight validation            | Already implemented (verified)                                  |
+| M5      | Moderate | Sub-component validation          | Added recursive component dependency check                      |
+| M6      | Moderate | Playwright MCP handling           | Added graceful degradation with manual alternative              |
+| M7      | Moderate | Skill file validation pattern     | Added shared pattern to agents.md                               |
+| M8      | Moderate | Entity naming cross-reference     | Already implemented (verified)                                  |
+| M9      | Moderate | Multiple views workflow           | Added cross-command reference table                             |
+| m1-m7   | Minor    | Various path/naming fixes         | Most already implemented; added README substitution             |
 
 ### Statistics
 
@@ -955,29 +1124,29 @@ Implementation of 9 LOW priority (P3) fixes from the analysis plan (vivid-marina
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/data-model.md` | **Lines 151-177:** Added "Plural Entity Names (Why Singular is Required)" section explaining what happens when users use plural entity names, with transformation table and guidance for /sample-data. |
-| `.claude/commands/design-os/screenshot-design.md` | **Lines 82-107:** Added "Viewport Selection Guidance" section with decision guide explaining when to use Desktop (default), Mobile, or Tablet viewports. |
-| `.claude/commands/design-os/sample-data.md` | **Lines 13-47:** Enhanced prerequisite check to handle edge case where section directory exists but spec.md is deleted. Added table showing all possible conditions and actions. |
-| `.claude/commands/design-os/export-product.md` | **Lines 5-11:** Added design note explaining why 15 steps is intentional. **Lines 61-91:** Added "Validate File Content (Not Just Existence)" section with content validation rules table. **Lines 1319-1336, 1385-1388, 1412, 1444-1449, 1464-1469:** Updated version regex patterns to handle version suffixes like v1.2.0-section. |
-| `src/components/SectionPage.tsx` | **Lines 77-83:** Fixed array index logic confusion. Added `hasValidIndex` check and clarifying comments to properly handle currentIndex === -1 case. |
-| `src/lib/section-loader.ts` | **Lines 142-158:** Improved shell config regex to prioritize Configuration section, reducing false positives from code blocks or prose. Added fallback for backwards compatibility. |
-| `src/shell/navigation-config.ts` | **Lines 1-25:** Added comprehensive JSDoc explaining why the file returns empty data, what happens after /design-shell, and how to fix empty navigation. **Lines 47-67:** Enhanced getNavigationCategories function JSDoc explaining the stub pattern. |
+| File                                              | Modification                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/data-model.md`        | **Lines 151-177:** Added "Plural Entity Names (Why Singular is Required)" section explaining what happens when users use plural entity names, with transformation table and guidance for /sample-data.                                                                                                                                |
+| `.claude/commands/design-os/screenshot-design.md` | **Lines 82-107:** Added "Viewport Selection Guidance" section with decision guide explaining when to use Desktop (default), Mobile, or Tablet viewports.                                                                                                                                                                              |
+| `.claude/commands/design-os/sample-data.md`       | **Lines 13-47:** Enhanced prerequisite check to handle edge case where section directory exists but spec.md is deleted. Added table showing all possible conditions and actions.                                                                                                                                                      |
+| `.claude/commands/design-os/export-product.md`    | **Lines 5-11:** Added design note explaining why 15 steps is intentional. **Lines 61-91:** Added "Validate File Content (Not Just Existence)" section with content validation rules table. **Lines 1319-1336, 1385-1388, 1412, 1444-1449, 1464-1469:** Updated version regex patterns to handle version suffixes like v1.2.0-section. |
+| `src/components/SectionPage.tsx`                  | **Lines 77-83:** Fixed array index logic confusion. Added `hasValidIndex` check and clarifying comments to properly handle currentIndex === -1 case.                                                                                                                                                                                  |
+| `src/lib/section-loader.ts`                       | **Lines 142-158:** Improved shell config regex to prioritize Configuration section, reducing false positives from code blocks or prose. Added fallback for backwards compatibility.                                                                                                                                                   |
+| `src/shell/navigation-config.ts`                  | **Lines 1-25:** Added comprehensive JSDoc explaining why the file returns empty data, what happens after /design-shell, and how to fix empty navigation. **Lines 47-67:** Enhanced getNavigationCategories function JSDoc explaining the stub pattern.                                                                                |
 
 ### Issues Addressed (from analysis plan)
 
-| Issue # | Title | Resolution |
-|---------|-------|------------|
-| P3-38 | Entity Naming Flexibility Undefined | Added documentation explaining singular requirement and what happens with plural names |
-| P3-39 | Screenshot Viewport Selection Guidance Missing | Added decision guide for Desktop/Mobile/Tablet viewport selection |
-| P3-40 | Empty Section Directory Behavior | Added handling for directory-exists-but-spec-missing edge case |
-| P3-41 | File Content Validation Missing | Added content validation rules table for critical files |
-| P3-42 | Version Comment Regex Too Strict | Updated regex patterns to handle v1.2.0-section style versions |
-| P3-43 | Excessive Step Count in Export | Added design note explaining why 15 steps is intentional |
-| P3-44 | Array Index Logic Confusion | Fixed currentIndex === -1 handling with hasValidIndex check |
-| P3-45 | Shell Config Regex Too Permissive | Improved regex to prioritize Configuration section match |
-| P3-46 | Navigation Config Placeholder | Added comprehensive JSDoc explaining empty array behavior |
+| Issue # | Title                                          | Resolution                                                                             |
+| ------- | ---------------------------------------------- | -------------------------------------------------------------------------------------- |
+| P3-38   | Entity Naming Flexibility Undefined            | Added documentation explaining singular requirement and what happens with plural names |
+| P3-39   | Screenshot Viewport Selection Guidance Missing | Added decision guide for Desktop/Mobile/Tablet viewport selection                      |
+| P3-40   | Empty Section Directory Behavior               | Added handling for directory-exists-but-spec-missing edge case                         |
+| P3-41   | File Content Validation Missing                | Added content validation rules table for critical files                                |
+| P3-42   | Version Comment Regex Too Strict               | Updated regex patterns to handle v1.2.0-section style versions                         |
+| P3-43   | Excessive Step Count in Export                 | Added design note explaining why 15 steps is intentional                               |
+| P3-44   | Array Index Logic Confusion                    | Fixed currentIndex === -1 handling with hasValidIndex check                            |
+| P3-45   | Shell Config Regex Too Permissive              | Improved regex to prioritize Configuration section match                               |
+| P3-46   | Navigation Config Placeholder                  | Added comprehensive JSDoc explaining empty array behavior                              |
 
 ### Statistics
 
@@ -1008,23 +1177,23 @@ Implementation of remaining MEDIUM priority (P2) fixes from the analysis plan. T
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `src/components/ScreenDesignPage.tsx` | **Line 195:** Changed iframe title from generic "Screen Design Preview" to descriptive `${section?.title \|\| sectionId} - ${screenDesignName} Screen Design`. **Lines 283-298:** Fixed ShellComponentProps interface to match NavigationCategory type structure (nested items array). |
-| `src/lib/section-loader.ts` | **Lines 199-229:** Enhanced `loadScreenDesignComponent()` with DEV-mode logging that shows the expected path and lists available paths for the section when a component is not found. |
+| File                                           | Modification                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/components/ScreenDesignPage.tsx`          | **Line 195:** Changed iframe title from generic "Screen Design Preview" to descriptive `${section?.title \|\| sectionId} - ${screenDesignName} Screen Design`. **Lines 283-298:** Fixed ShellComponentProps interface to match NavigationCategory type structure (nested items array).                                                                                                                                |
+| `src/lib/section-loader.ts`                    | **Lines 199-229:** Enhanced `loadScreenDesignComponent()` with DEV-mode logging that shows the expected path and lists available paths for the section when a component is not found.                                                                                                                                                                                                                                 |
 | `.claude/commands/design-os/export-product.md` | **Lines 1230-1270:** Rewrote "Template Assembly Algorithm" from mixed pseudo-code to clear numbered steps with explicit input/output documentation. **Lines 684-698:** Added "Preview Wrappers are NOT Exported" section with table explaining what files to copy vs exclude. **Lines 792-817:** Expanded "Handling Type Conflicts" with decision table and explicit fallback steps when no global data model exists. |
 
 ### Issues Addressed (from analysis plan)
 
-| Issue # | Title | Resolution |
-|---------|-------|------------|
-| P2-31 | Iframe Title Not Descriptive | Changed title to include section name and screen design name |
-| P2-32 | Missing Import Path Validation at Runtime | Added DEV-mode console.warn with expected path and available alternatives |
-| P2-33 | README.md References Wrong Line Numbers | Already fixed in P0-2 (verified Step 14 references are correct) |
-| P2-34 | Pseudo-Code Algorithm Not Executable | Rewrote as numbered steps with clear input/output documentation |
-| P2-35 | Preview Wrappers Not Explicitly Excluded in Export | Added explicit table and warning about preview wrappers |
-| P2-36 | Data Model Consolidation Conflict Resolution Unclear | Added decision table and step-by-step fallback logic |
-| P2-37 | Error Boundary Missing în Router | Already addressed in P3-36 (ERROR BOUNDARY NOTE exists) |
+| Issue # | Title                                                | Resolution                                                                |
+| ------- | ---------------------------------------------------- | ------------------------------------------------------------------------- |
+| P2-31   | Iframe Title Not Descriptive                         | Changed title to include section name and screen design name              |
+| P2-32   | Missing Import Path Validation at Runtime            | Added DEV-mode console.warn with expected path and available alternatives |
+| P2-33   | README.md References Wrong Line Numbers              | Already fixed in P0-2 (verified Step 14 references are correct)           |
+| P2-34   | Pseudo-Code Algorithm Not Executable                 | Rewrote as numbered steps with clear input/output documentation           |
+| P2-35   | Preview Wrappers Not Explicitly Excluded in Export   | Added explicit table and warning about preview wrappers                   |
+| P2-36   | Data Model Consolidation Conflict Resolution Unclear | Added decision table and step-by-step fallback logic                      |
+| P2-37   | Error Boundary Missing în Router                     | Already addressed in P3-36 (ERROR BOUNDARY NOTE exists)                   |
 
 ### Statistics
 
@@ -1053,36 +1222,36 @@ Implementation of all 13 HIGH priority (P1) fixes from the analysis plan. These 
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/design-shell.md` | **Lines 199-231:** Added "Multi-View Navigation Routing" section documenting default route behavior, view-specific routes, and navigation patterns between views. |
-| `.claude/commands/design-os/shape-section.md` | **Lines 219-222:** Added "Default View (Routing)" section explaining that the first view in spec loads by default and how to order views. |
-| `.claude/commands/design-os/design-screen.md` | **Lines 146-151:** Added "Default View Routing" section explaining default view loading and naming conventions. |
-| `.claude/commands/design-os/data-model.md` | **Lines 151-183:** Added "Entity Naming Validation" section with PascalCase rules, valid/invalid examples, and explanation of why consistent naming matters for /sample-data parsing. |
-| `.claude/commands/design-os/export-product.md` | **Lines 601-623:** Extended import validation patterns to include dynamic imports (`import('...')`) and CommonJS (`require(...)`). **Lines 681-701:** Added "Import Path Transformation Table" with complete transformation rules for all import types. **Lines 52-53:** Added SKILL.md to required prerequisites. |
-| `.claude/templates/design-os/README.md` | **Lines 69-84:** Added "Clarifying Questions: Common vs Section" section documenting the different purposes and when to use each template type. |
-| `.claude/templates/design-os/section/tdd-workflow.md` | **Line 1:** Changed version from `v1.1.0` to `v1.2.0-section` to differentiate from common/tdd-workflow.md (v1.1.0). |
-| `src/lib/shell-loader.ts` | **Lines 112-121:** Removed ShellWrapper.tsx fallback in loadAppShell() function. Now loads AppShell.tsx directly as per design-shell.md specifications. Added JSDoc explaining the change. |
-| `src/components/ScreenDesignPage.tsx` | **Lines 278-290:** Replaced broad `Record<string, unknown>` type assertion with specific `ShellComponentProps` interface including children, categories, user, onNavigate, and onLogout props. |
-| `src/lib/product-loader.ts` | **Lines 100-104, 152-156:** Added DEV-mode error logging to parseProductOverview() and parseProductRoadmap() catch blocks for easier debugging. |
+| File                                                  | Modification                                                                                                                                                                                                                                                                                                       |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `.claude/commands/design-os/design-shell.md`          | **Lines 199-231:** Added "Multi-View Navigation Routing" section documenting default route behavior, view-specific routes, and navigation patterns between views.                                                                                                                                                  |
+| `.claude/commands/design-os/shape-section.md`         | **Lines 219-222:** Added "Default View (Routing)" section explaining that the first view in spec loads by default and how to order views.                                                                                                                                                                          |
+| `.claude/commands/design-os/design-screen.md`         | **Lines 146-151:** Added "Default View Routing" section explaining default view loading and naming conventions.                                                                                                                                                                                                    |
+| `.claude/commands/design-os/data-model.md`            | **Lines 151-183:** Added "Entity Naming Validation" section with PascalCase rules, valid/invalid examples, and explanation of why consistent naming matters for /sample-data parsing.                                                                                                                              |
+| `.claude/commands/design-os/export-product.md`        | **Lines 601-623:** Extended import validation patterns to include dynamic imports (`import('...')`) and CommonJS (`require(...)`). **Lines 681-701:** Added "Import Path Transformation Table" with complete transformation rules for all import types. **Lines 52-53:** Added SKILL.md to required prerequisites. |
+| `.claude/templates/design-os/README.md`               | **Lines 69-84:** Added "Clarifying Questions: Common vs Section" section documenting the different purposes and when to use each template type.                                                                                                                                                                    |
+| `.claude/templates/design-os/section/tdd-workflow.md` | **Line 1:** Changed version from `v1.1.0` to `v1.2.0-section` to differentiate from common/tdd-workflow.md (v1.1.0).                                                                                                                                                                                               |
+| `src/lib/shell-loader.ts`                             | **Lines 112-121:** Removed ShellWrapper.tsx fallback in loadAppShell() function. Now loads AppShell.tsx directly as per design-shell.md specifications. Added JSDoc explaining the change.                                                                                                                         |
+| `src/components/ScreenDesignPage.tsx`                 | **Lines 278-290:** Replaced broad `Record<string, unknown>` type assertion with specific `ShellComponentProps` interface including children, categories, user, onNavigate, and onLogout props.                                                                                                                     |
+| `src/lib/product-loader.ts`                           | **Lines 100-104, 152-156:** Added DEV-mode error logging to parseProductOverview() and parseProductRoadmap() catch blocks for easier debugging.                                                                                                                                                                    |
 
 ### Issues Addressed (from analysis plan)
 
-| Issue # | Title | Resolution |
-|---------|-------|------------|
-| P1-7 | Multi-View Navigation Routing Nedocumentat | Added routing documentation to design-shell.md, shape-section.md, and design-screen.md |
-| P1-8 | Entity Naming Extraction Fragil | Added entity naming validation rules to data-model.md with examples |
-| P1-9 | Component Validation Missing Dynamic Imports | Extended validation patterns for `import()` and `require()` in export-product.md |
-| P1-10 | Directory Validation Inconsistentă | Verified existing pattern in agents.md covers all commands |
-| P1-11 | Duplicate Clarifying Questions Content | Added documentation to README.md explaining common vs section clarifying-questions |
-| P1-12 | TDD Workflow Same Version Different Content | Changed section/tdd-workflow.md to v1.2.0-section |
-| P1-13 | Import Path Transformation Incomplet Documentat | Added complete transformation table to export-product.md |
-| P1-14 | Shell Component Naming Confusion | Removed ShellWrapper fallback, now only loads AppShell.tsx |
-| P1-15 | Type Assertion Too Broad | Replaced Record<string, unknown> with ShellComponentProps interface |
-| P1-16 | Shell Props Pattern Inconsistent | Verified design-shell.md already uses separate interfaces (AppShellProps, MainNavProps, UserMenuProps) |
-| P1-17 | Skill File Not Verified at Export Start | Added SKILL.md to prerequisite check list in export-product.md Step 1 |
-| P1-18 | Section ID Rules Missing in product-roadmap | Verified rules already exist at line 199 in product-roadmap.md |
-| P1-19 | Parse Functions Silent Failure | Added DEV-mode console.error() logging to parse functions |
+| Issue # | Title                                           | Resolution                                                                                             |
+| ------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| P1-7    | Multi-View Navigation Routing Nedocumentat      | Added routing documentation to design-shell.md, shape-section.md, and design-screen.md                 |
+| P1-8    | Entity Naming Extraction Fragil                 | Added entity naming validation rules to data-model.md with examples                                    |
+| P1-9    | Component Validation Missing Dynamic Imports    | Extended validation patterns for `import()` and `require()` in export-product.md                       |
+| P1-10   | Directory Validation Inconsistentă              | Verified existing pattern in agents.md covers all commands                                             |
+| P1-11   | Duplicate Clarifying Questions Content          | Added documentation to README.md explaining common vs section clarifying-questions                     |
+| P1-12   | TDD Workflow Same Version Different Content     | Changed section/tdd-workflow.md to v1.2.0-section                                                      |
+| P1-13   | Import Path Transformation Incomplet Documentat | Added complete transformation table to export-product.md                                               |
+| P1-14   | Shell Component Naming Confusion                | Removed ShellWrapper fallback, now only loads AppShell.tsx                                             |
+| P1-15   | Type Assertion Too Broad                        | Replaced Record<string, unknown> with ShellComponentProps interface                                    |
+| P1-16   | Shell Props Pattern Inconsistent                | Verified design-shell.md already uses separate interfaces (AppShellProps, MainNavProps, UserMenuProps) |
+| P1-17   | Skill File Not Verified at Export Start         | Added SKILL.md to prerequisite check list in export-product.md Step 1                                  |
+| P1-18   | Section ID Rules Missing in product-roadmap     | Verified rules already exist at line 199 in product-roadmap.md                                         |
+| P1-19   | Parse Functions Silent Failure                  | Added DEV-mode console.error() logging to parse functions                                              |
 
 ### Statistics
 
@@ -1112,26 +1281,26 @@ Implementation of all 6 CRITICAL priority (P0) fixes from the analysis plan. The
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/design-shell.md` | **Lines 100-132:** Enhanced skill file validation to check for meaningful content (>100 characters after frontmatter), not just file existence. Added bash validation script with content length check. |
-| `.claude/commands/design-os/design-screen.md` | **Lines 152-184:** Enhanced skill file validation to check for meaningful content (>100 characters after frontmatter), not just file existence. Added bash validation script with content length check. |
-| `.claude/templates/design-os/README.md` | **Lines 116, 121, 130:** Fixed step numbering references from "Step 13" to "Step 14" to match actual export-product.md structure. |
-| `.claude/templates/design-os/one-shot/preamble.md` | **Full rewrite to v1.1.0:** Added `[Product Name]` placeholder in title and intro text. Product name is now substituted during export. |
-| `.claude/commands/design-os/shape-section.md` | **Lines 114-129:** Added handling for "Components only (unusual)" shell state. Now reports all 4 possible shell states with actionable guidance. |
-| `.claude/commands/design-os/sample-data.md` | **Lines 215-249:** Rewrote retry loop section from pseudo-code to declarative agent instructions. Clarified that the AI agent tracks retry attempts during execution. |
-| `.claude/commands/design-os/export-product.md` | **Lines 1332-1391:** Completely rewrote validation section to differentiate one-shot vs section-prompt validation. Added clear table explaining which variables should be substituted vs remain. |
+| File                                               | Modification                                                                                                                                                                                            |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-shell.md`       | **Lines 100-132:** Enhanced skill file validation to check for meaningful content (>100 characters after frontmatter), not just file existence. Added bash validation script with content length check. |
+| `.claude/commands/design-os/design-screen.md`      | **Lines 152-184:** Enhanced skill file validation to check for meaningful content (>100 characters after frontmatter), not just file existence. Added bash validation script with content length check. |
+| `.claude/templates/design-os/README.md`            | **Lines 116, 121, 130:** Fixed step numbering references from "Step 13" to "Step 14" to match actual export-product.md structure.                                                                       |
+| `.claude/templates/design-os/one-shot/preamble.md` | **Full rewrite to v1.1.0:** Added `[Product Name]` placeholder in title and intro text. Product name is now substituted during export.                                                                  |
+| `.claude/commands/design-os/shape-section.md`      | **Lines 114-129:** Added handling for "Components only (unusual)" shell state. Now reports all 4 possible shell states with actionable guidance.                                                        |
+| `.claude/commands/design-os/sample-data.md`        | **Lines 215-249:** Rewrote retry loop section from pseudo-code to declarative agent instructions. Clarified that the AI agent tracks retry attempts during execution.                                   |
+| `.claude/commands/design-os/export-product.md`     | **Lines 1332-1391:** Completely rewrote validation section to differentiate one-shot vs section-prompt validation. Added clear table explaining which variables should be substituted vs remain.        |
 
 ### Issues Addressed (from analysis plan)
 
-| Issue # | Title | Resolution |
-|---------|-------|------------|
-| P0-1 | Skill File Check Nu Verifică Conținut | Added content validation (>100 chars after frontmatter) to both design-shell.md and design-screen.md |
-| P0-2 | Step Numbering Confusion în export-product | Fixed 3 references in templates README.md from "Step 13" to "Step 14" |
-| P0-3 | Missing Product Name Placeholder în One-Shot Preamble | Added `[Product Name]` placeholder to preamble title and intro |
-| P0-4 | Shell Prerequisite Check Incomplet | Added handling for "Components exist but no spec" case with actionable guidance |
-| P0-5 | Retry Loop State Management Pseudo-Code | Rewrote as declarative agent instructions with clear flow diagram |
-| P0-6 | Validation Inconsistentă One-Shot vs Section-Prompt | Added differentiated validation with clear table explaining substitution rules |
+| Issue # | Title                                                 | Resolution                                                                                           |
+| ------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| P0-1    | Skill File Check Nu Verifică Conținut                 | Added content validation (>100 chars after frontmatter) to both design-shell.md and design-screen.md |
+| P0-2    | Step Numbering Confusion în export-product            | Fixed 3 references in templates README.md from "Step 13" to "Step 14"                                |
+| P0-3    | Missing Product Name Placeholder în One-Shot Preamble | Added `[Product Name]` placeholder to preamble title and intro                                       |
+| P0-4    | Shell Prerequisite Check Incomplet                    | Added handling for "Components exist but no spec" case with actionable guidance                      |
+| P0-5    | Retry Loop State Management Pseudo-Code               | Rewrote as declarative agent instructions with clear flow diagram                                    |
+| P0-6    | Validation Inconsistentă One-Shot vs Section-Prompt   | Added differentiated validation with clear table explaining substitution rules                       |
 
 ### Statistics
 
@@ -1160,26 +1329,26 @@ Implementation of all 8 LOW priority (P3) fixes from fix-plan.md. These fixes im
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `agents.md` | **Lines 438-446:** Added ".gitkeep Convention" section explaining empty directory placeholders. **Lines 209-231:** Added "Tailwind v4 Specific Patterns" section with v3→v4 migration table and key behaviors. **Lines 235-272:** Added "Import Path Aliases" section documenting `@/` alias pattern with usage examples and consistency rules. |
-| `src/lib/section-loader.ts` | **Lines 25-37:** Improved type safety for `screenDesignModules` with `ComponentType<Record<string, unknown>>` and added JSDoc explaining why. **Lines 199-212:** Updated `loadScreenDesignComponent` return type to match. |
-| `src/components/ThemeToggle.tsx` | **Lines 1-25:** Added comprehensive JSDoc documenting theme persistence system, localStorage key usage, theme cycle, and integration with screen design iframes. |
-| `src/components/ui/skeleton.tsx` | **Lines 1-29:** Added JSDoc documenting standardized loading state patterns (Suspense, Skeleton, Spinners), where they're used, and consistency guidelines. |
-| `src/lib/router.tsx` | **Lines 31-45:** Added "Error Boundary Note" section documenting current gaps and guidance for adding error boundaries if needed in the future. |
+| File                             | Modification                                                                                                                                                                                                                                                                                                                                    |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agents.md`                      | **Lines 438-446:** Added ".gitkeep Convention" section explaining empty directory placeholders. **Lines 209-231:** Added "Tailwind v4 Specific Patterns" section with v3→v4 migration table and key behaviors. **Lines 235-272:** Added "Import Path Aliases" section documenting `@/` alias pattern with usage examples and consistency rules. |
+| `src/lib/section-loader.ts`      | **Lines 25-37:** Improved type safety for `screenDesignModules` with `ComponentType<Record<string, unknown>>` and added JSDoc explaining why. **Lines 199-212:** Updated `loadScreenDesignComponent` return type to match.                                                                                                                      |
+| `src/components/ThemeToggle.tsx` | **Lines 1-25:** Added comprehensive JSDoc documenting theme persistence system, localStorage key usage, theme cycle, and integration with screen design iframes.                                                                                                                                                                                |
+| `src/components/ui/skeleton.tsx` | **Lines 1-29:** Added JSDoc documenting standardized loading state patterns (Suspense, Skeleton, Spinners), where they're used, and consistency guidelines.                                                                                                                                                                                     |
+| `src/lib/router.tsx`             | **Lines 31-45:** Added "Error Boundary Note" section documenting current gaps and guidance for adding error boundaries if needed in the future.                                                                                                                                                                                                 |
 
 ### Issues Addressed (from fix-plan.md)
 
-| Issue # | Title | Resolution |
-|---------|-------|------------|
-| P3-31 | agents.md Step Number Reference Off | Verified correct — Step 5 references in agents.md match actual command files |
-| P3-32 | Import.meta.glob Type Safety | Added `ComponentType<Record<string, unknown>>` with explanatory JSDoc |
-| P3-33 | .gitkeep Files Throughout | Added ".gitkeep Convention" section to agents.md |
-| P3-34 | Theme Syncing Documentation | Added comprehensive JSDoc to ThemeToggle.tsx |
-| P3-35 | Loading States Inconsistency | Added standardized loading pattern documentation to skeleton.tsx |
-| P3-36 | Error Boundary Coverage | Added Error Boundary Note to router.tsx with implementation guidance |
-| P3-37 | Tailwind v4 Documentation | Added v3→v4 migration table and key behaviors to agents.md |
-| P3-38 | Import Path Aliases | Added @/ alias documentation with examples and rules to agents.md |
+| Issue # | Title                               | Resolution                                                                   |
+| ------- | ----------------------------------- | ---------------------------------------------------------------------------- |
+| P3-31   | agents.md Step Number Reference Off | Verified correct — Step 5 references in agents.md match actual command files |
+| P3-32   | Import.meta.glob Type Safety        | Added `ComponentType<Record<string, unknown>>` with explanatory JSDoc        |
+| P3-33   | .gitkeep Files Throughout           | Added ".gitkeep Convention" section to agents.md                             |
+| P3-34   | Theme Syncing Documentation         | Added comprehensive JSDoc to ThemeToggle.tsx                                 |
+| P3-35   | Loading States Inconsistency        | Added standardized loading pattern documentation to skeleton.tsx             |
+| P3-36   | Error Boundary Coverage             | Added Error Boundary Note to router.tsx with implementation guidance         |
+| P3-37   | Tailwind v4 Documentation           | Added v3→v4 migration table and key behaviors to agents.md                   |
+| P3-38   | Import Path Aliases                 | Added @/ alias documentation with examples and rules to agents.md            |
 
 ### Statistics
 
@@ -1211,33 +1380,33 @@ Implementation of all 11 MEDIUM priority (P2) fixes from fix-plan.md. These fixe
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/data-model.md` | **Lines 163-164:** Added optional relationship patterns (`optionally belongs to`, `optionally has one`) to the relationship patterns table. |
-| `.claude/commands/design-os/design-tokens.md` | **Line 260:** Clarified mono font handling — required in JSON with `IBM Plex Mono` as default if user skips selection. |
-| `.claude/commands/design-os/design-shell.md` | **Lines 147-149:** Standardized shell spec header to `# [Product Name] Shell Specification` with note to replace with actual product name. |
-| `.claude/commands/design-os/export-product.md` | **Lines 1863-1901:** Added screenshot filename validation (Step 2.5) with naming convention rules, valid/invalid examples, and bash validation script. **Lines 1332-1356:** Added post-assembly validation commands with specific grep patterns for version comments and unsubstituted variables. |
-| `.claude/commands/design-os/product-roadmap.md` | **Lines 222-246:** Added "Completion Confirmation" section with summary template and next steps guidance. |
-| `agents.md` | **Lines 294-297:** Documented that export-product copies frontend-design skill to `design-guidance/frontend-design.md`. **Lines 141-158:** Added "Components vs. Preview Wrappers" section with table explaining exportable components vs preview wrappers and example structure. |
-| `.claude/templates/design-os/README.md` | **Lines 56-67:** Added "What Section-Specific Means" table explaining differences between section templates and one-shot templates. |
-| `src/components/ScreenDesignPage.tsx` | **Lines 165-186:** Added comprehensive JSDoc comment explaining iframe architecture: CSS isolation, theme syncing, shell integration, and screenshot capture. |
-| `src/lib/router.tsx` | **Lines 11-30:** Added documentation comment explaining route patterns and their references in command files, ensuring future changes stay in sync. |
+| File                                            | Modification                                                                                                                                                                                                                                                                                      |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/data-model.md`      | **Lines 163-164:** Added optional relationship patterns (`optionally belongs to`, `optionally has one`) to the relationship patterns table.                                                                                                                                                       |
+| `.claude/commands/design-os/design-tokens.md`   | **Line 260:** Clarified mono font handling — required in JSON with `IBM Plex Mono` as default if user skips selection.                                                                                                                                                                            |
+| `.claude/commands/design-os/design-shell.md`    | **Lines 147-149:** Standardized shell spec header to `# [Product Name] Shell Specification` with note to replace with actual product name.                                                                                                                                                        |
+| `.claude/commands/design-os/export-product.md`  | **Lines 1863-1901:** Added screenshot filename validation (Step 2.5) with naming convention rules, valid/invalid examples, and bash validation script. **Lines 1332-1356:** Added post-assembly validation commands with specific grep patterns for version comments and unsubstituted variables. |
+| `.claude/commands/design-os/product-roadmap.md` | **Lines 222-246:** Added "Completion Confirmation" section with summary template and next steps guidance.                                                                                                                                                                                         |
+| `agents.md`                                     | **Lines 294-297:** Documented that export-product copies frontend-design skill to `design-guidance/frontend-design.md`. **Lines 141-158:** Added "Components vs. Preview Wrappers" section with table explaining exportable components vs preview wrappers and example structure.                 |
+| `.claude/templates/design-os/README.md`         | **Lines 56-67:** Added "What Section-Specific Means" table explaining differences between section templates and one-shot templates.                                                                                                                                                               |
+| `src/components/ScreenDesignPage.tsx`           | **Lines 165-186:** Added comprehensive JSDoc comment explaining iframe architecture: CSS isolation, theme syncing, shell integration, and screenshot capture.                                                                                                                                     |
+| `src/lib/router.tsx`                            | **Lines 11-30:** Added documentation comment explaining route patterns and their references in command files, ensuring future changes stay in sync.                                                                                                                                               |
 
 ### Issues Addressed (from fix-plan.md)
 
-| Issue # | Title | Resolution |
-|---------|-------|------------|
-| P2-20 | Optional Relationships Not in Pattern Table | Added `optionally belongs to` and `optionally has one` to table |
-| P2-21 | Mono Font Optional vs. Required Contradiction | Clarified required in JSON with default fallback |
-| P2-22 | Shell Spec Header Format Inconsistent | Standardized to `# [Product Name] Shell Specification` |
-| P2-23 | Screenshot Filename Validation Missing | Added Step 2.5 with naming convention validation |
-| P2-24 | Product-Roadmap Missing End State | Added Completion Confirmation section |
-| P2-25 | Version Comment Stripping Risk | Added post-assembly validation commands with grep |
-| P2-26 | Skill Reference Documentation Gap | Documented skill copy in agents.md Export section |
-| P2-27 | Template Assembly Order Documentation | Added table explaining section-specific template differences |
-| P2-28 | agents.md File Structure Minor Gap | Added Components vs. Preview Wrappers section |
-| P2-29 | ScreenDesignPage Iframe Usage Undocumented | Added comprehensive JSDoc explaining iframe architecture |
-| P2-30 | Router Route Verification Needed | Added documentation linking routes to command files |
+| Issue # | Title                                         | Resolution                                                      |
+| ------- | --------------------------------------------- | --------------------------------------------------------------- |
+| P2-20   | Optional Relationships Not in Pattern Table   | Added `optionally belongs to` and `optionally has one` to table |
+| P2-21   | Mono Font Optional vs. Required Contradiction | Clarified required in JSON with default fallback                |
+| P2-22   | Shell Spec Header Format Inconsistent         | Standardized to `# [Product Name] Shell Specification`          |
+| P2-23   | Screenshot Filename Validation Missing        | Added Step 2.5 with naming convention validation                |
+| P2-24   | Product-Roadmap Missing End State             | Added Completion Confirmation section                           |
+| P2-25   | Version Comment Stripping Risk                | Added post-assembly validation commands with grep               |
+| P2-26   | Skill Reference Documentation Gap             | Documented skill copy in agents.md Export section               |
+| P2-27   | Template Assembly Order Documentation         | Added table explaining section-specific template differences    |
+| P2-28   | agents.md File Structure Minor Gap            | Added Components vs. Preview Wrappers section                   |
+| P2-29   | ScreenDesignPage Iframe Usage Undocumented    | Added comprehensive JSDoc explaining iframe architecture        |
+| P2-30   | Router Route Verification Needed              | Added documentation linking routes to command files             |
 
 ### Statistics
 
@@ -1271,37 +1440,37 @@ Implementation of all 12 HIGH priority (P1) fixes from fix-plan.md. These fixes 
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/product-roadmap.md` | **Lines 184-206:** Added "Validate section IDs conform to rules" step with bash validation script and reference to Section ID Rules. Ensures manually renamed sections follow consistent naming. |
-| `.claude/commands/design-os/design-tokens.md` | **Lines 347-382:** Added comprehensive "Font Weight Validation" section with UI element weight table, validation process, common issues table, and minimum recommended weights. |
-| `.claude/commands/design-os/sample-data.md` | **Lines 311-363:** Added "Bidirectional Naming Validation" section ensuring consistency between data-model.md, data.json, and types.ts with transformation tables and mismatch reporting. |
-| `.claude/commands/design-os/design-shell.md` | **Lines 201-224:** Added "Navigation Href Format" section defining `/sections/[section-id]` pattern with route type table and example navigation items. |
-| `.claude/commands/design-os/design-screen.md` | **Lines 73-108:** Added "Check for Existing Views" section that lists existing components before prompting, marks views as CREATED/PENDING, and skips completed views. **Lines 460-465:** Added "Where do Props come from?" clarification explaining types.ts contains both entity types and Props interfaces. |
-| `.claude/commands/design-os/export-product.md` | **Lines 215-232:** Added "Preamble Handling for One-Shot vs Incremental" section clarifying that one-shot has preamble once at top, while each incremental file has its own preamble. |
-| `.claude/commands/design-os/screenshot-design.md` | **Lines 57-66:** Added "Route Verification" section confirming URL pattern matches router.tsx and providing troubleshooting steps for 404/blank screens. |
-| `.claude/commands/design-os/shape-section.md` | **Lines 88-118:** Enhanced shell check to be comprehensive: checks spec.md + AppShell.tsx + ShellPreview.tsx, provides status table for different combinations, and reports shell status to user. |
-| `.claude/commands/design-os/product-vision.md` | **Lines 67-86:** Added "Product Name Validation Criteria" with length rules (2-50 chars), generic names to reject list, and prompt for when user provides placeholder names. |
-| `.claude/templates/design-os/section/clarifying-questions.md` | **Full rewrite to v1.1.0:** Differentiated from common version by removing tech stack questions, adding section-specific permissions, state & navigation, and section-specific edge cases sections. Added note clarifying this is for section-specific implementation. |
-| `.claude/templates/design-os/common/tdd-workflow.md` | **Lines 2, 22-30:** Added usage comment, test categories table (unit/integration/E2E), and note clarifying this is for one-shot implementation. |
-| `.claude/templates/design-os/section/tdd-workflow.md` | **Lines 2, 22-30:** Added usage comment, test scope table with examples, and note clarifying this is for section-specific implementation. |
+| File                                                          | Modification                                                                                                                                                                                                                                                                                                   |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/product-roadmap.md`               | **Lines 184-206:** Added "Validate section IDs conform to rules" step with bash validation script and reference to Section ID Rules. Ensures manually renamed sections follow consistent naming.                                                                                                               |
+| `.claude/commands/design-os/design-tokens.md`                 | **Lines 347-382:** Added comprehensive "Font Weight Validation" section with UI element weight table, validation process, common issues table, and minimum recommended weights.                                                                                                                                |
+| `.claude/commands/design-os/sample-data.md`                   | **Lines 311-363:** Added "Bidirectional Naming Validation" section ensuring consistency between data-model.md, data.json, and types.ts with transformation tables and mismatch reporting.                                                                                                                      |
+| `.claude/commands/design-os/design-shell.md`                  | **Lines 201-224:** Added "Navigation Href Format" section defining `/sections/[section-id]` pattern with route type table and example navigation items.                                                                                                                                                        |
+| `.claude/commands/design-os/design-screen.md`                 | **Lines 73-108:** Added "Check for Existing Views" section that lists existing components before prompting, marks views as CREATED/PENDING, and skips completed views. **Lines 460-465:** Added "Where do Props come from?" clarification explaining types.ts contains both entity types and Props interfaces. |
+| `.claude/commands/design-os/export-product.md`                | **Lines 215-232:** Added "Preamble Handling for One-Shot vs Incremental" section clarifying that one-shot has preamble once at top, while each incremental file has its own preamble.                                                                                                                          |
+| `.claude/commands/design-os/screenshot-design.md`             | **Lines 57-66:** Added "Route Verification" section confirming URL pattern matches router.tsx and providing troubleshooting steps for 404/blank screens.                                                                                                                                                       |
+| `.claude/commands/design-os/shape-section.md`                 | **Lines 88-118:** Enhanced shell check to be comprehensive: checks spec.md + AppShell.tsx + ShellPreview.tsx, provides status table for different combinations, and reports shell status to user.                                                                                                              |
+| `.claude/commands/design-os/product-vision.md`                | **Lines 67-86:** Added "Product Name Validation Criteria" with length rules (2-50 chars), generic names to reject list, and prompt for when user provides placeholder names.                                                                                                                                   |
+| `.claude/templates/design-os/section/clarifying-questions.md` | **Full rewrite to v1.1.0:** Differentiated from common version by removing tech stack questions, adding section-specific permissions, state & navigation, and section-specific edge cases sections. Added note clarifying this is for section-specific implementation.                                         |
+| `.claude/templates/design-os/common/tdd-workflow.md`          | **Lines 2, 22-30:** Added usage comment, test categories table (unit/integration/E2E), and note clarifying this is for one-shot implementation.                                                                                                                                                                |
+| `.claude/templates/design-os/section/tdd-workflow.md`         | **Lines 2, 22-30:** Added usage comment, test scope table with examples, and note clarifying this is for section-specific implementation.                                                                                                                                                                      |
 
 ### Issues Addressed (from fix-plan.md)
 
-| Issue # | Title | Resolution |
-|---------|-------|------------|
-| P1-8 | Section ID Generation Rules Not Enforced in Roadmap | Added validation script in orphaned files section |
-| P1-9 | Font Weight Validation Missing | Added Font Weight Validation section with tables and process |
-| P1-10 | Entity Naming Bidirectional Check Missing | Added bidirectional validation between types.ts ↔ data.json |
-| P1-11 | Navigation Href Format Undefined | Defined pattern `/sections/[section-id]` with examples |
-| P1-12 | Multiple Views Tracking Missing | Added check for existing views before prompting |
-| P1-13 | Duplicate Template Content - clarifying-questions.md | Differentiated section version with unique sections |
-| P1-14 | Duplicate Template Content - tdd-workflow.md | Added usage comments and clarifying notes to both versions |
-| P1-15 | One-Shot vs. Incremental Preamble Confusion | Clarified preamble handling for each prompt type |
-| P1-16 | Screenshot Route Pattern Unverified | Added route verification and troubleshooting steps |
-| P1-17 | Re-Export Pattern Backwards | Clarified Props interfaces come from types.ts |
-| P1-18 | Shell Completeness Check Unreliable | Enhanced to check all 3 files with status table |
-| P1-19 | Product Name Validation Criteria Vague | Added criteria table and generic names rejection list |
+| Issue # | Title                                                | Resolution                                                   |
+| ------- | ---------------------------------------------------- | ------------------------------------------------------------ |
+| P1-8    | Section ID Generation Rules Not Enforced in Roadmap  | Added validation script in orphaned files section            |
+| P1-9    | Font Weight Validation Missing                       | Added Font Weight Validation section with tables and process |
+| P1-10   | Entity Naming Bidirectional Check Missing            | Added bidirectional validation between types.ts ↔ data.json  |
+| P1-11   | Navigation Href Format Undefined                     | Defined pattern `/sections/[section-id]` with examples       |
+| P1-12   | Multiple Views Tracking Missing                      | Added check for existing views before prompting              |
+| P1-13   | Duplicate Template Content - clarifying-questions.md | Differentiated section version with unique sections          |
+| P1-14   | Duplicate Template Content - tdd-workflow.md         | Added usage comments and clarifying notes to both versions   |
+| P1-15   | One-Shot vs. Incremental Preamble Confusion          | Clarified preamble handling for each prompt type             |
+| P1-16   | Screenshot Route Pattern Unverified                  | Added route verification and troubleshooting steps           |
+| P1-17   | Re-Export Pattern Backwards                          | Clarified Props interfaces come from types.ts                |
+| P1-18   | Shell Completeness Check Unreliable                  | Enhanced to check all 3 files with status table              |
+| P1-19   | Product Name Validation Criteria Vague               | Added criteria table and generic names rejection list        |
 
 ### Statistics
 
@@ -1334,27 +1503,27 @@ Implementation of 7 critical (P0) fixes from fix-plan.md to ensure template/comm
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
+| File                                           | Modification                                                                                                                                                                                                                                                                                                          |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `.claude/commands/design-os/export-product.md` | **Lines 1318-1611:** Replaced all emojis (✅, ❌, 📁, 🧪) with text equivalents ((CORRECT), (INCORRECT), [DONE], Files:, Tests:) to match template format. **Lines 1183-1221:** Added explicit pseudo-code algorithm for template assembly with regex patterns for version comment stripping and variable validation. |
-| `.claude/commands/design-os/sample-data.md` | **Lines 215-255:** Added retry loop state management pseudo-code and state diagram showing Step 5 → Step 6 → Step 7 flow with retry counter tracking. |
-| `.claude/commands/design-os/design-shell.md` | **Line 108:** Added `**END COMMAND**` blocking pattern after skill file validation failure. |
-| `.claude/commands/design-os/design-screen.md` | **Line 134:** Added `**END COMMAND**` blocking pattern after skill file validation failure. |
-| `src/lib/shell-loader.ts` | **Lines 92-98:** Wrapped console.log in `if (import.meta.env.DEV)` conditional. |
-| `src/components/ScreenDesignPage.tsx` | **Lines 211-287:** Wrapped 9 console statements (error, log, warn) in `if (import.meta.env.DEV)` conditionals. |
-| `agents.md` | **Lines 389-423:** Added "Template State (Boilerplate Directories)" section documenting intentionally empty directories, why they're empty, and helper functions that handle the empty state. |
+| `.claude/commands/design-os/sample-data.md`    | **Lines 215-255:** Added retry loop state management pseudo-code and state diagram showing Step 5 → Step 6 → Step 7 flow with retry counter tracking.                                                                                                                                                                 |
+| `.claude/commands/design-os/design-shell.md`   | **Line 108:** Added `**END COMMAND**` blocking pattern after skill file validation failure.                                                                                                                                                                                                                           |
+| `.claude/commands/design-os/design-screen.md`  | **Line 134:** Added `**END COMMAND**` blocking pattern after skill file validation failure.                                                                                                                                                                                                                           |
+| `src/lib/shell-loader.ts`                      | **Lines 92-98:** Wrapped console.log in `if (import.meta.env.DEV)` conditional.                                                                                                                                                                                                                                       |
+| `src/components/ScreenDesignPage.tsx`          | **Lines 211-287:** Wrapped 9 console statements (error, log, warn) in `if (import.meta.env.DEV)` conditionals.                                                                                                                                                                                                        |
+| `agents.md`                                    | **Lines 389-423:** Added "Template State (Boilerplate Directories)" section documenting intentionally empty directories, why they're empty, and helper functions that handle the empty state.                                                                                                                         |
 
 ### Issues Addressed (from fix-plan.md)
 
-| Issue # | Title | Resolution |
-|---------|-------|------------|
-| P0-1 | Template/Command Emoji Inconsistency | Replaced all emojis with text equivalents matching template format |
-| P0-2 | Export-Product Template Assembly Logic Undefined | Added explicit pseudo-code algorithm with regex patterns |
-| P0-3 | Sample-Data Validation Loop State Unclear | Added retry loop pseudo-code and state diagram |
-| P0-4 | Skill File Validation Non-Blocking | Added `**END COMMAND**` pattern to design-shell.md and design-screen.md |
-| P0-5 | Product Directory Empty (Template State) | Documented in agents.md as intentional design |
-| P0-6 | Shell Components Directory Empty (Template State) | Documented in agents.md as intentional design |
-| P0-7 | Console Debug Statements in Production Code | Wrapped in `if (import.meta.env.DEV)` conditionals |
+| Issue # | Title                                             | Resolution                                                              |
+| ------- | ------------------------------------------------- | ----------------------------------------------------------------------- |
+| P0-1    | Template/Command Emoji Inconsistency              | Replaced all emojis with text equivalents matching template format      |
+| P0-2    | Export-Product Template Assembly Logic Undefined  | Added explicit pseudo-code algorithm with regex patterns                |
+| P0-3    | Sample-Data Validation Loop State Unclear         | Added retry loop pseudo-code and state diagram                          |
+| P0-4    | Skill File Validation Non-Blocking                | Added `**END COMMAND**` pattern to design-shell.md and design-screen.md |
+| P0-5    | Product Directory Empty (Template State)          | Documented in agents.md as intentional design                           |
+| P0-6    | Shell Components Directory Empty (Template State) | Documented in agents.md as intentional design                           |
+| P0-7    | Console Debug Statements in Production Code       | Wrapped in `if (import.meta.env.DEV)` conditionals                      |
 
 ### Statistics
 
@@ -1384,25 +1553,26 @@ Implementation of a comprehensive Bash synchronization system for keeping multip
 
 ### New Files Created
 
-| File | Description |
-|------|-------------|
-| `VERSION` | Semantic version file for boilerplate (1.0.0) |
-| `scripts/sync.sh` | Main sync script (~650 lines) with argument parsing, file analysis, backup, restore, conflict handling, batch mode, and reporting |
-| `scripts/sync-config.sh` | Configuration file (~150 lines) defining SYNC_DIRS, SYNC_FILES, EXCLUDE_PATTERNS, and utility functions |
-| `scripts/sync-watch.sh` | Watch mode script (~120 lines) for auto-sync on file changes using fswatch (macOS) or inotifywait (Linux) |
-| `scripts/targets.txt.example` | Example batch targets file with usage instructions |
-| `scripts/logs/` | Directory for sync logs (gitignored) |
-| `scripts/logs/backups/` | Directory for file backups (gitignored) |
+| File                          | Description                                                                                                                       |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `VERSION`                     | Semantic version file for boilerplate (1.0.0)                                                                                     |
+| `scripts/sync.sh`             | Main sync script (~650 lines) with argument parsing, file analysis, backup, restore, conflict handling, batch mode, and reporting |
+| `scripts/sync-config.sh`      | Configuration file (~150 lines) defining SYNC_DIRS, SYNC_FILES, EXCLUDE_PATTERNS, and utility functions                           |
+| `scripts/sync-watch.sh`       | Watch mode script (~120 lines) for auto-sync on file changes using fswatch (macOS) or inotifywait (Linux)                         |
+| `scripts/targets.txt.example` | Example batch targets file with usage instructions                                                                                |
+| `scripts/logs/`               | Directory for sync logs (gitignored)                                                                                              |
+| `scripts/logs/backups/`       | Directory for file backups (gitignored)                                                                                           |
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
+| File         | Modification                                                                                         |
+| ------------ | ---------------------------------------------------------------------------------------------------- |
 | `.gitignore` | **Lines 32-35:** Added exclusions for `scripts/logs/`, `scripts/targets.txt`, and `scripts/backups/` |
 
 ### Features Implemented
 
 **Core Functionality:**
+
 - `--target <path>` — Sync to specific project (required for most operations)
 - `--batch` — Sync to all projects listed in `targets.txt`
 - `--dry-run` — Preview changes without modifying files
@@ -1410,26 +1580,31 @@ Implementation of a comprehensive Bash synchronization system for keeping multip
 - `--diff` — Show file differences during sync
 
 **Backup & Restore:**
+
 - `--backup` / `--no-backup` — Control automatic backup (default: on)
 - `--restore <id>` — Restore files from a specific backup
 - `--list-backups` — List available backups for a target
 
 **Conflict Handling:**
+
 - `--force` — Overwrite all conflicts without prompting
 - `--skip-conflicts` — Skip conflicting files (keep local versions)
 - Interactive mode with options: Overwrite, Skip, Diff, Overwrite All, Skip All
 
 **Maintenance:**
+
 - `--cleanup` — Remove old logs and backups based on retention settings
 - Auto-cleanup after sync (configurable)
 - Lock file prevents concurrent syncs on same target
 
 **Watch Mode (sync-watch.sh):**
+
 - Auto-sync on file changes using fswatch (macOS) or inotifywait (Linux)
 - Debounce delay prevents rapid re-syncs
 - Graceful shutdown with Ctrl+C
 
 **Reporting:**
+
 - Text logs in `scripts/logs/sync-*.log`
 - JSON logs in `scripts/logs/sync-*.json`
 - Manifest tracking in target (`.sync-manifest.json`)
@@ -1500,16 +1675,16 @@ None (all modifications integrated into existing files)
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/design-tokens.md` | **Lines 103-128:** Added Contrast Validation Checklist with WCAG AA requirements for light/dark mode. **Lines 263-278:** Added Tailwind Color Validation section listing valid colors and rejection patterns. **Lines 281-372:** Added Google Fonts Validation with common naming mistakes table and Font Matching Between CSS and Design Tokens section with configuration examples. |
-| `.claude/commands/design-os/shape-section.md` | **Lines 25-55:** Added Check for Existing Specification section with options to update, start fresh, or view current spec. Prevents accidental overwrites. |
-| `.claude/commands/design-os/data-model.md` | **Lines 151-194:** Added Entity Relationship Format section with standard patterns table (has many, has one, belongs to, linked through), valid/invalid examples, and bidirectional/optional relationship guidance. |
-| `.claude/commands/design-os/sample-data.md` | **Lines 367-450:** Added Complex Callback Scenarios section covering bulk operations, filtering/sorting, pagination, inline editing, drag-and-drop, and modal actions with TypeScript examples. |
-| `.claude/commands/design-os/design-screen.md` | **Lines 249-300:** Added Design Token Shade Guide with tables for primary, secondary, and neutral color shades in light/dark mode. **Lines 412-456:** Enhanced index.ts section with What to Export, Export Requirements, and When NOT to Export guidance including Props interface re-exports. |
-| `.claude/commands/design-os/design-shell.md` | **Lines 289-333:** Added Shell-Specific Design Token Shades section with navigation, user menu, and layout shade tables plus example styling. |
+| File                                           | Modification                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-tokens.md`  | **Lines 103-128:** Added Contrast Validation Checklist with WCAG AA requirements for light/dark mode. **Lines 263-278:** Added Tailwind Color Validation section listing valid colors and rejection patterns. **Lines 281-372:** Added Google Fonts Validation with common naming mistakes table and Font Matching Between CSS and Design Tokens section with configuration examples.                                                                                     |
+| `.claude/commands/design-os/shape-section.md`  | **Lines 25-55:** Added Check for Existing Specification section with options to update, start fresh, or view current spec. Prevents accidental overwrites.                                                                                                                                                                                                                                                                                                                |
+| `.claude/commands/design-os/data-model.md`     | **Lines 151-194:** Added Entity Relationship Format section with standard patterns table (has many, has one, belongs to, linked through), valid/invalid examples, and bidirectional/optional relationship guidance.                                                                                                                                                                                                                                                       |
+| `.claude/commands/design-os/sample-data.md`    | **Lines 367-450:** Added Complex Callback Scenarios section covering bulk operations, filtering/sorting, pagination, inline editing, drag-and-drop, and modal actions with TypeScript examples.                                                                                                                                                                                                                                                                           |
+| `.claude/commands/design-os/design-screen.md`  | **Lines 249-300:** Added Design Token Shade Guide with tables for primary, secondary, and neutral color shades in light/dark mode. **Lines 412-456:** Enhanced index.ts section with What to Export, Export Requirements, and When NOT to Export guidance including Props interface re-exports.                                                                                                                                                                           |
+| `.claude/commands/design-os/design-shell.md`   | **Lines 289-333:** Added Shell-Specific Design Token Shades section with navigation, user menu, and layout shade tables plus example styling.                                                                                                                                                                                                                                                                                                                             |
 | `.claude/commands/design-os/export-product.md` | **Lines 1245-1271:** Added Prompt Assembly Validation Checklist with 7 validation checks and common assembly issues. **Lines 1776-1821:** Added Screenshot Copying with Reporting section with bash scripts for tracking and summary output. **Lines 1841-1877:** Improved Zip Cleanup Behavior with explanation of replacement policy. **Lines 1926-1963:** Added Progress Reporting section with format examples for step progress, milestones, and completion summary. |
-| `.claude/commands/design-os/product-vision.md` | **Lines 120-149:** Added Validate File Creation section with bash checks for file existence, non-empty content, and heading format. |
+| `.claude/commands/design-os/product-vision.md` | **Lines 120-149:** Added Validate File Creation section with bash checks for file existence, non-empty content, and heading format.                                                                                                                                                                                                                                                                                                                                       |
 
 ### Fixes Applied
 
@@ -1566,6 +1741,7 @@ None (all modifications integrated into existing files)
 ### Verification
 
 All modifications validated for:
+
 - ✅ Clear documentation with tables and examples
 - ✅ Actionable validation checklists with specific items
 - ✅ Bash scripts for file validation and reporting
@@ -1576,6 +1752,7 @@ All modifications validated for:
 ### Production Status
 
 **After Implementation:**
+
 - **Validation:** COMPREHENSIVE (dark mode, colors, fonts, prompts, files)
 - **User Safety:** PROTECTED (overwrite prevention, progress reporting)
 - **Documentation:** COMPLETE (relationships, callbacks, shades, fonts)
@@ -1592,18 +1769,18 @@ Implementation of all 2 P1 (High) code change issues from BATCH 4 in fix-plan.md
 
 ### New Files Created
 
-| File | Description |
-|------|-------------|
-| `src/components/index.ts` | Barrel file re-exporting all application components (pages, cards, layout, navigation, UI helpers) |
+| File                         | Description                                                                                                                                                         |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/components/index.ts`    | Barrel file re-exporting all application components (pages, cards, layout, navigation, UI helpers)                                                                  |
 | `src/components/ui/index.ts` | Barrel file re-exporting all UI primitives (avatar, badge, button, card, collapsible, dialog, dropdown-menu, input, label, separator, sheet, skeleton, table, tabs) |
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `src/components/AppLayout.tsx` | **Line 86:** Added responsive padding to main content area: `px-6 py-12` → `px-4 sm:px-6 py-8 sm:py-12`. Mobile devices now have tighter padding. |
-| `src/components/SectionPage.tsx` | **Line 184:** Made screenshots grid responsive: `grid-cols-2` → `grid-cols-1 sm:grid-cols-2`. Screenshots stack vertically on mobile. |
-| `src/components/DesignPage.tsx` | **Lines 108, 131:** Made color and typography grids responsive: `grid-cols-3` → `grid-cols-1 sm:grid-cols-3`. Design tokens stack vertically on mobile. |
+| File                             | Modification                                                                                                                                            |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/components/AppLayout.tsx`   | **Line 86:** Added responsive padding to main content area: `px-6 py-12` → `px-4 sm:px-6 py-8 sm:py-12`. Mobile devices now have tighter padding.       |
+| `src/components/SectionPage.tsx` | **Line 184:** Made screenshots grid responsive: `grid-cols-2` → `grid-cols-1 sm:grid-cols-2`. Screenshots stack vertically on mobile.                   |
+| `src/components/DesignPage.tsx`  | **Lines 108, 131:** Made color and typography grids responsive: `grid-cols-3` → `grid-cols-1 sm:grid-cols-3`. Design tokens stack vertically on mobile. |
 
 ### Fixes Applied
 
@@ -1636,6 +1813,7 @@ Implementation of all 2 P1 (High) code change issues from BATCH 4 in fix-plan.md
 ### Verification
 
 All modifications validated for:
+
 - ✅ TypeScript compilation passes (`npx tsc --noEmit`)
 - ✅ Responsive breakpoints use standard Tailwind `sm:` prefix (640px)
 - ✅ All UI primitives exported from `src/components/ui/index.ts`
@@ -1645,6 +1823,7 @@ All modifications validated for:
 ### Production Status
 
 **After Implementation:**
+
 - **Responsive Design:** IMPROVED (main layouts adapt to mobile)
 - **Import Structure:** ORGANIZED (barrel files for both components and UI)
 - **Tree-Shaking:** ENABLED (centralized exports)
@@ -1664,16 +1843,16 @@ None (all modifications integrated into existing files)
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/design-screen.md` | **Lines 151-165:** Added "Import Path Transformation" section with table showing Development Path to Export Path transformations. **Lines 94-120:** Added "Multiple Views File Structure" section with complete file tree and key points, cross-reference to `/shape-section`. |
-| `.claude/commands/design-os/sample-data.md` | **Lines 233-258:** Added "Entity Naming Transformation Table" section documenting singular to plural conventions, transformation rules, and examples table (Data Model Entity to data.json Key to TypeScript Type). |
-| `.claude/templates/design-os/common/tdd-workflow.md` | **Full rewrite (v1.1.0):** Changed from generic 3-line TDD to full implementation TDD with guidance on foundation tests, milestone progression, regression testing, and integration tests. |
-| `.claude/templates/design-os/section/tdd-workflow.md` | **Full rewrite (v1.1.0):** Changed from duplicate content to section-specific TDD with guidance on component isolation, Props testing, callbacks verification, and edge cases. |
-| `.claude/templates/design-os/README.md` | **Lines 15, 25:** Updated TDD template descriptions to reflect differentiated content (full implementation vs section-specific). |
-| `.claude/commands/design-os/product-roadmap.md` | **Lines 150-188:** Added "Handling Orphaned Files" section with 4-step workflow: identify orphaned files, handle renamed sections, handle removed sections, verify cleanup. |
-| `.claude/commands/design-os/shape-section.md` | **Lines 125-152:** Added "Multiple Views Workflow (Full Picture)" section documenting how views flow through all 5 Design OS commands from spec to screenshot. |
-| `.claude/commands/design-os/screenshot-design.md` | **Lines 63-79:** Replaced "1280px recommended" with standardized viewport table (Desktop 1280x800, Mobile 375x667, Tablet 768x1024). **Lines 124-128:** Updated additional screenshot suggestions with specific viewport sizes. **Line 167:** Updated Important Notes with standard viewports. |
+| File                                                  | Modification                                                                                                                                                                                                                                                                                   |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-screen.md`         | **Lines 151-165:** Added "Import Path Transformation" section with table showing Development Path to Export Path transformations. **Lines 94-120:** Added "Multiple Views File Structure" section with complete file tree and key points, cross-reference to `/shape-section`.                 |
+| `.claude/commands/design-os/sample-data.md`           | **Lines 233-258:** Added "Entity Naming Transformation Table" section documenting singular to plural conventions, transformation rules, and examples table (Data Model Entity to data.json Key to TypeScript Type).                                                                            |
+| `.claude/templates/design-os/common/tdd-workflow.md`  | **Full rewrite (v1.1.0):** Changed from generic 3-line TDD to full implementation TDD with guidance on foundation tests, milestone progression, regression testing, and integration tests.                                                                                                     |
+| `.claude/templates/design-os/section/tdd-workflow.md` | **Full rewrite (v1.1.0):** Changed from duplicate content to section-specific TDD with guidance on component isolation, Props testing, callbacks verification, and edge cases.                                                                                                                 |
+| `.claude/templates/design-os/README.md`               | **Lines 15, 25:** Updated TDD template descriptions to reflect differentiated content (full implementation vs section-specific).                                                                                                                                                               |
+| `.claude/commands/design-os/product-roadmap.md`       | **Lines 150-188:** Added "Handling Orphaned Files" section with 4-step workflow: identify orphaned files, handle renamed sections, handle removed sections, verify cleanup.                                                                                                                    |
+| `.claude/commands/design-os/shape-section.md`         | **Lines 125-152:** Added "Multiple Views Workflow (Full Picture)" section documenting how views flow through all 5 Design OS commands from spec to screenshot.                                                                                                                                 |
+| `.claude/commands/design-os/screenshot-design.md`     | **Lines 63-79:** Replaced "1280px recommended" with standardized viewport table (Desktop 1280x800, Mobile 375x667, Tablet 768x1024). **Lines 124-128:** Updated additional screenshot suggestions with specific viewport sizes. **Line 167:** Updated Important Notes with standard viewports. |
 
 ### Fixes Applied
 
@@ -1712,6 +1891,7 @@ None (all modifications integrated into existing files)
 ### Verification
 
 All modifications validated for:
+
 - ✅ Clear documentation with tables and examples
 - ✅ Cross-references between related commands
 - ✅ Version bumps for modified templates (v1.0.0 → v1.1.0)
@@ -1722,6 +1902,7 @@ All modifications validated for:
 ### Production Status
 
 **After Implementation:**
+
 - **Import Paths:** DOCUMENTED (clear transformation table)
 - **Entity Naming:** STANDARDIZED (transformation rules with examples)
 - **TDD Templates:** DIFFERENTIATED (scope-appropriate guidance)
@@ -1744,18 +1925,18 @@ None (all modifications integrated into existing files)
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/product-vision.md` | **Lines 83-88:** Added directory creation validation after `mkdir -p product` with existence check. |
-| `.claude/commands/design-os/product-roadmap.md` | **Lines 57-62:** Added directory creation validation after `mkdir -p product` with existence check. |
-| `.claude/commands/design-os/data-model.md` | **Lines 14-22:** Changed generic error message to specific file-based errors. **Lines 83-88:** Added directory creation validation. |
-| `.claude/commands/design-os/design-tokens.md` | **Lines 13-15:** Changed generic error to specific `Missing: product/product-overview.md. Run /product-vision to create it.` **Lines 143-148:** Added directory creation validation. |
-| `.claude/commands/design-os/shape-section.md` | **Lines 9-11:** Changed generic error to specific format. **Lines 136-141:** Added directory creation validation. **Lines 181-195:** Added comprehensive Section ID Generation Rules with examples. |
-| `.claude/commands/design-os/sample-data.md` | **Lines 15-17:** Changed generic error to specific format. **Lines 109-114:** Added directory creation validation. |
-| `.claude/commands/design-os/design-shell.md` | **Lines 13-25:** Changed generic error messages to specific file-based errors. **Lines 124-133:** Added directory creation validation for both `product/shell` and `src/shell/components`. |
-| `.claude/commands/design-os/design-screen.md` | **Lines 19-35:** Changed generic error messages to specific file-based errors for spec.md, data.json, and types.ts. |
-| `.claude/commands/design-os/export-product.md` | **Lines 101-108:** Added comprehensive directory creation validation with loop for all subdirectories. |
-| `agents.md` | **Lines 370-387:** Added new "Section ID Generation Rules" section documenting standardized slug generation rules with examples. |
+| File                                            | Modification                                                                                                                                                                                        |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/product-vision.md`  | **Lines 83-88:** Added directory creation validation after `mkdir -p product` with existence check.                                                                                                 |
+| `.claude/commands/design-os/product-roadmap.md` | **Lines 57-62:** Added directory creation validation after `mkdir -p product` with existence check.                                                                                                 |
+| `.claude/commands/design-os/data-model.md`      | **Lines 14-22:** Changed generic error message to specific file-based errors. **Lines 83-88:** Added directory creation validation.                                                                 |
+| `.claude/commands/design-os/design-tokens.md`   | **Lines 13-15:** Changed generic error to specific `Missing: product/product-overview.md. Run /product-vision to create it.` **Lines 143-148:** Added directory creation validation.                |
+| `.claude/commands/design-os/shape-section.md`   | **Lines 9-11:** Changed generic error to specific format. **Lines 136-141:** Added directory creation validation. **Lines 181-195:** Added comprehensive Section ID Generation Rules with examples. |
+| `.claude/commands/design-os/sample-data.md`     | **Lines 15-17:** Changed generic error to specific format. **Lines 109-114:** Added directory creation validation.                                                                                  |
+| `.claude/commands/design-os/design-shell.md`    | **Lines 13-25:** Changed generic error messages to specific file-based errors. **Lines 124-133:** Added directory creation validation for both `product/shell` and `src/shell/components`.          |
+| `.claude/commands/design-os/design-screen.md`   | **Lines 19-35:** Changed generic error messages to specific file-based errors for spec.md, data.json, and types.ts.                                                                                 |
+| `.claude/commands/design-os/export-product.md`  | **Lines 101-108:** Added comprehensive directory creation validation with loop for all subdirectories.                                                                                              |
+| `agents.md`                                     | **Lines 370-387:** Added new "Section ID Generation Rules" section documenting standardized slug generation rules with examples.                                                                    |
 
 ### Fixes Applied
 
@@ -1786,6 +1967,7 @@ None (all modifications integrated into existing files)
 ### Verification
 
 All modifications validated for:
+
 - ✅ Directory validation after all mkdir commands
 - ✅ Specific error messages with file paths
 - ✅ Consistent Section ID rules across documentation
@@ -1795,6 +1977,7 @@ All modifications validated for:
 ### Production Status
 
 **After Implementation:**
+
 - **Directory Creation:** VALIDATED (existence check after mkdir)
 - **Error Messages:** SPECIFIC (file path + command to run)
 - **Section IDs:** STANDARDIZED (6 explicit rules with examples)
@@ -1815,14 +1998,14 @@ None (all modifications integrated into existing files)
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/design-shell.md` | **Lines 98-102:** Changed frontend-design skill from optional to MANDATORY. Replaced "Continue with the design process even if the file is missing" with STOP instruction and error message. |
-| `.claude/commands/design-os/design-screen.md` | **Lines 93-97:** Changed frontend-design skill from optional to MANDATORY. Replaced "Continue with the design process even if the file is missing" with STOP instruction and error message. |
-| `.claude/commands/design-os/export-product.md` | **Lines 34-56:** Moved template validation from Step 3 to Step 1 as a blocking prerequisite. Template files now validated BEFORE any export work begins, preventing wasted time on Step 2 if templates are missing. |
-| `.claude/commands/design-os/shape-section.md` | **Lines 57-62:** Added explicit shell existence check before shell question. Now informs user "No shell has been designed yet" if `product/shell/spec.md` doesn't exist, clarifying that shell can be designed later. |
-| `.claude/commands/design-os/sample-data.md` | **Lines 198-203:** Added retry limit (3 attempts) for validation loop. If validation fails 3 times, STOP with escalation message directing user to review data model. Prevents infinite regeneration loops. |
-| `.claude/templates/design-os/README.md` | **Line 114:** Removed `[Product Name]` from variable substitution list since product name comes from file content, not template variable substitution. Updated to only list section prompt variables. |
+| File                                           | Modification                                                                                                                                                                                                          |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-shell.md`   | **Lines 98-102:** Changed frontend-design skill from optional to MANDATORY. Replaced "Continue with the design process even if the file is missing" with STOP instruction and error message.                          |
+| `.claude/commands/design-os/design-screen.md`  | **Lines 93-97:** Changed frontend-design skill from optional to MANDATORY. Replaced "Continue with the design process even if the file is missing" with STOP instruction and error message.                           |
+| `.claude/commands/design-os/export-product.md` | **Lines 34-56:** Moved template validation from Step 3 to Step 1 as a blocking prerequisite. Template files now validated BEFORE any export work begins, preventing wasted time on Step 2 if templates are missing.   |
+| `.claude/commands/design-os/shape-section.md`  | **Lines 57-62:** Added explicit shell existence check before shell question. Now informs user "No shell has been designed yet" if `product/shell/spec.md` doesn't exist, clarifying that shell can be designed later. |
+| `.claude/commands/design-os/sample-data.md`    | **Lines 198-203:** Added retry limit (3 attempts) for validation loop. If validation fails 3 times, STOP with escalation message directing user to review data model. Prevents infinite regeneration loops.           |
+| `.claude/templates/design-os/README.md`        | **Line 114:** Removed `[Product Name]` from variable substitution list since product name comes from file content, not template variable substitution. Updated to only list section prompt variables.                 |
 
 ### Fixes Applied
 
@@ -1858,6 +2041,7 @@ None (all modifications integrated into existing files)
 ### Verification
 
 All modifications validated for:
+
 - ✅ Explicit STOP instructions for missing prerequisites
 - ✅ Clear error messages explaining what's missing and how to fix
 - ✅ No conflicts with previous fixes
@@ -1867,6 +2051,7 @@ All modifications validated for:
 ### Production Status
 
 **After Implementation:**
+
 - **Prerequisites:** MANDATORY (skill file required, templates validated early)
 - **User Guidance:** CLEAR (explicit messages about shell existence)
 - **Validation:** BOUNDED (retry limit prevents infinite loops)
@@ -1887,15 +2072,15 @@ None (all modifications integrated into existing files)
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/design-shell.md` | **Line 108:** Made skill file reading explicit with "**Read the file... now.**" instruction. **Lines 219-220, 227, 252-255:** Clarified navigation data source — navigation items from roadmap, user menu uses placeholder mock data |
-| `.claude/commands/design-os/design-screen.md` | **Line 103:** Made skill file reading explicit with "**Read the file... now.**" instruction |
+| File                                              | Modification                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-shell.md`      | **Line 108:** Made skill file reading explicit with "**Read the file... now.**" instruction. **Lines 219-220, 227, 252-255:** Clarified navigation data source — navigation items from roadmap, user menu uses placeholder mock data                                                                                                                                  |
+| `.claude/commands/design-os/design-screen.md`     | **Line 103:** Made skill file reading explicit with "**Read the file... now.**" instruction                                                                                                                                                                                                                                                                           |
 | `.claude/commands/design-os/screenshot-design.md` | **Lines 47-49:** Added PID tracking note and wait time clarification (5 seconds or verify response). **Lines 57-58:** Clarified "Hide" button context — Design OS preview chrome vs product shell, added fallback if button not found. **Lines 122-147:** Improved dev server cleanup — safer process termination, ask user before killing if server was pre-existing |
-| `.claude/commands/design-os/sample-data.md` | **Lines 189-196:** Added explicit recovery workflow for validation failures — 4-step process: identify failing check, explain to user, return to Step 5, re-run validation |
-| `.claude/commands/design-os/product-vision.md` | **Line 74:** Simplified Step 4 intro — removed redundant product name validation reference since Step 3 already handles validation |
-| `.claude/commands/design-os/shape-section.md` | **Lines 59-63:** Added explanation of what the app shell is and how to design it with `/design-shell` |
-| `.claude/commands/design-os/export-product.md` | **Lines 625-628:** Changed recovery workflow to allow resumption from Step 8 instead of requiring full restart |
+| `.claude/commands/design-os/sample-data.md`       | **Lines 189-196:** Added explicit recovery workflow for validation failures — 4-step process: identify failing check, explain to user, return to Step 5, re-run validation                                                                                                                                                                                            |
+| `.claude/commands/design-os/product-vision.md`    | **Line 74:** Simplified Step 4 intro — removed redundant product name validation reference since Step 3 already handles validation                                                                                                                                                                                                                                    |
+| `.claude/commands/design-os/shape-section.md`     | **Lines 59-63:** Added explanation of what the app shell is and how to design it with `/design-shell`                                                                                                                                                                                                                                                                 |
+| `.claude/commands/design-os/export-product.md`    | **Lines 625-628:** Changed recovery workflow to allow resumption from Step 8 instead of requiring full restart                                                                                                                                                                                                                                                        |
 
 ### Fixes Applied
 
@@ -1939,6 +2124,7 @@ None (all modifications integrated into existing files)
 ### Verification
 
 All modifications validated for:
+
 - ✅ Explicit action instructions (no ambiguous prose)
 - ✅ Clear recovery workflows with step-by-step guidance
 - ✅ Safe operations with user confirmation when needed
@@ -1949,6 +2135,7 @@ All modifications validated for:
 ### Production Status
 
 **After Implementation:**
+
 - **Instructions:** EXPLICIT (clear action verbs, "Read now")
 - **Recovery:** DOCUMENTED (step-by-step workflows)
 - **Safety:** IMPROVED (user confirmation for risky operations)
@@ -1970,8 +2157,8 @@ None (all modifications integrated into existing files)
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
+| File                                           | Modification                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `.claude/commands/design-os/export-product.md` | **Lines 20-32:** Added explicit conditional structure with `**END COMMAND**` instruction for missing required files. Previously "Stop here" was prose-only and agents could continue to Step 2. **Lines 1213-1216:** Fixed contradictory version comment instructions — removed "Add version comments at the very top (after all content)" which contradicted "at the top". Now clearly states version comments should be stripped and NOT added to final prompt. |
 
 ### Fixes Applied
@@ -1999,6 +2186,7 @@ None (all modifications integrated into existing files)
 ### Verification
 
 All modifications validated for:
+
 - ✅ Explicit conditional branching with END COMMAND instruction
 - ✅ Consistent version comment handling (strip and don't add)
 - ✅ No conflicts with previous fixes
@@ -2007,6 +2195,7 @@ All modifications validated for:
 ### Production Status
 
 **After Implementation:**
+
 - **Control Flow:** EXPLICIT (END COMMAND prevents continuation)
 - **Documentation:** CONSISTENT (no contradictory instructions)
 - **Production Ready:** ✅ YES (all P0 critical issues from fix-plan.md resolved)
@@ -2025,18 +2214,18 @@ None (all modifications integrated into existing files)
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `agents.md` | **Line 78:** Added `screenshot-design.md` to file structure documentation (was missing from command list) |
-| `.claude/commands/design-os/design-screen.md` | **Line 126:** Added period to error message for consistent punctuation. **Line 116:** Changed "Ensure Directory Exists" to "Create Directory" for consistency |
-| `.claude/commands/design-os/screenshot-design.md` | **Lines 84, 86:** Added periods to echo messages. **Line 137:** Added Playwright MCP to Important Notes section. **Lines 145-152:** Added Performance Note section |
-| `.claude/commands/design-os/sample-data.md` | **Line 102:** Changed "Ensure Directory Exists" to "Create Directory". **Lines 302-315:** Added Callback Prop Naming Convention section documenting standard callback names (onView, onEdit, onDelete, onCreate, onArchive, onSelect) |
-| `.claude/commands/design-os/product-vision.md` | **Line 76:** Changed "Create Product Directory" to "Create Directory". **Lines 127-137:** Added Length Guidelines section (Description: 1-3 sentences, Problems: 3-5, Features: 5-8) |
-| `.claude/commands/design-os/design-tokens.md` | **Lines 195-223:** Expanded font pairing suggestions from 6 to 18 pairings, organized by category (Sans-Serif, Serif+Sans, Technical), added tips for custom pairings |
-| `.claude/commands/design-os/export-product.md` | **Lines 1739-1770:** Added zip command validation with existence check and fallback guidance. **Lines 1821-1828:** Added Performance Note section |
-| `.claude/commands/design-os/design-shell.md` | **Lines 177-198:** Added props interfaces for MainNav and UserMenu components (were previously undocumented) |
-| `.claude/templates/design-os/one-shot/prompt-template.md` | **Line 17:** Removed conclusion text "Once I answer your questions..." (was appearing before clarifying questions) |
-| `.claude/templates/design-os/common/clarifying-questions.md` | **Line 33:** Added conclusion text "Once I answer your questions..." (moved from prompt-template.md to correct position) |
+| File                                                         | Modification                                                                                                                                                                                                                          |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agents.md`                                                  | **Line 78:** Added `screenshot-design.md` to file structure documentation (was missing from command list)                                                                                                                             |
+| `.claude/commands/design-os/design-screen.md`                | **Line 126:** Added period to error message for consistent punctuation. **Line 116:** Changed "Ensure Directory Exists" to "Create Directory" for consistency                                                                         |
+| `.claude/commands/design-os/screenshot-design.md`            | **Lines 84, 86:** Added periods to echo messages. **Line 137:** Added Playwright MCP to Important Notes section. **Lines 145-152:** Added Performance Note section                                                                    |
+| `.claude/commands/design-os/sample-data.md`                  | **Line 102:** Changed "Ensure Directory Exists" to "Create Directory". **Lines 302-315:** Added Callback Prop Naming Convention section documenting standard callback names (onView, onEdit, onDelete, onCreate, onArchive, onSelect) |
+| `.claude/commands/design-os/product-vision.md`               | **Line 76:** Changed "Create Product Directory" to "Create Directory". **Lines 127-137:** Added Length Guidelines section (Description: 1-3 sentences, Problems: 3-5, Features: 5-8)                                                  |
+| `.claude/commands/design-os/design-tokens.md`                | **Lines 195-223:** Expanded font pairing suggestions from 6 to 18 pairings, organized by category (Sans-Serif, Serif+Sans, Technical), added tips for custom pairings                                                                 |
+| `.claude/commands/design-os/export-product.md`               | **Lines 1739-1770:** Added zip command validation with existence check and fallback guidance. **Lines 1821-1828:** Added Performance Note section                                                                                     |
+| `.claude/commands/design-os/design-shell.md`                 | **Lines 177-198:** Added props interfaces for MainNav and UserMenu components (were previously undocumented)                                                                                                                          |
+| `.claude/templates/design-os/one-shot/prompt-template.md`    | **Line 17:** Removed conclusion text "Once I answer your questions..." (was appearing before clarifying questions)                                                                                                                    |
+| `.claude/templates/design-os/common/clarifying-questions.md` | **Line 33:** Added conclusion text "Once I answer your questions..." (moved from prompt-template.md to correct position)                                                                                                              |
 
 ### Fixes Applied
 
@@ -2088,6 +2277,7 @@ None (all modifications integrated into existing files)
 ### Verification
 
 All modifications validated for:
+
 - ✅ Consistent patterns across all commands
 - ✅ Complete documentation coverage
 - ✅ Proper interface definitions for all components
@@ -2098,6 +2288,7 @@ All modifications validated for:
 ### Production Status
 
 **After Implementation:**
+
 - **Documentation:** COMPLETE (all commands documented in file structure)
 - **Consistency:** STANDARDIZED (directory headers, punctuation, callback names)
 - **Interfaces:** COMPLETE (all component props defined)
@@ -2119,17 +2310,17 @@ None (all modifications integrated into existing files)
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/screenshot-design.md` | **Step 5:** Added next-step guidance to run `/export-product` when all screenshots are complete |
-| `.claude/templates/design-os/README.md` | **Template Versioning section:** Added detailed procedure for stripping version comments, version numbering convention (Major/Minor/Patch), and clear assembly instructions |
-| `.claude/commands/design-os/export-product.md` | **Section-prompt.md:** Added clarification that this is a template file requiring variable substitution, not a ready-to-use prompt like one-shot-prompt.md |
-| `.claude/commands/design-os/shape-section.md` | **Step 5:** Improved shell config check to always ask user (not skip based on shell existence). **Step 6:** Added multi-view handling guidance with explicit view listing. **Spec file format:** Added Views section for multi-view sections |
-| `.claude/commands/design-os/product-vision.md` | **Step 3:** Added explicit product name validation before file creation with instructions to ask user if name is missing |
-| `.claude/commands/design-os/design-shell.md` | **Step 2:** Added navigation pattern recommendations based on section count (Sidebar for 5+, Top Nav for 3-4, Minimal for 1-2). **Step 5:** Added skill file existence validation with graceful fallback |
-| `.claude/commands/design-os/design-screen.md` | **Step 5:** Added skill file existence validation with graceful fallback if SKILL.md is missing |
-| `.claude/commands/design-os/design-tokens.md` | **Step 5 (new):** Added dark mode preview step showing light/dark color combinations and contrast checks before finalizing. Renumbered subsequent steps |
-| `.claude/commands/design-os/product-roadmap.md` | **Start fresh section:** Added warning about overwriting manual edits with confirmation dialog. **Important Notes:** Added Manual Edit Protection section explaining preservation vs overwrite behavior |
+| File                                              | Modification                                                                                                                                                                                                                                 |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/screenshot-design.md` | **Step 5:** Added next-step guidance to run `/export-product` when all screenshots are complete                                                                                                                                              |
+| `.claude/templates/design-os/README.md`           | **Template Versioning section:** Added detailed procedure for stripping version comments, version numbering convention (Major/Minor/Patch), and clear assembly instructions                                                                  |
+| `.claude/commands/design-os/export-product.md`    | **Section-prompt.md:** Added clarification that this is a template file requiring variable substitution, not a ready-to-use prompt like one-shot-prompt.md                                                                                   |
+| `.claude/commands/design-os/shape-section.md`     | **Step 5:** Improved shell config check to always ask user (not skip based on shell existence). **Step 6:** Added multi-view handling guidance with explicit view listing. **Spec file format:** Added Views section for multi-view sections |
+| `.claude/commands/design-os/product-vision.md`    | **Step 3:** Added explicit product name validation before file creation with instructions to ask user if name is missing                                                                                                                     |
+| `.claude/commands/design-os/design-shell.md`      | **Step 2:** Added navigation pattern recommendations based on section count (Sidebar for 5+, Top Nav for 3-4, Minimal for 1-2). **Step 5:** Added skill file existence validation with graceful fallback                                     |
+| `.claude/commands/design-os/design-screen.md`     | **Step 5:** Added skill file existence validation with graceful fallback if SKILL.md is missing                                                                                                                                              |
+| `.claude/commands/design-os/design-tokens.md`     | **Step 5 (new):** Added dark mode preview step showing light/dark color combinations and contrast checks before finalizing. Renumbered subsequent steps                                                                                      |
+| `.claude/commands/design-os/product-roadmap.md`   | **Start fresh section:** Added warning about overwriting manual edits with confirmation dialog. **Important Notes:** Added Manual Edit Protection section explaining preservation vs overwrite behavior                                      |
 
 ### Gaps Resolved
 
@@ -2178,6 +2369,7 @@ None (all modifications integrated into existing files)
 ### Verification
 
 All modifications validated for:
+
 - ✅ Workflow continuity with next-step guidance
 - ✅ Clear documentation for template versioning
 - ✅ User preference respected in all decisions
@@ -2189,6 +2381,7 @@ All modifications validated for:
 ### Production Status
 
 **After Implementation:**
+
 - **Workflow Guidance:** COMPLETE (all commands guide to next step)
 - **Documentation:** CLEAR (template system fully documented)
 - **Validation:** COMPREHENSIVE (product name, skill files, preferences)
@@ -2211,14 +2404,14 @@ None (all modifications integrated into existing files)
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/templates/design-os/section/tdd-workflow.md` | **Lines 11-13:** Removed duplicate text "Lastly, be sure to ask me if I have any other notes to add for this implementation. Once I answer your questions, proceed with implementation." — This text was duplicated in section/prompt-template.md line 18, causing the final assembled prompt to have this text twice |
-| `.claude/commands/design-os/export-product.md` | **Step 7.5 → Step 8:** Renumbered from non-standard .5 numbering to sequential Step 8. Cascaded renumbering for all subsequent steps (8→9, 9→10, 10→11, 11→12, 12→13, 13→14, 14→15, 15→16, 16→17, 17→18). Updated internal step references ("Continue to Step 9", "Do NOT attempt to resume from Step 9"). **Step 14:** Added "Validate Required Files Exist" section to verify product-plan files exist before generating prompts |
-| `.claude/commands/design-os/sample-data.md` | **Step 5.5 → Step 6:** Renumbered from non-standard .5 numbering to sequential Step 6. Cascaded renumbering (6→7, 7→8). Updated internal reference from "Step 5.5" to "Step 6" in the mandatory warning |
-| `.claude/templates/design-os/common/reporting-protocol.md` | **Lines 7-33:** Replaced all emojis with text equivalents: ✅→[DONE], 📁→Files:, 🧪→Tests:, ❌→(INCORRECT), ✅→(CORRECT). Aligns with agents.md style guide which discourages emoji usage |
-| `.claude/templates/design-os/common/top-rules.md` | **Lines 12-58:** Replaced all emojis with text equivalents: ❌→(INCORRECT), ✅→(CORRECT). Applied consistently across all three rules sections (Rule 1, Rule 2, Rule 3) |
-| `.claude/commands/design-os/design-screen.md` | **Lines 109-115:** Added directory validation after mkdir command: `if [ ! -d "..." ]; then echo "Error"; exit 1; fi`. Prevents silent failures when directory creation fails |
+| File                                                       | Modification                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/templates/design-os/section/tdd-workflow.md`      | **Lines 11-13:** Removed duplicate text "Lastly, be sure to ask me if I have any other notes to add for this implementation. Once I answer your questions, proceed with implementation." — This text was duplicated in section/prompt-template.md line 18, causing the final assembled prompt to have this text twice                                                                                                              |
+| `.claude/commands/design-os/export-product.md`             | **Step 7.5 → Step 8:** Renumbered from non-standard .5 numbering to sequential Step 8. Cascaded renumbering for all subsequent steps (8→9, 9→10, 10→11, 11→12, 12→13, 13→14, 14→15, 15→16, 16→17, 17→18). Updated internal step references ("Continue to Step 9", "Do NOT attempt to resume from Step 9"). **Step 14:** Added "Validate Required Files Exist" section to verify product-plan files exist before generating prompts |
+| `.claude/commands/design-os/sample-data.md`                | **Step 5.5 → Step 6:** Renumbered from non-standard .5 numbering to sequential Step 6. Cascaded renumbering (6→7, 7→8). Updated internal reference from "Step 5.5" to "Step 6" in the mandatory warning                                                                                                                                                                                                                            |
+| `.claude/templates/design-os/common/reporting-protocol.md` | **Lines 7-33:** Replaced all emojis with text equivalents: ✅→[DONE], 📁→Files:, 🧪→Tests:, ❌→(INCORRECT), ✅→(CORRECT). Aligns with agents.md style guide which discourages emoji usage                                                                                                                                                                                                                                          |
+| `.claude/templates/design-os/common/top-rules.md`          | **Lines 12-58:** Replaced all emojis with text equivalents: ❌→(INCORRECT), ✅→(CORRECT). Applied consistently across all three rules sections (Rule 1, Rule 2, Rule 3)                                                                                                                                                                                                                                                            |
+| `.claude/commands/design-os/design-screen.md`              | **Lines 109-115:** Added directory validation after mkdir command: `if [ ! -d "..." ]; then echo "Error"; exit 1; fi`. Prevents silent failures when directory creation fails                                                                                                                                                                                                                                                      |
 
 ### Gaps Resolved
 
@@ -2257,6 +2450,7 @@ None (all modifications integrated into existing files)
 ### Verification
 
 All modifications validated for:
+
 - ✅ Sequential step numbering in all command files
 - ✅ No duplicate text in template assembly
 - ✅ No emojis in template files
@@ -2267,6 +2461,7 @@ All modifications validated for:
 ### Production Status
 
 **After Implementation:**
+
 - **Step Numbering:** SEQUENTIAL (no more .5 steps anywhere)
 - **Template Content:** CLEAN (no duplicates)
 - **Style Guide:** COMPLIANT (no emojis)
@@ -2283,19 +2478,19 @@ Applied 2 bug fixes from upstream repository (buildermethods/design-os) commits 
 
 ### Upstream Commits Applied
 
-| Commit | Description |
-|--------|-------------|
-| `5f773b4` | Added handling of & in section names |
+| Commit    | Description                                                 |
+| --------- | ----------------------------------------------------------- |
+| `5f773b4` | Added handling of & in section names                        |
 | `a9c7f5a` | Fixed errors related to importing Google fonts out of order |
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `src/lib/product-loader.ts` | Added `.replace(/\s+&\s+/g, '-and-')` to `slugify()` function to convert " & " to "-and-" in section IDs |
-| `src/components/PhaseWarningBanner.tsx` | Added same ampersand handling to `getStorageKey()` function |
-| `src/index.css` | Removed `@import url()` for Google Fonts (moved to HTML) |
-| `index.html` | Added preconnect links and font stylesheet for proper loading order |
+| File                                    | Modification                                                                                             |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `src/lib/product-loader.ts`             | Added `.replace(/\s+&\s+/g, '-and-')` to `slugify()` function to convert " & " to "-and-" in section IDs |
+| `src/components/PhaseWarningBanner.tsx` | Added same ampersand handling to `getStorageKey()` function                                              |
+| `src/index.css`                         | Removed `@import url()` for Google Fonts (moved to HTML)                                                 |
+| `index.html`                            | Added preconnect links and font stylesheet for proper loading order                                      |
 
 ### Statistics
 
@@ -2319,11 +2514,11 @@ Final critical analysis identified 3 minor documentation consistency issues. All
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `agents.md` | **Line 245:** Fixed step number reference from "Step 6" to "Step 5" for design-shell skill integration (matches actual design-shell.md Step 5) |
-| `.claude/commands/design-os/export-product.md` | **Lines 1175-1183:** Added `common/tdd-workflow.md` to one-shot prompt assembly order (position 6, renumbered subsequent items). TDD guidance now included in both prompt types |
-| `.claude/templates/design-os/README.md` | **Line 15:** Fixed description from "(used in section prompts only)" to "(used in one-shot prompts)". **Lines 32-39:** Added tdd-workflow.md to one-shot assembly order documentation |
+| File                                           | Modification                                                                                                                                                                          |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agents.md`                                    | **Line 245:** Fixed step number reference from "Step 6" to "Step 5" for design-shell skill integration (matches actual design-shell.md Step 5)                                        |
+| `.claude/commands/design-os/export-product.md` | **Lines 1175-1183:** Added `common/tdd-workflow.md` to one-shot prompt assembly order (position 6, renumbered subsequent items). TDD guidance now included in both prompt types       |
+| `.claude/templates/design-os/README.md`        | **Line 15:** Fixed description from "(used in section prompts only)" to "(used in one-shot prompts)". **Lines 32-39:** Added tdd-workflow.md to one-shot assembly order documentation |
 
 ### Fixes Applied
 
@@ -2358,10 +2553,10 @@ Three optional polish fixes identified during comprehensive critical analysis. T
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/design-shell.md` | **Lines 172-174:** Removed redundant `mkdir -p src/shell` before Step 8. Directory already created by `mkdir -p src/shell/components` in Step 6 |
-| `.claude/commands/design-os/export-product.md` | **Lines 55-77:** Added template validation at Step 3 start. Lists all 12 required template files and provides clear error message if any missing. Prevents late failures at Step 13 |
+| File                                           | Modification                                                                                                                                                                                    |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-shell.md`   | **Lines 172-174:** Removed redundant `mkdir -p src/shell` before Step 8. Directory already created by `mkdir -p src/shell/components` in Step 6                                                 |
+| `.claude/commands/design-os/export-product.md` | **Lines 55-77:** Added template validation at Step 3 start. Lists all 12 required template files and provides clear error message if any missing. Prevents late failures at Step 13             |
 | `.claude/commands/design-os/export-product.md` | **Lines 716-719:** Added type conflict resolution guidance in Step 10. Clarifies that global data model is authoritative, with fallback to first section's definition if no global model exists |
 
 ### Fixes Applied
@@ -2401,13 +2596,13 @@ None (all modifications integrated into existing files)
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
+| File                                           | Modification                                                                                                                                                                                                                                                                      |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `.claude/commands/design-os/export-product.md` | **Line 669:** Renamed "Step 10.5" to "Step 10" — fixes step numbering sequence that jumped from Step 9 to Step 10.5. **Lines 596-599:** Added "Recovery workflow" section with clear instructions to re-run `/export-product` from the beginning after fixing validation failures |
-| `.claude/commands/design-os/sample-data.md` | **Lines 165-167:** Added mandatory warning indicator before Step 5.5 with ⚠️ emoji and explicit "(MANDATORY)" label in step title. **Lines 205-206:** Added acceptable variations for entity names (plural camelCase in data.json vs singular PascalCase in data model) |
-| `.claude/commands/design-os/design-shell.md` | **Lines 85-96:** Moved "Read Design Guidance" from Step 6 to Step 5 (before spec creation). Now consistent with design-screen.md pattern where guidance is read before component creation. Removed duplicate old Step 6 content |
-| `.claude/commands/design-os/design-screen.md` | **Line 125:** Added comment in code example: "Note: During export, this path will be transformed to '../types' for portability" — clarifies path transformation during export |
-| `.claude/templates/design-os/README.md` | **Line 88:** Fixed incorrect step reference from "Step 14" to "Step 13". **Line 15:** Fixed misleading description of `tdd-workflow.md` from "One-shot TDD implementation approach" to "TDD implementation approach (used in section prompts only)" |
+| `.claude/commands/design-os/sample-data.md`    | **Lines 165-167:** Added mandatory warning indicator before Step 5.5 with ⚠️ emoji and explicit "(MANDATORY)" label in step title. **Lines 205-206:** Added acceptable variations for entity names (plural camelCase in data.json vs singular PascalCase in data model)           |
+| `.claude/commands/design-os/design-shell.md`   | **Lines 85-96:** Moved "Read Design Guidance" from Step 6 to Step 5 (before spec creation). Now consistent with design-screen.md pattern where guidance is read before component creation. Removed duplicate old Step 6 content                                                   |
+| `.claude/commands/design-os/design-screen.md`  | **Line 125:** Added comment in code example: "Note: During export, this path will be transformed to '../types' for portability" — clarifies path transformation during export                                                                                                     |
+| `.claude/templates/design-os/README.md`        | **Line 88:** Fixed incorrect step reference from "Step 14" to "Step 13". **Line 15:** Fixed misleading description of `tdd-workflow.md` from "One-shot TDD implementation approach" to "TDD implementation approach (used in section prompts only)"                               |
 
 ### Gaps Resolved
 
@@ -2457,6 +2652,7 @@ None (all modifications integrated into existing files)
 ### Verification
 
 All modifications validated for:
+
 - ✅ Logical consistency with existing patterns
 - ✅ No conflicts with previous 32 fixes
 - ✅ Accurate step numbering across all files
@@ -2467,6 +2663,7 @@ All modifications validated for:
 ### Production Status
 
 **After Implementation:**
+
 - **Step Numbering:** CORRECTED (no more .5 steps without parent steps)
 - **Mandatory Indicators:** EXPLICIT (visual warnings, clear titles)
 - **Pattern Consistency:** UNIFIED (design guidance order standardized)
@@ -2485,6 +2682,7 @@ Implementation of context optimization techniques adapted from the `evaluate-cod
 ### New Files Created
 
 **Template System (10 new files):**
+
 - `.claude/templates/design-os/common/top-rules.md` — TOP 3 RULES FOR IMPLEMENTATION (anti-hallucination, anti-fabrication rules)
 - `.claude/templates/design-os/common/reporting-protocol.md` — Implementation Reporting Protocol (reduce token usage)
 - `.claude/templates/design-os/common/model-guidance.md` — Suggested Model Usage (Opus vs Sonnet optimization)
@@ -2499,23 +2697,26 @@ Implementation of context optimization techniques adapted from the `evaluate-cod
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
+| File                                           | Modification                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `.claude/commands/design-os/export-product.md` | **Step 13 (formerly Step 14) enhancement:** Added Template System Overview section explaining how prompts are assembled from templates. Expanded documentation with comprehensive template assembly implementation section including variable substitution, template concatenation order, version comment handling, whitespace formatting, error handling, and validation. Updated assembly references to clarify distinction between common and section-specific templates. Prompts generated from templates include: (1) Model Usage guidance, (2) TOP 3 RULES, (3) Implementation Reporting Protocol, (4) Clarifying Questions, (5) Final Verification Checklist. Inline template content documentation provides implementation guidance for future template-based assembly |
 
 ### Quality Improvements
 
 **TOP 3 RULES FOR IMPLEMENTATION** (Anti-Hallucination):
+
 - Rule 1: NEVER FABRICATE REQUIREMENTS — Only implement spec'd features
 - Rule 2: INTEGRATION > REDESIGN — Don't restyle components, focus on integration
 - Rule 3: READ BEFORE BUILDING — Read all files before planning, verify all requirements
 
 **Implementation Reporting Protocol** (~30% token reduction):
+
 - Agents write brief progress summaries instead of echoing full files
 - Format: ✅ [Feature] complete, 📁 Files: [...], 🧪 Tests: [count]
 - Reduces context usage during implementation sessions
 
 **Final Verification Checklist** (40+ items, ~40% reduction in post-impl issues):
+
 - Authentication & Data Access (4 items)
 - Component Integration (4 items)
 - Testing (5 items)
@@ -2524,6 +2725,7 @@ Implementation of context optimization techniques adapted from the `evaluate-cod
 - Data Integrity (4 items)
 
 **Model Selection Guidance**:
+
 - Claude Opus → Planning, architecture, complex logic
 - Claude Sonnet → Repetitive components, tests, CRUD
 - Claude Opus → Final integration, edge cases, polish
@@ -2531,12 +2733,14 @@ Implementation of context optimization techniques adapted from the `evaluate-cod
 ### How It Works
 
 **Phase 1 (Immediate Value):** Quality improvements added directly to export-product.md prompts:
+
 - All generated prompts include TOP 3 RULES
 - All prompts include Final Verification Checklist
 - Both prompt types include Reporting Protocol guidance
 - Both prompt types include Model Selection guidance
 
 **Phase 2 (Long-term Maintainability):** Modular template system enables:
+
 - Single source of truth for prompt components
 - Easy updates: change template once, apply to all exports
 - Clear separation of concerns (preamble vs instructions vs rules vs checklists)
@@ -2580,11 +2784,11 @@ None (all modifications integrated into existing command files)
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/design-shell.md` | **Lines 174-178:** Added directory creation `mkdir -p src/shell` before Step 8 (ShellPreview.tsx creation). Prevents file write failures when parent directory doesn't exist |
-| `.claude/commands/design-os/design-screen.md` | **Line 42:** Changed shell detection from `src/shell/components/AppShell.tsx` to `product/shell/spec.md`. Standardizes with shape-section.md canonical check, prevents inconsistent shell detection across commands |
-| `.claude/commands/design-os/sample-data.md` | **Lines 165-213:** Restructured validation into explicit mandatory section with clear heading "Perform Data Validation". Added parsing instructions for extracting entity names from markdown headings (`### EntityName`). Clarified comparison logic: extract headings from data-model.md → match against _meta.models keys. Validation now fully executable without ambiguity |
+| File                                           | Modification                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-shell.md`   | **Lines 174-178:** Added directory creation `mkdir -p src/shell` before Step 8 (ShellPreview.tsx creation). Prevents file write failures when parent directory doesn't exist                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `.claude/commands/design-os/design-screen.md`  | **Line 42:** Changed shell detection from `src/shell/components/AppShell.tsx` to `product/shell/spec.md`. Standardizes with shape-section.md canonical check, prevents inconsistent shell detection across commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `.claude/commands/design-os/sample-data.md`    | **Lines 165-213:** Restructured validation into explicit mandatory section with clear heading "Perform Data Validation". Added parsing instructions for extracting entity names from markdown headings (`### EntityName`). Clarified comparison logic: extract headings from data-model.md → match against \_meta.models keys. Validation now fully executable without ambiguity                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `.claude/commands/design-os/export-product.md` | **Lines 535-594:** Added new Step 7.5 "Validate All Components" (blocking validation before export). Validates shell and section components for props-based pattern (no direct data imports, no state management, no routing). Clear failure handling: report failures, provide fix instructions, prevent partial exports. **Lines 669-819:** Added new Step 10.5 "Consolidate Data Model Types" (after component copying). Creates: `product-plan/data-model/types.ts` (consolidated entity types with JSDoc), `product-plan/data-model/README.md` (entity documentation), `product-plan/data-model/sample-data.json` (consolidated sample data). Ensures complete type definitions in export package. Updated all subsequent step numbers (8→9, 9→10, 10→11, etc. up to Step 18) |
 
 ### Gaps Resolved
@@ -2627,6 +2831,7 @@ None (all modifications integrated into existing command files)
 ### Verification
 
 All modifications validated for:
+
 - ✅ Logical consistency with existing patterns
 - ✅ Alignment with standardized patterns in agents.md
 - ✅ No conflicts with previous 23 fixes (Skills, Enhancements, Robustness)
@@ -2637,6 +2842,7 @@ All modifications validated for:
 ### Production Status
 
 **After Implementation:**
+
 - **Directory Creation:** COMPLETE (all parent directories created before file writes)
 - **Shell Detection:** STANDARDIZED (all commands check same canonical file)
 - **Validation:** MANDATORY (explicit execution, not optional)
@@ -2713,23 +2919,21 @@ None (all modifications integrated into existing files)
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/design-shell.md` | **Lines 126-136:** Added Step 6 "Read Design Guidance" instructing users to read `.claude/skills/frontend-design/SKILL.md` before creating shell components. Ensures shell has distinctive, production-grade aesthetics. Renumbered subsequent steps (Step 7→8, Step 8→9, Step 9→10) |
-| `agents.md` | **Lines 64-82:** Updated File Structure section to include `.claude/commands/` and `.claude/skills/` directory documentation. **Lines 181-230:** Added new "Skills & Design Guidance" section documenting: the frontend-design skill location and purpose, when/how skills integrate with commands (design-shell Step 6, design-screen Step 5), and design guidance hierarchy clarifying that both technical requirements and aesthetic guidance are MANDATORY |
+| File                                           | Modification                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-shell.md`   | **Lines 126-136:** Added Step 6 "Read Design Guidance" instructing users to read `.claude/skills/frontend-design/SKILL.md` before creating shell components. Ensures shell has distinctive, production-grade aesthetics. Renumbered subsequent steps (Step 7→8, Step 8→9, Step 9→10)                                                                                                                                                                                                                                                                       |
+| `agents.md`                                    | **Lines 64-82:** Updated File Structure section to include `.claude/commands/` and `.claude/skills/` directory documentation. **Lines 181-230:** Added new "Skills & Design Guidance" section documenting: the frontend-design skill location and purpose, when/how skills integrate with commands (design-shell Step 6, design-screen Step 5), and design guidance hierarchy clarifying that both technical requirements and aesthetic guidance are MANDATORY                                                                                             |
 | `.claude/commands/design-os/export-product.md` | **Lines 64-69:** Added `mkdir -p product-plan/design-guidance` directory creation. **Lines 80-81:** Updated export structure diagram to show `design-guidance/frontend-design.md`. **Lines 522-529:** Added Step 7 "Copy Design Guidance" instructing to copy `.claude/skills/frontend-design/SKILL.md` contents to export package. **Lines 1575-1576:** Updated README template "What's Included" section to document design-guidance folder. Renumbered subsequent steps (7→8, 8→9, etc. up to Step 15 in P0 fixes, now Step 14 in context optimization) |
 
 ### Gaps Resolved
 
 **Critical (P0) - 1 Issue:**
+
 1. **design-shell.md Missing Frontend-Design Skill Reference** → Added Step 6 to read skill before creating components. Ensures shell design quality matches section screens.
 
-**Medium (P1) - 2 Issues:**
-2. **agents.md Has No Documentation About Skills** → Added "Skills & Design Guidance" section with skill location, purpose, and integration points. Updated File Structure to document `.claude/skills/` organization.
-3. **export-product.md Doesn't Include Skills in Export Package** → Added Step 7 to copy frontend-design skill to `product-plan/design-guidance/`. Updated directory creation, export structure, and README template.
+**Medium (P1) - 2 Issues:** 2. **agents.md Has No Documentation About Skills** → Added "Skills & Design Guidance" section with skill location, purpose, and integration points. Updated File Structure to document `.claude/skills/` organization. 3. **export-product.md Doesn't Include Skills in Export Package** → Added Step 7 to copy frontend-design skill to `product-plan/design-guidance/`. Updated directory creation, export structure, and README template.
 
-**Clarity (P2) - 1 Issue:**
-4. **Logical Inconsistency: Skill Guidance vs. Design Requirements** → Clarified in agents.md that technical requirements (responsive, dark mode, props-based) and aesthetic guidance (distinctive UI, bold directions, thoughtful typography) are complementary and both MANDATORY for production-ready designs.
+**Clarity (P2) - 1 Issue:** 4. **Logical Inconsistency: Skill Guidance vs. Design Requirements** → Clarified in agents.md that technical requirements (responsive, dark mode, props-based) and aesthetic guidance (distinctive UI, bold directions, thoughtful typography) are complementary and both MANDATORY for production-ready designs.
 
 ### Statistics
 
@@ -2753,6 +2957,7 @@ None (all modifications integrated into existing files)
 ### Verification
 
 All modifications validated for:
+
 - ✅ Logical consistency with existing patterns
 - ✅ Alignment with previous 23 fixes (no conflicts)
 - ✅ Complete integration of frontend-design skill into workflow
@@ -2763,6 +2968,7 @@ All modifications validated for:
 ### Production Status
 
 **After Implementation:**
+
 - **Skills Integration:** COMPLETE (skill referenced in all UI design commands)
 - **Export Completeness:** ENHANCED (design guidance included in handoff packages)
 - **Design Consistency:** ASSURED (shell and sections follow same quality standards)
@@ -2827,29 +3033,22 @@ None (all fixes integrated into existing command files)
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/export-product.md` | **Lines 55-69:** Added explicit `mkdir -p` commands for root and all subdirectories before file creation. **Lines 568-588:** Added "If Component Validation Fails" section with clear workflow: stop export, report failures, provide fix instructions, prevent partial exports |
-| `.claude/commands/design-os/product-roadmap.md` | **Line 76:** Enhanced next step guidance to explicitly mention running `/design-tokens` after `/data-model`. **Lines 51-55:** Added `mkdir -p product` directory creation step for sync mode |
-| `.claude/commands/design-os/design-screen.md` | **Lines 75-83:** Added "Note on Multiple Views" section with clear guidance on file organization, Props interfaces, and exports for multi-view sections |
-| `.claude/commands/design-os/screenshot-design.md` | **Lines 80-88:** Added Step 3 with file validation using `if` statement to check both existence and content (non-empty) after screenshot copy |
-| `.claude/commands/design-os/sample-data.md` | **Lines 185-205:** Added Step 5.6 "Validate Entity Name Consistency" with 4-step validation process to ensure section data entity names match global data model |
-| `agents.md` | **Lines 113-114:** Removed separate `02-shell.md` milestone entry. Updated incremental structure to show only `01-foundation.md` followed by section milestones (02+), clarifying that Foundation includes design tokens, data model, routing, AND shell together |
+| File                                              | Modification                                                                                                                                                                                                                                                                    |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/export-product.md`    | **Lines 55-69:** Added explicit `mkdir -p` commands for root and all subdirectories before file creation. **Lines 568-588:** Added "If Component Validation Fails" section with clear workflow: stop export, report failures, provide fix instructions, prevent partial exports |
+| `.claude/commands/design-os/product-roadmap.md`   | **Line 76:** Enhanced next step guidance to explicitly mention running `/design-tokens` after `/data-model`. **Lines 51-55:** Added `mkdir -p product` directory creation step for sync mode                                                                                    |
+| `.claude/commands/design-os/design-screen.md`     | **Lines 75-83:** Added "Note on Multiple Views" section with clear guidance on file organization, Props interfaces, and exports for multi-view sections                                                                                                                         |
+| `.claude/commands/design-os/screenshot-design.md` | **Lines 80-88:** Added Step 3 with file validation using `if` statement to check both existence and content (non-empty) after screenshot copy                                                                                                                                   |
+| `.claude/commands/design-os/sample-data.md`       | **Lines 185-205:** Added Step 5.6 "Validate Entity Name Consistency" with 4-step validation process to ensure section data entity names match global data model                                                                                                                 |
+| `agents.md`                                       | **Lines 113-114:** Removed separate `02-shell.md` milestone entry. Updated incremental structure to show only `01-foundation.md` followed by section milestones (02+), clarifying that Foundation includes design tokens, data model, routing, AND shell together               |
 
 ### Gaps Resolved
 
 **Critical (P0) - 1 Issue:**
+
 1. **export-product.md missing root directory creation** → Added explicit `mkdir -p product-plan` with all subdirectories
 
-**Medium (P1) - 8 Issues:**
-2. **product-roadmap.md incomplete next step guidance** → Enhanced to include design-tokens in sequence
-3. **agents.md vs export-product.md milestone structure contradiction** → Aligned by removing separate shell milestone
-4. **product-roadmap.md missing directory creation in sync mode** → Added `mkdir -p product` step
-5. **screenshot-design.md no validation after capture** → Added file existence and content validation
-6. **export-product.md missing subdirectory creation commands** → Added all required mkdir commands
-7. **sample-data.md no entity name consistency validation** → Added comprehensive validation step
-8. **design-screen.md ambiguous multi-view file organization** → Added clear guidance for file structure and Props interfaces
-9. **export-product.md no workflow for validation failures** → Added detailed failure handling with stop/report/fix/prevent guidance
+**Medium (P1) - 8 Issues:** 2. **product-roadmap.md incomplete next step guidance** → Enhanced to include design-tokens in sequence 3. **agents.md vs export-product.md milestone structure contradiction** → Aligned by removing separate shell milestone 4. **product-roadmap.md missing directory creation in sync mode** → Added `mkdir -p product` step 5. **screenshot-design.md no validation after capture** → Added file existence and content validation 6. **export-product.md missing subdirectory creation commands** → Added all required mkdir commands 7. **sample-data.md no entity name consistency validation** → Added comprehensive validation step 8. **design-screen.md ambiguous multi-view file organization** → Added clear guidance for file structure and Props interfaces 9. **export-product.md no workflow for validation failures** → Added detailed failure handling with stop/report/fix/prevent guidance
 
 ### Statistics
 
@@ -2874,6 +3073,7 @@ None (all fixes integrated into existing command files)
 ### Verification
 
 All modifications validated for:
+
 - ✅ Logical consistency with existing patterns
 - ✅ Alignment with agents.md standardization patterns
 - ✅ No conflicts with previous 14 fixes
@@ -2884,6 +3084,7 @@ All modifications validated for:
 ### Production Status
 
 **After Implementation:**
+
 - **Completeness:** 100% (23/23 total issues resolved: 14 + 9)
 - **Robustness:** HIGH (complete directory creation, validation at all checkpoints)
 - **Error Handling:** COMPREHENSIVE (specific workflows for all failure scenarios)
@@ -2925,43 +3126,37 @@ Comprehensive critical analysis of the Design OS project identifying 14 critical
 
 ### New Files Created
 
-| File | Description |
-|------|-------------|
+| File                                     | Description                                                                              |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------- |
 | `.claude/plans/floofy-moseying-lemur.md` | Complete critical analysis report with 14 issues identified and detailed recommendations |
 
 ### Modified Files
 
-| File | Modification |
-|------|--------------|
-| `.claude/commands/design-os/design-screen.md` | **Lines 75-88:** Fixed ambiguous "Invoke the Frontend Design Skill" vs "Read the file" contradiction. Added clear header "Read Frontend Design Guidance" and Key Design Principles section with 5 concrete principles |
-| `.claude/commands/design-os/sample-data.md` | **Line 154+:** Added Step 5.5 "Validate Data Structure" with comprehensive checklist for `_meta` structure validation. **Lines 102-107:** Added directory creation step with `mkdir -p` |
-| `.claude/commands/design-os/export-product.md` | **Lines 444-453:** Added "Implementation Sequence" section clarifying Foundation milestone includes design tokens + data model + routing + shell. **Lines 528-549:** Added "Validate Components Before Export" section with checklist to prevent non-portable component export |
-| `.claude/commands/design-os/design-shell.md` | **Lines 155-190:** Removed hardcoded import of `product/sections/[first-section]/data.json`. Changed to placeholder mock data that works independently. **Lines 87-93:** Added directory creation steps (`mkdir -p product/shell` + `mkdir -p src/shell/components`) |
-| `.claude/commands/design-os/screenshot-design.md` | **Lines 105-128:** Added Step 6 "Clean Up - Kill Dev Server" with explicit `pkill -f "npm run dev"` and verification with `lsof -i :3000`. Updated Important Notes to reflect explicit cleanup requirement |
-| `.claude/commands/design-os/shape-section.md` | **Lines 53-67:** Changed shell verification from checking `AppShell.tsx` component to checking `product/shell/spec.md` specification file (more reliable). **Lines 98-103:** Added directory creation step with `mkdir -p product/sections/[section-id]` |
-| `.claude/commands/design-os/product-vision.md` | **Lines 59-66:** Added directory creation step with `mkdir -p product` before file creation |
-| `.claude/commands/design-os/data-model.md` | **Lines 74-81:** Added directory creation step with `mkdir -p product/data-model` before file creation |
-| `.claude/commands/design-os/design-tokens.md` | **Lines 103-108:** Added directory creation step with `mkdir -p product/design-system` before file creation |
-| `agents.md` | **Lines 220-277:** Added new "Standardized Prerequisite Checks" section documenting patterns for all future commands: Required vs Optional prerequisites, standard error messages, directory creation pattern, and file validation pattern |
+| File                                              | Modification                                                                                                                                                                                                                                                                   |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `.claude/commands/design-os/design-screen.md`     | **Lines 75-88:** Fixed ambiguous "Invoke the Frontend Design Skill" vs "Read the file" contradiction. Added clear header "Read Frontend Design Guidance" and Key Design Principles section with 5 concrete principles                                                          |
+| `.claude/commands/design-os/sample-data.md`       | **Line 154+:** Added Step 5.5 "Validate Data Structure" with comprehensive checklist for `_meta` structure validation. **Lines 102-107:** Added directory creation step with `mkdir -p`                                                                                        |
+| `.claude/commands/design-os/export-product.md`    | **Lines 444-453:** Added "Implementation Sequence" section clarifying Foundation milestone includes design tokens + data model + routing + shell. **Lines 528-549:** Added "Validate Components Before Export" section with checklist to prevent non-portable component export |
+| `.claude/commands/design-os/design-shell.md`      | **Lines 155-190:** Removed hardcoded import of `product/sections/[first-section]/data.json`. Changed to placeholder mock data that works independently. **Lines 87-93:** Added directory creation steps (`mkdir -p product/shell` + `mkdir -p src/shell/components`)           |
+| `.claude/commands/design-os/screenshot-design.md` | **Lines 105-128:** Added Step 6 "Clean Up - Kill Dev Server" with explicit `pkill -f "npm run dev"` and verification with `lsof -i :3000`. Updated Important Notes to reflect explicit cleanup requirement                                                                     |
+| `.claude/commands/design-os/shape-section.md`     | **Lines 53-67:** Changed shell verification from checking `AppShell.tsx` component to checking `product/shell/spec.md` specification file (more reliable). **Lines 98-103:** Added directory creation step with `mkdir -p product/sections/[section-id]`                       |
+| `.claude/commands/design-os/product-vision.md`    | **Lines 59-66:** Added directory creation step with `mkdir -p product` before file creation                                                                                                                                                                                    |
+| `.claude/commands/design-os/data-model.md`        | **Lines 74-81:** Added directory creation step with `mkdir -p product/data-model` before file creation                                                                                                                                                                         |
+| `.claude/commands/design-os/design-tokens.md`     | **Lines 103-108:** Added directory creation step with `mkdir -p product/design-system` before file creation                                                                                                                                                                    |
+| `agents.md`                                       | **Lines 220-277:** Added new "Standardized Prerequisite Checks" section documenting patterns for all future commands: Required vs Optional prerequisites, standard error messages, directory creation pattern, and file validation pattern                                     |
 
 ### Gaps Resolved
 
 **Critical (P0) - 4 Issues:**
+
 1. **design-screen.md ambiguous frontend-design reference** → Clarified with "Read Frontend Design Guidance" header and Key Design Principles section
 2. **sample-data.md missing `_meta` validation** → Added Step 5.5 with comprehensive validation checklist including existence, structure, and consistency checks
 3. **export-product.md Foundation milestone contradiction** → Clarified that Foundation = design tokens + data model + routing + shell (all together, one milestone)
 4. **design-shell.md hardcoded import fails without sections** → Changed to placeholder mock data that always works independently
 
-**Medium (P1) - 6 Issues:**
-5. **export-product.md no component validation** → Added "Validate Components Before Export" section with checks for props-based pattern compliance
-6. **screenshot-design.md vague dev server cleanup** → Added explicit Step 6 with pkill command and port verification
-7. **shape-section.md unreliable shell check** → Changed from component check to spec file check
-8. **product-vision.md no directory creation** → Added `mkdir -p product` step
-9. **data-model.md no directory creation** → Added `mkdir -p product/data-model` step
-10. **design-tokens.md no directory creation** → Added `mkdir -p product/design-system` step
+**Medium (P1) - 6 Issues:** 5. **export-product.md no component validation** → Added "Validate Components Before Export" section with checks for props-based pattern compliance 6. **screenshot-design.md vague dev server cleanup** → Added explicit Step 6 with pkill command and port verification 7. **shape-section.md unreliable shell check** → Changed from component check to spec file check 8. **product-vision.md no directory creation** → Added `mkdir -p product` step 9. **data-model.md no directory creation** → Added `mkdir -p product/data-model` step 10. **design-tokens.md no directory creation** → Added `mkdir -p product/design-system` step
 
-**Additional (Enhancement) - 1 Issue:**
-11. **Missing standardization guide for future commands** → Added "Standardized Prerequisite Checks" section to agents.md documenting patterns, error messages, and validation approaches
+**Additional (Enhancement) - 1 Issue:** 11. **Missing standardization guide for future commands** → Added "Standardized Prerequisite Checks" section to agents.md documenting patterns, error messages, and validation approaches
 
 ### Statistics
 
@@ -2989,6 +3184,7 @@ Comprehensive critical analysis of the Design OS project identifying 14 critical
 ### Verification
 
 All modifications validated for:
+
 - ✅ Logical consistency across all commands
 - ✅ No broken references between commands
 - ✅ Clear error messages and prerequisite checking
@@ -2999,6 +3195,7 @@ All modifications validated for:
 ### Production Status
 
 **Before Implementation:**
+
 - Completeness: 71% (10/14 critical issues)
 - Robustness: MEDIUM (some error cases not handled)
 - Error Handling: INCONSISTENT (varied approaches)
@@ -3006,6 +3203,7 @@ All modifications validated for:
 - Production Ready: ❌ NO
 
 **After Implementation:**
+
 - Completeness: 100% (14/14 issues resolved)
 - Robustness: HIGH (all edge cases handled)
 - Error Handling: STANDARDIZED (consistent patterns)
@@ -3059,29 +3257,35 @@ and standardized patterns for all commands.
 ## [YYYY-MM-DD HH:MM] Modification Title
 
 ### Description
+
 Brief description of what was modified and why.
 
 ### New Files Created
-| File | Description |
-|------|-------------|
+
+| File              | Description |
+| ----------------- | ----------- |
 | `path/to/file.md` | Description |
 
 ### Modified Files
-| File | Modification |
-|------|--------------|
+
+| File              | Modification |
+| ----------------- | ------------ |
 | `path/to/file.md` | What changed |
 
 ### Gaps Resolved
+
 - **P0:** Critical issues with blocking impact
 - **P1:** Major issues affecting functionality
 - **P2:** Minor issues or enhancements
 
 ### Statistics
+
 - Files modified: N
 - Lines changed: N
 - Issues resolved: N
 
 ### Verification
+
 - ✅ Issue resolved
 - ✅ Tests passing
 - ✅ Documentation updated

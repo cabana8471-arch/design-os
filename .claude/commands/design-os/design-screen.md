@@ -38,6 +38,7 @@ The skill file provides guidance on creating distinctive, production-grade inter
 ```
 
 Use AskUserQuestion with options:
+
 - "Continue with basic design principles" — Proceed using fallback guidance
 - "Stop — I'll add the skill file first" — END COMMAND
 
@@ -69,10 +70,10 @@ echo "Extracted section-id: $SECTION_ID"
 
 Compare the extracted section-id with the section selected from the roadmap:
 
-| Source | Section ID |
-|--------|------------|
-| From roadmap selection | `[selected-section-id]` |
-| From spec path | `[extracted-section-id]` |
+| Source                 | Section ID               |
+| ---------------------- | ------------------------ |
+| From roadmap selection | `[selected-section-id]`  |
+| From spec path         | `[extracted-section-id]` |
 
 **3. If IDs don't match:**
 
@@ -85,6 +86,7 @@ This may indicate a file was moved or renamed. Please verify you're working with
 ```
 
 Use AskUserQuestion with options:
+
 - "Continue with roadmap section" — Use the section ID from roadmap
 - "Continue with spec path section" — Use the section ID from file path
 - "Cancel — I'll verify the files first" — END COMMAND
@@ -102,16 +104,19 @@ Verify all required files exist for the selected section:
 If any file is missing, show a specific error message:
 
 **If `spec.md` doesn't exist:**
+
 ```
 Error: spec.md - File not found at product/sections/[section-id]/spec.md. Run /shape-section to create it.
 ```
 
 **If `data.json` doesn't exist:**
+
 ```
 Error: data.json - File not found at product/sections/[section-id]/data.json. Run /sample-data to create it.
 ```
 
 **If `types.ts` doesn't exist:**
+
 ```
 Error: types.ts - File not found at product/sections/[section-id]/types.ts. Run /sample-data to create it.
 ```
@@ -123,6 +128,7 @@ Stop here if any required file is missing.
 Check for optional enhancements:
 
 **Design Tokens:**
+
 - Check if `/product/design-system/colors.json` exists
 - Check if `/product/design-system/typography.json` exists
 
@@ -131,6 +137,7 @@ If design tokens exist, read them and use them for styling. If they don't exist,
 "Note: Design tokens haven't been defined yet. I'll use default styling, but for consistent branding, consider running `/design-tokens` first."
 
 **Shell:**
+
 - Check if `product/shell/spec.md` exists
 
 If shell exists, the screen design will render inside the shell in Design OS. If not, show a warning:
@@ -138,17 +145,82 @@ If shell exists, the screen design will render inside the shell in Design OS. If
 "Note: An application shell hasn't been designed yet. The screen design will render standalone. Consider running `/design-shell` first to see section screen designs in the full app context."
 
 **Design Direction:**
+
 - Check if `/product/design-system/design-direction.md` exists
 
 If design direction exists, read it and display a confirmation:
 
-"I found your Design Direction document. I'll ensure this screen design follows the established aesthetic: [aesthetic tone from document]"
+"I found your Design Direction document. I'll ensure this screen design follows the established aesthetic."
 
-Read the key sections:
-- **Visual Signatures** — Elements that MUST appear consistently
-- **Color Application** — How primary/secondary/neutral colors are used
-- **Motion & Interaction** — Animation style and timing
-- **Consistency Guidelines** — Rules that MUST remain consistent
+### Parse Design Direction
+
+Read and extract the key preferences from the design direction document:
+
+**1. User Preferences Table:**
+
+Extract the values from the `## User Preferences` section:
+
+| Setting                 | Value to Apply                                        |
+| ----------------------- | ----------------------------------------------------- |
+| **Aesthetic Tone**      | Professional / Modern / Minimal / Playful / Technical |
+| **Animation Style**     | None / Subtle / Standard / Rich                       |
+| **Information Density** | Compact / Comfortable / Spacious                      |
+| **Responsive Priority** | Desktop-first / Mobile-first / Balanced               |
+
+**2. Apply Aesthetic Guidelines:**
+
+Based on the **Aesthetic Tone** value:
+
+| Tone         | Apply These Patterns                                      |
+| ------------ | --------------------------------------------------------- |
+| Professional | Muted colors, clear hierarchy, rounded-md borders         |
+| Modern       | High contrast, bold typography, rounded-lg to rounded-xl  |
+| Minimal      | Max whitespace, monochromatic palette, shadow-sm or none  |
+| Playful      | Warm palette, rounded-xl to rounded-2xl, generous padding |
+| Technical    | Dense layouts, monospace for data, minimal border radius  |
+
+**3. Apply Animation Timing:**
+
+Based on the **Animation Style** value:
+
+| Style    | Hover | Entry/Exit | Micro-interactions |
+| -------- | ----- | ---------- | ------------------ |
+| None     | 0ms   | 0ms        | Disabled           |
+| Subtle   | 150ms | 200ms      | Fade only          |
+| Standard | 200ms | 300ms      | Fade + scale       |
+| Rich     | 250ms | 400ms      | Full animations    |
+
+**4. Apply Spacing Scale:**
+
+Based on the **Information Density** value:
+
+| Density     | Card Padding | Section Gap | Component Spacing |
+| ----------- | ------------ | ----------- | ----------------- |
+| Compact     | p-3          | gap-4       | space-y-2         |
+| Comfortable | p-5          | gap-6       | space-y-4         |
+| Spacious    | p-8          | gap-10      | space-y-6         |
+
+**5. Apply Responsive Approach:**
+
+Based on the **Responsive Priority** value:
+
+| Priority      | Tailwind Approach                                            |
+| ------------- | ------------------------------------------------------------ |
+| Desktop-first | Design for lg: first, then adapt with default and sm:        |
+| Mobile-first  | Design for default (mobile) first, enhance with md:, lg:     |
+| Balanced      | Design all breakpoints equally, test at 375px, 768px, 1024px |
+
+### Display Confirmation
+
+After parsing, show the user what will be applied:
+
+```
+Design Direction loaded:
+- Aesthetic: [Aesthetic Tone] — [brief description of what this means]
+- Animation: [Animation Style] — [timing to be used]
+- Density: [Information Density] — [spacing to be applied]
+- Responsive: [Responsive Priority] — [approach to be taken]
+```
 
 If design direction doesn't exist but shell exists, show a warning:
 
@@ -174,6 +246,7 @@ The `## Views` section in spec.md defines all views for a section. Extract views
 
 ```markdown
 ## Views
+
 - ListView — Shows all items in a table with filtering
 - DetailView — Displays single item details with edit capability
 - CreateForm — Modal form for adding new items
@@ -211,20 +284,83 @@ if len(views) == 0:
 
 **Common view patterns:**
 
-| Pattern | Views | Use Case |
-|---------|-------|----------|
-| Single view | `[SectionName]View` | Simple sections (settings, about page) |
-| List + Detail | `ListView`, `DetailView` | CRUD for a single entity |
-| List + Detail + Form | `ListView`, `DetailView`, `CreateForm` | Full CRUD operations |
-| Dashboard + Settings | `DashboardView`, `SettingsView` | Section with config |
+| Pattern              | Views                                  | Use Case                               |
+| -------------------- | -------------------------------------- | -------------------------------------- |
+| Single view          | `[SectionName]View`                    | Simple sections (settings, about page) |
+| List + Detail        | `ListView`, `DetailView`               | CRUD for a single entity               |
+| List + Detail + Form | `ListView`, `DetailView`, `CreateForm` | Full CRUD operations                   |
+| Dashboard + Settings | `DashboardView`, `SettingsView`        | Section with config                    |
 
 **Validation:**
 
 If the `## Views` section exists but has no valid entries:
+
 ```
 Warning: spec.md has a ## Views section but no views could be parsed.
 Expected format: "- ViewName — Description"
 Proceeding as single-view section.
+```
+
+### Layout Patterns Extraction from spec.md
+
+The `## Layout Patterns` section in spec.md defines the preferred layouts for different screen sizes (added by `/shape-section`):
+
+**Expected spec.md format:**
+
+```markdown
+## Layout Patterns
+
+- **Desktop:** Table + Drawer
+- **Mobile/Tablet:** Card Stack
+- **Responsive Behavior:** Different patterns
+```
+
+**Extraction rules:**
+
+1. Look for `## Layout Patterns` section in spec.md
+2. Parse the three entries: Desktop, Mobile/Tablet, Responsive Behavior
+3. If section doesn't exist, use defaults based on content type
+
+**Layout Pattern Values:**
+
+| Pattern              | Description                             | Component Pattern                                |
+| -------------------- | --------------------------------------- | ------------------------------------------------ |
+| **Desktop Patterns** |                                         |                                                  |
+| Table + Drawer       | Data table, row click opens drawer      | `<DataTable />` + `<Drawer />`                   |
+| Card Grid            | Visual cards in grid layout             | `<div className="grid grid-cols-3">`             |
+| Split View           | Master list + detail panel side-by-side | `<div className="flex"><List /><Detail /></div>` |
+| Full-Page Detail     | Navigate to separate detail page        | Router-based navigation                          |
+| **Mobile Patterns**  |                                         |                                                  |
+| Card Stack           | Vertical scrolling cards                | `<div className="space-y-4">`                    |
+| Compact List         | Minimal list items                      | `<ul className="divide-y">`                      |
+| Bottom Sheet         | Details in swipe-up sheet               | `<BottomSheet />` component                      |
+| Accordion            | Inline expandable items                 | `<Accordion />` component                        |
+
+**Responsive Behavior Values:**
+
+| Behavior                 | Implementation                              |
+| ------------------------ | ------------------------------------------- |
+| Same pattern, adapted    | Use same component, responsive classes only |
+| Different patterns       | Render different components per breakpoint  |
+| Mobile-first progressive | Start mobile, add desktop enhancements      |
+
+**Apply Layout Patterns:**
+
+When creating the screen design components:
+
+1. **For Desktop:** Use the specified desktop pattern as the primary layout
+2. **For Mobile/Tablet:** Use the specified mobile pattern or adapt desktop
+3. **Responsive classes:** Apply Tailwind breakpoint classes based on behavior:
+   - Same pattern: `className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"`
+   - Different patterns: `{isMobile ? <CardStack /> : <DataTable />}` or `className="hidden lg:block"`
+
+**If Layout Patterns section is missing:**
+
+```
+Note: No Layout Patterns specified in spec.md. I'll use sensible defaults based on the content type:
+- List views → Table (desktop), Cards (mobile)
+- Detail views → Full width (all sizes)
+- Forms → Single column (mobile), Two columns (desktop)
 ```
 
 ## Step 4: Clarify the Screen Design Scope
@@ -244,6 +380,7 @@ ls src/sections/[section-id]/*.tsx 2>/dev/null | grep -v components || echo "No 
 If components already exist, report them to the user:
 
 "I found the following screen designs already created for **[Section Title]**:
+
 - [Existing View 1] (component + preview)
 - [Existing View 2] (component + preview)
 
@@ -297,6 +434,7 @@ src/sections/[section-id]/
 ```
 
 **Key points:**
+
 - Each view has its own component AND preview wrapper
 - All views share the same `data.json` and `types.ts`
 - Sub-components can be shared across views (import from `./[SubComponent]`)
@@ -306,21 +444,23 @@ src/sections/[section-id]/
 
 When working with sections that have multiple views, here's how the commands work together:
 
-| Step | Command | What It Does for Multi-View Sections |
-|------|---------|--------------------------------------|
-| 1 | `/shape-section` | Defines all views in the `## Views` section of `spec.md` |
-| 2 | `/sample-data` | Creates data for ALL views in a single `data.json`, creates Props interfaces for EACH view in `types.ts` |
-| 3 | `/design-screen` | Run N times (once per view). Each run creates one component + preview wrapper |
-| 4 | `/screenshot-design` | Run N times (once per view). Each run captures one screenshot |
-| 5 | `/export-product` | Exports ALL view components together with their shared types |
+| Step | Command              | What It Does for Multi-View Sections                                                                     |
+| ---- | -------------------- | -------------------------------------------------------------------------------------------------------- |
+| 1    | `/shape-section`     | Defines all views in the `## Views` section of `spec.md`                                                 |
+| 2    | `/sample-data`       | Creates data for ALL views in a single `data.json`, creates Props interfaces for EACH view in `types.ts` |
+| 3    | `/design-screen`     | Run N times (once per view). Each run creates one component + preview wrapper                            |
+| 4    | `/screenshot-design` | Run N times (once per view). Each run captures one screenshot                                            |
+| 5    | `/export-product`    | Exports ALL view components together with their shared types                                             |
 
 **Workflow Tips:**
+
 - Check the spec's `## Views` section to know how many views exist
 - Track which views have been created (check `src/sections/[id]/components/`)
 - Complete all views before running `/screenshot-design`
 - If you add a new view to the spec later, run `/sample-data` again to update `types.ts`
 
 **Common Issues:**
+
 - **Missing view in types.ts:** Re-run `/sample-data` to regenerate Props interfaces
 - **View component exists but no preview:** Create the preview wrapper manually or re-run `/design-screen`
 - **Inconsistent styling between views:** Use shared sub-components and import them in all views
@@ -328,6 +468,7 @@ When working with sections that have multiple views, here's how the commands wor
 ### Default View Routing
 
 When navigating to `/sections/[section-id]`:
+
 - The **first view listed in the spec** is the default view
 - Other views are accessed via `/sections/[section-id]/screen-designs/[ViewName]` (matching the component file name, PascalCase)
 - Name your primary view first (e.g., "ListView" before "DetailView")
@@ -355,6 +496,7 @@ If the user chose to continue without the skill file, use the **fallback design 
 ### Key Design Principles to Follow
 
 Regardless of which scenario applies, ensure the screen design follows these principles:
+
 - Create distinctive, non-generic interfaces that avoid common AI design patterns
 - Use creative layouts with strong visual hierarchy
 - Apply thoughtful spacing and typography choices
@@ -378,6 +520,7 @@ ls src/sections/*/components/*.tsx 2>/dev/null | head -10
 4. **Component patterns** — Check for card styles, button styles, table layouts
 
 Example analysis:
+
 ```bash
 # Extract color patterns from existing components
 grep -rh 'bg-[a-z]+-[0-9]\+' src/sections/*/components/*.tsx 2>/dev/null | sort | uniq -c | sort -rn | head -5
@@ -392,6 +535,7 @@ grep -rh 'p-[0-9]\+\|px-[0-9]\+\|py-[0-9]\+' src/sections/*/components/*.tsx 2>/
 
 **Report to user:**
 "I found [N] existing section(s) with screen designs. I'll match the established patterns:
+
 - Primary color: [color]-[shade] for buttons/accents
 - Card style: [padding], [border/shadow style]
 - Spacing: [consistent spacing pattern]"
@@ -401,11 +545,13 @@ grep -rh 'p-[0-9]\+\|px-[0-9]\+\|py-[0-9]\+' src/sections/*/components/*.tsx 2>/
 ### Create Directory
 
 First, create the necessary directories if they don't exist:
+
 ```bash
 mkdir -p src/sections/[section-id]/components
 ```
 
 Then validate the directory was created successfully:
+
 ```bash
 if [ ! -d "src/sections/[section-id]/components" ]; then
   echo "Error: src/sections/[section-id]/components/ - Directory creation failed. Check write permissions."
@@ -430,19 +576,21 @@ The component MUST:
 
 Components in Design OS use relative import paths. Here's how imports work for different file types:
 
-| File Type | Import From Component | Example |
-|-----------|----------------------|---------|
-| **Types** (types.ts in product/) | Alias path via product | `import type { InvoiceListProps } from '@/../product/sections/invoices/types'` |
+| File Type                               | Import From Component  | Example                                                                                       |
+| --------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------- |
+| **Types** (types.ts in product/)        | Alias path via product | `import type { InvoiceListProps } from '@/../product/sections/invoices/types'`                |
 | **Sample data** (data.json in product/) | Alias path via product | `import invoiceData from '@/../product/sections/invoices/data.json'` (preview wrappers only!) |
-| **Sub-components** (in same directory) | Relative path | `import { StatusBadge } from './StatusBadge'` |
-| **UI components** (shared library) | Alias path | `import { Button } from '@/components/ui/button'` |
+| **Sub-components** (in same directory)  | Relative path          | `import { StatusBadge } from './StatusBadge'`                                                 |
+| **UI components** (shared library)      | Alias path             | `import { Button } from '@/components/ui/button'`                                             |
 
 **Path Resolution:**
+
 - `@/` resolves to `src/` (TypeScript path alias)
 - `@/../product/` resolves to the `product/` directory (for types.ts access)
 - Relative paths (e.g., `./StatusBadge`) stay within the section's component folder
 
 **Why `@/../product/`?**
+
 - Components live in `src/sections/[section-id]/components/`
 - Types live in `product/sections/[section-id]/types.ts`
 - The `@/../product/` pattern navigates from `src/` up to root, then into `product/`
@@ -454,14 +602,14 @@ Components in Design OS use relative import paths. Here's how imports work for d
 // Types location: product/sections/invoices/types.ts
 
 // Import types using the @/../product/ pattern
-import type { InvoiceListProps } from '@/../product/sections/invoices/types'
+import type { InvoiceListProps } from "@/../product/sections/invoices/types";
 
 export function InvoiceList({
   invoices,
   onView,
   onEdit,
   onDelete,
-  onCreate
+  onCreate,
 }: InvoiceListProps) {
   return (
     <div className="max-w-4xl mx-auto">
@@ -471,7 +619,7 @@ export function InvoiceList({
       <button onClick={onCreate}>Create Invoice</button>
 
       {/* Example: Mapping data with callbacks */}
-      {invoices.map(invoice => (
+      {invoices.map((invoice) => (
         <div key={invoice.id}>
           <span>{invoice.clientName}</span>
           <button onClick={() => onView?.(invoice.id)}>View</button>
@@ -480,7 +628,7 @@ export function InvoiceList({
         </div>
       ))}
     </div>
-  )
+  );
 }
 ```
 
@@ -494,15 +642,18 @@ export function InvoiceList({
 ### Applying Design Tokens
 
 **If `/product/design-system/colors.json` exists:**
+
 - Use the primary color for buttons, links, and key accents
 - Use the secondary color for tags, highlights, secondary elements
 - Use the neutral color for backgrounds, text, and borders
 
 **If `/product/design-system/typography.json` exists:**
+
 - Note the font choices for reference in comments
 - The fonts will be applied at the app level, but use appropriate font weights
 
 **If design tokens don't exist:**
+
 - Fall back to `stone` for neutrals and `lime` for accents (Design OS defaults)
 
 ### Design Token Shade Guide
@@ -540,6 +691,7 @@ Use specific shades for each UI element type to ensure consistency:
 | Disabled element | `[neutral]-300` | `[neutral]-700` |
 
 **Example Usage:**
+
 ```tsx
 // Primary button
 <button className="bg-lime-600 hover:bg-lime-700 dark:bg-lime-500 dark:hover:bg-lime-400 text-white">
@@ -583,16 +735,21 @@ Create sub-components at `src/sections/[section-id]/components/[SubComponent].ts
 Example:
 
 ```tsx
-import type { Invoice } from '@/../product/sections/[section-id]/types'
+import type { Invoice } from "@/../product/sections/[section-id]/types";
 
 interface InvoiceRowProps {
-  invoice: Invoice
-  onView?: () => void
-  onEdit?: () => void
-  onDelete?: () => void
+  invoice: Invoice;
+  onView?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export function InvoiceRow({ invoice, onView, onEdit, onDelete }: InvoiceRowProps) {
+export function InvoiceRow({
+  invoice,
+  onView,
+  onEdit,
+  onDelete,
+}: InvoiceRowProps) {
   return (
     <div className="flex items-center justify-between p-4 border-b">
       <div>
@@ -605,19 +762,24 @@ export function InvoiceRow({ invoice, onView, onEdit, onDelete }: InvoiceRowProp
         <button onClick={onDelete}>Delete</button>
       </div>
     </div>
-  )
+  );
 }
 ```
 
 Then import and use in the main component:
 
 ```tsx
-import { InvoiceRow } from './InvoiceRow'
+import { InvoiceRow } from "./InvoiceRow";
 
-export function InvoiceList({ invoices, onView, onEdit, onDelete }: InvoiceListProps) {
+export function InvoiceList({
+  invoices,
+  onView,
+  onEdit,
+  onDelete,
+}: InvoiceListProps) {
   return (
     <div>
-      {invoices.map(invoice => (
+      {invoices.map((invoice) => (
         <InvoiceRow
           key={invoice.id}
           invoice={invoice}
@@ -627,7 +789,7 @@ export function InvoiceList({ invoices, onView, onEdit, onDelete }: InvoiceListP
         />
       ))}
     </div>
-  )
+  );
 }
 ```
 
@@ -640,19 +802,19 @@ This wrapper is what Design OS renders. It imports the sample data and feeds it 
 Example:
 
 ```tsx
-import data from '@/../product/sections/[section-id]/data.json'
-import { InvoiceList } from './components/InvoiceList'
+import data from "@/../product/sections/[section-id]/data.json";
+import { InvoiceList } from "./components/InvoiceList";
 
 export default function InvoiceListPreview() {
   return (
     <InvoiceList
       invoices={data.invoices}
-      onView={(id) => console.log('View invoice:', id)}
-      onEdit={(id) => console.log('Edit invoice:', id)}
-      onDelete={(id) => console.log('Delete invoice:', id)}
-      onCreate={() => console.log('Create new invoice')}
+      onView={(id) => console.log("View invoice:", id)}
+      onEdit={(id) => console.log("Edit invoice:", id)}
+      onDelete={(id) => console.log("Delete invoice:", id)}
+      onCreate={() => console.log("Create new invoice")}
     />
-  )
+  );
 }
 ```
 
@@ -670,6 +832,7 @@ The preview wrapper:
 For sections with multiple views (defined in the spec's `## Views` section), you need to create a separate preview wrapper for each view.
 
 **Workflow for multi-view sections:**
+
 1. Run `/design-screen` for the first view (e.g., "List view")
    - Creates: `src/sections/[section-id]/InvoiceListView.tsx` (preview wrapper)
    - Creates: `src/sections/[section-id]/components/InvoiceList.tsx` (exportable component)
@@ -679,6 +842,7 @@ For sections with multiple views (defined in the spec's `## Views` section), you
 3. Repeat for each additional view
 
 **File structure after multiple views:**
+
 ```
 src/sections/invoices/
 ├── InvoiceListView.tsx       ← Preview wrapper for list view
@@ -691,6 +855,7 @@ src/sections/invoices/
 ```
 
 **Each preview wrapper is independent:**
+
 - Uses the same `data.json` (shared sample data)
 - Passes relevant data to its specific component
 - Can reference other views via callbacks (e.g., `onViewDetail` navigates to detail view)
@@ -710,19 +875,23 @@ The index file should export:
 ### Export Requirements
 
 **Always export:**
+
 - All view components (e.g., `InvoiceList`, `InvoiceDetail`)
 - Components that might be reused in other sections
 
 **Optionally export:**
+
 - Internal sub-components used only within this section (e.g., `InvoiceRow`)
 - Helper components that aren't standalone (consider keeping private)
 
 **Re-export Props interfaces:**
+
 - Include Props interfaces so consumers can import from one location
 - This makes the component API more discoverable
 
 **Where do Props come from?**
 Props interfaces are defined in `product/sections/[section-id]/types.ts` by the `/sample-data` command. The types.ts file contains BOTH:
+
 - Entity types (e.g., `Invoice`, `LineItem`) — describe the data structure
 - Props interfaces (e.g., `InvoiceListProps`) — describe component inputs including data and callbacks
 
@@ -732,20 +901,27 @@ Components import Props from types.ts, not define them locally. This ensures Pro
 
 ```tsx
 // Re-export components
-export { InvoiceList } from './InvoiceList'
-export { InvoiceDetail } from './InvoiceDetail'
-export { InvoiceRow } from './InvoiceRow'
+export { InvoiceList } from "./InvoiceList";
+export { InvoiceDetail } from "./InvoiceDetail";
+export { InvoiceRow } from "./InvoiceRow";
 
 // Re-export Props interfaces for convenience
-export type { InvoiceListProps, InvoiceDetailProps } from '@/../product/sections/[section-id]/types'
+export type {
+  InvoiceListProps,
+  InvoiceDetailProps,
+} from "@/../product/sections/[section-id]/types";
 
 // Optionally re-export entity types if useful
-export type { Invoice, LineItem } from '@/../product/sections/[section-id]/types'
+export type {
+  Invoice,
+  LineItem,
+} from "@/../product/sections/[section-id]/types";
 ```
 
 ### When NOT to Export
 
 Keep components private (don't export) if:
+
 - They're highly specific to a single parent component
 - They contain hardcoded layout assumptions
 - They're being refactored and the API is unstable
@@ -802,6 +978,7 @@ fi
 ```
 
 **Report to user:**
+
 - For single-view sections: No additional message needed
 - For multi-view sections: "Progress: Created X of Y views. Z view(s) remaining: [list pending view names]"
 
@@ -824,6 +1001,7 @@ This helps users track their progress and ensures all views are completed before
 Screen design components use the `@/` path alias for imports. Before creating components, verify the alias is configured:
 
 **Expected tsconfig.json configuration:**
+
 ```json
 {
   "compilerOptions": {
@@ -838,6 +1016,7 @@ Screen design components use the `@/` path alias for imports. Before creating co
 > **How `@/../product/` works:**
 >
 > The `@/../product/` pattern is NOT a separate alias — it combines the `@/` alias with relative path navigation:
+>
 > 1. `@/` resolves to `./src/`
 > 2. `../` navigates up from `src/` to the project root
 > 3. `product/` enters the product directory
@@ -856,20 +1035,21 @@ Screen design components use the `@/` path alias for imports. Before creating co
 
 **Troubleshooting:**
 
-| Issue | Symptom | Fix |
-|-------|---------|-----|
-| Missing path alias | `Cannot find module '@/...'` | Add `paths` to tsconfig.json |
-| Wrong baseUrl | Imports resolve incorrectly | Set `baseUrl: "."` in tsconfig.json |
+| Issue              | Symptom                           | Fix                                       |
+| ------------------ | --------------------------------- | ----------------------------------------- |
+| Missing path alias | `Cannot find module '@/...'`      | Add `paths` to tsconfig.json              |
+| Wrong baseUrl      | Imports resolve incorrectly       | Set `baseUrl: "."` in tsconfig.json       |
 | Vite not resolving | Works in IDE but fails at runtime | Check `vite.config.ts` has matching alias |
 
 **Vite alias configuration (if needed):**
+
 ```ts
 // vite.config.ts
 export default defineConfig({
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
-})
+});
 ```

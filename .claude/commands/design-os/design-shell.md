@@ -14,11 +14,13 @@ First, verify prerequisites exist:
 If any required file is missing, show a specific error message:
 
 **If `/product/product-overview.md` is missing:**
+
 ```
 Error: product-overview.md - File not found. Run /product-vision to create it.
 ```
 
 **If `/product/product-roadmap.md` is missing:**
+
 ```
 Error: product-roadmap.md - File not found. Run /product-roadmap to create it.
 ```
@@ -58,52 +60,61 @@ The skill file provides guidance on creating distinctive, production-grade inter
 ```
 
 Use AskUserQuestion with options:
+
 - "Continue with basic design principles" — Proceed using fallback guidance
 - "Stop — I'll add the skill file first" — END COMMAND
 
 Track user's choice - if continuing without skill file, use these **enhanced fallback design principles** (see agents.md → "Enhanced Fallback Design Guidance" for full details):
 
 **Aesthetic Tone Options** (ask user to choose one):
+
 - **Refined Utility**: Clean, purposeful, subtle shadows, muted accents, professional feel
 - **Bold & Bright**: High contrast, vibrant colors, strong typography, energetic
 - **Soft & Approachable**: Rounded corners, pastel accents, generous spacing, friendly
 - **Professional Dense**: Compact layout, neutral palette, efficient use of space, data-focused
 
 **Visual Hierarchy** (beyond just sizes):
+
 - Create clear distinction using size, weight, AND color together
 - Use generous whitespace around primary actions
 - Group related elements with subtle background colors
 - Apply contrast intentionally to guide the eye
 
 **Spacing System:**
+
 - Use 8px increments for padding and margins (8, 16, 24, 32, 48, 64)
 - Maintain consistent gutter widths (16px on mobile, 24px on tablet, 32px on desktop)
 - Apply generous whitespace around primary actions
 
 **Color Application:**
+
 - Primary: Reserve for key actions and active states (buttons, links, selected items)
 - Secondary: Use for supportive elements (badges, highlights, secondary buttons)
 - Neutral: Create hierarchy with 3-4 distinct shades (not more)
 - Accent: One unexpected color choice for distinctiveness
 
 **Typography Choices:**
+
 - Headings: Slightly heavier weight (600-700), moderate tracking
 - Body: Regular weight (400), comfortable line height (1.5-1.7)
 - Use size differences of at least 4px between hierarchy levels
 - Consider one distinctive font choice (avoid Inter, Roboto unless product specifically requires them)
 
 **Motion & Interaction:**
+
 - Prefer CSS transitions over JavaScript animations
 - Use 150-200ms for hover states
 - Use 250-300ms for entry/exit animations
 - Avoid bounce or overshoot effects unless matching a playful tone
 
 **Responsive Breakpoints:**
+
 - Mobile: < 640px (single column, stacked nav)
 - Tablet: 640-1024px (condensed sidebar or collapsible nav)
 - Desktop: > 1024px (full sidebar, multi-column layouts)
 
 **Dark Mode:**
+
 - Backgrounds: stone-900 to stone-950 (never pure black)
 - Text: stone-100 to stone-300
 - Borders: stone-700 to stone-800
@@ -111,6 +122,7 @@ Track user's choice - if continuing without skill file, use these **enhanced fal
 
 **Distinctiveness Requirement:**
 Even without the full skill file, make at least ONE distinctive choice:
+
 - An unexpected color accent
 - Asymmetric layout element
 - Creative use of negative space
@@ -136,16 +148,16 @@ Review the roadmap sections and present navigation options with recommendations 
 Let's decide on the shell layout. Common patterns:
 
 **A. Sidebar Navigation** — Vertical nav on the left, content on the right
-   Best for: Apps with many sections, dashboard-style tools, admin panels
-   **Recommended when:** 5+ sections, complex navigation hierarchy, or data-heavy applications
+Best for: Apps with many sections, dashboard-style tools, admin panels
+**Recommended when:** 5+ sections, complex navigation hierarchy, or data-heavy applications
 
 **B. Top Navigation** — Horizontal nav at top, content below
-   Best for: Simpler apps, marketing-style products, fewer sections
-   **Recommended when:** 3-4 sections, content-focused products, or public-facing sites
+Best for: Simpler apps, marketing-style products, fewer sections
+**Recommended when:** 3-4 sections, content-focused products, or public-facing sites
 
 **C. Minimal Header** — Just logo + user menu, sections accessed differently
-   Best for: Single-purpose tools, wizard-style flows
-   **Recommended when:** 1-2 sections, focused workflows, or embedded applications
+Best for: Single-purpose tools, wizard-style flows
+**Recommended when:** 1-2 sections, focused workflows, or embedded applications
 
 **Based on your [N] sections, I'd recommend [Pattern A/B/C]** because [reason based on section count and product type].
 
@@ -162,6 +174,67 @@ Use AskUserQuestion to clarify:
 - "Any additional items in the navigation? (Settings, Help, etc.)"
 - "What should the 'home' or default view be when the app loads?"
 
+## Step 3.5: Design Direction Preferences
+
+After gathering layout details, explicitly ask about design direction to ensure consistency across all future screen designs. Use AskUserQuestion with these predefined options:
+
+### Question 1: Aesthetic Tone
+
+**"What aesthetic tone should [Product Name] have?"**
+
+Options (present as predefined choices):
+
+- **Professional** — Clean, corporate, trustworthy. Muted colors, clear hierarchy, no-nonsense typography.
+- **Modern** — Bold, contemporary, cutting-edge. High contrast, strong typography, energetic feel.
+- **Minimal** — Simple, focused, uncluttered. Maximum whitespace, essential elements only, subtle.
+- **Playful** — Friendly, approachable, colorful. Rounded corners, warm colors, inviting.
+- **Technical** — Data-dense, utility-focused. Compact layouts, monospace accents, efficient.
+
+### Question 2: Animation Style
+
+**"How much animation should the interface have?"**
+
+Options:
+
+- **None** — Instant transitions, no motion. Focus on speed and simplicity.
+- **Subtle** — Fade and slight slide effects (150-200ms). Professional but alive.
+- **Standard** — Smooth transitions, micro-interactions (200-300ms). Modern feel.
+- **Rich** — Engaging animations, delight moments. Memorable and expressive.
+
+### Question 3: Information Density
+
+**"How dense should the information be?"**
+
+Options:
+
+- **Compact** — Dense layouts, minimal spacing. Power-user focused, more on screen.
+- **Comfortable** — Balanced spacing. Works for most users and use cases.
+- **Spacious** — Generous whitespace. Focused, easy to scan, luxurious feel.
+
+### Question 4: Responsive Priority
+
+**"Which screen size is most important?"**
+
+Options:
+
+- **Desktop-first** — Optimize for large screens, adapt down for mobile.
+- **Mobile-first** — Optimize for mobile, enhance for larger screens.
+- **Balanced** — Equal effort on all breakpoints. Best for diverse user base.
+
+### Record the Choices
+
+Store the user's answers for use in Step 6.5 (Design Direction Document):
+
+```
+DESIGN_DIRECTION:
+  aesthetic_tone: [user's choice]
+  animation_style: [user's choice]
+  density: [user's choice]
+  responsive_priority: [user's choice]
+```
+
+These choices will be documented in `product/design-system/design-direction.md` and read by `/design-screen` for consistency.
+
 ## Step 4: Present Shell Specification
 
 Once you understand their preferences:
@@ -171,16 +244,19 @@ Once you understand their preferences:
 **Layout Pattern:** [Sidebar/Top Nav/Minimal]
 
 **Navigation Structure:**
+
 - [Nav Item 1] → [Section]
 - [Nav Item 2] → [Section]
 - [Nav Item 3] → [Section]
 - [Additional items like Settings, Help]
 
 **User Menu:**
+
 - Location: [Top right / Bottom of sidebar]
 - Contents: Avatar, user name, logout
 
 **Responsive Behavior:**
+
 - Desktop: [How it looks]
 - Mobile: [How it adapts]
 
@@ -195,6 +271,7 @@ Before creating the shell specification and components, apply the design guidanc
 **If the skill file was validated in Step 1, read it now:** `.claude/skills/frontend-design/SKILL.md`
 
 Apply the following guidance:
+
 - Creating distinctive UI that avoids generic "AI slop" aesthetics
 - Choosing bold design directions and unexpected layouts
 - Applying thoughtful typography and color choices
@@ -209,12 +286,14 @@ This guidance applies to both the shell specification and shell components — t
 ### Create Directory
 
 First, ensure the shell directory exists:
+
 ```bash
 mkdir -p product/shell
 mkdir -p src/shell/components
 ```
 
 Then validate the directories were created:
+
 ```bash
 if [ ! -d "product/shell" ]; then
   echo "Error: product/shell/ - Directory creation failed. Check write permissions."
@@ -236,49 +315,59 @@ Then create `/product/shell/spec.md`:
 **Note:** Replace `[Product Name]` with the actual product name from `product/product-overview.md` to maintain consistency with other documentation files.
 
 ## Overview
+
 [Description of the shell design and its purpose]
 
 ## Navigation Structure
+
 - [Nav Item 1] → [Section 1]
 - [Nav Item 2] → [Section 2]
 - [Nav Item 3] → [Section 3]
 - [Any additional nav items]
 
 ## User Menu
+
 [Description of user menu location and contents]
 
 ## Layout Pattern
+
 [Description of the layout — sidebar, top nav, etc.]
 
 ## Responsive Behavior
+
 - **Desktop:** [Behavior]
 - **Tablet:** [Behavior]
 - **Mobile:** [Behavior]
 
 ## Design Notes
+
 [Any additional design decisions or notes]
 
 ## Context Selector
-*(Optional)* Define if your app needs an organization/client/workspace picker.
+
+_(Optional)_ Define if your app needs an organization/client/workspace picker.
 type: organization
 label: "Select Organization"
 position: header-left
 items:
-  - { id: "org-1", name: "Acme Corp", icon: "building" }
-  - { id: "org-2", name: "Globex Inc", icon: "building" }
+
+- { id: "org-1", name: "Acme Corp", icon: "building" }
+- { id: "org-2", name: "Globex Inc", icon: "building" }
 
 ## Breadcrumbs
-*(Optional)* Define breadcrumb paths for navigation hierarchy.
+
+_(Optional)_ Define breadcrumb paths for navigation hierarchy.
 mode: manual
 default:
-  - { label: "Home", href: "/" }
-sections:
-  [section-id]:
-    - { label: "Parent", href: "/parent" }
-    - { label: "Section", href: "/sections/[section-id]" }
+
+- { label: "Home", href: "/" }
+  sections:
+  [section-id]: - { label: "Parent", href: "/parent" } - { label: "Section", href: "/sections/[section-id]" }
 
 ## Header Actions
-*(Optional)* Define action buttons in the header area.
+
+_(Optional)_ Define action buttons in the header area.
+
 - { id: "notifications", icon: "bell", badge: true }
 - { id: "search", icon: "search" }
 - { id: "help", icon: "help-circle", label: "Help" }
@@ -288,11 +377,11 @@ sections:
 
 The shell spec supports additional sections for enhanced functionality:
 
-| Section | Purpose | Required |
-|---------|---------|----------|
-| `## Context Selector` | Organization/client/workspace picker | No |
-| `## Breadcrumbs` | Navigation hierarchy paths | No |
-| `## Header Actions` | Header action buttons (notifications, search, help) | No |
+| Section               | Purpose                                             | Required |
+| --------------------- | --------------------------------------------------- | -------- |
+| `## Context Selector` | Organization/client/workspace picker                | No       |
+| `## Breadcrumbs`      | Navigation hierarchy paths                          | No       |
+| `## Header Actions`   | Header action buttons (notifications, search, help) | No       |
 
 These sections are parsed by `getShellProps()` in `shell-loader.ts` and passed to AppShell automatically via the complete passthrough pattern.
 
@@ -303,23 +392,27 @@ When a section has multiple views (e.g., ListView and DetailView), here's how ro
 ### Default Route Behavior
 
 When navigating to `/sections/[section-id]`:
+
 - The **first view defined in the spec** becomes the default view
 - Example: If spec lists "ListView" then "DetailView", ListView loads by default
 
 ### View-Specific Routes
 
 For direct navigation to specific views:
+
 - `/sections/[section-id]/screen-designs/[view-name]` — Loads a specific view
 - Example: `/sections/invoice-management/screen-designs/invoice-detail`
 
 ### Navigation Between Views
 
 Views should NOT include internal routing logic. Instead:
+
 - Use callback props (e.g., `onView`, `onBack`) to signal navigation intent
 - The shell or parent application handles actual route changes
 - This keeps components portable and testable
 
 **Example navigation pattern:**
+
 ```tsx
 // In ListView - signal intent to navigate
 <button onClick={() => onView?.(item.id)}>View Details</button>
@@ -332,55 +425,111 @@ The shell receives these callbacks and performs actual navigation (which may var
 
 ## Step 6.5: Document Design Direction
 
-After creating the shell specification, document the aesthetic decisions made. This ensures future `/design-screen` commands maintain visual consistency.
+After creating the shell specification, document the user's design direction choices from Step 3.5. This ensures future `/design-screen` commands maintain visual consistency.
+
+### Ensure Directory Exists
+
+```bash
+mkdir -p product/design-system
+```
 
 ### Create the Design Direction Document
 
-Create `/product/design-system/design-direction.md`:
+Create `/product/design-system/design-direction.md` using the choices from Step 3.5:
 
 ```markdown
 # Design Direction for [Product Name]
 
-## Aesthetic Tone
-[One sentence describing the overall feel based on the shell design - e.g., "Refined utility with bold [primary color] accents"]
+## User Preferences (from Step 3.5)
 
-## Visual Signatures
-These distinctive elements MUST appear consistently across all sections:
-- [Signature 1 - e.g., "Rounded corners (rounded-xl) on all cards and containers"]
-- [Signature 2 - e.g., "[Primary]-500 accent for primary actions and active states"]
-- [Signature 3 - e.g., "[Neutral]-900 dark mode backgrounds with high contrast text"]
+| Setting                 | Choice                                                         |
+| ----------------------- | -------------------------------------------------------------- |
+| **Aesthetic Tone**      | [User's choice: Professional/Modern/Minimal/Playful/Technical] |
+| **Animation Style**     | [User's choice: None/Subtle/Standard/Rich]                     |
+| **Information Density** | [User's choice: Compact/Comfortable/Spacious]                  |
+| **Responsive Priority** | [User's choice: Desktop-first/Mobile-first/Balanced]           |
 
-## Color Application
-- **Primary usage**: [When and how the primary color is used - e.g., "For buttons, active nav items, key CTAs"]
-- **Accent pattern**: [How accents draw attention - e.g., "Subtle underlines on hover, badges for counts"]
-- **Neutral treatment**: [How neutrals create hierarchy - e.g., "[Neutral]-50 to [Neutral]-900 for depth layers"]
+## Aesthetic Guidelines
 
-## Motion & Interaction
-- **Animation style**: [subtle/bold/none - based on product personality]
-- **Key interactions**: [e.g., "200ms ease-out for all hover states"]
-- **Timing**: [e.g., "Fast - prioritize responsiveness over flair"]
+Based on the **[Aesthetic Tone]** tone:
 
-## Typography Treatment
-- **Heading style**: [e.g., "[Heading font] 600, tight tracking, [neutral]-900"]
-- **Body approach**: [e.g., "[Body font] 400, relaxed line-height (1.6), [neutral]-600"]
-- **Distinctive choices**: [e.g., "Mono font for IDs, codes, and data values"]
+### If Professional:
 
-## Consistency Guidelines
-These rules MUST remain consistent across all sections:
-1. [Guideline - e.g., "All interactive elements use [primary]-500 hover states"]
-2. [Guideline - e.g., "Card padding is always p-6 on desktop, p-4 on mobile"]
-3. [Guideline - e.g., "Dark mode uses [neutral]-900 backgrounds, never pure black"]
+- Muted color palette, clear visual hierarchy
+- Conservative typography (no playful fonts)
+- Minimal decorative elements
+- Border radius: rounded-md (subtle)
+
+### If Modern:
+
+- High contrast color combinations
+- Bold typography with strong weight differences
+- Geometric shapes and clean lines
+- Border radius: rounded-lg to rounded-xl
+
+### If Minimal:
+
+- Maximum whitespace usage
+- Monochromatic or limited color palette
+- Very subtle shadows (shadow-sm or none)
+- Border radius: rounded-sm or sharp corners
+
+### If Playful:
+
+- Warm, inviting color palette
+- Rounded corners throughout (rounded-xl to rounded-2xl)
+- Friendly typography choices
+- Generous padding, breathing room
+
+### If Technical:
+
+- Dense layouts, efficient use of space
+- Monospace fonts for data/IDs
+- Neutral colors with functional accents
+- Minimal border radius (rounded or rounded-sm)
+
+## Animation Timing
+
+Based on **[Animation Style]**:
+
+| Style    | Hover | Entry/Exit | Micro-interactions |
+| -------- | ----- | ---------- | ------------------ |
+| None     | 0ms   | 0ms        | Disabled           |
+| Subtle   | 150ms | 200ms      | Fade only          |
+| Standard | 200ms | 300ms      | Fade + scale       |
+| Rich     | 250ms | 400ms      | Full animations    |
+
+## Spacing Scale
+
+Based on **[Information Density]**:
+
+| Density     | Card Padding | Section Gap | Base Unit |
+| ----------- | ------------ | ----------- | --------- |
+| Compact     | p-3          | gap-4       | 4px       |
+| Comfortable | p-5          | gap-6       | 8px       |
+| Spacious    | p-8          | gap-10      | 12px      |
+
+## Responsive Approach
+
+Based on **[Responsive Priority]**:
+
+| Priority      | Design First | Then Adapt      | Breakpoint Focus       |
+| ------------- | ------------ | --------------- | ---------------------- |
+| Desktop-first | 1280px+      | Down to 375px   | lg:, xl: first         |
+| Mobile-first  | 375px        | Up to 1920px    | Default, then sm:, md: |
+| Balanced      | 768px        | Both directions | All breakpoints equal  |
 
 ## Applied From
-- **Skill file**: [Yes/No]
-- **Fallback tone**: [If No above, which aesthetic tone was chosen from fallback options]
+
+- **Skill file used**: [Yes/No]
+- **User choices**: Recorded in Step 3.5 of /design-shell
 ```
 
-**Populate the document by:**
-1. Extracting the aesthetic choices made when applying the frontend-design skill (or fallback)
-2. Documenting the layout pattern selected and key visual decisions
-3. Recording specific color, typography, and motion patterns used in the shell
-4. Noting any distinctive elements that make this shell unique
+**Populate the document using:**
+
+1. The user's explicit answers from Step 3.5 (Aesthetic Tone, Animation Style, etc.)
+2. The conditional sections that match their choices
+3. Design tokens if available (colors.json, typography.json)
 
 **Why this matters:** This document serves as the definitive reference for all subsequent `/design-screen` commands. When designing sections, the agent will read this file to ensure visual consistency with the shell.
 
@@ -391,43 +540,49 @@ These rules MUST remain consistent across all sections:
 Create the shell components at `src/shell/components/`:
 
 ### AppShell.tsx
+
 The main wrapper component that accepts children and provides the layout structure.
 
 ```tsx
 interface AppShellProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 
   // Navigation
-  navigationItems?: Array<{ label: string; href: string; isActive?: boolean }>
-  categories?: Array<{ id: string; label: string; items: NavigationItem[] }>
+  navigationItems?: Array<{ label: string; href: string; isActive?: boolean }>;
+  categories?: Array<{ id: string; label: string; items: NavigationItem[] }>;
 
   // User
-  user?: { name: string; email?: string; avatarUrl?: string }
+  user?: { name: string; email?: string; avatarUrl?: string };
 
   // Context selector (organization/client picker - from spec)
   contextSelector?: {
-    type: string
-    label: string
-    items: Array<{ id: string; name: string; icon?: string }>
-    selectedId?: string
-    onSelect?: (id: string) => void
-  }
+    type: string;
+    label: string;
+    items: Array<{ id: string; name: string; icon?: string }>;
+    selectedId?: string;
+    onSelect?: (id: string) => void;
+  };
 
   // Breadcrumbs (from spec)
-  breadcrumbs?: Array<{ label: string; href?: string }>
-  onBreadcrumbClick?: (href: string) => void
+  breadcrumbs?: Array<{ label: string; href?: string }>;
+  onBreadcrumbClick?: (href: string) => void;
 
   // Header actions (from spec)
-  headerActions?: Array<{ id: string; icon: string; label?: string; badge?: boolean | number }>
-  onHeaderAction?: (actionId: string) => void
+  headerActions?: Array<{
+    id: string;
+    icon: string;
+    label?: string;
+    badge?: boolean | number;
+  }>;
+  onHeaderAction?: (actionId: string) => void;
 
   // Layout
-  layoutVariant?: 'sidebar' | 'topnav' | 'minimal'
-  currentSection?: string
+  layoutVariant?: "sidebar" | "topnav" | "minimal";
+  currentSection?: string;
 
   // Callbacks
-  onNavigate?: (href: string) => void
-  onLogout?: () => void
+  onNavigate?: (href: string) => void;
+  onLogout?: () => void;
 }
 ```
 
@@ -446,13 +601,19 @@ AppShell receives ALL props from the shell spec automatically via the passthroug
 **This means:** If you define a `## Context Selector` section in your shell spec, AppShell will receive it as the `contextSelector` prop automatically. Same for `breadcrumbs`, `headerActions`, and any future props.
 
 ### MainNav.tsx
+
 The navigation component (sidebar or top nav based on the chosen pattern).
 
 ```tsx
 interface MainNavProps {
-  items: Array<{ label: string; href: string; isActive?: boolean; icon?: React.ReactNode }>
-  onNavigate?: (href: string) => void
-  collapsed?: boolean
+  items: Array<{
+    label: string;
+    href: string;
+    isActive?: boolean;
+    icon?: React.ReactNode;
+  }>;
+  onNavigate?: (href: string) => void;
+  collapsed?: boolean;
 }
 ```
 
@@ -460,46 +621,51 @@ interface MainNavProps {
 
 Navigation item `href` values must follow this pattern to ensure compatibility with the application routing:
 
-| Route Type | Format | Example |
-|------------|--------|---------|
-| Section page | `/sections/[section-id]` | `/sections/invoice-management` |
+| Route Type    | Format                                         | Example                                                    |
+| ------------- | ---------------------------------------------- | ---------------------------------------------------------- |
+| Section page  | `/sections/[section-id]`                       | `/sections/invoice-management`                             |
 | Screen design | `/sections/[section-id]/screen-designs/[name]` | `/sections/invoice-management/screen-designs/invoice-list` |
-| Static pages | `/[page-name]` | `/settings`, `/help` |
+| Static pages  | `/[page-name]`                                 | `/settings`, `/help`                                       |
 
 **Important:**
+
 - Section IDs must match the directory names in `src/sections/`
 - The `href` values are used by both Design OS preview and the exported shell
 - When exporting, these routes should be updated to match your application's actual routing structure
 
 **Example navigation items:**
+
 ```tsx
 const navigationItems = [
-  { label: 'Dashboard', href: '/sections/dashboard', isActive: true },
-  { label: 'Invoices', href: '/sections/invoice-management' },
-  { label: 'Reports', href: '/sections/reports-and-analytics' },
-  { label: 'Settings', href: '/settings' },
-]
+  { label: "Dashboard", href: "/sections/dashboard", isActive: true },
+  { label: "Invoices", href: "/sections/invoice-management" },
+  { label: "Reports", href: "/sections/reports-and-analytics" },
+  { label: "Settings", href: "/settings" },
+];
 ```
 
 ### UserMenu.tsx
+
 The user menu with avatar and dropdown.
 
 ```tsx
 interface UserMenuProps {
   user?: {
-    name: string
-    email?: string
-    avatarUrl?: string
-  }
-  onLogout?: () => void
-  onSettings?: () => void
+    name: string;
+    email?: string;
+    avatarUrl?: string;
+  };
+  onLogout?: () => void;
+  onSettings?: () => void;
 }
 ```
 
 ### index.ts
+
 Export all components.
 
 **Component Requirements:**
+
 - Use props for all data and callbacks (portable)
 - Apply design tokens if they exist (colors, fonts)
 - Support light and dark mode with `dark:` variants
@@ -512,30 +678,30 @@ Export all components.
 Create `src/shell/ShellPreview.tsx` — a preview wrapper for viewing the shell in Design OS:
 
 ```tsx
-import { AppShell } from './components/AppShell'
+import { AppShell } from "./components/AppShell";
 
 export default function ShellPreview() {
   // Navigation items use REAL section names from the product roadmap
   // Replace these with actual section titles and IDs from product-roadmap.md
   const navigationItems = [
-    { label: 'Dashboard', href: '/sections/dashboard', isActive: true },
-    { label: 'Invoices', href: '/sections/invoice-management' },
-    { label: 'Reports', href: '/sections/reports-and-analytics' },
-  ]
+    { label: "Dashboard", href: "/sections/dashboard", isActive: true },
+    { label: "Invoices", href: "/sections/invoice-management" },
+    { label: "Reports", href: "/sections/reports-and-analytics" },
+  ];
 
   // User menu uses placeholder data — not from sections
   const user = {
-    name: 'Alex Morgan',
-    email: 'alex@example.com',
+    name: "Alex Morgan",
+    email: "alex@example.com",
     avatarUrl: undefined,
-  }
+  };
 
   return (
     <AppShell
       navigationItems={navigationItems}
       user={user}
-      onNavigate={(href) => console.log('Navigate to:', href)}
-      onLogout={() => console.log('Logout')}
+      onNavigate={(href) => console.log("Navigate to:", href)}
+      onLogout={() => console.log("Logout")}
     >
       <div className="p-8">
         <h1 className="text-2xl font-bold mb-4">Content Area</h1>
@@ -544,7 +710,7 @@ export default function ShellPreview() {
         </p>
       </div>
     </AppShell>
-  )
+  );
 }
 ```
 
@@ -557,13 +723,14 @@ The shell can still be created with placeholder navigation items:
 ```tsx
 // Placeholder navigation when no sections exist yet
 const navigationItems = [
-  { label: 'Home', href: '/', isActive: true },
-  { label: 'Section 1', href: '/sections/section-1' },
-  { label: 'Section 2', href: '/sections/section-2' },
-]
+  { label: "Home", href: "/", isActive: true },
+  { label: "Section 1", href: "/sections/section-1" },
+  { label: "Section 2", href: "/sections/section-2" },
+];
 ```
 
 Inform the user:
+
 ```
 Note: No sections defined in product-roadmap.md yet.
 I'm using placeholder navigation items. Run /product-roadmap to define your sections,
@@ -604,6 +771,7 @@ fi
 ```
 
 **Important:**
+
 - **Navigation items** should use the REAL section names from `product/product-roadmap.md` (or placeholders if none exist)
 - **User menu, notifications, and other chrome** should use placeholder mock data
 - Do NOT import data from section folders — this ensures the shell preview works even if no sections have been designed yet
@@ -613,12 +781,14 @@ fi
 If design tokens exist, apply them to the shell components:
 
 **Colors:**
+
 - Read `/product/design-system/colors.json`
 - Use primary color for active nav items, key accents
 - Use secondary color for hover states, subtle highlights
 - Use neutral color for backgrounds, borders, text
 
 **Typography:**
+
 - Read `/product/design-system/typography.json`
 - Apply heading font to nav items and titles
 - Apply body font to other text
@@ -656,6 +826,7 @@ Use these specific shades for shell UI elements:
 | Mobile overlay | `black/50` | `black/70` |
 
 **Example Shell Styling (replace `[primary]` and `[neutral]` with your token colors):**
+
 ```tsx
 // Sidebar - use neutral palette from design tokens
 <aside className="bg-white dark:bg-[neutral]-900 border-r border-[neutral]-200 dark:border-[neutral]-800">
@@ -679,6 +850,7 @@ Let the user know:
 "I've designed the application shell for **[Product Name]**:
 
 **Created files:**
+
 - `/product/shell/spec.md` — Shell specification
 - `/product/design-system/design-direction.md` — Design direction for consistency
 - `src/shell/components/AppShell.tsx` — Main shell wrapper
@@ -688,6 +860,7 @@ Let the user know:
 - `src/shell/ShellPreview.tsx` — Preview wrapper
 
 **Shell features:**
+
 - [Layout pattern] layout
 - Navigation for all [N] sections
 - User menu with avatar and logout

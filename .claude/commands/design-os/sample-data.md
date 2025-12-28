@@ -23,11 +23,11 @@ fi
 
 **Handle the following cases:**
 
-| Condition | Action |
-|-----------|--------|
-| Directory doesn't exist | Show error: "Error: product/sections/[section-id]/ - Directory not found. Run /shape-section to create it." |
+| Condition                         | Action                                                                                                                           |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Directory doesn't exist           | Show error: "Error: product/sections/[section-id]/ - Directory not found. Run /shape-section to create it."                      |
 | Directory exists, spec.md missing | Show error: "Error: spec.md - File not found in product/sections/[section-id]/. Run /shape-section to create the specification." |
-| Directory exists, spec.md exists | Continue to Step 2 |
+| Directory exists, spec.md exists  | Continue to Step 2                                                                                                               |
 
 **If the spec doesn't exist:**
 
@@ -51,6 +51,7 @@ Stop here if the spec doesn't exist.
 Check if `/product/data-model/data-model.md` exists.
 
 **If it exists:**
+
 - Read the file to understand the global entity definitions
 - Entity names in your sample data should match the global data model
 - Use the descriptions and relationships as a guide
@@ -70,6 +71,66 @@ Read and analyze `product/sections/[section-id]/spec.md` to understand:
 - What actions can be taken on each entity? (These become callback props)
 
 **If a global data model exists:** Cross-reference the spec with the data model. Use the same entity names and ensure consistency.
+
+## Step 3.5: Sample Data Preferences
+
+Before generating data, explicitly ask about sample data requirements. Use AskUserQuestion with predefined options:
+
+### Question 1: Sample Data Volume
+
+**"How much sample data should I generate?"**
+
+Options:
+
+- **Minimal (5-10 records)** — Quick testing, basic layout verification. Enough to see how lists look, not enough for pagination testing.
+- **Standard (20-50 records)** — Realistic scenarios, good for most use cases. Shows pagination, filtering behavior.
+- **Comprehensive (100+ records)** — Performance testing, pagination, search optimization. Good for stress-testing UI with large datasets.
+
+### Question 2: Edge Cases to Include
+
+**"Which edge cases should I include in the sample data?"**
+
+Options (allow multiple selection):
+
+- **Empty states** — Include scenarios with empty arrays, null values, missing optional fields. Tests "no data" UI.
+- **Long content** — Include records with long names, descriptions (100+ chars), and text overflow scenarios. Tests truncation and layout.
+- **Extreme values** — Include very large numbers, dates far in the past/future, boundary values. Tests formatting and edge calculations.
+- **Unicode & special characters** — Include names with accents (Müller, José), emoji (🏠), special chars (&, ", <). Tests encoding and display.
+
+### Record Preferences
+
+Store the user's answers for use in Step 5:
+
+```
+DATA_PREFERENCES:
+  volume: [Minimal / Standard / Comprehensive]
+  edge_cases:
+    empty_states: [true/false]
+    long_content: [true/false]
+    extreme_values: [true/false]
+    unicode_special: [true/false]
+```
+
+### Apply Preferences in Step 5
+
+When generating data.json, apply these preferences:
+
+**Volume Guidelines:**
+
+| Volume        | Main Entity Records | Nested Records | Status Distribution       |
+| ------------- | ------------------- | -------------- | ------------------------- |
+| Minimal       | 5-10                | 1-3 each       | 2-3 statuses              |
+| Standard      | 20-50               | 3-5 each       | All statuses              |
+| Comprehensive | 100+                | 5-10 each      | All statuses + edge cases |
+
+**Edge Case Implementation:**
+
+| Edge Case         | How to Implement                                                                 |
+| ----------------- | -------------------------------------------------------------------------------- |
+| Empty states      | Include 1-2 records with empty arrays, null optional fields                      |
+| Long content      | Include 2-3 records with 100+ char descriptions, long names                      |
+| Extreme values    | Include dates like 1990-01-01, 2099-12-31, amounts like 0.01 and 999999.99       |
+| Unicode & special | Include names: "José García", "Müller GmbH", "测试公司", "Company <Test> & Demo" |
 
 ## Step 4: Present Data Structure
 
@@ -132,11 +193,13 @@ Once the user approves the structure:
 ### Create Directory
 
 First, verify the directory exists:
+
 ```bash
 mkdir -p product/sections/[section-id]
 ```
 
 Then validate the directory was created:
+
 ```bash
 if [ ! -d "product/sections/[section-id]" ]; then
   echo "Error: product/sections/[section-id]/ - Directory creation failed. Check write permissions."
@@ -181,11 +244,11 @@ Example structure:
       "invoiceNumber": "INV-2024-001",
       "clientName": "Acme Corp",
       "clientEmail": "billing@acme.com",
-      "total": 1500.00,
+      "total": 1500.0,
       "status": "sent",
       "dueDate": "2024-02-15",
       "lineItems": [
-        { "description": "Web Design", "quantity": 1, "rate": 1500.00 }
+        { "description": "Web Design", "quantity": 1, "rate": 1500.0 }
       ]
     }
   ]
@@ -193,6 +256,7 @@ Example structure:
 ```
 
 The `_meta` descriptions should:
+
 - Use plain, non-technical language
 - Explain what each model represents in the context of the user's product
 - Describe relationships in terms of "contains", "belongs to", "links to", etc.
@@ -211,6 +275,7 @@ After creating data.json, you MUST perform the following validations to ensure d
 After creating data.json, verify that the file was created correctly using these **actionable validation steps**:
 
 **1. Check file exists and is valid JSON:**
+
 ```bash
 # Check file exists
 if [ ! -f "product/sections/[section-id]/data.json" ]; then
@@ -226,6 +291,7 @@ fi
 ```
 
 **2. Validate `_meta` structure (MANDATORY):**
+
 ```bash
 # Check _meta exists and has required fields
 python3 << 'EOF'
@@ -269,6 +335,7 @@ EOF
 ```
 
 **3. Check data consistency:**
+
 ```bash
 python3 << 'EOF'
 import json
@@ -293,6 +360,7 @@ EOF
 ```
 
 **4. Verify content quality (checklist):**
+
 - [ ] At least 5 records exist for main entity (for realistic list display)
 - [ ] At least one status/enum field shows multiple values (e.g., 'draft', 'sent', 'paid')
 - [ ] At least one record has a long description (50+ chars) for text overflow testing
@@ -301,11 +369,11 @@ EOF
 **5. Verify bidirectional entity naming consistency:**
 If a data model exists at `product/data-model/data-model.md`, verify entity names match:
 
-| Location | Format | Example |
-|----------|--------|---------|
-| data-model.md | Singular PascalCase | `Invoice`, `Customer` |
-| data.json keys | Plural camelCase | `invoices`, `customers` |
-| types.ts interfaces | Singular PascalCase | `Invoice`, `Customer` |
+| Location            | Format              | Example                 |
+| ------------------- | ------------------- | ----------------------- |
+| data-model.md       | Singular PascalCase | `Invoice`, `Customer`   |
+| data.json keys      | Plural camelCase    | `invoices`, `customers` |
+| types.ts interfaces | Singular PascalCase | `Invoice`, `Customer`   |
 
 ```bash
 # Check if data model exists
@@ -335,6 +403,7 @@ If mismatches are found, either update the entity names or document why they dif
 Do not proceed to Step 7 until all validation checks pass.
 
 **Retry limit:** If validation fails 3 times in a row, STOP and report:
+
 ```
 Validation has failed 3 times. Please review the data model at product/data-model/data-model.md for consistency issues before continuing.
 ```
@@ -393,6 +462,7 @@ When retrying, always include the attempt number in your response:
 ```
 
 **Key Points:**
+
 - Always report the current attempt number (e.g., "Attempt 2/3")
 - Explain what specific issue you're fixing on each retry
 - After 3 failed attempts, stop and ask user to review the data model manually
@@ -420,13 +490,14 @@ If a global data model exists, verify that entity names in your sample data matc
 
 The naming convention differs between the data model and data.json files:
 
-| Location | Format | Example |
-|----------|--------|---------|
-| **Data Model** (`data-model.md`) | Singular PascalCase | `Invoice`, `User`, `LineItem` |
-| **Data JSON** (`data.json` keys) | Plural camelCase | `invoices`, `users`, `lineItems` |
-| **TypeScript Types** (`types.ts`) | Singular PascalCase | `Invoice`, `User`, `LineItem` |
+| Location                          | Format              | Example                          |
+| --------------------------------- | ------------------- | -------------------------------- |
+| **Data Model** (`data-model.md`)  | Singular PascalCase | `Invoice`, `User`, `LineItem`    |
+| **Data JSON** (`data.json` keys)  | Plural camelCase    | `invoices`, `users`, `lineItems` |
+| **TypeScript Types** (`types.ts`) | Singular PascalCase | `Invoice`, `User`, `LineItem`    |
 
 **Transformation Rules:**
+
 1. **Singular → Plural**: Add `s` (or `es` for words ending in `s`, `x`, `ch`, `sh`)
 2. **PascalCase → camelCase**: Lowercase the first letter
 3. **Special cases**: Handle irregular plurals manually (`Person` → `people`, `Child` → `children`)
@@ -434,12 +505,12 @@ The naming convention differs between the data model and data.json files:
 **Examples:**
 
 | Data Model Entity | data.json Key | TypeScript Type |
-|-------------------|---------------|-----------------|
-| `Invoice` | `invoices` | `Invoice` |
-| `User` | `users` | `User` |
-| `LineItem` | `lineItems` | `LineItem` |
-| `Category` | `categories` | `Category` |
-| `Status` | `statuses` | `Status` |
+| ----------------- | ------------- | --------------- |
+| `Invoice`         | `invoices`    | `Invoice`       |
+| `User`            | `users`       | `User`          |
+| `LineItem`        | `lineItems`   | `LineItem`      |
+| `Category`        | `categories`  | `Category`      |
+| `Status`          | `statuses`    | `Status`        |
 
 This ensures consistency: types match the data model, while JSON keys follow JavaScript object naming conventions.
 
@@ -461,14 +532,15 @@ This ensures consistency: types match the data model, while JSON keys follow Jav
 
 When generating types.ts, apply these transformations to plural entity names:
 
-| Pattern | Transformation | Example |
-|---------|---------------|---------|
-| Ends with 'ies' | Replace 'ies' with 'y' | `Categories` → `Category` |
-| Ends with 'es' (after s, x, ch, sh) | Remove 'es' | `Statuses` → `Status` |
-| Ends with 's' | Remove trailing 's' | `Invoices` → `Invoice` |
-| Irregular plurals | Use lookup table | `People` → `Person`, `Children` → `Child` |
+| Pattern                             | Transformation         | Example                                   |
+| ----------------------------------- | ---------------------- | ----------------------------------------- |
+| Ends with 'ies'                     | Replace 'ies' with 'y' | `Categories` → `Category`                 |
+| Ends with 'es' (after s, x, ch, sh) | Remove 'es'            | `Statuses` → `Status`                     |
+| Ends with 's'                       | Remove trailing 's'    | `Invoices` → `Invoice`                    |
+| Irregular plurals                   | Use lookup table       | `People` → `Person`, `Children` → `Child` |
 
 **Detection heuristic:** An entity name is likely plural if:
+
 - It ends with 's' and the singular form is a valid English word
 - It matches known plural patterns (ies, es, s)
 
@@ -481,6 +553,7 @@ This validation ensures consistency across all sections and prevents fragmented 
 After generating `types.ts`, perform a reverse validation to ensure naming consistency between all three files:
 
 **Validation Flow:**
+
 ```
 data-model.md  ←→  data.json  ←→  types.ts
 (PascalCase)      (camelCase)    (PascalCase)
@@ -491,10 +564,10 @@ data-model.md  ←→  data.json  ←→  types.ts
 For each interface in types.ts, verify a corresponding key exists in data.json:
 
 | types.ts Interface | Expected data.json Key |
-|--------------------|------------------------|
-| `Invoice` | `invoices` |
-| `User` | `users` |
-| `LineItem` | `lineItems` |
+| ------------------ | ---------------------- |
+| `Invoice`          | `invoices`             |
+| `User`             | `users`                |
+| `LineItem`         | `lineItems`            |
 
 **Transformation Rule:** Convert PascalCase to camelCase + pluralize
 
@@ -503,10 +576,10 @@ For each interface in types.ts, verify a corresponding key exists in data.json:
 For each key in data.json (excluding `_meta`), verify a corresponding interface exists in types.ts:
 
 | data.json Key | Expected types.ts Interface |
-|---------------|----------------------------|
-| `invoices` | `Invoice` |
-| `users` | `User` |
-| `lineItems` | `LineItem` |
+| ------------- | --------------------------- |
+| `invoices`    | `Invoice`                   |
+| `users`       | `User`                      |
+| `lineItems`   | `LineItem`                  |
 
 **Transformation Rule:** Singularize + convert camelCase to PascalCase
 
@@ -525,6 +598,7 @@ Please ensure all entity names are consistent across files.
 **4. Props interface validation:**
 
 Verify that Props interfaces in types.ts correctly reference entity types:
+
 - `InvoiceListProps.invoices` should be typed as `Invoice[]`
 - `UserDetailProps.user` should be typed as `User`
 
@@ -546,11 +620,11 @@ echo "Found $VIEW_COUNT views in spec.md"
 
 For each view extracted from `## Views` section (e.g., `ListView`, `DetailView`, `CreateForm`), verify a corresponding Props interface exists in `types.ts`:
 
-| View Name | Expected Props Interface |
-|-----------|-------------------------|
-| `ListView` | `ListViewProps` |
-| `DetailView` | `DetailViewProps` |
-| `CreateForm` | `CreateFormProps` |
+| View Name    | Expected Props Interface |
+| ------------ | ------------------------ |
+| `ListView`   | `ListViewProps`          |
+| `DetailView` | `DetailViewProps`        |
+| `CreateForm` | `CreateFormProps`        |
 
 **3. Validation script:**
 
@@ -598,7 +672,6 @@ After creating data.json, generate `product/sections/[section-id]/types.ts` base
    - Objects → Create a named interface
 
 2. **Use union types for status/enum fields:**
-
    - If a field like `status` has known values, use a union: `'draft' | 'sent' | 'paid' | 'overdue'`
 
    - Base this on the spec and the variety in sample data
@@ -619,20 +692,20 @@ Example types.ts:
 // =============================================================================
 
 export interface LineItem {
-  description: string
-  quantity: number
-  rate: number
+  description: string;
+  quantity: number;
+  rate: number;
 }
 
 export interface Invoice {
-  id: string
-  invoiceNumber: string
-  clientName: string
-  clientEmail: string
-  total: number
-  status: 'draft' | 'sent' | 'paid' | 'overdue'
-  dueDate: string
-  lineItems: LineItem[]
+  id: string;
+  invoiceNumber: string;
+  clientName: string;
+  clientEmail: string;
+  total: number;
+  status: "draft" | "sent" | "paid" | "overdue";
+  dueDate: string;
+  lineItems: LineItem[];
 }
 
 // =============================================================================
@@ -641,17 +714,17 @@ export interface Invoice {
 
 export interface InvoiceListProps {
   /** The list of invoices to display */
-  invoices: Invoice[]
+  invoices: Invoice[];
   /** Called when user wants to view an invoice's details */
-  onView?: (id: string) => void
+  onView?: (id: string) => void;
   /** Called when user wants to edit an invoice */
-  onEdit?: (id: string) => void
+  onEdit?: (id: string) => void;
   /** Called when user wants to delete an invoice */
-  onDelete?: (id: string) => void
+  onDelete?: (id: string) => void;
   /** Called when user wants to archive an invoice */
-  onArchive?: (id: string) => void
+  onArchive?: (id: string) => void;
   /** Called when user wants to create a new invoice */
-  onCreate?: () => void
+  onCreate?: () => void;
 }
 ```
 
@@ -671,14 +744,14 @@ export interface InvoiceListProps {
 
 Use consistent action-based callback names:
 
-| Callback | Purpose |
-|----------|---------|
-| `onView` | Called when user wants to view item details |
-| `onEdit` | Called when user wants to edit an item |
-| `onDelete` | Called when user wants to delete an item |
-| `onCreate` | Called when user wants to create a new item |
-| `onArchive` | Called when user wants to archive an item |
-| `onSelect` | Called when user selects an item (for multi-select) |
+| Callback    | Purpose                                             |
+| ----------- | --------------------------------------------------- |
+| `onView`    | Called when user wants to view item details         |
+| `onEdit`    | Called when user wants to edit an item              |
+| `onDelete`  | Called when user wants to delete an item            |
+| `onCreate`  | Called when user wants to create a new item         |
+| `onArchive` | Called when user wants to archive an item           |
+| `onSelect`  | Called when user selects an item (for multi-select) |
 
 **Note:** `onClick` is a React DOM event handler used inside components. The callback props (`onView`, `onEdit`, etc.) describe the user intent and are passed from parent components.
 
@@ -687,6 +760,7 @@ Use consistent action-based callback names:
 For advanced UI interactions, use these additional callback patterns:
 
 **Bulk Operations:**
+
 ```typescript
 /** Called when user selects/deselects multiple items */
 onSelectionChange?: (selectedIds: string[]) => void
@@ -697,6 +771,7 @@ onBulkExport?: (ids: string[]) => void
 ```
 
 **Filtering and Sorting:**
+
 ```typescript
 /** Called when user changes filter criteria */
 onFilterChange?: (filters: FilterCriteria) => void
@@ -707,6 +782,7 @@ onSearch?: (query: string) => void
 ```
 
 **Pagination:**
+
 ```typescript
 /** Called when user changes page */
 onPageChange?: (page: number) => void
@@ -715,6 +791,7 @@ onPageSizeChange?: (size: number) => void
 ```
 
 **Inline Editing:**
+
 ```typescript
 /** Called when user saves inline edit */
 onInlineEdit?: (id: string, field: string, value: unknown) => void
@@ -723,6 +800,7 @@ onInlineEditCancel?: (id: string) => void
 ```
 
 **Drag and Drop:**
+
 ```typescript
 /** Called when user reorders items */
 onReorder?: (items: { id: string; order: number }[]) => void
@@ -731,6 +809,7 @@ onMove?: (id: string, targetContainerId: string) => void
 ```
 
 **Modal/Dialog Actions:**
+
 ```typescript
 /** Called when user opens a modal for an item */
 onOpenModal?: (id: string, modalType: 'edit' | 'view' | 'delete') => void
@@ -739,6 +818,7 @@ onCloseModal?: () => void
 ```
 
 **When to Use Complex Callbacks:**
+
 - The spec mentions bulk operations or multi-select
 - The spec includes filtering, sorting, or search
 - The spec requires pagination for large datasets
@@ -746,24 +826,25 @@ onCloseModal?: () => void
 - The UI includes modals or slide-over panels
 
 **Example Complex Props Interface:**
+
 ```typescript
 export interface ProjectListProps {
-  projects: Project[]
+  projects: Project[];
   // Basic callbacks
-  onView?: (id: string) => void
-  onCreate?: () => void
+  onView?: (id: string) => void;
+  onCreate?: () => void;
   // Bulk operations
-  selectedIds?: string[]
-  onSelectionChange?: (ids: string[]) => void
-  onBulkDelete?: (ids: string[]) => void
+  selectedIds?: string[];
+  onSelectionChange?: (ids: string[]) => void;
+  onBulkDelete?: (ids: string[]) => void;
   // Filtering
-  filters?: FilterCriteria
-  onFilterChange?: (filters: FilterCriteria) => void
-  onSearch?: (query: string) => void
+  filters?: FilterCriteria;
+  onFilterChange?: (filters: FilterCriteria) => void;
+  onSearch?: (query: string) => void;
   // Pagination
-  currentPage?: number
-  totalPages?: number
-  onPageChange?: (page: number) => void
+  currentPage?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
 }
 ```
 
