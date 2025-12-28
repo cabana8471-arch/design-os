@@ -1485,6 +1485,48 @@ All commands referencing viewport sizes must use these consistent dimensions:
 
 ---
 
+## Shell Utility Components
+
+Utility components and hooks available in `src/shell/` for building shell features. Used by `/design-shell` audit checklist (sections I-L).
+
+**Components (`src/shell/components/`):**
+
+| Component | Priority | Purpose |
+|-----------|----------|---------|
+| `SkipLink` | High | Skip-to-content accessibility link |
+| `ShellErrorBoundary` | High | Error boundary for secondary components |
+| `LogoArea` | Medium | Customizable logo/branding area |
+| `ThemeToggle` | Medium | Light/dark/system theme switcher |
+| `ShellSkeleton` | Medium | Loading skeleton states |
+| `ShellFooter` | Low | Optional footer with version/links |
+
+**Hooks (`src/shell/hooks/`):**
+
+| Hook | Priority | Purpose |
+|------|----------|---------|
+| `useFocusManagement` | High | Focus trap and restoration for modals |
+| `useShellShortcuts` | Medium | Global keyboard shortcuts (Cmd+K, etc.) |
+| `useShellState` | Medium | Persistent UI state (sidebar, nav groups) |
+| `useSessionTimeout` | Low | Session inactivity timeout with warning |
+
+**Usage:**
+
+```tsx
+import {
+  SkipLink,
+  ShellErrorBoundary,
+  ThemeToggle
+} from '@/shell/components'
+
+import {
+  useFocusManagement,
+  useShellShortcuts,
+  useShellState
+} from '@/shell/hooks'
+```
+
+---
+
 ## Template State (Boilerplate Directories)
 
 The Design OS boilerplate includes several intentionally empty directories. This is by design — they serve as placeholders that users populate through the Design OS workflow commands.

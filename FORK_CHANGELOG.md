@@ -6,6 +6,103 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-28 21:45] Shell Utility Components & Extended Audit Checklist
+
+### Description
+
+Implemented "Funcționalități Adiționale" from the Shell Relationships plan - utility components and hooks for accessibility, error handling, loading states, theme management, and session handling. Also extended the shell audit checklist with sections I-L.
+
+### New Shell Utility Components
+
+**HIGH PRIORITY (Accessibility):**
+
+| Component/Hook | Location | Purpose |
+| -------------- | -------- | ------- |
+| `SkipLink` | `src/shell/components/SkipLink.tsx` | Skip-to-content link for screen readers |
+| `ShellErrorBoundary` | `src/shell/components/ShellErrorBoundary.tsx` | Error boundary for secondary components with retry |
+| `useFocusManagement` | `src/shell/hooks/useFocusManagement.ts` | Focus trap and restoration for modals/drawers |
+
+**MEDIUM PRIORITY (UX):**
+
+| Component/Hook | Location | Purpose |
+| -------------- | -------- | ------- |
+| `useShellShortcuts` | `src/shell/hooks/useShellShortcuts.ts` | Global keyboard shortcuts (Cmd+K, Cmd+B, etc.) |
+| `LogoArea` | `src/shell/components/LogoArea.tsx` | Customizable logo/branding area |
+| `ThemeToggle` | `src/shell/components/ThemeToggle.tsx` | Light/dark/system theme switcher |
+| `ShellSkeleton` | `src/shell/components/ShellSkeleton.tsx` | Loading skeletons for shell and components |
+| `useShellState` | `src/shell/hooks/useShellState.ts` | Persistent UI state (sidebar, nav groups) |
+
+**LOW PRIORITY (Optional):**
+
+| Component/Hook | Location | Purpose |
+| -------------- | -------- | ------- |
+| `ShellFooter` | `src/shell/components/ShellFooter.tsx` | Footer with version, links, copyright |
+| `useSessionTimeout` | `src/shell/hooks/useSessionTimeout.ts` | Session inactivity timeout with warning |
+
+### Extended Audit Checklist (I-L)
+
+Added to `.claude/commands/design-os/design-shell.md` Step 0.5:
+
+| Section | Checks | Purpose |
+| ------- | ------ | ------- |
+| I. Focus & Keyboard | I1-I4 | Skip link, focus trap, Escape closes, shortcuts |
+| J. Error Handling | J1-J3 | Error boundaries, fallback UI, retry mechanism |
+| K. Loading & Performance | K1-K3 | Skeleton loaders, lazy loading, Suspense |
+| L. Theme & Dark Mode | L1-L6 | Anti-flicker script, localStorage init, system listener |
+
+### Anti-Flicker Script
+
+Added synchronous theme initialization to `index.html`:
+
+```html
+<script>
+  (function() {
+    try {
+      var theme = localStorage.getItem('theme') || 'system';
+      var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (theme === 'dark' || (theme === 'system' && systemDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (e) {}
+  })();
+</script>
+```
+
+### Files Created
+
+| File | Lines | Purpose |
+| ---- | ----- | ------- |
+| `src/shell/components/SkipLink.tsx` | 40 | Skip-to-content accessibility |
+| `src/shell/components/ShellErrorBoundary.tsx` | 85 | Error boundary with retry |
+| `src/shell/components/LogoArea.tsx` | 75 | Customizable logo |
+| `src/shell/components/ThemeToggle.tsx` | 95 | Theme switcher |
+| `src/shell/components/ShellSkeleton.tsx` | 145 | Loading skeletons |
+| `src/shell/components/ShellFooter.tsx` | 95 | Optional footer |
+| `src/shell/components/index.ts` | 25 | Component exports |
+| `src/shell/hooks/useFocusManagement.ts` | 115 | Focus management |
+| `src/shell/hooks/useShellShortcuts.ts` | 100 | Keyboard shortcuts |
+| `src/shell/hooks/useShellState.ts` | 115 | Persistent state |
+| `src/shell/hooks/useSessionTimeout.ts` | 130 | Session timeout |
+| `src/shell/hooks/index.ts` | 18 | Hook exports |
+| `src/shell/index.ts` | 15 | Main module export |
+
+### Files Modified
+
+| File | Change |
+| ---- | ------ |
+| `index.html` | Added anti-flicker script in `<head>` before CSS |
+| `agents.md` | Added "Shell Utility Components" reference section |
+| `.claude/commands/design-os/design-shell.md` | Extended audit checklist I-L (already had A-H) |
+
+### Usage
+
+```tsx
+import { SkipLink, ShellErrorBoundary, ThemeToggle } from '@/shell/components'
+import { useFocusManagement, useShellShortcuts, useShellState } from '@/shell/hooks'
+```
+
+---
+
 ## [2025-12-28 18:30] Shell Relationships Feature Implementation
 
 ### Description
