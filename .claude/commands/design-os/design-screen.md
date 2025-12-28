@@ -356,6 +356,40 @@ If design direction doesn't exist but shell exists, show a warning:
 
 If neither shell nor design direction exists, proceed with the design guidance from Step 1 (skill file or fallback).
 
+### Fallback When Design Direction Missing
+
+If `design-direction.md` doesn't exist, apply these defaults:
+
+**Default Information Density:** Comfortable
+
+**Default Container Pattern:**
+
+```tsx
+<div className="h-full bg-stone-50 dark:bg-stone-950 px-4 py-4 sm:px-6">
+  {/* Section content */}
+</div>
+```
+
+**Default Spacing Values:**
+
+| Context           | Value               |
+| ----------------- | ------------------- |
+| Container Padding | `px-4 py-4 sm:px-6` |
+| Card Padding      | `p-5`               |
+| Section Gap       | `gap-6`             |
+| Component Spacing | `space-y-4`         |
+
+**Report to user:**
+
+```
+Note: design-direction.md not found. Using default "Comfortable" density:
+- Container: px-4 py-4 sm:px-6
+- Cards: p-5
+- Gaps: gap-6
+
+For consistent styling across sections, run /design-shell to create design-direction.md.
+```
+
 ## Step 3: Analyze Requirements
 
 Read and analyze all three files:
@@ -781,10 +815,29 @@ ls src/sections/*/components/*.tsx 2>/dev/null | head -10
 
 **If other sections exist**, analyze their styling patterns to ensure consistency:
 
-1. **Color class patterns** — Check for primary color usage (e.g., `bg-lime-600`, `text-lime-500`)
-2. **Spacing patterns** — Check for consistent padding/margin (e.g., `p-6`, `gap-4`, `space-y-4`)
-3. **Typography patterns** — Check for heading/body text styles (e.g., `text-xl font-semibold`)
-4. **Component patterns** — Check for card styles, button styles, table layouts
+1. **Container pattern** — Check for page-level container padding (e.g., `px-4 sm:px-6 py-4`)
+2. **Color class patterns** — Check for primary color usage (e.g., `bg-lime-600`, `text-lime-500`)
+3. **Spacing patterns** — Check for consistent padding/margin (e.g., `p-6`, `gap-4`, `space-y-4`)
+4. **Typography patterns** — Check for heading/body text styles (e.g., `text-xl font-semibold`)
+5. **Component patterns** — Check for card styles, button styles, table layouts
+
+**Container Pattern Analysis:**
+
+```bash
+# Extract container patterns from existing section root divs
+grep -rh 'className="h-full\|className="min-h-full' src/sections/*/components/*.tsx 2>/dev/null | head -5
+```
+
+**If container patterns are inconsistent:**
+
+```
+Warning: Inconsistent container padding detected across sections:
+- [Section A]: px-4 sm:px-6 py-4
+- [Section B]: p-1
+- [Section C]: no padding
+
+I'll apply the standard container pattern from design-direction.md to ensure consistency.
+```
 
 Example analysis:
 
@@ -803,6 +856,7 @@ grep -rh 'p-[0-9]\+\|px-[0-9]\+\|py-[0-9]\+' src/sections/*/components/*.tsx 2>/
 **Report to user:**
 "I found [N] existing section(s) with screen designs. I'll match the established patterns:
 
+- Container: [container padding pattern]
 - Primary color: [color]-[shade] for buttons/accents
 - Card style: [padding], [border/shadow style]
 - Spacing: [consistent spacing pattern]"
@@ -829,6 +883,70 @@ fi
 ### Create the Component File
 
 Then create the main component file at `src/sections/[section-id]/components/[ViewName].tsx`.
+
+### Content Container Pattern (MANDATORY)
+
+Every section screen design MUST wrap its content in a standardized container that applies consistent padding based on Information Density from `design-direction.md`.
+
+**Standard Container Template:**
+
+```tsx
+export function [ViewName]({ ... }: [ViewName]Props) {
+  return (
+    <div className="h-full [background] [container-padding]">
+      {/* Section content */}
+    </div>
+  );
+}
+```
+
+**Container Values by Information Density:**
+
+| Density     | Container Padding   | Background           |
+| ----------- | ------------------- | -------------------- |
+| Compact     | `px-3 py-3 sm:px-4` | `bg-[neutral]-50/50` |
+| Comfortable | `px-4 py-4 sm:px-6` | `bg-[neutral]-50`    |
+| Spacious    | `px-6 py-6 sm:px-8` | `bg-[neutral]-50`    |
+
+**Responsive Padding Pattern:**
+
+- Mobile: Use base padding (e.g., `px-4`)
+- Tablet+: Use enhanced padding with `sm:` prefix (e.g., `sm:px-6`)
+
+**Dark Mode:**
+
+- Light: `bg-[neutral]-50 dark:bg-[neutral]-950`
+- Or: `bg-white dark:bg-[neutral]-900` for card-style containers
+
+**Example with Comfortable density and stone neutral:**
+
+```tsx
+export function InvoiceList({ invoices, onView }: InvoiceListProps) {
+  return (
+    <div className="h-full bg-stone-50 dark:bg-stone-950 px-4 py-4 sm:px-6">
+      {/* Section content here */}
+    </div>
+  );
+}
+```
+
+**Edge-to-Edge Exception:**
+
+For dashboards or views that NEED full-width content (e.g., large data visualizations):
+
+```tsx
+<div className="h-full bg-stone-50 dark:bg-stone-950">
+  {/* Full-width header */}
+  <div className="px-4 sm:px-6 py-4 border-b">
+    <h1>Dashboard</h1>
+  </div>
+
+  {/* Full-width content area */}
+  <div className="flex-1">{/* Charts, maps, etc. */}</div>
+</div>
+```
+
+Document the exception with a comment if used.
 
 ### Component Structure
 

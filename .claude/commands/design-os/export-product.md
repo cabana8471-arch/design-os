@@ -993,6 +993,40 @@ echo "Checking spacing consistency..."
 grep -rh 'p-[0-9]\+\|px-[0-9]\+\|py-[0-9]\+\|gap-[0-9]\+' src/sections/*/components/*.tsx 2>/dev/null | sort | uniq -c | sort -rn | head -10
 ```
 
+### Container Pattern Consistency
+
+Check for consistent container patterns across section root components:
+
+```bash
+# Extract container patterns from section components
+echo "Checking container consistency..."
+grep -rh 'className="h-full\|className="min-h-full' src/sections/*/components/*.tsx 2>/dev/null | \
+  sed 's/.*className="\([^"]*\)".*/\1/' | sort | uniq -c | sort -rn
+```
+
+**Check for inconsistencies:**
+
+| Pattern           | Expected                                   | Status |
+| ----------------- | ------------------------------------------ | ------ |
+| Container wrapper | `h-full bg-[neutral]-50 px-4 py-4 sm:px-6` | ✓/✗    |
+| Background color  | Consistent neutral across sections         | ✓/✗    |
+| Padding pattern   | Matches Information Density                | ✓/✗    |
+
+**If container patterns are inconsistent:**
+
+```
+Warning: Inconsistent container patterns detected:
+
+Section "agents": h-full bg-slate-50 px-4 sm:px-6 py-4
+Section "machines": h-full bg-slate-50 p-1  <- INCONSISTENT
+Section "dashboard": min-h-full             <- MISSING PADDING
+
+These differences may be intentional (e.g., edge-to-edge dashboards).
+Would you like to:
+1. Continue anyway — document inconsistencies in export README
+2. Stop — fix inconsistencies before exporting
+```
+
 ### Typography Consistency
 
 Check for consistent font treatment:

@@ -6,7 +6,54 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-28 17:45] View Relationships: Functional Preview Wrappers with Drawers/Modals
+## [2025-12-28 14:20] Content Container Standard: Consistent Section Padding
+
+### Description
+
+Added a mandatory "Content Container Pattern" to ensure all section screen designs use consistent padding and backgrounds, preventing visual inconsistencies between sections.
+
+### Problem Solved
+
+When creating screen designs with `/design-screen`, different sections could have wildly different container padding:
+
+- AgentList: `px-4 sm:px-6 py-4` (consistent)
+- MachineList: `p-1` (too minimal)
+- Dashboard: no padding (edge-to-edge when not intended)
+
+This caused visual inconsistency across the application.
+
+### Solution
+
+Added standardized container pattern based on Information Density:
+
+| Density     | Container Padding   | Background           |
+| ----------- | ------------------- | -------------------- |
+| Compact     | `px-3 py-3 sm:px-4` | `bg-[neutral]-50/50` |
+| Comfortable | `px-4 py-4 sm:px-6` | `bg-[neutral]-50`    |
+| Spacious    | `px-6 py-6 sm:px-8` | `bg-[neutral]-50`    |
+
+### Modified Files
+
+| File                                           | Change                                                       |
+| ---------------------------------------------- | ------------------------------------------------------------ |
+| `.claude/commands/design-os/design-screen.md`  | Added "Content Container Pattern (MANDATORY)" in Step 6      |
+| `.claude/commands/design-os/design-screen.md`  | Added "Container Pattern Analysis" in Step 5                 |
+| `.claude/commands/design-os/design-screen.md`  | Added "Fallback When Design Direction Missing" in Step 2     |
+| `.claude/commands/design-os/design-shell.md`   | Added "Container Padding" row to Spacing Scale table         |
+| `.claude/commands/design-os/export-product.md` | Added "Container Pattern Consistency" validation in Step 8.5 |
+| `agents.md`                                    | Added new "Content Container Standard" section               |
+
+### Edge-to-Edge Exception
+
+Dashboards and full-width views can still use edge-to-edge layouts, but must:
+
+1. Document the exception with a comment
+2. Apply padding only to header/control areas
+3. Keep the container wrapper (`h-full bg-[neutral]-50`)
+
+---
+
+## [2025-12-28 14:05] View Relationships: Functional Preview Wrappers with Drawers/Modals
 
 ### Description
 

@@ -292,6 +292,52 @@ When creating screen designs, follow these guidelines:
 
 ---
 
+## Content Container Standard
+
+All section screen designs MUST use a consistent container wrapper. This ensures visual harmony across sections.
+
+### Container Pattern
+
+```tsx
+<div className="h-full bg-[neutral]-50 dark:bg-[neutral]-950 px-4 py-4 sm:px-6">
+  {/* Section content */}
+</div>
+```
+
+### Container Values by Information Density
+
+| Density     | Container Padding   | Background           |
+| ----------- | ------------------- | -------------------- |
+| Compact     | `px-3 py-3 sm:px-4` | `bg-[neutral]-50/50` |
+| Comfortable | `px-4 py-4 sm:px-6` | `bg-[neutral]-50`    |
+| Spacious    | `px-6 py-6 sm:px-8` | `bg-[neutral]-50`    |
+
+### Where Density Comes From
+
+1. **design-direction.md** — If exists, use the documented Information Density value
+2. **Existing sections** — If no design-direction, match existing section patterns
+3. **Default** — If neither exists, use "Comfortable" (`px-4 py-4 sm:px-6`)
+
+### Edge-to-Edge Exception
+
+Some views require full-width content (dashboards, maps, large visualizations). In these cases:
+
+1. Still wrap in `<div className="h-full bg-[neutral]-50">`
+2. Apply padding only to header/control areas
+3. Document the exception with a comment
+
+```tsx
+// Edge-to-edge layout for dashboard charts
+<div className="h-full bg-stone-50 dark:bg-stone-950">
+  <div className="px-4 sm:px-6 py-4 border-b">
+    {/* Header with standard padding */}
+  </div>
+  <div className="flex-1">{/* Full-width chart area */}</div>
+</div>
+```
+
+---
+
 ## Tailwind CSS Directives
 
 These rules apply to both the Design OS application and all screen designs/components it generates:

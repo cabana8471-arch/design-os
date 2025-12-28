@@ -522,11 +522,12 @@ Example:
 
 Based on **[Information Density]**:
 
-| Context      | Compact | Comfortable | Spacious |
-| ------------ | ------- | ----------- | -------- |
-| Card Padding | p-3     | p-5         | p-8      |
-| Section Gap  | gap-4   | gap-6       | gap-10   |
-| Base Unit    | 4px     | 8px         | 12px     |
+| Context           | Compact           | Comfortable       | Spacious          |
+| ----------------- | ----------------- | ----------------- | ----------------- |
+| Container Padding | px-3 py-3 sm:px-4 | px-4 py-4 sm:px-6 | px-6 py-6 sm:px-8 |
+| Card Padding      | p-3               | p-5               | p-8               |
+| Section Gap       | gap-4             | gap-6             | gap-10            |
+| Base Unit         | 4px               | 8px               | 12px              |
 
 ## Responsive Approach
 
