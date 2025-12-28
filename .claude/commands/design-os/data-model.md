@@ -4,26 +4,26 @@ You are helping the user define the core data model for their product. This esta
 
 ## Step 1: Check Prerequisites
 
-First, verify that the product overview and roadmap exist:
+First, verify the product overview exists (required) and check for roadmap (optional):
 
 1. Read `/product/product-overview.md` to understand what the product does
-2. Read `/product/product-roadmap.md` to understand the planned sections
+2. Read `/product/product-roadmap.md` to understand the planned sections (if available)
 
-If either file is missing, let the user know with a specific message:
-
-**If `/product/product-overview.md` is missing:**
+**If `/product/product-overview.md` is missing (REQUIRED):**
 
 ```
 Error: product/product-overview.md - File not found. Run /product-vision to create it.
 ```
 
-**If `/product/product-roadmap.md` is missing:**
+Stop here if product-overview.md is missing.
+
+**If `/product/product-roadmap.md` is missing (OPTIONAL):**
 
 ```
-Error: product/product-roadmap.md - File not found. Run /product-roadmap to create it.
+Note: product/product-roadmap.md not found. Proceeding without roadmap context — entity definitions may be less informed by planned sections.
 ```
 
-Stop here if any prerequisite is missing.
+Continue with analysis using only the product overview.
 
 ## Step 2: Gather Initial Input
 
