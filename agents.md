@@ -1600,3 +1600,72 @@ The Design OS source code includes functions that check for content existence:
 - `loadProductData()` — Returns empty/null values until product files are created
 
 These functions gracefully handle the empty state and enable the UI to show appropriate "get started" messaging rather than errors.
+
+---
+
+## Hookify Guardrails
+
+Design OS includes **hookify rules** that provide real-time feedback during development. These rules catch common mistakes before they cause problems.
+
+### How It Works
+
+Hookify rules are markdown files with YAML frontmatter that trigger on specific events:
+
+- **file** events — When creating or editing files
+- **prompt** events — When user submits a prompt
+- **bash** events — When running bash commands
+
+Each rule can either:
+
+- **warn** — Show a warning and continue
+- **block** — Prevent the action entirely
+
+### Rule Categories
+
+| Category       | Prefix           | Purpose                                |
+| -------------- | ---------------- | -------------------------------------- |
+| Code Patterns  | `dos-code-`      | Prevent code that won't work correctly |
+| Workflow       | `dos-workflow-`  | Guide command sequence                 |
+| Data Integrity | `dos-data-`      | Ensure data.json correctness           |
+| Design System  | `dos-design-`    | Enforce design consistency             |
+| Accessibility  | `dos-a11y-`      | Catch accessibility issues             |
+| File Structure | `dos-structure-` | Ensure correct file organization       |
+
+### Critical Rules (BLOCK)
+
+These rules **prevent** actions that would break Design OS:
+
+| Rule                                 | What It Blocks                                  |
+| ------------------------------------ | ----------------------------------------------- |
+| `dos-code-block-direct-data-import`  | Importing data.json in exportable components    |
+| `dos-code-block-tailwind-config`     | Creating tailwind.config.js (v4 doesn't use it) |
+| `dos-structure-block-tsx-in-product` | Creating .tsx files in product/ directory       |
+
+### Managing Rules
+
+**List all rules:**
+
+```bash
+ls .claude/hookify.dos-*.local.md
+```
+
+**Disable a rule:**
+
+1. Open the rule file
+2. Change `enabled: true` to `enabled: false`
+3. Save — takes effect immediately
+
+**Enable a disabled rule:**
+
+1. Open the rule file
+2. Change `enabled: false` to `enabled: true`
+3. Save — takes effect immediately
+
+### Full Documentation
+
+See `.claude/hookify/README.md` for complete documentation including:
+
+- All rules and their purposes
+- Rule file format and syntax
+- Creating custom rules
+- Troubleshooting guide

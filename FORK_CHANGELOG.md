@@ -6,7 +6,88 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-28 21:30] Critical Analysis: 18 Documentation & Consistency Fixes
+## [2025-12-28 21:05] Hookify Integration: 22 Guardrail Rules for Design OS
+
+### Description
+
+Comprehensive integration of the **Hookify plugin** from Anthropic's Claude Code plugins repository. Provides real-time guardrails that prevent common mistakes, enforce best practices, and guide users through the correct Design OS workflow. Implementation includes 22 rules across 6 categories, plus complete documentation.
+
+### What is Hookify?
+
+Hookify creates markdown files with YAML frontmatter that trigger on specific events (file edits, prompts, bash commands). Each rule can either **warn** (show warning, continue) or **block** (prevent action entirely).
+
+### Rules Created
+
+#### Critical Rules (BLOCK) - 3 rules
+
+| Rule                                 | What It Blocks                                                    |
+| ------------------------------------ | ----------------------------------------------------------------- |
+| `dos-code-block-direct-data-import`  | Importing data.json in exportable components (breaks portability) |
+| `dos-code-block-tailwind-config`     | Creating tailwind.config.js (Tailwind v4 is CSS-based)            |
+| `dos-structure-block-tsx-in-product` | Creating .tsx files in product/ directory (wrong location)        |
+
+#### Warning Rules - 19 rules
+
+| Category                               | Rules | Purpose                                                                   |
+| -------------------------------------- | ----- | ------------------------------------------------------------------------- |
+| **Code Patterns** (`dos-code-*`)       | 4     | Missing dark mode, relative imports, responsive prefixes, default exports |
+| **Workflow** (`dos-workflow-*`)        | 3     | Prerequisite checklists for /design-screen, /sample-data, /export-product |
+| **Data Integrity** (`dos-data-*`)      | 4     | Missing \_meta, placeholder content, trailing commas, hardcoded IDs       |
+| **Design System** (`dos-design-*`)     | 4     | Generic fonts, custom colors, container padding, missing transitions      |
+| **Accessibility** (`dos-a11y-*`)       | 2     | Icon buttons without aria-label, missing focus styles                     |
+| **File Structure** (`dos-structure-*`) | 2     | Component location, shell component references                            |
+
+### Files Created
+
+| File                             | Purpose                                                           |
+| -------------------------------- | ----------------------------------------------------------------- |
+| `.claude/hookify/README.md`      | Complete documentation (rule format, management, troubleshooting) |
+| `.claude/hookify/categories.md`  | Detailed explanations of each rule category                       |
+| `.claude/hookify.dos-*.local.md` | 22 rule files with YAML frontmatter and helpful messages          |
+
+### Files Modified
+
+| File        | Changes                                                                                          |
+| ----------- | ------------------------------------------------------------------------------------------------ |
+| `agents.md` | Added "Hookify Guardrails" section with rule categories, critical rules, and management commands |
+
+### Rule Naming Convention
+
+`hookify.dos-[category]-[action]-[name].local.md`
+
+- `dos` = Design OS prefix (avoids conflicts with other plugins)
+- `[category]` = code, workflow, data, design, a11y, structure
+- `[action]` = block or warn
+- `[name]` = descriptive rule name
+
+### Key Features
+
+1. **Immediate feedback** — Rules trigger in real-time as you work
+2. **Educational messages** — Each rule explains WHY and HOW to fix
+3. **Committable** — Rules are part of the boilerplate template (not gitignored)
+4. **Easy management** — Enable/disable by changing `enabled: true/false`
+5. **No restart needed** — Changes take effect immediately
+
+### Usage
+
+```bash
+# List all rules
+ls .claude/hookify.dos-*.local.md
+
+# Disable a specific rule
+# Edit the file and change enabled: true to enabled: false
+```
+
+### Verification
+
+- All 22 rules created with correct YAML frontmatter
+- Documentation files created in .claude/hookify/
+- agents.md updated with Hookify Guardrails section
+- Rules follow Design OS conventions and reference agents.md/SKILL.md
+
+---
+
+## [2025-12-28 20:40] Critical Analysis: 18 Documentation & Consistency Fixes
 
 ### Description
 
