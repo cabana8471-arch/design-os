@@ -32,16 +32,21 @@ Stop here if any required file is missing.
 Check that the frontend-design skill file exists and has meaningful content:
 
 ```bash
-# Check file exists
-if [ ! -f ".claude/skills/frontend-design/SKILL.md" ]; then
-  echo "Warning: SKILL.md - File not found at .claude/skills/frontend-design/SKILL.md"
-  exit 1
-fi
+SKILL_FILE=".claude/skills/frontend-design/SKILL.md"
+SKILL_AVAILABLE=false
 
-# Check file has meaningful content (>100 characters after frontmatter)
-CONTENT_LENGTH=$(sed '/^---$/,/^---$/d' .claude/skills/frontend-design/SKILL.md | tr -d '[:space:]' | wc -c)
-if [ "$CONTENT_LENGTH" -lt 100 ]; then
-  echo "Warning: SKILL.md - Insufficient content (< 100 chars). Add meaningful design guidance."
+# Check file exists
+if [ ! -f "$SKILL_FILE" ]; then
+  echo "Warning: SKILL.md - File not found at $SKILL_FILE"
+else
+  # Check file has meaningful content (>100 characters after frontmatter)
+  CONTENT_LENGTH=$(sed '/^---$/,/^---$/d' "$SKILL_FILE" | tr -d '[:space:]' | wc -c)
+  if [ "$CONTENT_LENGTH" -lt 100 ]; then
+    echo "Warning: SKILL.md - Insufficient content (< 100 chars). Add meaningful design guidance."
+  else
+    SKILL_AVAILABLE=true
+    echo "Skill file validated"
+  fi
 fi
 ```
 

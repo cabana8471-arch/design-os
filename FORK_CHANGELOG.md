@@ -6,6 +6,74 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-28 16:00] Comprehensive Codebase Analysis: 18 Issues Fixed
+
+### Description
+
+Comprehensive critical analysis of the entire boilerplate codebase after December 28 changes identified 18 issues (5 high priority, 7 medium, 6 low). All issues were documentation inconsistencies and cross-reference mismatches — no critical implementation bugs.
+
+### Issues Fixed
+
+#### High Priority (5)
+
+| Issue                    | File                             | Fix                                                               |
+| ------------------------ | -------------------------------- | ----------------------------------------------------------------- |
+| H1: TOP 3 vs TOP 4 RULES | `README.md`, `export-product.md` | Updated all 7 remaining references to "TOP 4 RULES"               |
+| H2: Port inconsistency   | `screenshot-design.md`           | Changed port 5173 → 3000 in cleanup code (matches vite.config.ts) |
+| H3: Container dark mode  | `export-product.md`              | Added `dark:bg-[neutral]-950` to validation pattern               |
+| H4: Step count wrong     | `export-product.md`              | Changed "15 steps" → "18 steps (including 8.5)"                   |
+| H5: Validation script    | `README.md`                      | Standardized sed pattern to match agents.md                       |
+
+#### Medium Priority (7)
+
+| Issue                       | File                | Fix                                                       |
+| --------------------------- | ------------------- | --------------------------------------------------------- |
+| M1: exit 1 on missing skill | `design-shell.md`   | Replaced with SKILL_AVAILABLE flag, warn instead of exit  |
+| M2: Column header mismatch  | `design-screen.md`  | Changed "Value to Apply" → "Choice" to match design-shell |
+| M3: Missing prerequisite    | `shape-section.md`  | Added check for product-overview.md                       |
+| M4: No recovery guidance    | `export-product.md` | Added circular import recovery steps                      |
+| M5: Error message format    | `shape-section.md`  | Changed "Missing:" → "Error:" prefix                      |
+| M6: Output list incomplete  | `agents.md`         | Added design-direction.md to design-shell output          |
+| M7: Placeholder unclear     | `agents.md`         | Added note explaining [neutral] is a placeholder          |
+
+#### Low Priority (6)
+
+| Issue                          | File                          | Fix                                      |
+| ------------------------------ | ----------------------------- | ---------------------------------------- |
+| L1: Missing reference          | `one-shot/prompt-template.md` | Added design-direction.md to file list   |
+| L2: Missing usage comment      | `section/preamble.md`         | Added note about placeholder variables   |
+| L3: Field name inconsistency   | `agents.md`                   | Changed "Skill file" → "Skill file used" |
+| L4: Runtime props undocumented | `agents.md`                   | Added note about ScreenDesignPage props  |
+| L6: dataRef unclear            | `shape-section.md`            | Added explanation of ID→entity lookup    |
+
+### Modified Files
+
+| File                                                      | Changes                                                           |
+| --------------------------------------------------------- | ----------------------------------------------------------------- |
+| `.claude/commands/design-os/export-product.md`            | TOP 4 (5 places), step count, dark mode, circular import recovery |
+| `.claude/commands/design-os/screenshot-design.md`         | Port 5173 → 3000 (3 places)                                       |
+| `.claude/commands/design-os/design-shell.md`              | Removed exit 1, added SKILL_AVAILABLE pattern                     |
+| `.claude/commands/design-os/design-screen.md`             | Column header "Choice" instead of "Value to Apply"                |
+| `.claude/commands/design-os/shape-section.md`             | Prerequisites, error format, dataRef clarification                |
+| `.claude/templates/design-os/README.md`                   | TOP 4 (2 places), validation script pattern                       |
+| `.claude/templates/design-os/one-shot/prompt-template.md` | Added design-direction.md reference                               |
+| `.claude/templates/design-os/section/preamble.md`         | Added usage comment for placeholders                              |
+| `agents.md`                                               | Output list, placeholder note, field name, runtime props note     |
+
+### Verification
+
+- All "TOP 3 RULES" references updated (except historical FORK_CHANGELOG.md entries)
+- Port 3000 consistent with vite.config.ts throughout
+- Validation scripts use identical sed pattern
+- Error messages follow standard format
+- Cross-references verified as accurate
+
+### Production Status
+
+All issues resolved. Codebase is production ready.
+
+---
+
 ## [2025-12-28 14:30] Documentation Polish: TOP 4 RULES & Cross-Reference Fix
 
 ### Description

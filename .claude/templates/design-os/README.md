@@ -99,7 +99,7 @@ Section templates use placeholder variables that users must replace:
 1. `one-shot/preamble.md` — Title and introduction
 2. `common/model-guidance.md` — Model selection guidance
 3. `one-shot/prompt-template.md` — Instructions and file references
-4. `common/top-rules.md` — TOP 3 RULES
+4. `common/top-rules.md` — TOP 4 RULES
 5. `common/reporting-protocol.md` — Implementation reporting
 6. `common/tdd-workflow.md` — TDD implementation approach
 7. `common/clarifying-questions.md` — Clarifying questions
@@ -112,7 +112,7 @@ Section templates use placeholder variables that users must replace:
 1. `section/preamble.md` — Title, section variables, and introduction
 2. `common/model-guidance.md` — Model selection guidance
 3. `section/prompt-template.md` — Instructions and file references
-4. `common/top-rules.md` — TOP 3 RULES
+4. `common/top-rules.md` — TOP 4 RULES
 5. `common/reporting-protocol.md` — Implementation reporting
 6. `section/tdd-workflow.md` — TDD implementation approach (section-specific)
 7. `section/clarifying-questions.md` — Clarifying questions (section-specific)
@@ -419,8 +419,8 @@ if [ ! -f "$SKILL_FILE" ]; then
   exit 1
 fi
 
-# Check file has content (excluding frontmatter)
-CONTENT_LENGTH=$(sed '1{/^---$/!q;};1,/^---$/d' "$SKILL_FILE" | wc -c | tr -d ' ')
+# Check file has content (excluding frontmatter and whitespace)
+CONTENT_LENGTH=$(sed '/^---$/,/^---$/d' "$SKILL_FILE" | tr -d '[:space:]' | wc -c)
 
 if [ "$CONTENT_LENGTH" -lt "$MIN_CONTENT_LENGTH" ]; then
   echo "Warning: SKILL.md - Insufficient content ($CONTENT_LENGTH chars < $MIN_CONTENT_LENGTH required)"

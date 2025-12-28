@@ -4,13 +4,19 @@ You are helping the user define the specification for a section of their product
 
 ## Step 1: Check Prerequisites
 
-First, verify that `/product/product-roadmap.md` exists. If it doesn't:
+First, verify that both required files exist:
+
+1. `/product/product-roadmap.md` — Required for section list
+2. `/product/product-overview.md` — Required for scope detection (Step 1.5)
+
+If either file is missing:
 
 ```
-Missing: product/product-roadmap.md. Run /product-roadmap to create it.
+Error: product-roadmap.md - File not found. Run /product-roadmap to create it.
+Error: product-overview.md - File not found. Run /product-vision to create it.
 ```
 
-Stop here if the roadmap doesn't exist.
+Stop here if any required file doesn't exist.
 
 ## Step 1.5: Load Product Context
 
@@ -739,6 +745,9 @@ The `## View Relationships` section uses a specific format that `/design-screen`
 - `SecondaryView` — The view that opens (e.g., `AgentDetailDrawer`)
 - `type` — UI type: `drawer`, `modal`, or `inline`
 - `dataRef` — Data passing: `entityId`, `entity`, or `none`
+
+**Note on dataRef:**
+When `dataRef = entityId`, the primary view's callback receives just the ID (e.g., `onView(id: string)`). The **preview wrapper** created by `/design-screen` then looks up the full entity from sample data and passes it to the secondary view. The secondary view always receives the full entity object, not just the ID.
 
 **Parsing Example:**
 

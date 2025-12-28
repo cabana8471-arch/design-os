@@ -19,6 +19,7 @@ The Playwright MCP provides browser automation tools. Check for these **exact to
 | `mcp__playwright__browser_set_viewport_size` | Set viewport dimensions |
 
 **Alternative Tool Names (older versions):**
+
 - `browser_take_screenshot` — May appear without `mcp__playwright__` prefix
 - `playwright_screenshot` — Deprecated, use `browser_take_screenshot`
 
@@ -29,14 +30,14 @@ The Playwright MCP provides browser automation tools. Check for these **exact to
 Output this EXACT message to the user (copy it verbatim, do not modify or "correct" it):
 
 ---
+
 To capture screenshots, I need the Playwright MCP server installed. Please run:
 
 ```
 claude mcp add playwright npx @playwright/mcp@latest
 ```
 
-Then restart this Claude Code session and run `/screenshot-design` again.
----
+## Then restart this Claude Code session and run `/screenshot-design` again.
 
 Do not substitute different package names or modify the command. Output it exactly as written above.
 
@@ -76,6 +77,7 @@ If multiple screen designs exist, use the AskUserQuestion tool to ask which one 
 "Which screen design would you like to screenshot?"
 
 Present the available screen designs as options, grouped by section:
+
 - [Section Name] / [ScreenDesignName]
 - [Section Name] / [ScreenDesignName]
 
@@ -102,6 +104,7 @@ fi
 ```
 
 **Track the dev server state:**
+
 - If `DEV_SERVER_PREEXISTING=true`: Do NOT kill the server in Step 6
 - If `DEV_SERVER_PREEXISTING=false`: Kill the server in Step 6 (you started it)
 
@@ -117,19 +120,21 @@ The screen design URL pattern is: `http://localhost:3000/sections/[section-id]/s
 
 **Route Verification:**
 This URL pattern matches the route defined in `src/lib/router.tsx`:
+
 - Router pattern: `/sections/:sectionId/screen-designs/:screenDesignName`
 - Ensure `section-id` matches a directory in `src/sections/`
 - Ensure `screen-design-name` matches a `.tsx` file (without extension) in `src/sections/[section-id]/`
 
 If the page shows a 404 or blank screen, check:
+
 1. The route exists in router.tsx
 2. The file exists at `src/sections/[section-id]/[screen-design-name].tsx`
 3. The component has a default export
 
-1. First, use `browser_navigate` to go to the screen design URL
-2. Wait for the page to fully load (at least 2-3 seconds for fonts and images)
-3. **Hide the Design OS preview header** — Click the "Hide" link (with `data-hide-header` attribute). This is the Design OS preview chrome, separate from the product's shell navigation.
-4. Use `browser_take_screenshot` to capture the page (without the navigation bar)
+4. First, use `browser_navigate` to go to the screen design URL
+5. Wait for the page to fully load (at least 2-3 seconds for fonts and images)
+6. **Hide the Design OS preview header** — Click the "Hide" link (with `data-hide-header` attribute). This is the Design OS preview chrome, separate from the product's shell navigation.
+7. Use `browser_take_screenshot` to capture the page (without the navigation bar)
 
 ### Hide Button Failure Handling
 
@@ -145,6 +150,7 @@ If the Hide button cannot be found or clicked, follow this fallback procedure:
 **Fallback Procedure:**
 
 1. **Try alternative selectors:**
+
    ```
    Selectors to try (in order):
    1. [data-hide-header]
@@ -169,21 +175,21 @@ If the Hide button cannot be found or clicked, follow this fallback procedure:
 
 **Screenshot specifications:**
 
-| Viewport | Width | Height | Use Case |
-|----------|-------|--------|----------|
-| **Desktop** (default) | 1280px | 800px | Standard documentation screenshots |
-| **Mobile** | 375px | 667px | Mobile-responsive variants |
-| **Tablet** | 768px | 1024px | Tablet variants (optional) |
+| Viewport              | Width  | Height | Use Case                           |
+| --------------------- | ------ | ------ | ---------------------------------- |
+| **Desktop** (default) | 1280px | 800px  | Standard documentation screenshots |
+| **Mobile**            | 375px  | 667px  | Mobile-responsive variants         |
+| **Tablet**            | 768px  | 1024px | Tablet variants (optional)         |
 
 ### Viewport Selection Guidance
 
 **When to use each viewport:**
 
-| Viewport | Best For | Examples |
-|----------|----------|----------|
-| **Desktop** | Primary documentation, complex layouts, data tables, dashboards | Admin panels, analytics dashboards, multi-column forms |
-| **Mobile** | Touch-first interfaces, mobile-specific features, responsive validation | Mobile navigation, touch gestures, bottom sheets |
-| **Tablet** | Hybrid layouts, side-by-side views, reading-focused content | Document viewers, email clients, iPad-optimized apps |
+| Viewport    | Best For                                                                | Examples                                               |
+| ----------- | ----------------------------------------------------------------------- | ------------------------------------------------------ |
+| **Desktop** | Primary documentation, complex layouts, data tables, dashboards         | Admin panels, analytics dashboards, multi-column forms |
+| **Mobile**  | Touch-first interfaces, mobile-specific features, responsive validation | Mobile navigation, touch gestures, bottom sheets       |
+| **Tablet**  | Hybrid layouts, side-by-side views, reading-focused content             | Document viewers, email clients, iPad-optimized apps   |
 
 **Decision guide:**
 
@@ -198,11 +204,13 @@ If the Hide button cannot be found or clicked, follow this fallback procedure:
    - The spec mentions tablet-specific features
 
 **Screenshot naming with viewports:**
+
 - `invoice-list.png` — Desktop (default, no suffix needed)
 - `invoice-list-mobile.png` — Mobile variant
 - `invoice-list-tablet.png` — Tablet variant
 
 **Requirements:**
+
 - **Desktop is the default** — always capture at 1280x800 unless mobile/tablet requested
 - Use **full page screenshot** to capture the entire scrollable content (not just the viewport)
 - PNG format for best quality
@@ -211,6 +219,7 @@ If the Hide button cannot be found or clicked, follow this fallback procedure:
 > **Note:** The viewport sizes above are defaults. If your design uses custom breakpoints (e.g., `sm:` at 600px instead of 640px, or a custom `2xl:` at 1536px), adjust the viewport dimensions to match your actual breakpoint values. Check your component's responsive classes to ensure screenshots capture the intended layout at each breakpoint.
 
 When using `browser_take_screenshot`:
+
 - Set `fullPage: true` to capture the entire page including content below the fold
 - Set viewport size before capturing: `browser_set_viewport_size` with width and height from the table above
 
@@ -223,6 +232,7 @@ The Playwright MCP tool can only save screenshots to its default output director
    - The file will be saved to `.playwright-mcp/[filename].png`
 
 2. **Then**, copy the file to the product folder using Bash:
+
    ```bash
    cp .playwright-mcp/[filename].png product/sections/[section-id]/[filename].png
    ```
@@ -240,6 +250,7 @@ The Playwright MCP tool can only save screenshots to its default output director
 **Naming convention:** `[screen-design-name]-[variant].png`
 
 Examples:
+
 - `invoice-list.png` (main view)
 - `invoice-list-dark.png` (dark mode variant)
 - `invoice-detail.png`
@@ -258,6 +269,7 @@ The screenshot captures the **[ScreenDesignName]** screen design for the **[Sect
 If they want additional screenshots (e.g., dark mode, different states):
 
 "Would you like me to capture any additional screenshots? For example:
+
 - Dark mode version (same viewport, toggle theme)
 - Mobile viewport (375x667)
 - Tablet viewport (768x1024)
@@ -274,11 +286,11 @@ After you're done capturing screenshots, clean up the dev server process based o
 **If `DEV_SERVER_PREEXISTING=false` (you started the server in Step 2):**
 
 ```bash
-# Kill the npm run dev process on port 5173 (Vite default)
-lsof -ti :5173 | xargs kill -9 2>/dev/null || true
+# Kill the npm run dev process on port 3000 (configured in vite.config.ts)
+lsof -ti :3000 | xargs kill -9 2>/dev/null || true
 
 # Verify cleanup
-if ! lsof -i :5173 > /dev/null 2>&1; then
+if ! lsof -i :3000 > /dev/null 2>&1; then
   echo "Dev server stopped successfully"
 fi
 ```
@@ -286,6 +298,7 @@ fi
 **If `DEV_SERVER_PREEXISTING=true` (server was already running):**
 
 Do NOT kill the server. Inform the user:
+
 ```
 "Leaving dev server running (it was already running before this command)."
 ```
@@ -300,13 +313,14 @@ Do NOT kill the server. Inform the user:
 - Screenshots are saved to `product/sections/[section-id]/` alongside spec.md and data.json
 - Use descriptive filenames that indicate the screen design and any variant (dark mode, mobile, etc.)
 - **Standard viewports:** Desktop 1280x800 (default), Mobile 375x667, Tablet 768x1024
-- **Default port:** Vite uses port 5173 by default
+- **Configured port:** 3000 (see vite.config.ts)
 - Always capture full page screenshots to include all scrollable content
 - **Cleanup:** Only kill the dev server if you started it (DEV_SERVER_PREEXISTING=false)
 
 ### Performance Note
 
 This command involves several steps that may take time:
+
 - **Dev server startup** (Step 2) — Wait for the server to be fully ready before navigating
 - **Page rendering** (Step 3) — Allow time for fonts, images, and animations to load
 - **Screenshot capture** — Full page screenshots of complex pages may take a moment

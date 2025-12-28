@@ -212,7 +212,7 @@ Read and extract the key preferences from the design direction document:
 
 Extract the values from the `## User Preferences` section:
 
-| Setting                 | Value to Apply                                        |
+| Setting                 | Choice                                                |
 | ----------------------- | ----------------------------------------------------- |
 | **Aesthetic Tone**      | Professional / Modern / Minimal / Playful / Technical |
 | **Animation Style**     | None / Subtle / Standard / Rich                       |

@@ -75,7 +75,7 @@ Choose your color palette (from Tailwind) and typography (from Google Fonts). Th
 ### 5. Application Shell (`/design-shell`)
 
 Design the persistent navigation and layout that wraps all sections.
-**Output:** `product/shell/spec.md`, `src/shell/components/`
+**Output:** `product/shell/spec.md`, `product/design-system/design-direction.md`, `src/shell/components/`
 
 ### 6. For Each Section:
 
@@ -303,6 +303,8 @@ All section screen designs MUST use a consistent container wrapper. This ensures
   {/* Section content */}
 </div>
 ```
+
+> **Note:** `[neutral]` is a placeholder — replace with your neutral color palette (e.g., `stone`, `slate`, `gray`, `zinc`). For example: `bg-stone-50 dark:bg-stone-950`.
 
 ### Container Values by Information Density
 
@@ -811,7 +813,7 @@ These rules MUST remain consistent across all sections:
 
 ## Applied From
 
-- **Skill file**: [Yes/No - whether SKILL.md was used]
+- **Skill file used**: [Yes/No - whether SKILL.md was used]
 - **Fallback tone**: [If fallback, which tone was chosen]
 ```
 
@@ -875,6 +877,8 @@ When you need a new feature in AppShell:
 | `## Breadcrumbs`      | `breadcrumbs`     | Navigation hierarchy paths           |
 | `## Header Actions`   | `headerActions`   | Header action buttons                |
 | `## Layout Pattern`   | `layoutVariant`   | Shell layout style                   |
+
+> **Note:** Additional props like `categories`, `user`, `currentSection`, and `currentView` are provided by `ScreenDesignPage` at runtime to enable navigation and context display. These are not parsed from spec.md.
 
 ### Example: Context Selector
 

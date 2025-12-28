@@ -2,7 +2,7 @@
 
 You are helping the user export their complete product design as a handoff package for implementation. This generates all files needed to build the product in a real codebase.
 
-> **Design Note on Step Count:** This command has 15 steps, which may seem verbose. This is intentional:
+> **Design Note on Step Count:** This command has 18 steps (including 8.5), which may seem verbose. This is intentional:
 >
 > - Each step performs a discrete, verifiable operation
 > - Steps can be referenced individually in error messages
@@ -910,6 +910,31 @@ Circular imports prevent proper validation and may cause issues in the target co
 Please refactor components to remove the circular dependency.
 ```
 
+**Recovery Guidance for Circular Imports:**
+
+To identify and fix circular imports:
+
+1. **Map the dependency chain** — Follow the cycle shown in the error message
+2. **Find shared logic** — Identify what's being shared that creates the cycle
+3. **Extract to a new component** — Create a component that both can import without cycles:
+
+   ```
+   # Before (circular):
+   InvoiceList → InvoiceCard → InvoiceRow → InvoiceList
+
+   # After (fixed):
+   InvoiceList → InvoiceCard → InvoiceRow
+                     ↓              ↓
+                 SharedUtils (new component)
+   ```
+
+4. **Common patterns causing cycles:**
+   - Parent passing callbacks that child uses to modify parent
+   - Shared type definitions imported from component files
+   - Utility functions mixed with component code
+
+5. **Re-run validation** after refactoring to confirm the cycle is broken
+
 This ensures the entire component tree is portable, not just the top-level components, while preventing infinite loops during validation.
 
 ### If Validation Passes
@@ -1006,11 +1031,11 @@ grep -rh 'className="h-full\|className="min-h-full' src/sections/*/components/*.
 
 **Check for inconsistencies:**
 
-| Pattern           | Expected                                   | Status |
-| ----------------- | ------------------------------------------ | ------ |
-| Container wrapper | `h-full bg-[neutral]-50 px-4 py-4 sm:px-6` | ✓/✗    |
-| Background color  | Consistent neutral across sections         | ✓/✗    |
-| Padding pattern   | Matches Information Density                | ✓/✗    |
+| Pattern           | Expected                                                         | Status |
+| ----------------- | ---------------------------------------------------------------- | ------ |
+| Container wrapper | `h-full bg-[neutral]-50 dark:bg-[neutral]-950 px-4 py-4 sm:px-6` | ✓/✗    |
+| Background color  | Consistent neutral across sections                               | ✓/✗    |
+| Padding pattern   | Matches Information Density                                      | ✓/✗    |
 
 **If container patterns are inconsistent:**
 
@@ -1892,7 +1917,7 @@ The templates are designed to be concatenated in a specific order. Do NOT reorde
 1. `one-shot/preamble.md` — Title and introduction
 2. `common/model-guidance.md` — Model selection guidance
 3. `one-shot/prompt-template.md` — Instructions and file references
-4. `common/top-rules.md` — TOP 3 RULES
+4. `common/top-rules.md` — TOP 4 RULES
 5. `common/reporting-protocol.md` — Implementation reporting
 6. `common/tdd-workflow.md` — TDD implementation approach
 7. `common/clarifying-questions.md` — Clarifying questions
@@ -1903,7 +1928,7 @@ The templates are designed to be concatenated in a specific order. Do NOT reorde
 1. `section/preamble.md` — Title, section variables, and introduction
 2. `common/model-guidance.md` — Model selection guidance
 3. `section/prompt-template.md` — Instructions and file references
-4. `common/top-rules.md` — TOP 3 RULES
+4. `common/top-rules.md` — TOP 4 RULES
 5. `common/reporting-protocol.md` — Implementation reporting
 6. `section/tdd-workflow.md` — TDD implementation approach (section-specific)
 7. `section/clarifying-questions.md` — Clarifying questions (section-specific)
@@ -1960,7 +1985,7 @@ Before saving each assembled prompt, perform these validation checks:
 ```
 [x] No version comments remain (<!-- v1.0.0 -->, <!-- v1.2.0-section -->, etc.)
 [x] No unsubstituted variables remain ([Product Name], SECTION_NAME, etc.)
-[x] All expected sections are present (TOP 3 RULES, Verification Checklist, etc.)
+[x] All expected sections are present (TOP 4 RULES, Verification Checklist, etc.)
 [x] No duplicate sections (same template included twice)
 [x] Proper markdown formatting (headings, code blocks, lists)
 [x] No broken markdown (unclosed code blocks, missing list items)
@@ -2082,7 +2107,7 @@ After reading these, also review:
 - **@product-plan/shell/** — Application shell components
 - **@product-plan/sections/** — All section components, types, sample data, and test instructions
 
-## TOP 3 RULES FOR IMPLEMENTATION
+## TOP 4 RULES FOR IMPLEMENTATION
 
 These rules prevent common implementation mistakes. Follow them strictly.
 
@@ -2310,7 +2335,7 @@ Also review the section assets:
 - **@product-plan/sections/SECTION_ID/types.ts** — TypeScript interfaces
 - **@product-plan/sections/SECTION_ID/sample-data.json** — Test data
 
-## TOP 3 RULES FOR IMPLEMENTATION
+## TOP 4 RULES FOR IMPLEMENTATION
 
 These rules prevent common implementation mistakes. Follow them strictly.
 
