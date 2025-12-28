@@ -19,12 +19,12 @@ Each rule can either:
 
 | Category       | Prefix           | Count | Purpose                                |
 | -------------- | ---------------- | ----- | -------------------------------------- |
-| Code Patterns  | `dos-code-`      | 7     | Prevent code that won't work correctly |
+| Code Patterns  | `dos-code-`      | 6     | Prevent code that won't work correctly |
 | Workflow       | `dos-workflow-`  | 3     | Guide command sequence                 |
 | Data Integrity | `dos-data-`      | 4     | Ensure data.json correctness           |
 | Design System  | `dos-design-`    | 4     | Enforce design consistency             |
 | Accessibility  | `dos-a11y-`      | 2     | Catch accessibility issues             |
-| File Structure | `dos-structure-` | 2     | Ensure correct file organization       |
+| File Structure | `dos-structure-` | 3     | Ensure correct file organization       |
 
 See [categories.md](./categories.md) for detailed category explanations.
 
@@ -51,6 +51,8 @@ These rules **warn** about potential issues:
 | `dos-workflow-warn-*-prereqs`     | Command prerequisites not met        |
 | `dos-data-warn-missing-meta`      | data.json without \_meta structure   |
 | `dos-design-warn-generic-fonts`   | Inter, Roboto, Arial usage           |
+
+> **Note:** This table shows common examples. See [categories.md](./categories.md) for the complete list of all 19 warning rules.
 
 ## Managing Rules
 
