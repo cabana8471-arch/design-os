@@ -1,4 +1,5 @@
 <!-- v1.0.0 -->
+<!-- Usage: Include in one-shot prompts as the main implementation instructions -->
 
 ## Instructions
 

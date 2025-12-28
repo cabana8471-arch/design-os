@@ -6,7 +6,50 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-28 21:45] Critical Analysis: 12 Issues Fixed
+## [2025-12-28 19:50] Critical Analysis: 4 Minor Documentation Fixes
+
+### Description
+
+Comprehensive critical analysis of all Design OS boilerplate files after December 28 modifications. Used 3 parallel exploration agents covering: command files, agents.md/source files, and templates/skills. Found the codebase **well-structured and production-ready** with only 4 minor documentation issues.
+
+### Issues Fixed
+
+| Priority     | Issue                                           | File                                         | Fix                                                                   |
+| ------------ | ----------------------------------------------- | -------------------------------------------- | --------------------------------------------------------------------- |
+| **Medium**   | Missing warning when design-direction.md absent | `design-screen.md`                           | Added warning after line 216 for missing design-direction.md          |
+| **Low**      | Validation script omits frontmatter stripping   | `agents.md`                                  | Updated script to use `sed` to strip YAML frontmatter (lines 536-546) |
+| **Very Low** | IBM Plex Mono not marked as default             | `design-tokens.md`                           | Added "(default)" to IBM Plex Mono in options (line 76)               |
+| **Very Low** | Usage comments missing from one-shot templates  | `one-shot/preamble.md`, `prompt-template.md` | Added `<!-- Usage: ... -->` comments for consistency                  |
+
+### Modified Files
+
+| File                                                      | Changes                                              |
+| --------------------------------------------------------- | ---------------------------------------------------- |
+| `.claude/commands/design-os/design-screen.md`             | Added warning for missing design-direction.md        |
+| `agents.md`                                               | Updated validation script with frontmatter stripping |
+| `.claude/commands/design-os/design-tokens.md`             | Marked IBM Plex Mono as default                      |
+| `.claude/templates/design-os/one-shot/preamble.md`        | Added usage comment                                  |
+| `.claude/templates/design-os/one-shot/prompt-template.md` | Added usage comment                                  |
+
+### False Positives Excluded
+
+| Item                                      | Why Not an Issue                                 |
+| ----------------------------------------- | ------------------------------------------------ |
+| Cross-reference "Multiple Views Workflow" | EXISTS at shape-section.md line 607              |
+| agents.md tables inaccurate               | All tables verified against actual files         |
+| Shell components missing                  | All 6 utilities + 4 hooks verified in src/shell/ |
+| Template versioning inconsistent          | All 13 templates have valid version comments     |
+
+### Verification
+
+- Design direction warning follows same pattern as design tokens/shell warnings
+- Validation script now matches actual implementation in design-shell.md
+- All one-shot templates now have usage comments like common/ templates
+- Codebase remains production ready
+
+---
+
+## [2025-12-28 19:25] Critical Analysis: 12 Issues Fixed
 
 ### Description
 

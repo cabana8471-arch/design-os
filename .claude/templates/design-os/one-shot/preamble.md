@@ -1,4 +1,5 @@
 <!-- v1.1.0 -->
+<!-- Usage: Include as the opening section of one-shot prompts -->
 <!-- Note: [Product Name] is automatically substituted during export by /export-product -->
 
 # One-Shot Implementation Prompt: [Product Name]

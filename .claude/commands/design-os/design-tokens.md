@@ -73,7 +73,7 @@ Popular choices: `DM Sans`, `Inter`, `Poppins`, `Manrope`, `Space Grotesk`, `Out
 Often the same as heading, or: `Inter`, `Source Sans 3`, `Nunito Sans`, `Open Sans`
 
 **Mono font** (code, technical content):
-Options: `IBM Plex Mono`, `JetBrains Mono`, `Fira Code`, `Source Code Pro`
+Options: `IBM Plex Mono` (default), `JetBrains Mono`, `Fira Code`, `Source Code Pro`
 
 My suggestions for [Product Name]:
 

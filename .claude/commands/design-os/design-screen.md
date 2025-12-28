@@ -215,6 +215,10 @@ Read the key sections:
 - **Typography Treatment** — How typography creates hierarchy
 - **Consistency Guidelines** — Rules that MUST remain consistent
 
+If design direction does NOT exist, show a warning:
+
+"Note: Design direction hasn't been defined yet. I'll proceed with default design principles, but for consistent aesthetics across sections, consider running `/design-shell` first to establish your visual identity."
+
 ### Parse Design Direction
 
 Read and extract the key preferences from the design direction document:

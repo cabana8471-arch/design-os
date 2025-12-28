@@ -530,15 +530,19 @@ Commands that reference the frontend-design skill (`/design-shell`, `/design-scr
 **Validation Script:**
 
 ```bash
-# Check skill file exists and has content
+# Check skill file exists and has meaningful content (excluding frontmatter)
 SKILL_FILE=".claude/skills/frontend-design/SKILL.md"
 
 if [ ! -f "$SKILL_FILE" ]; then
   echo "Skill file missing"
-elif [ $(wc -c < "$SKILL_FILE") -lt 100 ]; then
-  echo "Skill file has insufficient content"
 else
-  echo "Skill file valid"
+  # Strip YAML frontmatter and whitespace before counting characters
+  CONTENT_LENGTH=$(sed '/^---$/,/^---$/d' "$SKILL_FILE" | tr -d '[:space:]' | wc -c)
+  if [ "$CONTENT_LENGTH" -lt 100 ]; then
+    echo "Skill file has insufficient content"
+  else
+    echo "Skill file valid"
+  fi
 fi
 ```
 
