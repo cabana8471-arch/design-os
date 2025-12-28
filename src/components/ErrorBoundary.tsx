@@ -1,13 +1,28 @@
 /**
  * Error Boundary Components
  *
- * Provides graceful error handling with retry capabilities.
+ * Provides graceful error handling with retry capabilities and context-aware recovery.
  */
 
 import { Component, type ReactNode } from 'react'
-import { AlertTriangle, RefreshCw, Home, ChevronDown, ChevronUp } from 'lucide-react'
+import { AlertTriangle, RefreshCw, Home, ChevronDown, ChevronUp, Terminal, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { useState } from 'react'
+
+/**
+ * Recovery action with optional command
+ */
+interface RecoveryAction {
+  /** Button label */
+  label: string
+  /** Description of what this action does */
+  description?: string
+  /** Optional command to copy (e.g., "/design-screen") */
+  command?: string
+  /** Click handler */
+  onClick?: () => void
+}
 
 interface ErrorBoundaryProps {
   children: ReactNode
@@ -17,6 +32,158 @@ interface ErrorBoundaryProps {
   onError?: (error: Error, errorInfo: React.ErrorInfo) => void
   /** Custom error message */
   errorMessage?: string
+  /** Context for error (affects recovery suggestions) */
+  context?: 'section' | 'screen-design' | 'shell' | 'page'
+  /** Section ID (for context-aware suggestions) */
+  sectionId?: string
+  /** Additional recovery actions */
+  recoveryActions?: RecoveryAction[]
+}
+
+/**
+ * Get default recovery suggestions based on context
+ */
+function getDefaultRecoveryActions(
+  context?: ErrorBoundaryProps['context'],
+  sectionId?: string,
+  error?: Error | null
+): RecoveryAction[] {
+  const actions: RecoveryAction[] = []
+
+  // Add context-specific recovery actions
+  switch (context) {
+    case 'screen-design':
+      actions.push({
+        label: 'Create Screen Design',
+        description: 'Run the design-screen command to create this component',
+        command: '/design-screen',
+      })
+      if (sectionId) {
+        actions.push({
+          label: 'Check Section Data',
+          description: 'Ensure data.json and types.ts exist',
+          command: '/sample-data',
+        })
+      }
+      break
+
+    case 'section':
+      actions.push({
+        label: 'Create Section Spec',
+        description: 'Define the section specification first',
+        command: '/shape-section',
+      })
+      break
+
+    case 'shell':
+      actions.push({
+        label: 'Create Shell',
+        description: 'Design the application shell',
+        command: '/design-shell',
+      })
+      break
+
+    case 'page':
+      // Generic page error - check if it's a missing product file
+      if (error?.message?.includes('product-overview')) {
+        actions.push({
+          label: 'Create Product Vision',
+          description: 'Start by defining your product vision',
+          command: '/product-vision',
+        })
+      }
+      break
+  }
+
+  return actions
+}
+
+/**
+ * Context-aware recovery suggestions component
+ */
+function ContextRecovery({
+  context,
+  sectionId,
+  recoveryActions,
+  error,
+}: {
+  context?: ErrorBoundaryProps['context']
+  sectionId?: string
+  recoveryActions?: RecoveryAction[]
+  error?: Error | null
+}) {
+  const [copiedCommand, setCopiedCommand] = useState<string | null>(null)
+
+  // Combine default and custom recovery actions
+  const defaultActions = getDefaultRecoveryActions(context, sectionId, error)
+  const allActions = [...defaultActions, ...(recoveryActions || [])]
+
+  if (allActions.length === 0) return null
+
+  const handleCopyCommand = async (command: string) => {
+    await navigator.clipboard.writeText(command)
+    setCopiedCommand(command)
+    setTimeout(() => setCopiedCommand(null), 2000)
+  }
+
+  return (
+    <div className="w-full max-w-md mb-6">
+      <p className="text-sm font-medium text-stone-700 dark:text-stone-300 mb-3 text-center">
+        Recovery suggestions:
+      </p>
+      <div className="space-y-2">
+        {allActions.map((action, index) => (
+          <div
+            key={index}
+            className="flex items-center justify-between p-3 bg-stone-50 dark:bg-stone-800 rounded-lg border border-stone-200 dark:border-stone-700"
+          >
+            <div className="flex-1">
+              <p className="text-sm font-medium text-stone-800 dark:text-stone-200">
+                {action.label}
+              </p>
+              {action.description && (
+                <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+                  {action.description}
+                </p>
+              )}
+            </div>
+            {action.command && (
+              <button
+                onClick={() => handleCopyCommand(action.command!)}
+                className={cn(
+                  'flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-mono',
+                  'bg-stone-900 dark:bg-stone-950 text-lime-400',
+                  'hover:bg-stone-800 dark:hover:bg-stone-900 transition-colors'
+                )}
+                title="Copy command"
+              >
+                {copiedCommand === action.command ? (
+                  <>
+                    <Check className="w-3 h-3" strokeWidth={2} />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Terminal className="w-3 h-3" strokeWidth={2} />
+                    {action.command}
+                  </>
+                )}
+              </button>
+            )}
+            {action.onClick && !action.command && (
+              <Button
+                onClick={action.onClick}
+                variant="outline"
+                size="sm"
+              >
+                {action.label}
+              </Button>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 interface ErrorBoundaryState {
@@ -88,7 +255,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             {errorMessage || 'An unexpected error occurred. Please try again.'}
           </p>
 
-          <div className="flex gap-3 mb-6">
+          <div className="flex flex-wrap gap-3 mb-6 justify-center">
             <Button onClick={this.handleRetry} variant="default" size="sm">
               <RefreshCw className="w-4 h-4 mr-2" strokeWidth={2} />
               Try Again
@@ -102,6 +269,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               Go Home
             </Button>
           </div>
+
+          {/* Context-aware recovery suggestions */}
+          <ContextRecovery
+            context={this.props.context}
+            sectionId={this.props.sectionId}
+            recoveryActions={this.props.recoveryActions}
+            error={error}
+          />
 
           {import.meta.env.DEV && error && (
             <div className="w-full max-w-2xl">

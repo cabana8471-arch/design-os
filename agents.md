@@ -71,7 +71,7 @@ Generate the complete export package with all components, types, and handoff doc
 | `/product-roadmap` | `product-roadmap.md` | `product/` |
 | `/data-model` | `data-model.md` | `product/data-model/` |
 | `/design-tokens` | `colors.json`, `typography.json` | `product/design-system/` |
-| `/design-shell` | `spec.md`, `AppShell.tsx`, `MainNav.tsx`, `UserMenu.tsx`, `index.ts`, `ShellPreview.tsx` | `product/shell/`, `src/shell/components/`, `src/shell/` |
+| `/design-shell` | `spec.md`, `design-direction.md`, `AppShell.tsx`, `MainNav.tsx`, `UserMenu.tsx`, `index.ts`, `ShellPreview.tsx` | `product/shell/`, `product/design-system/`, `src/shell/components/`, `src/shell/` |
 | `/shape-section` | `spec.md` | `product/sections/[section-id]/` |
 | `/sample-data` | `data.json`, `types.ts` | `product/sections/[section-id]/` |
 | `/design-screen` | `[ViewName].tsx`, `components/*.tsx`, `components/index.ts` | `src/sections/[section-id]/` |
@@ -479,6 +479,160 @@ See: agents.md → "Skill File Validation Pattern" for the standard validation s
 - `/sample-data` — Data only, no visual components
 - `/screenshot-design` — Captures existing designs, doesn't create new ones
 - `/export-product` — Packages existing components, doesn't create new ones
+
+### Skill Invocation Standard Pattern
+
+Commands that reference the frontend-design skill MUST follow this standardized pattern for consistency:
+
+**Step A: Validate (Early in command — typically Step 1)**
+
+```bash
+SKILL_FILE=".claude/skills/frontend-design/SKILL.md"
+SKILL_AVAILABLE=false
+
+if [ ! -f "$SKILL_FILE" ]; then
+  echo "Warning: Skill file missing at $SKILL_FILE"
+elif [ $(sed '/^---$/,/^---$/d' "$SKILL_FILE" | tr -d '[:space:]' | wc -c) -lt 100 ]; then
+  echo "Warning: Skill file has insufficient content (< 100 chars)"
+else
+  SKILL_AVAILABLE=true
+  echo "Skill file validated"
+fi
+```
+
+**Step B: Apply (Before creating components — typically Step 5)**
+
+If SKILL_AVAILABLE is true:
+1. Read `.claude/skills/frontend-design/SKILL.md`
+2. Extract and apply "Design Thinking" and "Frontend Aesthetics Guidelines" sections
+3. Ensure distinctive, non-generic design choices
+
+If SKILL_AVAILABLE is false:
+1. Use enhanced fallback design principles (see below)
+2. Inform user that design may be more generic
+3. Document that fallback was used
+
+**Step C: Document (After creating components)**
+
+Record design decisions in `design-direction.md` (created by `/design-shell`):
+- Aesthetic tone chosen
+- Key visual signatures applied
+- Color/typography treatments used
+
+This ensures future `/design-screen` runs can maintain consistency.
+
+### Enhanced Fallback Design Guidance
+
+When the skill file is unavailable, use these enhanced fallback principles that include aesthetic direction (not just mechanical rules):
+
+**Aesthetic Tone Options** (ask user to choose one):
+- **Refined Utility**: Clean, purposeful, subtle shadows, muted accents, professional feel
+- **Bold & Bright**: High contrast, vibrant colors, strong typography, energetic
+- **Soft & Approachable**: Rounded corners, pastel accents, generous spacing, friendly
+- **Professional Dense**: Compact layout, neutral palette, efficient use of space, data-focused
+
+**Visual Hierarchy** (beyond just sizes):
+- Create clear distinction using size, weight, AND color together
+- Use generous whitespace around primary actions
+- Group related elements with subtle background colors
+- Apply contrast intentionally to guide the eye
+
+**Color Application**:
+- Primary: Reserve for key actions and active states (buttons, links, selected items)
+- Secondary: Use for supportive elements (badges, highlights, secondary buttons)
+- Neutral: Create hierarchy with 3-4 distinct shades (not more)
+- Accent: One unexpected color choice for distinctiveness
+
+**Typography Choices**:
+- Headings: Slightly heavier weight (600-700), moderate tracking
+- Body: Regular weight (400), comfortable line height (1.5-1.7)
+- Use size differences of at least 4px between hierarchy levels
+- Consider one distinctive font choice (avoid Inter, Roboto unless product specifically requires them)
+
+**Motion & Interaction**:
+- Prefer CSS transitions over JavaScript animations
+- Use 150-200ms for hover states
+- Use 250-300ms for entry/exit animations
+- Avoid bounce or overshoot effects unless matching a playful tone
+
+**Distinctiveness Requirement**:
+Even without the full skill file, make at least ONE distinctive choice:
+- An unexpected color accent
+- Asymmetric layout element
+- Creative use of negative space
+- Unique hover interaction
+- Non-standard card treatment
+
+---
+
+## Design Direction Document
+
+The Design Direction document captures aesthetic decisions made during shell design and ensures consistency across all sections.
+
+### Purpose
+
+1. **Document decisions**: Record the aesthetic choices made when applying the frontend-design skill
+2. **Enable consistency**: Provide a reference for `/design-screen` to match shell aesthetics
+3. **Guide implementation**: Help implementation agents understand the intended visual identity
+
+### Location
+
+`product/design-system/design-direction.md`
+
+### Schema
+
+```markdown
+# Design Direction for [Product Name]
+
+## Aesthetic Tone
+[One sentence describing the overall feel - e.g., "Refined utility with bold lime accents"]
+
+## Visual Signatures
+These distinctive elements MUST appear consistently across all sections:
+- [Signature 1 - e.g., "Rounded corners (rounded-xl) on all cards"]
+- [Signature 2 - e.g., "Lime-500 accent for primary actions"]
+- [Signature 3 - e.g., "Stone-900 dark backgrounds with high contrast text"]
+
+## Color Application
+- **Primary usage**: [When and how - e.g., "Lime for buttons, active nav, key CTAs"]
+- **Accent pattern**: [How accents draw attention - e.g., "Subtle lime underlines on hover"]
+- **Neutral treatment**: [How neutrals create hierarchy - e.g., "Stone-50 to stone-900 for depth"]
+
+## Motion & Interaction
+- **Animation style**: [subtle/bold/none]
+- **Key interactions**: [e.g., "200ms ease-out for all hover states"]
+- **Timing**: [e.g., "Fast - prioritize responsiveness over flair"]
+
+## Typography Treatment
+- **Heading style**: [e.g., "DM Sans 600, tight tracking, stone-900"]
+- **Body approach**: [e.g., "DM Sans 400, relaxed line-height, stone-600"]
+- **Distinctive choices**: [e.g., "Mono font for data values and IDs"]
+
+## Consistency Guidelines
+These rules MUST remain consistent across all sections:
+1. [Guideline - e.g., "All interactive elements use lime-500 hover states"]
+2. [Guideline - e.g., "Card padding is always p-6"]
+3. [Guideline - e.g., "Dark mode uses stone-900 backgrounds, not black"]
+
+## Applied From
+- **Skill file**: [Yes/No - whether SKILL.md was used]
+- **Fallback tone**: [If fallback, which tone was chosen]
+```
+
+### Created By
+
+The `/design-shell` command creates this document in Step 6.5, after defining the shell spec and before creating components.
+
+### Referenced By
+
+The `/design-screen` command:
+1. Checks for `design-direction.md` in Step 2
+2. Applies documented guidelines in Step 5
+3. Cross-references existing section components for pattern consistency
+
+### Exported To
+
+The `/export-product` command copies this to `product-plan/design-system/design-direction.md` for implementation agents.
 
 ---
 

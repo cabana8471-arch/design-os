@@ -16,6 +16,15 @@ Before considering this implementation complete, verify:
 - [ ] Props passed correctly to all components
 - [ ] Component imports use correct paths
 
+**Design Consistency:**
+- [ ] Aesthetic tone matches Design Direction document (if available)
+- [ ] Color application follows documented patterns (primary/secondary/neutral usage)
+- [ ] Typography treatment consistent with shell design
+- [ ] Visual signatures present across all sections (rounded corners, shadows, etc.)
+- [ ] Motion/interaction patterns consistent (hover states, transitions)
+- [ ] Spacing patterns match established system (padding, margins, gaps)
+- [ ] No jarring style differences between sections
+
 **Testing:**
 - [ ] All test scenarios from tests.md files implemented
 - [ ] User flows work end-to-end

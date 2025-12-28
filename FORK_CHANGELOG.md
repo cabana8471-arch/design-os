@@ -6,6 +6,103 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-28 10:50] Comprehensive Improvement: Design Consistency & Error Handling
+
+### Description
+Major enhancement focused on two key areas: **Design Consistency** (ensuring visual coherence between shell and all sections) and **Error Handling** (providing clear, actionable feedback when things go wrong). This update introduces the Design Direction document concept, cross-section consistency checks, a complete error infrastructure with LoadResult pattern, and user-visible validation components.
+
+### New Files Created
+
+| File | Purpose |
+|------|---------|
+| `src/lib/errors.ts` | Error types, utilities, and LoadResult pattern for error propagation |
+| `src/components/ValidationPanel.tsx` | Inline display of validation errors/warnings with recovery commands |
+| `src/components/ScreenDesignMissing.tsx` | Friendly UI when screen design component not found |
+
+### Modified Files
+
+| File | Modification |
+|------|--------------|
+| `agents.md` | Added: Error Message Format Standard, Skill Invocation Standard Pattern, Enhanced Fallback Design Guidance, Design Direction Document schema, updated Command Quick Reference table |
+| `.claude/commands/design-os/design-shell.md` | Added Step 6.5 to create `design-direction.md` after shell design |
+| `.claude/commands/design-os/design-screen.md` | Added design direction check in Step 2, cross-section consistency validation in Step 5 |
+| `.claude/commands/design-os/export-product.md` | Added Step 8.5 for design coherence validation (color, spacing, typography consistency) |
+| `.claude/templates/design-os/common/verification-checklist.md` | Added Design Consistency checklist section (7 items) |
+| `.claude/templates/design-os/section/prompt-template.md` | Added reference to `design-direction.md` |
+| `src/components/ErrorBoundary.tsx` | Added context-aware recovery suggestions with ContextRecovery component |
+| `src/lib/section-loader.ts` | Added `loadSectionDataWithValidation()` returning LoadResult with `_meta` validation |
+| `src/lib/shell-loader.ts` | Fixed type error in `parseLayoutVariant()` |
+| `src/test/setup.ts` | Fixed missing `afterEach` import from vitest |
+
+### Features Added
+
+| Feature | Description |
+|---------|-------------|
+| **Design Direction Document** | New `product/design-system/design-direction.md` created by `/design-shell` documenting aesthetic decisions |
+| **Cross-Section Consistency** | `/design-screen` checks existing sections and matches color, spacing, typography patterns |
+| **Design Coherence Validation** | `/export-product` validates visual consistency across all sections before export |
+| **Error Infrastructure** | `DesignOSError` type with severity, category, component, message, and recovery actions |
+| **LoadResult Pattern** | Generic pattern for propagating errors through loaders: `{ data, errors, warnings }` |
+| **ValidationPanel Component** | Collapsible panel showing errors/warnings with copy-to-clipboard recovery commands |
+| **ScreenDesignMissing Component** | Shows expected file, available designs, and recovery command when design not found |
+| **Context-Aware Error Boundaries** | Recovery suggestions based on context (section, screen-design, shell, page) |
+| **Enhanced Fallback Guidance** | When skill file unavailable, provides aesthetic tone options and distinctiveness requirements |
+
+### Design Consistency System
+
+The new Design Direction system ensures visual coherence:
+
+1. **`/design-shell`** creates `design-direction.md` documenting:
+   - Aesthetic tone (one sentence description)
+   - Visual signatures (elements that MUST appear consistently)
+   - Color application patterns
+   - Motion & interaction guidelines
+   - Typography treatment
+   - Consistency guidelines
+
+2. **`/design-screen`** references this document and:
+   - Checks for existing section components
+   - Extracts color/spacing/typography patterns
+   - Reports matching patterns to user
+   - Applies consistent styling
+
+3. **`/export-product`** validates design coherence:
+   - Checks color class consistency
+   - Validates spacing patterns
+   - Reports inconsistencies as warnings
+
+### Error Handling System
+
+The new error infrastructure provides:
+
+1. **Standardized Error Types**:
+   - Severity: `error` | `warning` | `info`
+   - Category: `file-not-found` | `parse-error` | `validation-error` | `component-error` | `type-mismatch` | `missing-dependency` | `structure-error`
+
+2. **Recovery Actions**:
+   - Each error can include recovery guidance
+   - Recovery includes action description and optional command
+   - Commands can be copied to clipboard
+
+3. **User-Visible Components**:
+   - ValidationPanel for inline error display
+   - ScreenDesignMissing for missing component guidance
+   - Enhanced ErrorBoundary with context-aware suggestions
+
+### Statistics
+- New files created: 3
+- Files modified: 10
+- New error types defined: 7 categories, 3 severity levels
+- Verification checklist items added: 7
+
+### Production Status
+- **Design Consistency:** READY (full workflow integration)
+- **Error Handling:** READY (infrastructure complete)
+- **Build:** PASSING (all TypeScript errors resolved)
+- **Documentation:** COMPLETE (agents.md updated)
+
+---
+
 ## [2025-12-28 09:30] Major Enhancement: Developer Experience, UX & Infrastructure
 
 ### Description

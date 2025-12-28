@@ -566,10 +566,10 @@ function parseLayoutVariant(md: string): ShellProps['layoutVariant'] | undefined
 
   // Check for explicit variant
   const variantMatch = content.match(/variant:\s*(\w+)/i)
-  if (variantMatch) {
-    const variant = variantMatch[1] as ShellProps['layoutVariant']
+  if (variantMatch && variantMatch[1]) {
+    const variant = variantMatch[1]
     if (['sidebar', 'topnav', 'minimal'].includes(variant)) {
-      return variant
+      return variant as ShellProps['layoutVariant']
     }
   }
 

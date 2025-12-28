@@ -118,7 +118,7 @@ Error: types.ts - File not found at product/sections/[section-id]/types.ts. Run 
 
 Stop here if any required file is missing.
 
-## Step 2: Check for Design System and Shell
+## Step 2: Check for Design System, Shell, and Design Direction
 
 Check for optional enhancements:
 
@@ -136,6 +136,25 @@ If design tokens exist, read them and use them for styling. If they don't exist,
 If shell exists, the screen design will render inside the shell in Design OS. If not, show a warning:
 
 "Note: An application shell hasn't been designed yet. The screen design will render standalone. Consider running `/design-shell` first to see section screen designs in the full app context."
+
+**Design Direction:**
+- Check if `/product/design-system/design-direction.md` exists
+
+If design direction exists, read it and display a confirmation:
+
+"I found your Design Direction document. I'll ensure this screen design follows the established aesthetic: [aesthetic tone from document]"
+
+Read the key sections:
+- **Visual Signatures** — Elements that MUST appear consistently
+- **Color Application** — How primary/secondary/neutral colors are used
+- **Motion & Interaction** — Animation style and timing
+- **Consistency Guidelines** — Rules that MUST remain consistent
+
+If design direction doesn't exist but shell exists, show a warning:
+
+"Note: A shell has been designed but no Design Direction document exists. For consistent aesthetics across sections, consider running `/design-shell` again to generate `design-direction.md`. I'll infer the direction from the shell components."
+
+If neither shell nor design direction exists, proceed with the design guidance from Step 1 (skill file or fallback).
 
 ## Step 3: Analyze Requirements
 
@@ -341,6 +360,41 @@ Regardless of which scenario applies, ensure the screen design follows these pri
 - Apply thoughtful spacing and typography choices
 - Implement meaningful interactions and animations
 - Ensure accessibility and responsive design throughout
+
+### Cross-Section Consistency Check
+
+Before creating the component, check if other sections already have screen designs:
+
+```bash
+# List existing section components
+ls src/sections/*/components/*.tsx 2>/dev/null | head -10
+```
+
+**If other sections exist**, analyze their styling patterns to ensure consistency:
+
+1. **Color class patterns** — Check for primary color usage (e.g., `bg-lime-600`, `text-lime-500`)
+2. **Spacing patterns** — Check for consistent padding/margin (e.g., `p-6`, `gap-4`, `space-y-4`)
+3. **Typography patterns** — Check for heading/body text styles (e.g., `text-xl font-semibold`)
+4. **Component patterns** — Check for card styles, button styles, table layouts
+
+Example analysis:
+```bash
+# Extract color patterns from existing components
+grep -rh 'bg-[a-z]+-[0-9]\+' src/sections/*/components/*.tsx 2>/dev/null | sort | uniq -c | sort -rn | head -5
+
+# Extract spacing patterns
+grep -rh 'p-[0-9]\+\|px-[0-9]\+\|py-[0-9]\+' src/sections/*/components/*.tsx 2>/dev/null | sort | uniq -c | head -5
+```
+
+**Apply matching patterns** to the new screen design to maintain visual cohesion across sections.
+
+**If design-direction.md exists**, use it as the primary reference. If not, infer patterns from existing section components.
+
+**Report to user:**
+"I found [N] existing section(s) with screen designs. I'll match the established patterns:
+- Primary color: [color]-[shade] for buttons/accents
+- Card style: [padding], [border/shadow style]
+- Spacing: [consistent spacing pattern]"
 
 ## Step 6: Create the Props-Based Component
 

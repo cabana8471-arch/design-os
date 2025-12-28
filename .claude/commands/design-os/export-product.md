@@ -913,6 +913,119 @@ Continue to Step 9 with confidence.
    - If validation passes, continue to Step 9 and subsequent steps
    - If earlier steps (1-7) were not completed, re-run `/export-product` from the beginning instead
 
+## Step 8.5: Validate Design Coherence
+
+Before copying components, perform a design coherence check across all sections to ensure consistent styling.
+
+### Check for Design Direction Document
+
+First, check if a design direction document exists:
+
+```bash
+if [ -f "product/design-system/design-direction.md" ]; then
+  echo "Design direction found - checking coherence against documented guidelines"
+else
+  echo "Note: No design-direction.md found. Inferring patterns from components."
+fi
+```
+
+### Color Class Consistency
+
+Extract and compare primary color usage across all section components:
+
+```bash
+# Find primary color patterns across sections
+echo "Checking color consistency..."
+for dir in src/sections/*/components; do
+  if [ -d "$dir" ]; then
+    section=$(basename $(dirname "$dir"))
+    echo "Section: $section"
+    grep -rh 'bg-[a-z]+-[0-9]\+' "$dir"/*.tsx 2>/dev/null | sort | uniq -c | sort -rn | head -3
+  fi
+done
+```
+
+**Check for inconsistencies:**
+- Different primary colors across sections (e.g., `lime` in one, `blue` in another)
+- Inconsistent shade usage (e.g., `-600` in one section, `-400` in another)
+- Mixed color systems (e.g., some using `stone`, others using `slate`)
+
+### Spacing Pattern Consistency
+
+Check for consistent spacing patterns:
+
+```bash
+# Find spacing patterns
+echo "Checking spacing consistency..."
+grep -rh 'p-[0-9]\+\|px-[0-9]\+\|py-[0-9]\+\|gap-[0-9]\+' src/sections/*/components/*.tsx 2>/dev/null | sort | uniq -c | sort -rn | head -10
+```
+
+### Typography Consistency
+
+Check for consistent font treatment:
+
+```bash
+# Find font patterns
+echo "Checking typography consistency..."
+grep -rh 'font-[a-z]\+\|text-[a-z]\+-[0-9]\+' src/sections/*/components/*.tsx 2>/dev/null | sort | uniq -c | head -10
+```
+
+### Report Findings
+
+**If inconsistencies are found:**
+
+```
+Design Coherence Check - Potential Inconsistencies Found:
+
+**Color Usage:**
+- Section "invoices" uses lime-600 for primary buttons
+- Section "reports" uses blue-500 for primary buttons
+
+**Spacing:**
+- Most sections use p-6 for card padding
+- Section "settings" uses p-4
+
+**Typography:**
+- Inconsistent heading styles across sections
+
+These may be intentional design choices. Please verify:
+1. Are these differences intentional (different visual treatments for different areas)?
+2. Should they be unified for visual consistency?
+
+Proceed with export? (y/n)
+```
+
+Use AskUserQuestion with options:
+- "Proceed — differences are intentional" — Continue with export
+- "Stop — I'll fix the inconsistencies first" — END COMMAND
+
+**If no significant inconsistencies found:**
+
+```
+Design Coherence Check - Passed
+
+All sections appear to use consistent:
+- Primary color: [detected color]-[shade]
+- Spacing patterns: [detected patterns]
+- Typography: [detected patterns]
+
+Continuing with export...
+```
+
+### Copy Design Direction to Export
+
+If `product/design-system/design-direction.md` exists, copy it to the export:
+
+```bash
+if [ -f "product/design-system/design-direction.md" ]; then
+  mkdir -p product-plan/design-system
+  cp product/design-system/design-direction.md product-plan/design-system/
+  echo "Copied design-direction.md to export"
+fi
+```
+
+This ensures implementation agents have access to the aesthetic direction when building the product.
+
 ## Step 9: Copy and Transform Components
 
 ### Shell Components

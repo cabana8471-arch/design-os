@@ -9,6 +9,15 @@
 
 import type { SectionData, ParsedSpec, ScreenDesignInfo, ScreenshotInfo } from '@/types/section'
 import type { ComponentType } from 'react'
+import {
+  type DesignOSError,
+  type LoadResult,
+  createWarning,
+  createError,
+  createMetaValidationError,
+  logWarnings,
+  logErrors,
+} from '@/lib/errors'
 
 // Load spec.md files from product/sections at build time
 const specFiles = import.meta.glob('/product/sections/*/spec.md', {
@@ -42,6 +51,76 @@ function validateDataFileContent(data: unknown, path: string): data is Record<st
     return false
   }
   return true
+}
+
+/**
+ * Validate data.json _meta structure
+ * Returns array of warnings/errors for issues found
+ */
+function validateDataJsonMeta(data: Record<string, unknown>): DesignOSError[] {
+  const issues: DesignOSError[] = []
+
+  // Check if _meta exists
+  if (!('_meta' in data)) {
+    issues.push(createMetaValidationError(
+      'Missing _meta object',
+      'data.json should have a _meta object with models and relationships'
+    ))
+    return issues // Can't validate further without _meta
+  }
+
+  const meta = data._meta as Record<string, unknown>
+
+  // Check _meta.models
+  if (!meta.models) {
+    issues.push(createMetaValidationError(
+      'Missing _meta.models',
+      '_meta should have a models object describing each entity'
+    ))
+  } else if (typeof meta.models !== 'object' || Array.isArray(meta.models)) {
+    issues.push(createMetaValidationError(
+      'Invalid _meta.models structure',
+      '_meta.models should be an object with entity names as keys'
+    ))
+  } else {
+    // Check that model names match data keys (excluding _meta)
+    const modelNames = Object.keys(meta.models as Record<string, unknown>)
+    const dataKeys = Object.keys(data).filter(k => k !== '_meta')
+
+    for (const modelName of modelNames) {
+      // Check if corresponding data exists (could be camelCase in data)
+      const matchingKey = dataKeys.find(
+        k => k.toLowerCase() === modelName.toLowerCase() ||
+             k === modelName + 's' || // plural form
+             k.toLowerCase() === modelName.toLowerCase() + 's'
+      )
+      if (!matchingKey) {
+        issues.push(createWarning(
+          'validation-error',
+          'data.json',
+          `Model "${modelName}" defined in _meta.models but no matching data found`,
+          { action: `Add "${modelName}" data or remove from _meta.models` }
+        ))
+      }
+    }
+  }
+
+  // Check _meta.relationships
+  if (!meta.relationships) {
+    issues.push(createWarning(
+      'structure-error',
+      'data.json',
+      'Missing _meta.relationships',
+      { action: 'Add _meta.relationships array (can be empty if no relationships)' }
+    ))
+  } else if (!Array.isArray(meta.relationships)) {
+    issues.push(createMetaValidationError(
+      'Invalid _meta.relationships structure',
+      '_meta.relationships should be an array'
+    ))
+  }
+
+  return issues
 }
 
 /**
@@ -342,6 +421,108 @@ export function loadSectionData(sectionId: string): SectionData {
     data,
     screenDesigns,
     screenshots,
+  }
+}
+
+/**
+ * Extended section data with validation results
+ */
+export interface SectionDataWithValidation extends SectionData {
+  /** Validation errors (fatal issues) */
+  errors: DesignOSError[]
+  /** Validation warnings (non-fatal issues to address) */
+  warnings: DesignOSError[]
+}
+
+/**
+ * Load all data for a specific section with validation
+ * Returns LoadResult with errors and warnings
+ */
+export function loadSectionDataWithValidation(sectionId: string): LoadResult<SectionDataWithValidation> {
+  const errors: DesignOSError[] = []
+  const warnings: DesignOSError[] = []
+
+  const specPath = `/product/sections/${sectionId}/spec.md`
+  const dataPath = `/product/sections/${sectionId}/data.json`
+
+  const specContent = specFiles[specPath] || null
+  const dataModule = dataFiles[dataPath]
+
+  // Validate spec.md
+  if (!specContent) {
+    warnings.push(createWarning(
+      'file-not-found',
+      'spec.md',
+      `Section spec not found at ${specPath}`,
+      { action: 'Create section specification.', command: '/shape-section' }
+    ))
+  }
+
+  // Validate data.json content
+  let data: Record<string, unknown> | null = null
+  if (!dataModule?.default) {
+    warnings.push(createWarning(
+      'file-not-found',
+      'data.json',
+      `Sample data not found at ${dataPath}`,
+      { action: 'Create sample data.', command: '/sample-data' }
+    ))
+  } else if (!validateDataFileContent(dataModule.default, dataPath)) {
+    errors.push(createError(
+      'validation-error',
+      'data.json',
+      'Invalid data structure (expected object)',
+      { action: 'Fix data.json structure.', command: '/sample-data' }
+    ))
+  } else {
+    data = dataModule.default
+    // Validate _meta structure
+    const metaIssues = validateDataJsonMeta(data)
+    for (const issue of metaIssues) {
+      if (issue.severity === 'error') {
+        errors.push(issue)
+      } else {
+        warnings.push(issue)
+      }
+    }
+  }
+
+  const screenDesigns = getSectionScreenDesigns(sectionId)
+  const screenshots = getSectionScreenshots(sectionId)
+
+  // Warn if no screen designs
+  if (screenDesigns.length === 0 && specContent) {
+    warnings.push(createWarning(
+      'missing-dependency',
+      'screen designs',
+      'No screen design components found',
+      { action: 'Create screen designs.', command: '/design-screen' }
+    ))
+  }
+
+  // Determine if any artifacts exist for this section
+  const exists = !!(specContent || data || screenDesigns.length > 0 || screenshots.length > 0)
+
+  // Log issues in development
+  logErrors(errors, `section-loader:${sectionId}`)
+  logWarnings(warnings, `section-loader:${sectionId}`)
+
+  const sectionData: SectionDataWithValidation = {
+    sectionId,
+    exists,
+    spec: specContent,
+    specParsed: specContent ? parseSpec(specContent) : null,
+    data,
+    screenDesigns,
+    screenshots,
+    errors,
+    warnings,
+  }
+
+  return {
+    data: sectionData,
+    errors,
+    warnings,
   }
 }
 

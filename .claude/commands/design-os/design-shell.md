@@ -61,22 +61,42 @@ Use AskUserQuestion with options:
 - "Continue with basic design principles" — Proceed using fallback guidance
 - "Stop — I'll add the skill file first" — END COMMAND
 
-Track user's choice - if continuing without skill file, use these **fallback design principles**:
+Track user's choice - if continuing without skill file, use these **enhanced fallback design principles** (see agents.md → "Enhanced Fallback Design Guidance" for full details):
 
-**Visual Hierarchy:**
-- Use 1.5-2rem (24-32px) for main headings
-- Use 0.875-1rem (14-16px) for body text
-- Create clear distinction between primary, secondary, and tertiary elements
+**Aesthetic Tone Options** (ask user to choose one):
+- **Refined Utility**: Clean, purposeful, subtle shadows, muted accents, professional feel
+- **Bold & Bright**: High contrast, vibrant colors, strong typography, energetic
+- **Soft & Approachable**: Rounded corners, pastel accents, generous spacing, friendly
+- **Professional Dense**: Compact layout, neutral palette, efficient use of space, data-focused
+
+**Visual Hierarchy** (beyond just sizes):
+- Create clear distinction using size, weight, AND color together
+- Use generous whitespace around primary actions
+- Group related elements with subtle background colors
+- Apply contrast intentionally to guide the eye
 
 **Spacing System:**
 - Use 8px increments for padding and margins (8, 16, 24, 32, 48, 64)
 - Maintain consistent gutter widths (16px on mobile, 24px on tablet, 32px on desktop)
 - Apply generous whitespace around primary actions
 
-**Component Patterns:**
-- Buttons: 40-44px height for primary actions, 32-36px for secondary
-- Nav items: 12-16px vertical padding, clear hover states
-- Cards: 16-24px padding, subtle shadows or borders
+**Color Application:**
+- Primary: Reserve for key actions and active states (buttons, links, selected items)
+- Secondary: Use for supportive elements (badges, highlights, secondary buttons)
+- Neutral: Create hierarchy with 3-4 distinct shades (not more)
+- Accent: One unexpected color choice for distinctiveness
+
+**Typography Choices:**
+- Headings: Slightly heavier weight (600-700), moderate tracking
+- Body: Regular weight (400), comfortable line height (1.5-1.7)
+- Use size differences of at least 4px between hierarchy levels
+- Consider one distinctive font choice (avoid Inter, Roboto unless product specifically requires them)
+
+**Motion & Interaction:**
+- Prefer CSS transitions over JavaScript animations
+- Use 150-200ms for hover states
+- Use 250-300ms for entry/exit animations
+- Avoid bounce or overshoot effects unless matching a playful tone
 
 **Responsive Breakpoints:**
 - Mobile: < 640px (single column, stacked nav)
@@ -84,10 +104,18 @@ Track user's choice - if continuing without skill file, use these **fallback des
 - Desktop: > 1024px (full sidebar, multi-column layouts)
 
 **Dark Mode:**
-- Backgrounds: stone-900 to stone-950
+- Backgrounds: stone-900 to stone-950 (never pure black)
 - Text: stone-100 to stone-300
 - Borders: stone-700 to stone-800
 - Increase contrast for interactive elements
+
+**Distinctiveness Requirement:**
+Even without the full skill file, make at least ONE distinctive choice:
+- An unexpected color accent
+- Asymmetric layout element
+- Creative use of negative space
+- Unique hover interaction
+- Non-standard card treatment
 
 ### Check Optional Enhancements
 
@@ -301,6 +329,62 @@ Views should NOT include internal routing logic. Instead:
 ```
 
 The shell receives these callbacks and performs actual navigation (which may vary by framework).
+
+## Step 6.5: Document Design Direction
+
+After creating the shell specification, document the aesthetic decisions made. This ensures future `/design-screen` commands maintain visual consistency.
+
+### Create the Design Direction Document
+
+Create `/product/design-system/design-direction.md`:
+
+```markdown
+# Design Direction for [Product Name]
+
+## Aesthetic Tone
+[One sentence describing the overall feel based on the shell design - e.g., "Refined utility with bold [primary color] accents"]
+
+## Visual Signatures
+These distinctive elements MUST appear consistently across all sections:
+- [Signature 1 - e.g., "Rounded corners (rounded-xl) on all cards and containers"]
+- [Signature 2 - e.g., "[Primary]-500 accent for primary actions and active states"]
+- [Signature 3 - e.g., "[Neutral]-900 dark mode backgrounds with high contrast text"]
+
+## Color Application
+- **Primary usage**: [When and how the primary color is used - e.g., "For buttons, active nav items, key CTAs"]
+- **Accent pattern**: [How accents draw attention - e.g., "Subtle underlines on hover, badges for counts"]
+- **Neutral treatment**: [How neutrals create hierarchy - e.g., "[Neutral]-50 to [Neutral]-900 for depth layers"]
+
+## Motion & Interaction
+- **Animation style**: [subtle/bold/none - based on product personality]
+- **Key interactions**: [e.g., "200ms ease-out for all hover states"]
+- **Timing**: [e.g., "Fast - prioritize responsiveness over flair"]
+
+## Typography Treatment
+- **Heading style**: [e.g., "[Heading font] 600, tight tracking, [neutral]-900"]
+- **Body approach**: [e.g., "[Body font] 400, relaxed line-height (1.6), [neutral]-600"]
+- **Distinctive choices**: [e.g., "Mono font for IDs, codes, and data values"]
+
+## Consistency Guidelines
+These rules MUST remain consistent across all sections:
+1. [Guideline - e.g., "All interactive elements use [primary]-500 hover states"]
+2. [Guideline - e.g., "Card padding is always p-6 on desktop, p-4 on mobile"]
+3. [Guideline - e.g., "Dark mode uses [neutral]-900 backgrounds, never pure black"]
+
+## Applied From
+- **Skill file**: [Yes/No]
+- **Fallback tone**: [If No above, which aesthetic tone was chosen from fallback options]
+```
+
+**Populate the document by:**
+1. Extracting the aesthetic choices made when applying the frontend-design skill (or fallback)
+2. Documenting the layout pattern selected and key visual decisions
+3. Recording specific color, typography, and motion patterns used in the shell
+4. Noting any distinctive elements that make this shell unique
+
+**Why this matters:** This document serves as the definitive reference for all subsequent `/design-screen` commands. When designing sections, the agent will read this file to ensure visual consistency with the shell.
+
+> **Recovery:** If this step fails, manually create the file at `product/design-system/design-direction.md` with the template above. The `/design-screen` command will warn if this file is missing but can still proceed.
 
 ## Step 7: Create Shell Components
 
@@ -596,6 +680,7 @@ Let the user know:
 
 **Created files:**
 - `/product/shell/spec.md` — Shell specification
+- `/product/design-system/design-direction.md` — Design direction for consistency
 - `src/shell/components/AppShell.tsx` — Main shell wrapper
 - `src/shell/components/MainNav.tsx` — Navigation component
 - `src/shell/components/UserMenu.tsx` — User menu component
