@@ -14,6 +14,8 @@ SYNC_DIRS=(
   "src/hooks"
   "src/lib"
   "src/types"
+  "src/shell/components"
+  "src/shell/hooks"
   "docs"
 )
 
@@ -34,8 +36,9 @@ SYNC_FILES=(
   "src/main.tsx"
   "src/index.css"
   "src/vite-env.d.ts"
-  # Shell infrastructure (NOT user components)
+  # Shell infrastructure (utility components synced via SYNC_DIRS)
   "src/shell/navigation-config.ts"
+  "src/shell/index.ts"
 )
 
 # ============================================================================
@@ -61,6 +64,8 @@ EXCLUDE_PATTERNS=(
 # ============================================================================
 
 # Directories to exclude when creating a new project
+# Note: src/shell/components and src/shell/hooks are INCLUDED (utility components)
+# User-generated shell components (AppShell, MainNav) are created by /design-shell
 CREATE_EXCLUDE_DIRS=(
   ".git"
   ".github"
@@ -74,7 +79,6 @@ CREATE_EXCLUDE_DIRS=(
   "product"
   "product-plan"
   "src/sections"
-  "src/shell/components"
 )
 
 # Files to exclude when creating a new project
