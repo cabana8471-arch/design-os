@@ -84,14 +84,14 @@ section/tdd-workflow.md
 
 Section templates use placeholder variables. **Only the assembled `section-prompt.md` requires user substitution** — these variables are left in place for users to fill in for each section they implement.
 
-> **Notation:** One-shot variables use bracket notation `[variable]` (auto-substituted by `/export-product`). Section variables use uppercase `VARIABLE` (user substitutes manually for each section).
+> **Notation:** One-shot variables use bracket notation `[variable]` (auto-substituted by `/export-product`). Section variables use uppercase `VARIABLE` (user substitutes manually for each section), EXCEPT `[Product Name]` which is auto-substituted during export since it's the same for all sections.
 
-| Variable         | Used In                                             | Description                  | Example              |
-| ---------------- | --------------------------------------------------- | ---------------------------- | -------------------- |
-| `[Product Name]` | `one-shot/preamble.md`                              | Product name from overview   | "InvoiceApp"         |
-| `SECTION_NAME`   | `section/preamble.md`                               | Human-readable section title | "Invoice Management" |
-| `SECTION_ID`     | `section/preamble.md`, `section/prompt-template.md` | URL-safe section identifier  | "invoice-management" |
-| `NN`             | `section/preamble.md`, `section/prompt-template.md` | Two-digit milestone number   | "02", "03", etc.     |
+| Variable         | Used In                                             | Auto-Substituted | Description                  | Example              |
+| ---------------- | --------------------------------------------------- | ---------------- | ---------------------------- | -------------------- |
+| `[Product Name]` | `one-shot/preamble.md`, `section/preamble.md`       | YES              | Product name from overview   | "InvoiceApp"         |
+| `SECTION_NAME`   | `section/preamble.md`                               | NO               | Human-readable section title | "Invoice Management" |
+| `SECTION_ID`     | `section/preamble.md`, `section/prompt-template.md` | NO               | URL-safe section identifier  | "invoice-management" |
+| `NN`             | `section/preamble.md`, `section/prompt-template.md` | NO               | Two-digit milestone number   | "02", "03", etc.     |
 
 > **Note:** Templates in `common/` and `section/clarifying-questions.md`, `section/tdd-workflow.md` do not use these variables — they work as-is.
 
@@ -108,6 +108,7 @@ Section templates use placeholder variables. **Only the assembled `section-promp
 **Verification Procedure:**
 
 To verify assembly orders are in sync:
+
 1. Compare the "One-Shot Prompt Assembly Order" section below with export-product.md Step 14 → "For one-shot-prompt.md:"
 2. Compare the "Section Prompt Assembly Order" section below with export-product.md Step 14 → "For section-prompt.md:"
 3. Ensure template file paths and descriptions match exactly
@@ -309,8 +310,9 @@ When stripping version comments (`<!-- v1.0.0 -->`):
 
 ```
 1. Check if first line matches: <!-- v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)? -->
-2. If match, remove the entire first line (including newline)
-3. Do NOT remove blank lines that follow — they may be intentional
+2. If match, remove the entire first line (including its trailing newline)
+3. Preserve any additional blank lines that follow — they may be intentional
+   (the regex removes the comment AND its trailing newline, but NOT blank lines after)
 4. The second line becomes the new first line
 ```
 

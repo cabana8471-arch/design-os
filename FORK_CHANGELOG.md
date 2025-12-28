@@ -6,7 +6,59 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-28 23:55] Critical Analysis - LOW Priority Issues (L1-L15)
+## [2025-12-29 13:30] Critical Analysis - Cross-References & Documentation Clarity
+
+### Description
+
+Comprehensive critical analysis of all files in `.claude/` folder plus `agents.md`. Identified 8 issues (4 medium, 4 low priority). Focus on adding cross-references between documentation sources, clarifying terminology, and improving documentation consistency.
+
+### New Files Created
+
+_None_
+
+### Modified Files
+
+| File                                            | Modification                                                                          |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/export-product.md`  | Added design-direction.md validation check in Step 1 (lines 97-117)                   |
+| `.claude/templates/design-os/README.md`         | Clarified variable substitution - `[Product Name]` is auto-substituted in all prompts |
+| `.claude/templates/design-os/README.md`         | Added "Auto-Substituted" column to variable table                                     |
+| `.claude/templates/design-os/README.md`         | Clarified whitespace handling behavior in version comment stripping                   |
+| `.claude/commands/design-os/sample-data.md`     | Added cross-reference to agents.md → "File Validation Pattern"                        |
+| `.claude/commands/design-os/design-shell.md`    | Clarified Primary/Secondary/Utility components terminology in Step 7                  |
+| `.claude/commands/design-os/design-shell.md`    | Added cross-reference to agents.md → "Shell Relationships" in Step 6.6                |
+| `.claude/commands/design-os/product-roadmap.md` | Added detailed comments explaining bash pipeline transformations for section-id       |
+| `agents.md`                                     | Expanded step numbering note to explain decimal notation convention                   |
+
+### Gaps Resolved
+
+- **M1:** export-product.md Step 1 didn't validate design-direction.md (created by /design-shell Step 6.5)
+- **M2:** templates/README.md didn't clarify that `[Product Name]` is auto-substituted in section prompts
+- **M3:** design-shell.md Primary/Secondary/Utility components distinction was unclear
+- **M4:** sample-data.md `_meta` structure lacked cross-reference to agents.md validation pattern
+- **L1:** product-roadmap.md bash scripts had complex transformations without explanatory comments
+- **L2:** design-shell.md Step 6.6 missing cross-reference to complete Shell Relationships spec in agents.md
+- **L3:** templates/README.md whitespace handling description was potentially confusing
+- **L4:** agents.md step numbering note didn't explain the decimal notation convention
+
+### Statistics
+
+- Files modified: 6
+- Lines changed: ~50
+- Issues resolved: 8 (4 Medium, 4 Low)
+
+### Verification
+
+- ✅ design-direction.md validation added to export-product.md Step 1
+- ✅ Variable substitution table now shows Auto-Substituted column
+- ✅ Component terminology clarified with notes referencing agents.md sections
+- ✅ Cross-references added to agents.md for validation patterns and shell relationships
+- ✅ Bash pipeline comments explain each transformation step
+- ✅ Whitespace handling clarified to distinguish trailing newline vs. blank lines
+
+---
+
+## [2025-12-28 23:45] Critical Analysis - LOW Priority Issues (L1-L15)
 
 ### Description
 

@@ -966,6 +966,8 @@ Example rules:
 
 **NEW:** Based on the interactive elements selected in Step 3.6, add the `## Shell Relationships` section to `product/shell/spec.md`.
 
+> **See also:** agents.md → "Shell Relationships" section for complete specification including all valid trigger types, relationship types, and data references.
+
 **Format:** `[Trigger].[action] -> [Component] ([type], [dataRef])`
 
 ```markdown
@@ -1257,7 +1259,11 @@ export interface ShellData {
 
 Create the shell components at `src/shell/components/`:
 
-### Primary Components (Always Created)
+### Primary Components (Always Created by /design-shell)
+
+These three components form the core shell structure and are always created by this command.
+
+> **Note:** These are distinct from the **utility components** (SkipLink, ShellErrorBoundary, LogoArea, ThemeToggle, ShellSkeleton, ShellFooter) which are pre-existing in the boilerplate. See agents.md → "Shell Utility Components" section for details.
 
 #### AppShell.tsx
 
@@ -1350,9 +1356,11 @@ interface UserMenuProps {
 }
 ```
 
-### Secondary Components (Based on Step 3.6 Selections)
+### Secondary Components (Generated Based on Step 3.6 Selections)
 
-Create each secondary component only if it was selected in Step 3.6.
+These components are created by /design-shell only if the user selected them in Step 3.6.
+
+> **Note:** Secondary components provide interactive shell features (notifications, search, settings, etc.). They are distinct from **utility components** which are pre-existing in the boilerplate.
 
 #### NotificationsDrawer.tsx
 

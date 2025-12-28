@@ -16,6 +16,7 @@ First, check if `/product/product-roadmap.md` exists and read `/product/product-
 ### Analyze the Product Overview
 
 Read the product overview and analyze:
+
 - The core description
 - The problems being solved
 - The key features listed
@@ -23,6 +24,7 @@ Read the product overview and analyze:
 ### Propose Sections
 
 Based on your analysis, propose 3-5 sections that represent:
+
 - **Navigation items** - main areas of the product UI
 - **Roadmap phases** - logical order for building
 - **Self-contained feature areas** - each can be designed and built independently
@@ -42,6 +44,7 @@ Then use the AskUserQuestion tool to ask the user: "Does this breakdown make sen
 ### Refine with User
 
 Iterate on the sections based on user feedback. Ask clarifying questions:
+
 - "Should [feature X] be its own section or part of [Section Y]?"
 - "What would you consider the most critical section to build first?"
 - "Are there any major areas I'm missing?"
@@ -55,6 +58,7 @@ mkdir -p product
 ```
 
 Then validate the directory was created:
+
 ```bash
 if [ ! -d "product" ]; then
   echo "Error: product/ - Directory creation failed. Check write permissions."
@@ -70,12 +74,15 @@ Then create `/product/product-roadmap.md` with this exact format:
 ## Sections
 
 ### 1. [Section Title]
+
 [One sentence description]
 
 ### 2. [Section Title]
+
 [One sentence description]
 
 ### 3. [Section Title]
+
 [One sentence description]
 ```
 
@@ -96,6 +103,7 @@ Then create `/product/product-roadmap.md` with this exact format:
 ### Read Current Files
 
 Read both:
+
 - `/product/product-overview.md`
 - `/product/product-roadmap.md`
 
@@ -105,9 +113,10 @@ Read both:
 
 1. [Section 1 Title]
 2. [Section 2 Title]
-...
+   ...
 
 What would you like to do?
+
 - **Update sections** - Add, remove, or reorder sections
 - **Sync from files** - I'll re-read the markdown files and confirm everything is in sync
 - **Start fresh** - Regenerate the roadmap based on the current product overview"
@@ -131,6 +140,7 @@ Before proceeding, warn the user:
 Are you sure you want to regenerate the roadmap from scratch?"
 
 Use AskUserQuestion with options:
+
 - "Yes, replace it" - Proceed with regeneration
 - "No, keep my edits" - Cancel and return to the sync options
 
@@ -143,6 +153,7 @@ If they confirm, follow the "Creating New" flow above but explicitly note you're
 ### Manual Edit Protection
 
 When users manually edit `/product/product-roadmap.md`:
+
 - The "Update sections" and "Sync from files" options preserve their changes
 - The "Start fresh" option will overwrite all manual edits — always confirm before proceeding
 - If a user has associated section specs, sample data, or screen designs that depend on current section names, changing the roadmap may orphan those files
@@ -153,24 +164,32 @@ When sections are renamed or removed from the roadmap, previously created files 
 
 **Agent Responsibilities (Mandatory vs. Requires Consent):**
 
-| Action | Mandatory? | Notes |
-|--------|------------|-------|
-| Check for orphans after roadmap change | **MANDATORY** | Always run detection script automatically |
-| Report orphans to user | **MANDATORY** | Present findings with AskUserQuestion |
+| Action                                  | Mandatory?           | Notes                                        |
+| --------------------------------------- | -------------------- | -------------------------------------------- |
+| Check for orphans after roadmap change  | **MANDATORY**        | Always run detection script automatically    |
+| Report orphans to user                  | **MANDATORY**        | Present findings with AskUserQuestion        |
 | Execute cleanup (delete/rename/archive) | **REQUIRES CONSENT** | Never execute without explicit user approval |
 
 **Who is responsible:** The agent executing this command MUST check for orphans after any roadmap modification and present options to the user. Detection is automatic and NOT optional; cleanup execution requires explicit user consent.
 
 **1. After any roadmap change, automatically identify orphaned files:**
+
 ```bash
-# Get section IDs from roadmap
+# Extract section titles from roadmap and convert to section-id format
+# Pipeline explanation:
+#   1. grep: Find lines like "### 1. Section Title"
+#   2. sed: Remove the "### N. " prefix, leaving just "Section Title"
+#   3. tr: Convert to lowercase -> "section title"
+#   4. sed: Replace spaces with hyphens -> "section-title"
+#   5. sed: Replace "&" with "-and-" -> "reports-and-analytics"
 ROADMAP_SECTIONS=$(grep -E "^### [0-9]+\." product/product-roadmap.md | sed 's/### [0-9]*\. //' | tr '[:upper:]' '[:lower:]' | sed 's/ /-/g' | sed 's/&/-and-/g')
 
-# List actual section directories
+# List actual section directories (just the folder names, not full paths)
 PRODUCT_SECTIONS=$(ls -d product/sections/*/ 2>/dev/null | xargs -n1 basename)
 SRC_SECTIONS=$(ls -d src/sections/*/ 2>/dev/null | xargs -n1 basename)
 
 # Find orphans (directories that exist but aren't in roadmap)
+# An orphan is a section directory that has no matching entry in ROADMAP_SECTIONS
 echo "Checking for orphaned sections..."
 ```
 
@@ -187,6 +206,7 @@ How would you like to handle these?
 ```
 
 Options:
+
 - "Delete them" — Permanently remove orphaned directories
 - "Archive them" — Move to `_archive/` folder for safekeeping
 - "Keep them" — Leave as-is (they won't appear in navigation)
@@ -198,6 +218,7 @@ Ask for the mapping: "Which roadmap section should `[orphan-name]` be renamed to
 > **Note:** The shell commands below are provided for **user reference**. If the user confirms they want to proceed with file operations (delete, rename, archive), execute the commands with their explicit approval. Never execute destructive commands (`rm -rf`, `mv`) without user confirmation.
 
 **2. For renamed sections:**
+
 - **Rename directories** to match the new section ID:
   ```bash
   mv product/sections/old-name product/sections/new-name
@@ -206,6 +227,7 @@ Ask for the mapping: "Which roadmap section should `[orphan-name]` be renamed to
 - **Update internal references** in `spec.md`, `types.ts`, and component imports
 
 **3. For removed sections:**
+
 - **Delete the directories** if the section is permanently removed:
   ```bash
   rm -rf product/sections/removed-section
@@ -234,6 +256,7 @@ done
 ```
 
 **Section ID Rules (Reference):**
+
 1. Lowercase only
 2. Hyphens instead of spaces
 3. "&" replaced with "-and-"
@@ -242,6 +265,7 @@ done
 6. Maximum 50 characters
 
 **5. Verify cleanup:**
+
 - Run the dev server and check the homepage shows only current sections
 - Ensure no broken navigation links exist
 

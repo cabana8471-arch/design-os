@@ -94,6 +94,28 @@ Use AskUserQuestion with options:
 
 Track the user's choice with a `INCLUDE_SHELL` flag for Steps 8-9.
 
+### Check Optional Design Direction
+
+Check if design direction exists (created by /design-shell Step 6.5):
+
+```bash
+if [ ! -f "product/design-system/design-direction.md" ]; then
+  echo "Note: Design direction not found at product/design-system/design-direction.md"
+  echo "Exports will use default design guidance. For consistent branding, run /design-shell first."
+  DESIGN_DIRECTION_EXISTS=false
+else
+  DESIGN_DIRECTION_EXISTS=true
+  echo "Design direction found"
+fi
+```
+
+| Design Direction Status | Action                                                           |
+| ----------------------- | ---------------------------------------------------------------- |
+| File exists             | Include in export (copy to product-plan/design-system/)          |
+| File missing            | Show note (informational only), proceed without design direction |
+
+> **Note:** This is informational only. Unlike shell components, missing design direction does not require user confirmation to proceed.
+
 **If any required file is missing:**
 
 Output error message:

@@ -792,7 +792,7 @@ Similar to View Relationships for sections, Shell Relationships wire interactive
 
 The `/design-shell` command (Step 3.6) asks about interactive elements and stores relationships in the spec.
 
-> **Note on step references:** Step numbers like "Step 3.6" refer to steps within the command file itself (e.g., `.claude/commands/design-os/design-shell.md`). Check the command file for full step details.
+> **Note on step references:** Step numbers use decimal notation (e.g., "Step 3.6", "Step 6.5") to indicate sub-steps or refinements within major workflow phases. The integer part indicates the major step, and the decimal indicates a sub-step within that phase. These refer to steps within the command file itself (e.g., `.claude/commands/design-os/design-shell.md`). Check the command file for the complete step breakdown.
 
 ```markdown
 ## Shell Relationships
