@@ -6,6 +6,69 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-28 13:30] Restored Missing Design Direction Instructions
+
+### Description
+
+Restored missing instructions that were inadvertently removed during the design direction enhancement refactoring. These instructions are critical for ensuring AI agents properly populate and read the design-direction.md document.
+
+### Problem Solved
+
+During the previous refactoring, two important pieces of guidance were removed:
+
+1. **In design-screen.md**: The explicit list of sections to read from design-direction.md was removed, leaving AI agents without clear guidance on which sections to parse.
+
+2. **In design-shell.md**: The "Fallback tone" field and "Populate the document by" 4-step instructions were removed, leaving AI agents without guidance on HOW to fill in the document.
+
+### Solution
+
+Restored both pieces of guidance while keeping the new enhancements:
+
+#### design-screen.md — Explicit Section List
+
+```markdown
+Read the key sections:
+
+- **Visual Signatures** — Elements that MUST appear consistently
+- **Color Application** — How primary/secondary/neutral colors are used
+- **Motion & Interaction** — Animation style and timing
+- **Typography Treatment** — How typography creates hierarchy
+- **Consistency Guidelines** — Rules that MUST remain consistent
+```
+
+#### design-shell.md — Applied From + Populate Instructions
+
+```markdown
+## Applied From
+
+- **Skill file used**: [Yes/No]
+- **User choices**: Recorded in Step 3.5 of /design-shell
+- **Design tokens**: [colors.json and typography.json if available]
+- **Fallback tone**: [If skill file not used, which aesthetic tone was chosen]
+
+**Populate the document by:**
+
+1. Extracting the aesthetic choices made when applying the skill (or fallback)
+2. Documenting the layout pattern selected and key visual decisions
+3. Recording specific color, typography, and motion patterns used
+4. Noting any distinctive elements that make this shell unique
+```
+
+### Modified Files
+
+| File                                          | Modification                                                                      |
+| --------------------------------------------- | --------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-screen.md` | Restored explicit section list for reading design-direction.md (added Typography) |
+| `.claude/commands/design-os/design-shell.md`  | Restored Fallback tone field + "Populate the document by" 4-step instructions     |
+
+### Benefits
+
+- **Clear guidance**: AI agents now know exactly WHICH sections to read and HOW to populate them
+- **Complete workflow**: The design-direction.md document captures all sources of design decisions
+- **Backward compatible**: All new enhancements preserved while restoring missing instructions
+
+---
+
 ## [2025-12-28 12:45] Enhanced Design Direction with AI-Generated Guidance Sections
 
 ### Description
