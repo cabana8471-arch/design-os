@@ -44,7 +44,7 @@ Use AskUserQuestion with options:
 
 Track user's choice - if continuing without skill file, use the **fallback design principles** defined in `/design-shell` Step 1.
 
-> **Note:** The full fallback design principles are defined in `.claude/commands/design-os/design-shell.md` Step 1 → "Validate Design Guidance (Skill File)" → "Enhanced Fallback Design Principles" subsection. They include: Aesthetic Tone Options, Visual Hierarchy, Spacing System, Color Application, Typography Choices, Motion & Interaction, Responsive Breakpoints, and Dark Mode. See also `agents.md` → "Enhanced Fallback Design Guidance" for the canonical documentation.
+> **Note:** The full fallback design principles are defined in `.claude/commands/design-os/design-shell.md` Step 1 → "Validate Design Guidance (Skill File)" subsection (lines 322-428), under "Enhanced Fallback Design Principles". They include: Aesthetic Tone Options, Visual Hierarchy, Spacing System, Color Application, Typography Choices, Motion & Interaction, Responsive Breakpoints, and Dark Mode. See also `agents.md` → "Enhanced Fallback Design Guidance" for the canonical documentation.
 
 ### Validate UI Components for Wiring
 

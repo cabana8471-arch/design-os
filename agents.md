@@ -128,6 +128,8 @@ Generate the complete export package with all components, types, and handoff doc
 - **Required**: Command will STOP if missing
 - **Optional**: Command will WARN and continue with defaults if missing
 
+**Note on Design Tokens for /design-shell:** While design tokens are optional, if they don't exist, `/design-shell` will use default stone/lime colors. For product-specific branding, run `/design-tokens` before `/design-shell`.
+
 ---
 
 ## File Structure
@@ -1252,6 +1254,8 @@ All commands must follow this consistent pattern for checking prerequisites:
 - Design tokens (design commands proceed with defaults)
 - Data model (sample-data proceeds with local definitions)
 - Application shell (design-shell question may be skipped)
+
+> **See also:** For the complete list of Required and Optional prerequisites per command, refer to the **Command Prerequisites** table in the "Command Quick Reference" section above.
 
 ### Standard Error Messages
 

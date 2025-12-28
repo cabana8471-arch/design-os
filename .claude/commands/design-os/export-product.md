@@ -461,8 +461,9 @@ Place in `product-plan/instructions/incremental/01-foundation.md`:
 ```markdown
 # Milestone 1: Foundation
 
-> **Provide alongside:** `product-overview.md`
+> **Provide alongside:** `product-overview.md`, `design-guidance/frontend-design.md`
 > **Prerequisites:** None
+> **Note:** If shell components exist in export, Foundation includes shell setup.
 
 [Include the preamble above]
 
@@ -841,6 +842,19 @@ For EACH shell component file, validate:
    - [ ] All callbacks are optional and use optional chaining: `onAction?.()`
    - [ ] No state management code (useState, useContext, etc.) — _EXCEPTION: Secondary components like ThemeToggle MAY use useState for local UI state_
    - [ ] No routing logic or navigation calls
+
+3. **Check Props interface (primary components only):**
+
+```bash
+# Validate primary shell components export Props interfaces
+for component in AppShell MainNav UserMenu; do
+  if [ -f "src/shell/components/${component}.tsx" ]; then
+    if ! grep -q "export interface ${component}Props" "src/shell/components/${component}.tsx"; then
+      echo "Warning: ${component}.tsx missing Props interface export"
+    fi
+  fi
+done
+```
 
 **Note:** Secondary components (drawers, modals) may use local useState for their open/close state. This is acceptable as long as:
 

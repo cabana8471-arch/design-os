@@ -310,6 +310,13 @@ else:
         errors.append("'_meta.models' must be an object, not " + type(meta['models']).__name__)
     elif len(meta['models']) == 0:
         errors.append("'_meta.models' is empty - add model descriptions")
+    else:
+        # Validate each model description is a non-empty string
+        for model_name, description in meta['models'].items():
+            if not isinstance(description, str):
+                errors.append(f"'_meta.models.{model_name}' must be a string description, not {type(description).__name__}")
+            elif len(description.strip()) == 0:
+                errors.append(f"'_meta.models.{model_name}' has empty description")
 
     # Check _meta.relationships
     if 'relationships' not in meta:

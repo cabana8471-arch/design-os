@@ -446,9 +446,11 @@ Check if a shell design has been created for this project by checking for all sh
 
 A complete shell consists of three parts:
 
-1. `product/shell/spec.md` — Shell specification (design decisions)
+1. `product/shell/spec.md` — Shell specification (design decisions) — **AUTHORITATIVE SOURCE**
 2. `src/shell/components/AppShell.tsx` — Main shell component
 3. `src/shell/ShellPreview.tsx` — Preview wrapper
+
+> **Note:** The spec.md file is the authoritative source for shell design decisions. Components may exist without a spec (manually created), but for proper Design OS integration, the spec should always be present.
 
 **Determine shell status:**
 

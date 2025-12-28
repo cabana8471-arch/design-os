@@ -1625,6 +1625,38 @@ export { MobileMenuDrawer } from "./MobileMenuDrawer";
 - Use Tailwind CSS for styling
 - Use lucide-react for icons
 
+## Step 7.5: Validate Section Availability
+
+Before creating ShellPreview, check if sections exist to avoid import failures:
+
+```bash
+SECTIONS_EXIST=false
+if ls -d product/sections/*/ 2>/dev/null | grep -q .; then
+  SECTIONS_EXIST=true
+  echo "Sections found: $(ls -d product/sections/*/)"
+else
+  echo "No sections found yet. ShellPreview will use placeholder content."
+fi
+```
+
+**If `SECTIONS_EXIST=false`:**
+
+The ShellPreview will render with placeholder content instead of section routes:
+
+```tsx
+// Placeholder content when no sections exist
+<div className="flex-1 flex items-center justify-center bg-stone-50 dark:bg-stone-900">
+  <div className="text-center text-muted-foreground">
+    <p className="text-lg font-medium">Shell preview ready</p>
+    <p className="text-sm mt-2">Run /shape-section to add sections.</p>
+  </div>
+</div>
+```
+
+**If `SECTIONS_EXIST=true`:**
+
+Generate navigation items from section directories and proceed with full ShellPreview (see Step 8).
+
 ## Step 8: Create Wired Shell Preview
 
 **UPDATED:** Create `src/shell/ShellPreview.tsx` as a **wired preview** with state management for all secondary components.
