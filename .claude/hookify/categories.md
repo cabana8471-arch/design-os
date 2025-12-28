@@ -2,6 +2,8 @@
 
 Detailed explanations of each rule category and why these rules exist.
 
+> **See also:** `agents.md` → "Hookify Guardrails" section for an overview of how these rules integrate with Design OS.
+
 ---
 
 ## Category 1: Code Patterns (`dos-code-*`)

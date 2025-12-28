@@ -70,4 +70,4 @@ border-stone-200 dark:border-stone-800
 ### See Also
 
 - `agents.md` > "Design Requirements"
-- `agents.md` > "Design Token Shade Guide"
+- `agents.md` > "Design System (Design OS Application)"

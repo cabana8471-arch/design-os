@@ -22,7 +22,7 @@ The React application that displays and manages planning files. When modifying t
 
 The product you're planning and designing. When creating screen designs and exports:
 
-- Screen design components live in `src/sections/[section-name]/` and `src/shell/`
+- Screen design components live in `src/sections/[section-id]/` and `src/shell/`
 - Product definition files live in `product/`
 - Exports are packaged to `product-plan/` for integration into a separate codebase
 - Follow the design requirements specified in each section's spec
@@ -189,7 +189,7 @@ product/                           # Product definition (portable)
 │   └── types.ts                   # TypeScript interfaces for shell
 │
 └── sections/
-    └── [section-name]/
+    └── [section-id]/
         ├── spec.md                # Section specification
         ├── data.json              # Sample data for screen designs
         ├── types.ts               # TypeScript interfaces
@@ -233,7 +233,7 @@ src/
 │   └── index.ts                   # Main shell module export
 │
 └── sections/
-    └── [section-name]/
+    └── [section-id]/
         ├── components/            # Exportable components (see note below)
         │   ├── [Component].tsx
         │   └── index.ts
@@ -790,7 +790,9 @@ Similar to View Relationships for sections, Shell Relationships wire interactive
 
 ### Defining Relationships in shell spec.md
 
-The `/design-shell` command (Step 3.6) asks about interactive elements and stores relationships in the spec:
+The `/design-shell` command (Step 3.6) asks about interactive elements and stores relationships in the spec.
+
+> **Note on step references:** Step numbers like "Step 3.6" refer to steps within the command file itself (e.g., `.claude/commands/design-os/design-shell.md`). Check the command file for full step details.
 
 ```markdown
 ## Shell Relationships
@@ -1009,7 +1011,7 @@ Design OS separates concerns between its own UI and the product being designed:
 
 - **Design OS UI**: Always uses the stone/lime palette and DM Sans typography
 - **Product Screen Designs**: Use the design tokens defined for the product (when available)
-- **Shell**: Uses product design tokens to preview the full app experience
+- **Shell**: Shell components are created with product design tokens during `/design-shell`, then used by `ScreenDesignPage` to preview the full app experience
 
 ---
 
@@ -1181,7 +1183,7 @@ Design OS uses a modular template system for generating implementation prompts a
 
 ### Usage
 
-The `/export-product` command (Step 14) assembles these templates into ready-to-use prompts:
+The `/export-product` command assembles these templates (see Step 14: Generate Prompt Files) into ready-to-use prompts:
 
 - `product-plan/prompts/one-shot-prompt.md`
 - `product-plan/prompts/section-prompt.md`

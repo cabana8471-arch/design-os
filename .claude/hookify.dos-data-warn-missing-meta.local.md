@@ -83,5 +83,5 @@ All `data.json` files must include a `_meta` object that documents the data stru
 
 ### See Also
 
-- `agents.md` > "Data Integrity Issues"
+- `agents.md` > "File Validation Pattern"
 - `/sample-data` command documentation

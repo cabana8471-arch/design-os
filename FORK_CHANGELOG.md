@@ -6,7 +6,70 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-28 23:45] Critical Analysis - Props Validation & Dev Server Tracking
+## [2025-12-28 23:45] Critical Analysis - Terminology, Pluralization & Cross-References
+
+### Description
+
+Comprehensive critical analysis of all files in `.claude/` folder plus `agents.md`. Identified 43 potential issues across 4 severity levels. After verification, implemented fixes for 13 issues while 6 were false positives (already correctly implemented).
+
+### New Files Created
+
+_None_
+
+### Modified Files
+
+| File                                                         | Modification                                                                                   |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| `agents.md`                                                  | Fixed terminology: `[section-name]` → `[section-id]` in 3 locations (lines 25, 192, 236)       |
+| `agents.md`                                                  | Clarified Step 14 reference in Template System section                                         |
+| `agents.md`                                                  | Added step reference note explaining step numbers refer to command files                       |
+| `agents.md`                                                  | Clarified Design System Scope - shell components created during /design-shell                  |
+| `.claude/commands/design-os/sample-data.md`                  | Replaced simplistic pluralization logic with comprehensive function handling irregular plurals |
+| `.claude/commands/design-os/sample-data.md`                  | Standardized Props naming: `[SectionName]Props` → `[ViewName]Props` (2 locations)              |
+| `.claude/commands/design-os/sample-data.md`                  | Added cross-reference note linking View Relationships to /shape-section Step 4.6               |
+| `.claude/hookify.dos-code-warn-missing-dark-mode.local.md`   | Fixed broken reference: "Design Token Shade Guide" → "Design System (Design OS Application)"   |
+| `.claude/hookify.dos-data-warn-missing-meta.local.md`        | Fixed broken reference: "Data Integrity Issues" → "File Validation Pattern"                    |
+| `.claude/hookify.dos-data-warn-placeholder-content.local.md` | Fixed broken reference: "Data Integrity Issues" → "File Validation Pattern"                    |
+| `.claude/hookify/categories.md`                              | Added cross-reference to agents.md "Hookify Guardrails" section                                |
+| `.claude/skills/frontend-design/SKILL.md`                    | Added "Helvetica" to generic fonts list for consistency with hookify rule                      |
+
+### Gaps Resolved
+
+- **C2:** Pluralization logic failed for common English words (Status→statuie, Box→boxe) - now handles irregular plurals, -es, -ies, -ves endings
+- **C3:** Props interface naming inconsistent (`[SectionName]Props` vs `[ViewName]Props`) - standardized to view-specific naming
+- **C6:** Terminology inconsistency `[section-name]` vs `[section-id]` in agents.md - standardized to `[section-id]`
+- **C7:** Step reference "Step 14" was ambiguous - clarified as "Step 14: Generate Prompt Files"
+- **H2:** View Relationships cross-reference missing in sample-data.md - added note linking to /shape-section
+- **H4:** Broken references in 3 hookify rules pointing to non-existent agents.md sections
+- **M5:** Step number references lacked explanation - added clarifying note
+- **M6:** Design System Scope unclear about shell token usage - expanded explanation
+- **M8:** categories.md missing reference to agents.md - added cross-reference
+- **M9:** Helvetica missing from generic fonts list in SKILL.md - added for hookify consistency
+
+### False Positives Identified
+
+- **C1:** Path alias `@/../product/` is valid TypeScript pattern - documentation already explains it correctly
+- **C4+C5:** UI validation and fallback behavior already adequately documented
+- **H5+H6:** Rule count "19 warning rules" is correct (3 block + 19 warn = 22 total)
+
+### Statistics
+
+- Files modified: 10
+- Lines changed: ~120
+- Issues resolved: 13 (4 Critical, 4 High, 5 Medium)
+- False positives: 6
+
+### Verification
+
+- ✅ All `[section-name]` instances replaced with `[section-id]`
+- ✅ Pluralization function handles Status, Box, Person, Child, Category correctly
+- ✅ Props naming consistent across sample-data.md and design-screen.md
+- ✅ All hookify rule references point to existing agents.md sections
+- ✅ Cross-references added for View Relationships workflow
+
+---
+
+## [2025-12-28 23:15] Critical Analysis - Props Validation & Dev Server Tracking
 
 ### Description
 

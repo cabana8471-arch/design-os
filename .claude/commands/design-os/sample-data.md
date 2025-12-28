@@ -385,15 +385,49 @@ if [ -f "product/data-model/data-model.md" ]; then
   # Extract entity names from data model
   DATA_MODEL_ENTITIES=$(grep -E '^## [A-Z]' product/data-model/data-model.md | sed 's/^## //')
 
+  # Pluralization function with common English rules
+  pluralize() {
+    local word="$1"
+    local lower=$(echo "$word" | tr '[:upper:]' '[:lower:]')
+
+    # Common irregular plurals
+    case "$lower" in
+      person) echo "people" ;;
+      child) echo "children" ;;
+      man) echo "men" ;;
+      woman) echo "women" ;;
+      foot) echo "feet" ;;
+      tooth) echo "teeth" ;;
+      mouse) echo "mice" ;;
+      *)
+        # Words ending in s, x, z, ch, sh -> add "es"
+        if echo "$lower" | grep -qE '(s|x|z|ch|sh)$'; then
+          echo "${lower}es"
+        # Words ending in consonant + y -> change y to ies
+        elif echo "$lower" | grep -qE '[^aeiou]y$'; then
+          echo "${lower%y}ies"
+        # Words ending in f or fe -> change to ves (common cases)
+        elif echo "$lower" | grep -qE '(f|fe)$'; then
+          echo "${lower%f}ves" | sed 's/eeves$/eves/'
+        # Default: just add s
+        else
+          echo "${lower}s"
+        fi
+        ;;
+    esac
+  }
+
   # Verify each entity has corresponding data.json key (pluralized, camelCase)
   for entity in $DATA_MODEL_ENTITIES; do
-    plural=$(echo "$entity" | sed 's/y$/ie/' | tr '[:upper:]' '[:lower:]')s
-    if ! grep -q "\"$plural\":" product/sections/[section-id]/data.json; then
+    plural=$(pluralize "$entity")
+    if ! grep -q "\"$plural\":" product/sections/${SECTION_ID}/data.json; then
       echo "Warning: Entity '$entity' not found as '$plural' in data.json"
     fi
   done
 fi
 ```
+
+> **Note:** The pluralization function covers common English patterns but may not handle all edge cases. If a warning appears for a correctly pluralized entity, verify manually that the data.json key matches expectations.
 
 If mismatches are found, either update the entity names or document why they differ.
 
@@ -738,7 +772,7 @@ export interface InvoiceListProps {
 
 - Use camelCase for property names: `clientName`, `dueDate`, `lineItems`
 
-- Props interface should be named `[SectionName]Props` (e.g., `InvoiceListProps`)
+- Props interface should be named `[ViewName]Props` (e.g., `InvoiceListProps` for the InvoiceList view)
 
 - Add JSDoc comments for callback props to explain when they're called
 
@@ -854,7 +888,7 @@ export interface ProjectListProps {
 
 ### Secondary View Props (Drawers, Modals, Inline Panels)
 
-If the spec contains a `## View Relationships` section, also generate Props interfaces for secondary views.
+If the spec contains a `## View Relationships` section (created by `/shape-section` Step 4.6), also generate Props interfaces for secondary views. These Props will be used by `/design-screen` when creating the related view components.
 
 **Parse View Relationships:**
 
@@ -1013,7 +1047,7 @@ Let the user know:
 The types include:
 
 - `[Entity]` - The main data type
-- `[SectionName]Props` - Props interface for the component (includes callbacks for [list actions])
+- `[ViewName]Props` - Props interface for each view (e.g., `InvoiceListProps`, `InvoiceDetailProps`)
 
 When you're ready, run `/design-screen` to create the screen design for this section."
 

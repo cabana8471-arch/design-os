@@ -86,4 +86,4 @@ conditions:
 ### See Also
 
 - `/sample-data` command documentation
-- `agents.md` > "Data Integrity Issues"
+- `agents.md` > "File Validation Pattern"
