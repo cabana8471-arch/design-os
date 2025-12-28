@@ -11,6 +11,7 @@ SYNC_DIRS=(
   ".claude/templates/design-os"
   "src/components"
   "src/components/ui"
+  "src/hooks"
   "src/lib"
   "src/types"
   "docs"
@@ -259,6 +260,16 @@ get_file_hash() {
     fi
   else
     echo ""
+  fi
+}
+
+# Get line count for text files (0 for binary files)
+get_line_count() {
+  local file="$1"
+  if [[ -f "$file" ]] && ! is_binary_file "$file"; then
+    wc -l < "$file" | tr -d ' '
+  else
+    echo "0"
   fi
 }
 

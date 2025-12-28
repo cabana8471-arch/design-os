@@ -6,7 +6,96 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-28 16:30] Post-Modification Critical Analysis: 3 Issues Fixed
+## [2025-12-28 15:35] Enhanced Sync Script Logging
+
+### Description
+
+Enhanced the sync script logging to show detailed file information instead of just summary counts. Now the log file includes which files were newly added, modified, or unchanged, with size and line count comparisons for modified files.
+
+### Changes Made
+
+#### New Helper Function
+
+| File             | Function           | Purpose                           |
+| ---------------- | ------------------ | --------------------------------- |
+| `sync-config.sh` | `get_line_count()` | Returns line count for text files |
+
+#### Enhanced File Analysis
+
+| File      | Change                                                               |
+| --------- | -------------------------------------------------------------------- |
+| `sync.sh` | Added metadata arrays (Bash 3.2 compatible) to store file size/lines |
+| `sync.sh` | Enhanced `analyze_files()` to capture metadata during file analysis  |
+
+#### New Formatting Functions
+
+| Function                           | Purpose                                     |
+| ---------------------------------- | ------------------------------------------- |
+| `format_new_files_section()`       | Lists new files with size and line count    |
+| `format_modified_files_section()`  | Lists modified files with before/after diff |
+| `format_unchanged_files_section()` | Groups unchanged files by directory         |
+| `format_conflicts_section()`       | Lists conflicts with source/target sizes    |
+| `format_errors_section()`          | Lists any sync errors                       |
+
+#### Enhanced Report Generation
+
+| Output  | Enhancement                                               |
+| ------- | --------------------------------------------------------- |
+| `.log`  | Added detailed file sections after summary                |
+| `.json` | Added `files` object with full metadata for each category |
+| Console | Unchanged (summary only) per user preference              |
+
+### New Log Format
+
+**MODIFIED FILES** section now shows:
+
+```
+agents.md
+  Size:  56.4 KB → 56.4 KB (+0%)
+  Lines: 1358 → 1360 (+2)
+```
+
+**NEW FILES** section shows:
+
+```
+new-file.tsx (2.3 KB, 45 lines)
+```
+
+**UNCHANGED FILES** grouped by directory:
+
+```
+.claude/commands/design-os/
+  data-model.md
+  design-screen.md
+```
+
+### JSON Report Enhancement
+
+```json
+{
+  "files": {
+    "new": [{"path": "...", "size": 123, "lines": 45}],
+    "modified": [{"path": "...", "source": {"size": ..., "lines": ...}, "target": {...}}],
+    "unchanged": ["path1", "path2"]
+  }
+}
+```
+
+### Modified Files
+
+| File                     | Lines Changed | Change Type                                      |
+| ------------------------ | ------------- | ------------------------------------------------ |
+| `scripts/sync-config.sh` | +10           | Added `get_line_count()` function                |
+| `scripts/sync.sh`        | +180          | Metadata storage, formatting, report enhancement |
+
+### Compatibility
+
+- Refactored to use Bash 3.2 compatible arrays (macOS default)
+- No associative arrays used (require Bash 4+)
+
+---
+
+## [2025-12-28 15:10] Post-Modification Critical Analysis: 3 Issues Fixed
 
 ### Description
 

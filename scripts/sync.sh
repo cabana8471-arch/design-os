@@ -65,6 +65,14 @@ CURRENT_BACKUP_DIR=""
 START_TIME=""
 MANIFEST_DATA=""
 
+# File metadata storage (populated during analyze_files)
+# Using parallel arrays for Bash 3.2 compatibility
+# Each entry: "path|source_size|source_lines|target_size|target_lines"
+FILE_META_NEW=()       # New files: "path|size|lines"
+FILE_META_MODIFIED=()  # Modified files: "path|src_size|src_lines|tgt_size|tgt_lines"
+FILE_META_UNCHANGED=() # Unchanged files: "path"
+FILE_META_CONFLICT=()  # Conflicts: "path|src_size|tgt_size"
+
 # ============================================================================
 # LOGGING FUNCTIONS
 # ============================================================================
@@ -506,15 +514,34 @@ analyze_files() {
   FILES_UNCHANGED=()
   FILES_CONFLICTS=()
 
+  # Reset metadata arrays
+  FILE_META_NEW=()
+  FILE_META_MODIFIED=()
+  FILE_META_UNCHANGED=()
+  FILE_META_CONFLICT=()
+
   while IFS= read -r file; do
     local source_file="$BOILERPLATE_ROOT/$file"
     local target_file="$target/$file"
 
+    # Get source file metadata
+    local source_size
+    source_size=$(get_file_size "$source_file")
+    local source_lines
+    source_lines=$(get_line_count "$source_file")
+
     if [[ ! -f "$target_file" ]]; then
       # File doesn't exist in target - it's new
       FILES_NEW+=("$file")
+      FILE_META_NEW+=("$file|$source_size|$source_lines")
       log_verbose "NEW: $file"
     else
+      # Get target file metadata
+      local target_size
+      target_size=$(get_file_size "$target_file")
+      local target_lines
+      target_lines=$(get_line_count "$target_file")
+
       # File exists - compare hashes
       local source_hash
       source_hash=$(get_file_hash "$source_file")
@@ -523,6 +550,7 @@ analyze_files() {
 
       if [[ "$source_hash" == "$target_hash" ]]; then
         FILES_UNCHANGED+=("$file")
+        FILE_META_UNCHANGED+=("$file")
         log_verbose "UNCHANGED: $file"
       else
         # Check for conflict (local modification since last sync)
@@ -532,10 +560,12 @@ analyze_files() {
         if [[ -n "$manifest_hash" ]] && [[ "$manifest_hash" != "$target_hash" ]]; then
           # Target was modified locally since last sync - this is a conflict
           FILES_CONFLICTS+=("$file")
+          FILE_META_CONFLICT+=("$file|$source_size|$target_size")
           log_verbose "CONFLICT: $file"
         else
           # Normal modification (or first sync)
           FILES_MODIFIED+=("$file")
+          FILE_META_MODIFIED+=("$file|$source_size|$source_lines|$target_size|$target_lines")
           log_verbose "MODIFIED: $file"
         fi
       fi
@@ -1051,6 +1081,151 @@ run_batch_sync() {
 # REPORT GENERATION
 # ============================================================================
 
+# Format new files section for log
+format_new_files_section() {
+  if [[ ${#FILE_META_NEW[@]} -eq 0 ]]; then
+    return
+  fi
+
+  echo ""
+  echo "─────────────────────────────────────────────────────────────────"
+  echo "  NEW FILES (${#FILE_META_NEW[@]})"
+  echo "─────────────────────────────────────────────────────────────────"
+  echo ""
+
+  for entry in "${FILE_META_NEW[@]}"; do
+    local file size lines
+    IFS='|' read -r file size lines <<< "$entry"
+    local size_formatted
+    size_formatted=$(format_size "$size")
+    if [[ "$lines" -gt 0 ]]; then
+      echo "  $file ($size_formatted, $lines lines)"
+    else
+      echo "  $file ($size_formatted)"
+    fi
+  done
+}
+
+# Format modified files section for log
+format_modified_files_section() {
+  if [[ ${#FILE_META_MODIFIED[@]} -eq 0 ]]; then
+    return
+  fi
+
+  echo ""
+  echo "─────────────────────────────────────────────────────────────────"
+  echo "  MODIFIED FILES (${#FILE_META_MODIFIED[@]})"
+  echo "─────────────────────────────────────────────────────────────────"
+  echo ""
+
+  for entry in "${FILE_META_MODIFIED[@]}"; do
+    local file source_size source_lines target_size target_lines
+    IFS='|' read -r file source_size source_lines target_size target_lines <<< "$entry"
+
+    local source_size_fmt
+    source_size_fmt=$(format_size "$source_size")
+    local target_size_fmt
+    target_size_fmt=$(format_size "$target_size")
+
+    # Calculate size difference percentage
+    local size_diff_pct=""
+    if [[ "$target_size" -gt 0 ]]; then
+      local diff=$((source_size - target_size))
+      local pct=$(echo "scale=1; $diff * 100 / $target_size" | bc 2>/dev/null || echo "0")
+      if [[ "$diff" -gt 0 ]]; then
+        size_diff_pct=" (+$pct%)"
+      elif [[ "$diff" -lt 0 ]]; then
+        size_diff_pct=" ($pct%)"
+      fi
+    fi
+
+    # Calculate line difference
+    local line_diff=$((source_lines - target_lines))
+    local line_diff_str=""
+    if [[ "$line_diff" -gt 0 ]]; then
+      line_diff_str=" (+$line_diff)"
+    elif [[ "$line_diff" -lt 0 ]]; then
+      line_diff_str=" ($line_diff)"
+    fi
+
+    echo "  $file"
+    echo "    Size:  $target_size_fmt → $source_size_fmt$size_diff_pct"
+    if [[ "$source_lines" -gt 0 ]] || [[ "$target_lines" -gt 0 ]]; then
+      echo "    Lines: $target_lines → $source_lines$line_diff_str"
+    fi
+  done
+}
+
+# Format unchanged files section (grouped by directory)
+format_unchanged_files_section() {
+  if [[ ${#FILE_META_UNCHANGED[@]} -eq 0 ]]; then
+    return
+  fi
+
+  echo ""
+  echo "─────────────────────────────────────────────────────────────────"
+  echo "  UNCHANGED FILES (${#FILE_META_UNCHANGED[@]})"
+  echo "─────────────────────────────────────────────────────────────────"
+  echo ""
+
+  # Group files by directory using sort
+  local current_dir=""
+  for file in $(printf '%s\n' "${FILE_META_UNCHANGED[@]}" | sort); do
+    local dir
+    dir=$(dirname "$file")
+    if [[ "$dir" != "$current_dir" ]]; then
+      current_dir="$dir"
+      echo "  $dir/"
+    fi
+    local basename
+    basename=$(basename "$file")
+    echo "    $basename"
+  done
+}
+
+# Format conflicts section for log
+format_conflicts_section() {
+  if [[ ${#FILE_META_CONFLICT[@]} -eq 0 ]]; then
+    return
+  fi
+
+  echo ""
+  echo "─────────────────────────────────────────────────────────────────"
+  echo "  CONFLICTS (${#FILE_META_CONFLICT[@]})"
+  echo "─────────────────────────────────────────────────────────────────"
+  echo ""
+
+  for entry in "${FILE_META_CONFLICT[@]}"; do
+    local file source_size target_size
+    IFS='|' read -r file source_size target_size <<< "$entry"
+
+    local source_size_fmt
+    source_size_fmt=$(format_size "$source_size")
+    local target_size_fmt
+    target_size_fmt=$(format_size "$target_size")
+
+    echo "  $file"
+    echo "    Source: $source_size_fmt | Target: $target_size_fmt (locally modified)"
+  done
+}
+
+# Format errors section for log
+format_errors_section() {
+  if [[ ${#FILES_ERRORS[@]} -eq 0 ]]; then
+    return
+  fi
+
+  echo ""
+  echo "─────────────────────────────────────────────────────────────────"
+  echo "  ERRORS (${#FILES_ERRORS[@]})"
+  echo "─────────────────────────────────────────────────────────────────"
+  echo ""
+
+  for file in "${FILES_ERRORS[@]}"; do
+    echo "  $file"
+  done
+}
+
 generate_report() {
   local target="$1"
   local timestamp
@@ -1067,7 +1242,7 @@ generate_report() {
   local duration_ms
   duration_ms=$(( (end_time - START_TIME) * 1000 ))
 
-  # Text report
+  # Text report - header and summary
   cat > "$log_file" << EOF
 ═══════════════════════════════════════════════════════════════
   DESIGN OS BOILERPLATE SYNC
@@ -1094,13 +1269,76 @@ Mode: $(if [[ "$DRY_RUN" == true ]]; then echo "DRY-RUN"; else echo "SYNC"; fi) 
 $(if [[ -n "$CURRENT_BACKUP_DIR" ]]; then echo "  Backup: $CURRENT_BACKUP_DIR"; fi)
 
   Duration: $(( duration_ms / 1000 )).$(( duration_ms % 1000 ))s
-
-═══════════════════════════════════════════════════════════════
-  $(if [[ ${#FILES_ERRORS[@]} -eq 0 ]]; then echo "✓ SYNC COMPLETE"; else echo "⚠ SYNC COMPLETED WITH ERRORS"; fi)
-═══════════════════════════════════════════════════════════════
 EOF
 
-  # JSON report
+  # Append detailed file sections to log file
+  {
+    format_new_files_section
+    format_modified_files_section
+    format_unchanged_files_section
+    format_conflicts_section
+    format_errors_section
+
+    echo ""
+    echo "═══════════════════════════════════════════════════════════════"
+    if [[ ${#FILES_ERRORS[@]} -eq 0 ]]; then
+      echo "  ✓ SYNC COMPLETE"
+    else
+      echo "  ⚠ SYNC COMPLETED WITH ERRORS"
+    fi
+    echo "═══════════════════════════════════════════════════════════════"
+    echo ""
+  } >> "$log_file"
+
+  # JSON report - build file arrays
+  local json_new_files=""
+  local json_modified_files=""
+  local json_unchanged_files=""
+  local json_conflict_files=""
+  local json_error_files=""
+  local first=true
+
+  # Build new files array
+  first=true
+  for entry in "${FILE_META_NEW[@]}"; do
+    local file size lines
+    IFS='|' read -r file size lines <<< "$entry"
+    [[ "$first" == true ]] && first=false || json_new_files+=","
+    json_new_files+=$'\n    {"path": "'"$file"'", "size": '"$size"', "lines": '"$lines"'}'
+  done
+
+  # Build modified files array
+  first=true
+  for entry in "${FILE_META_MODIFIED[@]}"; do
+    local file source_size source_lines target_size target_lines
+    IFS='|' read -r file source_size source_lines target_size target_lines <<< "$entry"
+    [[ "$first" == true ]] && first=false || json_modified_files+=","
+    json_modified_files+=$'\n    {"path": "'"$file"'", "source": {"size": '"$source_size"', "lines": '"$source_lines"'}, "target": {"size": '"$target_size"', "lines": '"$target_lines"'}}'
+  done
+
+  # Build unchanged files array (just paths)
+  first=true
+  for file in "${FILE_META_UNCHANGED[@]}"; do
+    [[ "$first" == true ]] && first=false || json_unchanged_files+=","
+    json_unchanged_files+=$'\n    "'"$file"'"'
+  done
+
+  # Build conflict files array
+  first=true
+  for entry in "${FILE_META_CONFLICT[@]}"; do
+    local file source_size target_size
+    IFS='|' read -r file source_size target_size <<< "$entry"
+    [[ "$first" == true ]] && first=false || json_conflict_files+=","
+    json_conflict_files+=$'\n    {"path": "'"$file"'", "source_size": '"$source_size"', "target_size": '"$target_size"'}'
+  done
+
+  # Build error files array (just paths)
+  first=true
+  for file in "${FILES_ERRORS[@]}"; do
+    [[ "$first" == true ]] && first=false || json_error_files+=","
+    json_error_files+=$'\n    "'"$file"'"'
+  done
+
   cat > "$json_file" << EOF
 {
   "timestamp": "$(get_timestamp)",
@@ -1120,6 +1358,18 @@ EOF
     "unchanged": ${#FILES_UNCHANGED[@]},
     "conflicts": ${#FILES_CONFLICTS[@]},
     "errors": ${#FILES_ERRORS[@]}
+  },
+  "files": {
+    "new": [$json_new_files
+    ],
+    "modified": [$json_modified_files
+    ],
+    "unchanged": [$json_unchanged_files
+    ],
+    "conflicts": [$json_conflict_files
+    ],
+    "errors": [$json_error_files
+    ]
   },
   "backup_path": "$(if [[ -n "$CURRENT_BACKUP_DIR" ]]; then echo "$CURRENT_BACKUP_DIR"; fi)",
   "duration_ms": $duration_ms
