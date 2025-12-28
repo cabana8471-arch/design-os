@@ -32,16 +32,13 @@ fi
 **If the spec doesn't exist:**
 
 ```
-Error: spec.md - File not found at product/sections/[section-id]/spec.md. Run /shape-section to create it.
+Error: spec.md - File not found. Run /shape-section to create it.
 ```
 
 **If directory exists but spec.md was deleted (edge case):**
 
 ```
-The section directory exists at product/sections/[section-id]/ but the spec.md file is missing.
-This can happen if the spec was accidentally deleted.
-
-To fix: Run /shape-section to recreate the specification.
+Error: spec.md - File not found (directory exists but spec.md is missing). Run /shape-section to recreate it.
 ```
 
 Stop here if the spec doesn't exist.

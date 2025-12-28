@@ -1497,6 +1497,8 @@ All commands referencing viewport sizes must use these consistent dimensions:
 
 Utility components and hooks available in `src/shell/` for building shell features. Used by `/design-shell` audit checklist (sections I-L).
 
+> **Note:** These utility components are **pre-existing** in the boilerplate. They are distinct from the **secondary components** (NotificationsDrawer, SearchModal, SettingsModal, ProfileModal, etc.) which are **generated** by `/design-shell` based on user selections. The utility components provide accessibility, error handling, and loading states; the secondary components provide interactive shell features.
+
 **Components (`src/shell/components/`):**
 
 | Component            | Priority | Purpose                                 |

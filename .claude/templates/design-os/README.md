@@ -90,11 +90,15 @@ Section templates use placeholder variables. **Only the assembled `section-promp
 
 > **Note:** Templates in `common/` and `section/clarifying-questions.md`, `section/tdd-workflow.md` do not use these variables — they work as-is.
 
+> **Note:** `NN` only appears in file path references (e.g., `NN-SECTION_ID.md`), not in the readable prompt content.
+
 ---
 
 ## How Prompts Are Assembled
 
 > **Source of Truth:** The authoritative template assembly order is defined in `/export-product` Step 14. This section provides a summary for quick reference. If there's any discrepancy, export-product.md takes precedence.
+
+> **Last verified:** 2025-12-28 (in sync with export-product.md Step 14)
 
 ### One-Shot Prompt Assembly Order
 
@@ -143,7 +147,7 @@ This distinction matters because section prompts are used after Foundation is co
 - Asks about: Authentication, user modeling, tech stack, backend logic
 - Purpose: Establish foundational decisions before building anything
 
-**`section/clarifying-questions.md` (v1.1.0)**
+**`section/clarifying-questions.md` (v1.1.0-section)**
 
 - Used in **section-specific prompts** for incremental implementation
 - Asks about: Data relationships, integration points, section permissions, navigation
