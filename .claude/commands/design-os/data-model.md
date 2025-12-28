@@ -12,13 +12,15 @@ First, verify that the product overview and roadmap exist:
 If either file is missing, let the user know with a specific message:
 
 **If `/product/product-overview.md` is missing:**
+
 ```
-Missing: product/product-overview.md. Run /product-vision to create it.
+Error: product/product-overview.md - File not found. Run /product-vision to create it.
 ```
 
 **If `/product/product-roadmap.md` is missing:**
+
 ```
-Missing: product/product-roadmap.md. Run /product-roadmap to create it.
+Error: product/product-roadmap.md - File not found. Run /product-roadmap to create it.
 ```
 
 Stop here if any prerequisite is missing.
@@ -50,6 +52,7 @@ Use the AskUserQuestion tool to clarify:
 - "How do these entities relate to each other?"
 
 Keep the conversation focused on:
+
 - **Entity names** — What are the main nouns?
 - **Plain-language descriptions** — What does each entity represent?
 - **Relationships** — How do entities connect to each other?
@@ -84,11 +87,13 @@ Once approved:
 ### Create Directory
 
 First, ensure the data-model directory exists:
+
 ```bash
 mkdir -p product/data-model
 ```
 
 Then validate the directory was created:
+
 ```bash
 if [ ! -d "product/data-model" ]; then
   echo "Error: product/data-model/ - Directory creation failed. Check write permissions."
@@ -106,9 +111,11 @@ Then create the file at `/product/data-model/data-model.md` with this format:
 ## Entities
 
 ### [EntityName]
+
 [Plain-language description of what this entity represents and its purpose in the system.]
 
 ### [AnotherEntity]
+
 [Plain-language description.]
 
 [Add more entities as needed]
@@ -118,7 +125,7 @@ Then create the file at `/product/data-model/data-model.md` with this format:
 - [Entity1] has many [Entity2]
 - [Entity2] belongs to [Entity1]
 - [Entity3] belongs to both [Entity1] and [Entity2]
-[Add more relationships as needed]
+  [Add more relationships as needed]
 ```
 
 **Important:** Keep descriptions minimal — focus on what each entity represents, not every field it contains. Leave room for the implementation agent to extend the model.
@@ -128,6 +135,7 @@ Then create the file at `/product/data-model/data-model.md` with this format:
 After creating the file, verify all required markdown sections exist:
 
 **Required sections:**
+
 - `# Data Model` — Main heading
 - `## Entities` — At least one `### EntityName` subsection
 - `## Relationships` — Relationship list
@@ -185,6 +193,7 @@ The file may not be parsed correctly by /sample-data. Would you like me to fix t
 ```
 
 Use AskUserQuestion with options:
+
 - "Yes, fix the formatting" — Regenerate with correct sections
 - "No, continue as is" — Proceed (user will fix manually)
 
@@ -195,9 +204,11 @@ Let the user know:
 "I've created your data model at `/product/data-model/data-model.md`.
 
 **Entities defined:**
+
 - [List entities]
 
 **Relationships:**
+
 - [List key relationships]
 
 This provides a shared vocabulary that will be used when generating sample data for your sections. When you run `/sample-data`, it will reference this model to ensure consistency.
@@ -218,6 +229,7 @@ Next step: Run `/design-tokens` to choose your color palette and typography."
 The data model uses **singular** entity names because they're transformed during downstream operations:
 
 **Why Singular?**
+
 - **TypeScript interfaces are singular** — `interface Invoice { }` matches TypeScript conventions
 - **Data model describes the concept** — "An Invoice represents..." not "Invoices represent..."
 - **Automatic pluralization** — `/sample-data` converts `Invoice` → `invoices` for JSON keys
@@ -226,28 +238,29 @@ The data model uses **singular** entity names because they're transformed during
 
 If a user defines a plural entity name (e.g., `### Invoices`), these issues occur:
 
-| Location | Expected | Actual (with plural) | Problem |
-|----------|----------|---------------------|---------|
-| types.ts | `Invoice` interface | `Invoices` interface | Non-standard TypeScript naming |
-| data.json | `invoices` key | `invoicess` key | Double-s suffix |
-| Component props | `invoice: Invoice` | `invoice: Invoices` | Confusing singular/plural mix |
+| Location        | Expected            | Actual (with plural) | Problem                        |
+| --------------- | ------------------- | -------------------- | ------------------------------ |
+| types.ts        | `Invoice` interface | `Invoices` interface | Non-standard TypeScript naming |
+| data.json       | `invoices` key      | `invoicess` key      | Double-s suffix                |
+| Component props | `invoice: Invoice`  | `invoice: Invoices`  | Confusing singular/plural mix  |
 
 **Guidance for `/sample-data`:**
 
 If entity names in the data model appear to be plural:
+
 1. **Warn the user** — "Entity 'Invoices' appears to be plural. Consider changing to 'Invoice' for consistency."
 2. **Auto-singularize for types.ts** — Transform `Invoices` → `Invoice` when generating TypeScript interfaces
 3. **Continue with transformation** — Apply the singular form to maintain TypeScript naming conventions
 
 **Auto-singularization Rules (applied by `/sample-data`):**
 
-| Plural Form | Singular Form | Rule Applied |
-|-------------|---------------|--------------|
-| `Invoices` | `Invoice` | Remove trailing 's' |
-| `Categories` | `Category` | 'ies' → 'y' |
-| `Statuses` | `Status` | 'es' → '' |
-| `People` | `Person` | Irregular (special case) |
-| `Children` | `Child` | Irregular (special case) |
+| Plural Form  | Singular Form | Rule Applied             |
+| ------------ | ------------- | ------------------------ |
+| `Invoices`   | `Invoice`     | Remove trailing 's'      |
+| `Categories` | `Category`    | 'ies' → 'y'              |
+| `Statuses`   | `Status`      | 'es' → ''                |
+| `People`     | `Person`      | Irregular (special case) |
+| `Children`   | `Child`       | Irregular (special case) |
 
 This ensures TypeScript interfaces follow standard naming conventions while allowing flexibility in the data model.
 
@@ -260,6 +273,7 @@ Entity names must follow a consistent format for proper parsing by `/sample-data
 **Required Format:** `### EntityName`
 
 **Entity Naming Rules:**
+
 1. **PascalCase** — First letter of each word capitalized (e.g., `User`, `Invoice`, `ProjectMember`)
 2. **Singular form** — Use `Invoice` not `Invoices`
 3. **No spaces** — Use `ProjectMember` not `Project Member`
@@ -267,22 +281,31 @@ Entity names must follow a consistent format for proper parsing by `/sample-data
 5. **Descriptive but concise** — `Invoice` is better than `Inv` or `CustomerInvoiceDocument`
 
 **Valid Examples:**
+
 ```markdown
 ### User
+
 ### Invoice
+
 ### ProjectMember
+
 ### PaymentTransaction
 ```
 
 **Invalid Examples (avoid these):**
+
 ```markdown
-### users              # lowercase, plural
-### Project Member     # contains space
-### invoice-item       # contains hyphen
-### Inv                # too abbreviated
+### users # lowercase, plural
+
+### Project Member # contains space
+
+### invoice-item # contains hyphen
+
+### Inv # too abbreviated
 ```
 
 **Why this matters:**
+
 - `/sample-data` extracts entity names from `### EntityName` headings
 - Consistent naming ensures types.ts interfaces are generated correctly
 - PascalCase matches TypeScript interface naming conventions
@@ -293,16 +316,17 @@ Relationships should follow a consistent format that clearly communicates cardin
 
 **Standard Relationship Patterns:**
 
-| Pattern | Meaning | Example |
-|---------|---------|---------|
-| `[A] has many [B]` | One-to-many, A is parent | "User has many Projects" |
-| `[A] has one [B]` | One-to-one, A owns B | "User has one Profile" |
-| `[A] belongs to [B]` | Many-to-one, A is child | "Project belongs to User" |
-| `[A] and [B] are linked through [C]` | Many-to-many via junction | "Users and Roles are linked through UserRoles" |
-| `[A] optionally belongs to [B]` | Optional many-to-one | "Task optionally belongs to Project (can be standalone)" |
-| `[A] optionally has one [B]` | Optional one-to-one | "User optionally has one Avatar" |
+| Pattern                              | Meaning                   | Example                                                  |
+| ------------------------------------ | ------------------------- | -------------------------------------------------------- |
+| `[A] has many [B]`                   | One-to-many, A is parent  | "User has many Projects"                                 |
+| `[A] has one [B]`                    | One-to-one, A owns B      | "User has one Profile"                                   |
+| `[A] belongs to [B]`                 | Many-to-one, A is child   | "Project belongs to User"                                |
+| `[A] and [B] are linked through [C]` | Many-to-many via junction | "Users and Roles are linked through UserRoles"           |
+| `[A] optionally belongs to [B]`      | Optional many-to-one      | "Task optionally belongs to Project (can be standalone)" |
+| `[A] optionally has one [B]`         | Optional one-to-one       | "User optionally has one Avatar"                         |
 
 **Valid Relationship Descriptions:**
+
 ```
 - User has many Projects
 - Project belongs to User
@@ -312,6 +336,7 @@ Relationships should follow a consistent format that clearly communicates cardin
 ```
 
 **Invalid or Unclear Formats (avoid these):**
+
 ```
 - User → Project (direction unclear)
 - User/Project (relationship type unclear)
@@ -321,6 +346,7 @@ Relationships should follow a consistent format that clearly communicates cardin
 
 **Bidirectional Relationships:**
 When documenting bidirectional relationships, include both directions for clarity:
+
 ```
 - User has many Projects
 - Project belongs to User
@@ -330,6 +356,7 @@ This redundancy ensures the relationship is clear from both entity perspectives.
 
 **Optional Relationships:**
 If a relationship is optional (entity B can exist without entity A), note it:
+
 ```
 - Task optionally belongs to Project (can be standalone)
 ```

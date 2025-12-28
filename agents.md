@@ -943,6 +943,30 @@ The prompts guide the implementation agent to ask clarifying questions about aut
 
 ---
 
+## Template System
+
+Design OS uses a modular template system for generating implementation prompts and instructions.
+
+### Location
+
+`.claude/templates/design-os/` contains:
+
+- `common/` — Shared templates (top-rules, verification, TDD workflow)
+- `one-shot/` — Full implementation prompt templates
+- `section/` — Section-by-section prompt templates
+- `README.md` — Complete template system documentation
+
+### Usage
+
+The `/export-product` command (Step 14) assembles these templates into ready-to-use prompts:
+
+- `product-plan/prompts/one-shot-prompt.md`
+- `product-plan/prompts/section-prompt.md`
+
+See `.claude/templates/design-os/README.md` for template authoring and assembly details.
+
+---
+
 ## Design System (Design OS Application)
 
 The Design OS application itself uses a "Refined Utility" aesthetic:
