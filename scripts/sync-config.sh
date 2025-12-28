@@ -7,6 +7,7 @@
 # ============================================================================
 SYNC_DIRS=(
   ".claude/commands/design-os"
+  ".claude/hookify"
   ".claude/skills/frontend-design"
   ".claude/templates/design-os"
   "src/components"
@@ -39,6 +40,29 @@ SYNC_FILES=(
   # Shell infrastructure (utility components synced via SYNC_DIRS)
   "src/shell/navigation-config.ts"
   "src/shell/index.ts"
+  # Hookify rule files (must be in .claude/ root per hookify convention)
+  ".claude/hookify.dos-a11y-warn-icon-button-no-aria.local.md"
+  ".claude/hookify.dos-a11y-warn-missing-focus.local.md"
+  ".claude/hookify.dos-code-block-direct-data-import.local.md"
+  ".claude/hookify.dos-code-block-tailwind-config.local.md"
+  ".claude/hookify.dos-code-warn-missing-dark-mode.local.md"
+  ".claude/hookify.dos-code-warn-missing-default-export.local.md"
+  ".claude/hookify.dos-code-warn-missing-responsive.local.md"
+  ".claude/hookify.dos-code-warn-relative-imports.local.md"
+  ".claude/hookify.dos-data-warn-hardcoded-ids.local.md"
+  ".claude/hookify.dos-data-warn-missing-meta.local.md"
+  ".claude/hookify.dos-data-warn-placeholder-content.local.md"
+  ".claude/hookify.dos-data-warn-trailing-comma.local.md"
+  ".claude/hookify.dos-design-warn-container-padding.local.md"
+  ".claude/hookify.dos-design-warn-custom-colors.local.md"
+  ".claude/hookify.dos-design-warn-generic-fonts.local.md"
+  ".claude/hookify.dos-design-warn-hover-no-transition.local.md"
+  ".claude/hookify.dos-structure-block-tsx-in-product.local.md"
+  ".claude/hookify.dos-structure-warn-component-location.local.md"
+  ".claude/hookify.dos-structure-warn-shell-location.local.md"
+  ".claude/hookify.dos-workflow-warn-design-screen-prereqs.local.md"
+  ".claude/hookify.dos-workflow-warn-export-prereqs.local.md"
+  ".claude/hookify.dos-workflow-warn-sample-data-prereqs.local.md"
 )
 
 # ============================================================================

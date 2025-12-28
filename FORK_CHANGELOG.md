@@ -6,6 +6,25 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-28 21:30] Add Hookify files to sync configuration
+
+### Description
+
+Updated `scripts/sync-config.sh` to include all Hookify guardrail files in the sync operation. This ensures that when the boilerplate is synced to other projects, all 22 hookify rules and documentation are included.
+
+### Changes
+
+| File                     | Changes                                   |
+| ------------------------ | ----------------------------------------- |
+| `scripts/sync-config.sh` | Added `.claude/hookify` to SYNC_DIRS      |
+| `scripts/sync-config.sh` | Added 22 hookify rule files to SYNC_FILES |
+
+### Why This Is Needed
+
+Hookify rule files must be at `.claude/hookify.*.local.md` (hookify convention). Since they're in the `.claude/` root rather than a subdirectory that was already synced, they needed to be explicitly added to SYNC_FILES.
+
+---
+
 ## [2025-12-28 21:05] Hookify Integration: 22 Guardrail Rules for Design OS
 
 ### Description
