@@ -1,11 +1,13 @@
+/* eslint-disable react-hooks/static-components, react-hooks/preserve-manual-memoization -- Dynamic lazy loading of screen designs requires components in useMemo */
 import { Suspense, useMemo, useState, useRef, useCallback, useEffect, Component, lazy } from 'react'
 import type { ErrorInfo, ReactNode } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Maximize2, GripVertical, Layout, Smartphone, Tablet, Monitor, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import { ThemeToggle, THEME_CHANNEL } from '@/components/ThemeToggle'
 import { loadScreenDesignComponent, sectionUsesShell } from '@/lib/section-loader'
-import { loadAppShell, hasShellComponents } from '@/lib/shell-loader'
+import { loadAppShell, hasShellComponents, getShellProps } from '@/lib/shell-loader'
+import type { ShellProps } from '@/lib/shell-loader'
 import { loadProductData } from '@/lib/product-loader'
 import { getNavigationCategories, defaultUser } from '@/shell/navigation-config'
 
@@ -242,7 +244,7 @@ export function ScreenDesignPage() {
              use their own design tokens (different colors, fonts).
 
           2. Theme Syncing: The iframe loads ScreenDesignFullscreen which syncs theme
-             via localStorage polling, ensuring dark/light mode matches the parent.
+             via BroadcastChannel for instant updates (no polling needed).
 
           3. Shell Integration: The fullscreen component can optionally wrap the screen
              design in the AppShell component, showing the complete app experience.
@@ -312,6 +314,7 @@ export function ScreenDesignFullscreen() {
   }, [sectionId, screenDesignName])
 
   // Load AppShell component if it exists AND this section uses the shell
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Only reload shell when section changes, not screen
   const AppShellComponent = useMemo(() => {
     // Check if this section should use the shell (based on spec.md config)
     if (sectionId && !sectionUsesShell(sectionId)) {
@@ -375,41 +378,71 @@ export function ScreenDesignFullscreen() {
 
         /**
          * Type for shell component props.
-         * AppShell components accept navigation categories, user info, and callbacks.
-         * Using a specific interface instead of Record<string, unknown> for better type safety.
+         * AppShell components accept all props from shell spec via the passthrough pattern.
+         * Using ShellProps & callbacks for complete type coverage.
          *
-         * NavigationCategory structure:
-         * - id: string - unique category identifier
-         * - label: string - display name
-         * - items: NavigationItem[] - list of navigation items with id, label, href, icon?
+         * The passthrough pattern means:
+         * 1. getShellProps() parses ALL sections from shell spec
+         * 2. ShellWrapper spreads all props to AppShell
+         * 3. When you add new features to AppShell, just update shell-loader.ts
+         * 4. No changes needed here - props are automatically passed through
          */
-        interface ShellComponentProps {
+        interface ShellComponentProps extends ShellProps {
           children?: React.ReactNode
-          categories?: Array<{
-            id: string
-            label: string
-            items: Array<{ id: string; label: string; href: string; icon?: string }>
-          }>
-          user?: { id: string; name: string; email: string; avatar?: string }
+          // Callbacks for preview (these override any from spec)
           onNavigate?: (href: string) => void
           onLogout?: () => void
+          onContextSelect?: (id: string) => void
+          onBreadcrumbClick?: (href: string) => void
+          onHeaderAction?: (actionId: string) => void
         }
 
         // Safe to cast now - we've validated it's a function
         const ShellComponent = rawComponent as React.ComponentType<ShellComponentProps>
 
-        // Create a wrapper that provides default props to the shell
+        // Create a wrapper that passes ALL props from shell spec
         const ShellWrapper = ({ children }: { children?: React.ReactNode }) => {
+          // Get ALL shell props from spec - complete passthrough pattern
+          const shellProps = getShellProps(sectionId, screenDesignName)
+
           // Get navigation categories with current section marked as active
           const categories = getNavigationCategories(sectionId)
 
-          // Pass props dynamically - the shell component decides what it needs
+          // Spread all shell props + add navigation and callbacks
+          // The spread order ensures:
+          // 1. shellProps: everything from spec (breadcrumbs, contextSelector, headerActions, etc.)
+          // 2. categories/user: navigation from existing config
+          // 3. callbacks: preview handlers (log to console in DEV)
           return (
             <ShellComponent
+              {...shellProps}
               categories={categories}
               user={defaultUser}
-              onNavigate={() => {}}
-              onLogout={() => {}}
+              onNavigate={(href) => {
+                if (import.meta.env.DEV) {
+                  console.log('[ScreenDesignFullscreen] Navigate:', href)
+                }
+              }}
+              onLogout={() => {
+                if (import.meta.env.DEV) {
+                  console.log('[ScreenDesignFullscreen] Logout')
+                }
+              }}
+              onContextSelect={(id) => {
+                if (import.meta.env.DEV) {
+                  console.log('[ScreenDesignFullscreen] Context select:', id)
+                }
+              }}
+              onBreadcrumbClick={(href) => {
+                if (import.meta.env.DEV) {
+                  console.log('[ScreenDesignFullscreen] Breadcrumb click:', href)
+                }
+              }}
+              onHeaderAction={(actionId) => {
+                if (import.meta.env.DEV) {
+                  console.log('[ScreenDesignFullscreen] Header action:', actionId)
+                }
+              }}
             >
               {children}
             </ShellComponent>
@@ -426,24 +459,33 @@ export function ScreenDesignFullscreen() {
     })
   }, [sectionId]) // Depends on sectionId to check section-specific shell config
 
-  // Sync theme with parent window
+  // Sync theme with parent window via BroadcastChannel
   useEffect(() => {
-    const applyTheme = () => {
-      const theme = localStorage.getItem('theme') || 'system'
+    const applyTheme = (theme?: string) => {
+      const currentTheme = theme || localStorage.getItem('theme') || 'system'
       const root = document.documentElement
 
-      if (theme === 'system') {
+      if (currentTheme === 'system') {
         const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
         root.classList.toggle('dark', systemDark)
       } else {
-        root.classList.toggle('dark', theme === 'dark')
+        root.classList.toggle('dark', currentTheme === 'dark')
       }
     }
 
     // Apply on mount
     applyTheme()
 
-    // Listen for storage changes (from parent window)
+    // Listen for theme changes via BroadcastChannel (instant sync, no polling!)
+    const channel = new BroadcastChannel(THEME_CHANNEL)
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'theme-change') {
+        applyTheme(event.data.theme)
+      }
+    }
+    channel.addEventListener('message', handleMessage)
+
+    // Also listen for storage changes (fallback for cross-tab sync)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'theme') {
         applyTheme()
@@ -451,13 +493,10 @@ export function ScreenDesignFullscreen() {
     }
     window.addEventListener('storage', handleStorageChange)
 
-    // Also poll for changes since storage event doesn't fire in same window
-    // Using 250ms interval to balance responsiveness with performance
-    const interval = setInterval(applyTheme, 250)
-
     return () => {
+      channel.removeEventListener('message', handleMessage)
+      channel.close()
       window.removeEventListener('storage', handleStorageChange)
-      clearInterval(interval)
     }
   }, [])
 

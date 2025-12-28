@@ -492,6 +492,76 @@ Design OS separates concerns between its own UI and the product being designed:
 
 ---
 
+## Shell Props Passthrough
+
+When viewing screen designs in Design OS, `ScreenDesignPage.tsx` wraps them in AppShell. To ensure ALL shell features appear in preview (breadcrumbs, context selector, header actions, etc.), Design OS uses a **complete passthrough pattern**.
+
+### How It Works
+
+1. **Shell spec defines features** — `product/shell/spec.md` contains sections like `## Context Selector`, `## Breadcrumbs`, `## Header Actions`
+2. **`getShellProps()` parses everything** — In `shell-loader.ts`, this function reads the spec and returns all props
+3. **ScreenDesignPage spreads props** — `<AppShell {...shellProps}>` passes everything to the shell component
+4. **No props left behind** — Whatever you define in the spec appears in preview automatically
+
+### Adding New Shell Features
+
+When you need a new feature in AppShell:
+
+| Step | File | Action |
+|------|------|--------|
+| 1 | `shell-loader.ts` | Add type to `ShellProps` interface |
+| 2 | `shell-loader.ts` | Add parser function (e.g., `parseMyFeature()`) |
+| 3 | `shell-loader.ts` | Include in `getShellProps()` return object |
+| 4 | `design-shell.md` | Document the new spec section format |
+
+**ScreenDesignPage needs NO changes** — props are passed through automatically.
+
+### Shell Spec Sections
+
+| Section | Prop | Description |
+|---------|------|-------------|
+| `## Context Selector` | `contextSelector` | Organization/client/workspace picker |
+| `## Breadcrumbs` | `breadcrumbs` | Navigation hierarchy paths |
+| `## Header Actions` | `headerActions` | Header action buttons |
+| `## Layout Pattern` | `layoutVariant` | Shell layout style |
+
+### Example: Context Selector
+
+**In `product/shell/spec.md`:**
+```markdown
+## Context Selector
+type: organization
+label: "Select Organization"
+position: header-left
+items:
+  - { id: "org-1", name: "Acme Corp", icon: "building" }
+  - { id: "org-2", name: "Globex Inc", icon: "building" }
+```
+
+**Automatically available in AppShell as:**
+```typescript
+props.contextSelector = {
+  type: 'organization',
+  label: 'Select Organization',
+  position: 'header-left',
+  items: [
+    { id: 'org-1', name: 'Acme Corp', icon: 'building' },
+    { id: 'org-2', name: 'Globex Inc', icon: 'building' }
+  ]
+}
+```
+
+### Why This Pattern?
+
+| Without Passthrough | With Passthrough |
+|---------------------|------------------|
+| Add prop to AppShell | Add prop to AppShell |
+| Add to ScreenDesignPage | *(no change needed)* |
+| Risk forgetting props | Impossible to forget |
+| Maintenance grows with features | Maintenance stays constant |
+
+---
+
 ## Export & Handoff
 
 The `/export-product` command generates a complete handoff package:

@@ -13,21 +13,24 @@
  * ## Theme Cycle
  * Click cycles through: light → dark → system → light
  *
- * ## Integration with Screen Designs
- * Screen designs rendered in iframes inherit the theme through:
- * - CSS custom properties propagated from the parent
- * - The iframe content reads the same localStorage key
- * - The ScreenDesignPage component syncs theme to iframes on load
+ * ## Integration with Screen Designs (BroadcastChannel)
+ * Screen designs rendered in iframes sync theme via BroadcastChannel:
+ * - Parent broadcasts theme changes on 'design-os-theme' channel
+ * - Iframes listen and apply theme immediately
+ * - No polling required - instant sync!
  *
  * ## localStorage Key
  * - Key: 'theme'
  * - Values: 'light' | 'dark' | 'system'
  */
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { Moon, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 type Theme = 'light' | 'dark' | 'system'
+
+/** BroadcastChannel name for theme syncing */
+export const THEME_CHANNEL = 'design-os-theme'
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>(() => {
@@ -36,6 +39,18 @@ export function ThemeToggle() {
     }
     return 'system'
   })
+
+  // BroadcastChannel for instant theme sync to iframes
+  const channelRef = useRef<BroadcastChannel | null>(null)
+
+  useEffect(() => {
+    // Create broadcast channel for theme sync
+    channelRef.current = new BroadcastChannel(THEME_CHANNEL)
+
+    return () => {
+      channelRef.current?.close()
+    }
+  }, [])
 
   useEffect(() => {
     const root = document.documentElement
@@ -52,11 +67,16 @@ export function ThemeToggle() {
     applyTheme(theme)
     localStorage.setItem('theme', theme)
 
+    // Broadcast theme change to all iframes
+    channelRef.current?.postMessage({ type: 'theme-change', theme })
+
     // Listen for system theme changes when in system mode
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = () => {
       if (theme === 'system') {
         applyTheme('system')
+        // Also broadcast when system theme changes
+        channelRef.current?.postMessage({ type: 'theme-change', theme })
       }
     }
     mediaQuery.addEventListener('change', handleChange)

@@ -7,6 +7,7 @@ import { SectionPage } from '@/components/SectionPage'
 import { ScreenDesignPage, ScreenDesignFullscreen } from '@/components/ScreenDesignPage'
 import { ShellDesignPage, ShellDesignFullscreen } from '@/components/ShellDesignPage'
 import { ExportPage } from '@/components/ExportPage'
+import { RouteErrorBoundary } from '@/components/ErrorBoundary'
 
 /**
  * Design OS Router Configuration
@@ -28,45 +29,66 @@ import { ExportPage } from '@/components/ExportPage'
  *
  * Keep these in sync to ensure /screenshot-design command works correctly.
  *
- * ERROR BOUNDARY NOTE
- * ===================
- * Currently, routes do not have error boundaries. Design OS gracefully handles
- * missing content (empty product, missing sections) at the component level.
+ * ERROR BOUNDARIES
+ * =================
+ * Routes are wrapped with RouteErrorBoundary for graceful error handling.
+ * Dynamic content routes (sections, screen designs, shell) have specific
+ * error boundaries to handle component loading failures.
  *
- * If error boundaries are needed in the future:
- * 1. Create an ErrorBoundary component in src/components/ErrorBoundary.tsx
- * 2. Use react-router-dom's errorElement property on each route
- * 3. Consider route-specific error handling for dynamic content routes
- *
- * Routes that would benefit from error boundaries if added:
- * - /sections/:sectionId (section data loading)
- * - /sections/:sectionId/screen-designs/:screenDesignName (component loading)
- * - /shell/design (shell component loading)
+ * Error boundaries provide:
+ * - Friendly error messages
+ * - Retry functionality
+ * - Navigation back to home
+ * - Detailed error info in development
  */
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <ProductPage />,
+    element: (
+      <RouteErrorBoundary routeName="Product">
+        <ProductPage />
+      </RouteErrorBoundary>
+    ),
   },
   {
     path: '/data-model',
-    element: <DataModelPage />,
+    element: (
+      <RouteErrorBoundary routeName="Data Model">
+        <DataModelPage />
+      </RouteErrorBoundary>
+    ),
   },
   {
     path: '/design',
-    element: <DesignPage />,
+    element: (
+      <RouteErrorBoundary routeName="Design">
+        <DesignPage />
+      </RouteErrorBoundary>
+    ),
   },
   {
     path: '/sections',
-    element: <SectionsPage />,
+    element: (
+      <RouteErrorBoundary routeName="Sections">
+        <SectionsPage />
+      </RouteErrorBoundary>
+    ),
   },
   {
     path: '/sections/:sectionId',
-    element: <SectionPage />,
+    element: (
+      <RouteErrorBoundary routeName="Section">
+        <SectionPage />
+      </RouteErrorBoundary>
+    ),
   },
   {
     path: '/sections/:sectionId/screen-designs/:screenDesignName',
-    element: <ScreenDesignPage />,
+    element: (
+      <RouteErrorBoundary routeName="Screen Design">
+        <ScreenDesignPage />
+      </RouteErrorBoundary>
+    ),
   },
   {
     path: '/sections/:sectionId/screen-designs/:screenDesignName/fullscreen',
@@ -74,7 +96,11 @@ export const router = createBrowserRouter([
   },
   {
     path: '/shell/design',
-    element: <ShellDesignPage />,
+    element: (
+      <RouteErrorBoundary routeName="Shell Design">
+        <ShellDesignPage />
+      </RouteErrorBoundary>
+    ),
   },
   {
     path: '/shell/design/fullscreen',
@@ -82,6 +108,10 @@ export const router = createBrowserRouter([
   },
   {
     path: '/export',
-    element: <ExportPage />,
+    element: (
+      <RouteErrorBoundary routeName="Export">
+        <ExportPage />
+      </RouteErrorBoundary>
+    ),
   },
 ])

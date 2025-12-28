@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Layers, ArrowLeft } from 'lucide-react'
+import { Layers, ArrowLeft, Search } from 'lucide-react'
 import { PhaseNav } from './PhaseNav'
 import { ThemeToggle } from './ThemeToggle'
+import { CommandPalette } from './CommandPalette'
+import { useCommandPalette } from '@/hooks/useCommandPalette'
 import { Button } from '@/components/ui/button'
 
 interface AppLayoutProps {
@@ -25,11 +27,14 @@ export function AppLayout({
   showPhaseNav = true,
 }: AppLayoutProps) {
   const navigate = useNavigate()
+  const { open: commandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPalette()
 
   // Determine if this is a sub-page (has back navigation)
   const isSubPage = !!backTo
 
   return (
+    <>
+      <CommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} />
     <div className="min-h-screen bg-background animate-fade-in flex flex-col">
       {/* Header */}
       <header className="border-b border-stone-200 dark:border-stone-800 bg-card/80 backdrop-blur-sm sticky top-0 z-20">
@@ -54,7 +59,16 @@ export function AppLayout({
                   </h1>
                 </>
               )}
-              <div className="ml-auto">
+              <div className="ml-auto flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCommandPaletteOpen(true)}
+                  className="hidden sm:flex items-center gap-2 text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300"
+                >
+                  <Search className="w-4 h-4" strokeWidth={1.5} />
+                  <kbd className="text-xs px-1.5 py-0.5 bg-stone-100 dark:bg-stone-800 rounded">⌘K</kbd>
+                </Button>
                 <ThemeToggle />
               </div>
             </div>
@@ -73,8 +87,17 @@ export function AppLayout({
                 </div>
               )}
 
-              {/* Theme Toggle */}
-              <div className="w-10 shrink-0 flex justify-end">
+              {/* Search & Theme Toggle */}
+              <div className="shrink-0 flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCommandPaletteOpen(true)}
+                  className="hidden sm:flex items-center gap-2 text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300"
+                >
+                  <Search className="w-4 h-4" strokeWidth={1.5} />
+                  <kbd className="text-xs px-1.5 py-0.5 bg-stone-100 dark:bg-stone-800 rounded">⌘K</kbd>
+                </Button>
                 <ThemeToggle />
               </div>
             </div>
@@ -103,5 +126,6 @@ export function AppLayout({
         </a>
       </footer>
     </div>
+    </>
   )
 }

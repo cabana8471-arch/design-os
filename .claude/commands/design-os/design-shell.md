@@ -229,7 +229,44 @@ Then create `/product/shell/spec.md`:
 
 ## Design Notes
 [Any additional design decisions or notes]
+
+## Context Selector
+*(Optional)* Define if your app needs an organization/client/workspace picker.
+type: organization
+label: "Select Organization"
+position: header-left
+items:
+  - { id: "org-1", name: "Acme Corp", icon: "building" }
+  - { id: "org-2", name: "Globex Inc", icon: "building" }
+
+## Breadcrumbs
+*(Optional)* Define breadcrumb paths for navigation hierarchy.
+mode: manual
+default:
+  - { label: "Home", href: "/" }
+sections:
+  [section-id]:
+    - { label: "Parent", href: "/parent" }
+    - { label: "Section", href: "/sections/[section-id]" }
+
+## Header Actions
+*(Optional)* Define action buttons in the header area.
+- { id: "notifications", icon: "bell", badge: true }
+- { id: "search", icon: "search" }
+- { id: "help", icon: "help-circle", label: "Help" }
 ```
+
+### Extended Shell Sections
+
+The shell spec supports additional sections for enhanced functionality:
+
+| Section | Purpose | Required |
+|---------|---------|----------|
+| `## Context Selector` | Organization/client/workspace picker | No |
+| `## Breadcrumbs` | Navigation hierarchy paths | No |
+| `## Header Actions` | Header action buttons (notifications, search, help) | No |
+
+These sections are parsed by `getShellProps()` in `shell-loader.ts` and passed to AppShell automatically via the complete passthrough pattern.
 
 ## Multi-View Navigation Routing
 
@@ -275,12 +312,54 @@ The main wrapper component that accepts children and provides the layout structu
 ```tsx
 interface AppShellProps {
   children: React.ReactNode
-  navigationItems: Array<{ label: string; href: string; isActive?: boolean }>
-  user?: { name: string; avatarUrl?: string }
+
+  // Navigation
+  navigationItems?: Array<{ label: string; href: string; isActive?: boolean }>
+  categories?: Array<{ id: string; label: string; items: NavigationItem[] }>
+
+  // User
+  user?: { name: string; email?: string; avatarUrl?: string }
+
+  // Context selector (organization/client picker - from spec)
+  contextSelector?: {
+    type: string
+    label: string
+    items: Array<{ id: string; name: string; icon?: string }>
+    selectedId?: string
+    onSelect?: (id: string) => void
+  }
+
+  // Breadcrumbs (from spec)
+  breadcrumbs?: Array<{ label: string; href?: string }>
+  onBreadcrumbClick?: (href: string) => void
+
+  // Header actions (from spec)
+  headerActions?: Array<{ id: string; icon: string; label?: string; badge?: boolean | number }>
+  onHeaderAction?: (actionId: string) => void
+
+  // Layout
+  layoutVariant?: 'sidebar' | 'topnav' | 'minimal'
+  currentSection?: string
+
+  // Callbacks
   onNavigate?: (href: string) => void
   onLogout?: () => void
 }
 ```
+
+### Props Passthrough Pattern
+
+AppShell receives ALL props from the shell spec automatically via the passthrough pattern:
+
+1. `getShellProps()` in `shell-loader.ts` parses all sections from `product/shell/spec.md`
+2. `ScreenDesignPage.tsx` spreads these props to AppShell: `<AppShell {...shellProps}>`
+3. When you add new features to AppShell:
+   - Add the prop to `AppShellProps` interface
+   - Add the section to shell spec template (Step 6)
+   - Add a parser in `getShellProps()` (shell-loader.ts)
+   - ScreenDesignPage passes it automatically — no changes needed there
+
+**This means:** If you define a `## Context Selector` section in your shell spec, AppShell will receive it as the `contextSelector` prop automatically. Same for `breadcrumbs`, `headerActions`, and any future props.
 
 ### MainNav.tsx
 The navigation component (sidebar or top nav based on the chosen pattern).

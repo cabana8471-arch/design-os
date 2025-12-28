@@ -30,7 +30,11 @@ export function ProductOverviewCard({ overview }: ProductOverviewCardProps) {
         {/* Problems & Solutions - Expandable */}
         {overview.problems.length > 0 && (
           <Collapsible open={problemsOpen} onOpenChange={setProblemsOpen}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full py-2 text-left group">
+            <CollapsibleTrigger
+              className="flex items-center justify-between w-full py-2 text-left group"
+              aria-expanded={problemsOpen}
+              aria-controls="problems-content"
+            >
               <span className="text-sm font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wide">
                 Problems & Solutions
                 <span className="ml-2 text-stone-400 dark:text-stone-500 normal-case tracking-normal">
@@ -42,9 +46,10 @@ export function ProductOverviewCard({ overview }: ProductOverviewCardProps) {
                   problemsOpen ? 'rotate-180' : ''
                 }`}
                 strokeWidth={1.5}
+                aria-hidden="true"
               />
             </CollapsibleTrigger>
-            <CollapsibleContent>
+            <CollapsibleContent id="problems-content">
               <ul className="space-y-3 pt-2">
                 {overview.problems.map((problem, index) => (
                   <li key={index} className="flex items-start gap-3">
@@ -68,7 +73,11 @@ export function ProductOverviewCard({ overview }: ProductOverviewCardProps) {
         {/* Key Features - Expandable */}
         {overview.features.length > 0 && (
           <Collapsible open={featuresOpen} onOpenChange={setFeaturesOpen}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full py-2 text-left group">
+            <CollapsibleTrigger
+              className="flex items-center justify-between w-full py-2 text-left group"
+              aria-expanded={featuresOpen}
+              aria-controls="features-content"
+            >
               <span className="text-sm font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wide">
                 Key Features
                 <span className="ml-2 text-stone-400 dark:text-stone-500 normal-case tracking-normal">
@@ -80,9 +89,10 @@ export function ProductOverviewCard({ overview }: ProductOverviewCardProps) {
                   featuresOpen ? 'rotate-180' : ''
                 }`}
                 strokeWidth={1.5}
+                aria-hidden="true"
               />
             </CollapsibleTrigger>
-            <CollapsibleContent>
+            <CollapsibleContent id="features-content">
               <ul className="space-y-2 pt-2 ml-1">
                 {overview.features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-4">

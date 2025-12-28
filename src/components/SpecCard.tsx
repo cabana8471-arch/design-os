@@ -37,7 +37,11 @@ export function SpecCard({ spec, sectionTitle }: SpecCardProps) {
         {/* User Flows - Expandable */}
         {spec.userFlows.length > 0 && (
           <Collapsible open={userFlowsOpen} onOpenChange={setUserFlowsOpen}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full py-2 text-left group">
+            <CollapsibleTrigger
+              className="flex items-center justify-between w-full py-2 text-left group"
+              aria-expanded={userFlowsOpen}
+              aria-controls="user-flows-content"
+            >
               <span className="text-sm font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wide">
                 User Flows
                 <span className="ml-2 text-stone-400 dark:text-stone-500 normal-case tracking-normal">
@@ -49,9 +53,10 @@ export function SpecCard({ spec, sectionTitle }: SpecCardProps) {
                   userFlowsOpen ? 'rotate-180' : ''
                 }`}
                 strokeWidth={1.5}
+                aria-hidden="true"
               />
             </CollapsibleTrigger>
-            <CollapsibleContent>
+            <CollapsibleContent id="user-flows-content">
               <ul className="space-y-2 pt-2">
                 {spec.userFlows.map((flow, index) => (
                   <li key={index} className="flex items-start gap-3">
@@ -69,7 +74,11 @@ export function SpecCard({ spec, sectionTitle }: SpecCardProps) {
         {/* UI Requirements - Expandable */}
         {spec.uiRequirements.length > 0 && (
           <Collapsible open={uiReqOpen} onOpenChange={setUiReqOpen}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full py-2 text-left group">
+            <CollapsibleTrigger
+              className="flex items-center justify-between w-full py-2 text-left group"
+              aria-expanded={uiReqOpen}
+              aria-controls="ui-req-content"
+            >
               <span className="text-sm font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wide">
                 UI Requirements
                 <span className="ml-2 text-stone-400 dark:text-stone-500 normal-case tracking-normal">
@@ -81,9 +90,10 @@ export function SpecCard({ spec, sectionTitle }: SpecCardProps) {
                   uiReqOpen ? 'rotate-180' : ''
                 }`}
                 strokeWidth={1.5}
+                aria-hidden="true"
               />
             </CollapsibleTrigger>
-            <CollapsibleContent>
+            <CollapsibleContent id="ui-req-content">
               <ul className="space-y-2 pt-2">
                 {spec.uiRequirements.map((req, index) => (
                   <li key={index} className="flex items-start gap-3">
