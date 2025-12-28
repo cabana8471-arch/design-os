@@ -50,6 +50,18 @@ export interface HeaderAction {
 }
 
 /**
+ * Shell relationship - maps triggers to secondary components
+ * Format: [Trigger].[action] -> [Component] ([type], [dataRef])
+ */
+export interface ShellRelationship {
+  trigger: 'HeaderAction' | 'UserMenu' | 'MobileNav'
+  action: string
+  component: string
+  type: 'drawer' | 'modal' | 'inline'
+  dataRef: string
+}
+
+/**
  * User configuration
  */
 export interface UserConfig {
@@ -87,6 +99,9 @@ export interface ShellProps {
 
   // Header elements
   headerActions?: HeaderAction[]
+
+  // Shell relationships (for secondary components)
+  shellRelationships?: ShellRelationship[]
 
   // Layout
   sidebarCollapsed?: boolean
@@ -582,6 +597,89 @@ function parseLayoutVariant(md: string): ShellProps['layoutVariant'] | undefined
 }
 
 /**
+ * Parse shell relationships from shell spec
+ *
+ * Expected format in spec.md:
+ * ## Shell Relationships
+ * - HeaderAction.notifications -> NotificationsDrawer (drawer, notifications)
+ * - HeaderAction.search -> SearchModal (modal, none)
+ * - UserMenu.profile -> ProfileModal (modal, user)
+ */
+function parseShellRelationships(md: string): ShellRelationship[] | undefined {
+  const sectionMatch = md.match(/## Shell Relationships\s*\n+([\s\S]*?)(?=\n## |\n#[^#]|$)/)
+  if (!sectionMatch) return undefined
+
+  const content = sectionMatch[1]
+  const relationships: ShellRelationship[] = []
+
+  // Pattern: - Trigger.action -> Component (type, dataRef)
+  const relationshipPattern = /^-\s*(\w+)\.(\w+)\s*->\s*(\w+)\s*\((\w+),\s*(\w+)\)/gm
+  let match
+
+  while ((match = relationshipPattern.exec(content)) !== null) {
+    const trigger = match[1] as ShellRelationship['trigger']
+    const action = match[2]
+    const component = match[3]
+    const type = match[4] as ShellRelationship['type']
+    const dataRef = match[5]
+
+    // Validate trigger type
+    if (!['HeaderAction', 'UserMenu', 'MobileNav'].includes(trigger)) {
+      if (import.meta.env.DEV) {
+        console.warn(`[shell-loader] Unknown trigger type: ${trigger}`)
+      }
+      continue
+    }
+
+    // Validate relationship type
+    if (!['drawer', 'modal', 'inline'].includes(type)) {
+      if (import.meta.env.DEV) {
+        console.warn(`[shell-loader] Unknown relationship type: ${type}`)
+      }
+      continue
+    }
+
+    relationships.push({ trigger, action, component, type, dataRef })
+  }
+
+  return relationships.length > 0 ? relationships : undefined
+}
+
+/**
+ * Check if secondary shell components exist
+ * Secondary components are those beyond the primary (AppShell, MainNav, UserMenu)
+ */
+export function hasSecondaryShellComponents(): boolean {
+  const primaryComponents = ['AppShell', 'MainNav', 'UserMenu', 'index']
+  const allComponents = getShellComponentNames()
+
+  const secondaryComponents = allComponents.filter(
+    name => !primaryComponents.includes(name)
+  )
+
+  if (import.meta.env.DEV) {
+    console.log('[shell-loader] hasSecondaryShellComponents:', {
+      primary: primaryComponents,
+      all: allComponents,
+      secondary: secondaryComponents
+    })
+  }
+
+  return secondaryComponents.length > 0
+}
+
+/**
+ * Get list of secondary shell component names
+ * Returns components beyond the primary ones (AppShell, MainNav, UserMenu)
+ */
+export function getSecondaryShellComponentNames(): string[] {
+  const primaryComponents = ['AppShell', 'MainNav', 'UserMenu', 'index']
+  const allComponents = getShellComponentNames()
+
+  return allComponents.filter(name => !primaryComponents.includes(name))
+}
+
+/**
  * Get all shell props from spec - complete passthrough
  *
  * This is the main function for the passthrough pattern.
@@ -618,6 +716,7 @@ export function getShellProps(sectionId?: string, viewName?: string): ShellProps
   const breadcrumbConfig = parseBreadcrumbConfig(md)
   const headerActions = parseHeaderActions(md)
   const layoutVariant = parseLayoutVariant(md)
+  const shellRelationships = parseShellRelationships(md)
 
   // Build breadcrumbs array for current section
   let breadcrumbs: BreadcrumbItem[] | undefined
@@ -643,6 +742,7 @@ export function getShellProps(sectionId?: string, viewName?: string): ShellProps
   if (breadcrumbs && breadcrumbs.length > 0) props.breadcrumbs = breadcrumbs
   if (headerActions) props.headerActions = headerActions
   if (layoutVariant) props.layoutVariant = layoutVariant
+  if (shellRelationships) props.shellRelationships = shellRelationships
 
   // Add view context
   if (sectionId) props.currentSection = sectionId
@@ -655,7 +755,8 @@ export function getShellProps(sectionId?: string, viewName?: string): ShellProps
       hasContextSelector: !!contextSelector,
       breadcrumbsCount: breadcrumbs?.length ?? 0,
       headerActionsCount: headerActions?.length ?? 0,
-      layoutVariant
+      layoutVariant,
+      shellRelationshipsCount: shellRelationships?.length ?? 0
     })
   }
 

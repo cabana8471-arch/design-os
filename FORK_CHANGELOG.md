@@ -6,6 +6,132 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-28 18:30] Shell Relationships Feature Implementation
+
+### Description
+
+Extended the `/design-shell` command with "Shell Relationships" functionality, similar to the "View Relationships" pattern from `/design-screen`. This feature enables interactive elements in the shell (notifications, search, settings, profile, etc.) to open secondary components (drawers, modals) with proper state management and wired previews instead of console.log callbacks.
+
+### Key Features
+
+| Feature | Description |
+| ------- | ----------- |
+| Audit Mode | `/design-shell` can now re-run on existing shells to add relationships |
+| Interactive Elements | Selection of common shell actions (notifications, search, theme, profile, etc.) |
+| Secondary Components | NotificationsDrawer, SearchModal, SettingsDrawer, ProfileModal, HelpSheet, ThemeToggle |
+| Wired Preview | State-managed callbacks that open actual components instead of console.log |
+| Anti-Flicker Script | Synchronous theme application for ThemeToggle to prevent flash |
+| Shell README | Export generates comprehensive shell documentation |
+
+### Shell Relationships Format
+
+New section in `product/shell/spec.md`:
+
+```markdown
+## Shell Relationships
+
+- HeaderAction.notifications -> NotificationsDrawer (drawer, notifications)
+- HeaderAction.search -> SearchModal (modal, none)
+- UserMenu.profile -> ProfileModal (modal, user)
+- UserMenu.settings -> SettingsDrawer (drawer, settings)
+- HeaderAction.help -> HelpSheet (drawer, helpTopics)
+- HeaderAction.theme -> ThemeToggle (inline, none)
+```
+
+### Modified Files
+
+| File | Lines Changed | Change Type |
+| ---- | ------------- | ----------- |
+| `.claude/commands/design-os/design-shell.md` | ~300 | Complete rewrite with audit mode, relationships, secondary components |
+| `agents.md` | ~80 | New Shell Relationships section, updated tables |
+| `src/lib/shell-loader.ts` | ~60 | Added relationship parsing, secondary component detection |
+| `src/components/ScreenDesignPage.tsx` | ~100 | Wired callbacks, keyboard shortcuts, dynamic component loading |
+| `.claude/commands/design-os/export-product.md` | ~50 | Shell README generation, all components export |
+
+### New Types Added
+
+```typescript
+// src/lib/shell-loader.ts
+export interface ShellRelationship {
+  trigger: 'HeaderAction' | 'UserMenu' | 'MobileNav'
+  action: string
+  component: string
+  type: 'drawer' | 'modal' | 'inline'
+  dataRef: string
+}
+```
+
+### New Functions Added
+
+| File | Function | Purpose |
+| ---- | -------- | ------- |
+| `shell-loader.ts` | `parseShellRelationships()` | Parse relationships from spec.md |
+| `shell-loader.ts` | `hasSecondaryShellComponents()` | Check if secondary components exist |
+| `shell-loader.ts` | `getSecondaryShellComponentNames()` | Get list of secondary component names |
+
+### New Steps in design-shell.md
+
+| Step | Title | Purpose |
+| ---- | ----- | ------- |
+| 0 | Detect Mode | Check if re-running on existing shell |
+| 0.5-0.7 | Audit Mode | Handle existing spec, skip completed steps |
+| 3.6 | Interactive Elements | Select shell actions to implement |
+| 6.6 | Shell Relationships | Document trigger-to-component mappings |
+| 6.7 | Secondary Component Data | Add data to data.json |
+| 6.8 | Secondary Component Types | Add types to types.ts |
+| 7 | Secondary Components | Create all secondary shell components |
+| 8 | Wired Preview | Create ShellWrapper with state management |
+| 9.5 | Anti-Flicker Script | Inject theme initialization script |
+
+### Wired Preview Pattern
+
+```tsx
+// src/shell/ShellPreview.tsx
+const [openComponent, setOpenComponent] = useState<string | null>(null)
+
+// Wired handlers instead of console.log
+const handleNotificationsClick = () => setOpenComponent('NotificationsDrawer')
+const handleSearchClick = () => setOpenComponent('SearchModal')
+
+// Keyboard shortcuts
+useEffect(() => {
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault()
+      handleSearchClick()
+    }
+    if (e.key === 'Escape') setOpenComponent(null)
+  }
+  window.addEventListener('keydown', handleKeyDown)
+  return () => window.removeEventListener('keydown', handleKeyDown)
+}, [])
+```
+
+### Documentation Updates
+
+#### agents.md - New Section
+
+Added "Shell Relationships" section documenting:
+- Defining relationships in spec.md
+- Relationship types (drawer, modal, inline)
+- Data references (notifications, user, settings, helpTopics, none)
+- Wired preview pattern in ShellPreview.tsx
+- Export behavior
+
+#### agents.md - Updated Tables
+
+| Table | Update |
+| ----- | ------ |
+| Files Generated Per Command | Added secondary components for `/design-shell` |
+| Command Prerequisites | Added Sheet, Dialog UI components |
+| Shell Props Passthrough | Added secondary component callbacks |
+
+### Production Status
+
+Feature complete and ready for use. Enables `/design-shell` to create fully interactive shell previews with drawer/modal components.
+
+---
+
 ## [2025-12-28 15:35] Enhanced Sync Script Logging
 
 ### Description

@@ -29,21 +29,48 @@ Verify the minimum requirements exist:
 
 **Shell Components (optional but recommended):**
 
-- `src/shell/components/AppShell.tsx` — Application shell
+Primary Components:
+- `src/shell/components/AppShell.tsx` — Application shell wrapper
+- `src/shell/components/MainNav.tsx` — Navigation component
+- `src/shell/components/UserMenu.tsx` — User menu component
+- `src/shell/components/index.ts` — Component exports
+
+Secondary Components (optional - based on /design-shell Step 3.6 selections):
+- `src/shell/components/NotificationsDrawer.tsx`
+- `src/shell/components/SearchModal.tsx`
+- `src/shell/components/ThemeToggle.tsx`
+- `src/shell/components/SettingsModal.tsx`
+- `src/shell/components/ProfileModal.tsx`
+- `src/shell/components/HelpPanel.tsx`
+- `src/shell/components/FeedbackModal.tsx`
+- `src/shell/components/MobileMenuDrawer.tsx`
 
 **Shell Prerequisite Check:**
 
 Check if shell components exist before proceeding:
 
 ```bash
+# Check for primary shell component
 if [ ! -f "src/shell/components/AppShell.tsx" ]; then
   echo "Shell components not found"
+  SHELL_EXISTS=false
+else
+  SHELL_EXISTS=true
+  # Count all shell components
+  SHELL_COMPONENT_COUNT=$(ls -1 src/shell/components/*.tsx 2>/dev/null | grep -v index.ts | wc -l)
+  echo "Found $SHELL_COMPONENT_COUNT shell component(s)"
+
+  # List secondary components if any
+  SECONDARY_COMPONENTS=$(ls -1 src/shell/components/*.tsx 2>/dev/null | grep -v -E "(AppShell|MainNav|UserMenu|index)" | xargs -I {} basename {} .tsx)
+  if [ -n "$SECONDARY_COMPONENTS" ]; then
+    echo "Secondary components: $SECONDARY_COMPONENTS"
+  fi
 fi
 ```
 
 | Shell Status             | Action                                                    |
 | ------------------------ | --------------------------------------------------------- |
-| Shell components exist   | Include shell in export (Step 8-9 will validate and copy) |
+| Shell components exist   | Include shell in export (Step 8-9 will validate and copy all components) |
 | Shell components missing | Show warning, offer to proceed without shell              |
 
 **If shell is missing:**
@@ -770,7 +797,33 @@ Before proceeding with export, validate that all components are portable and fol
 
 **Skip this section if `INCLUDE_SHELL` is false** (user chose to proceed without shell in Step 1).
 
-If shell components exist at `src/shell/components/`, validate each file:
+Validate ALL shell components at `src/shell/components/` (primary AND secondary):
+
+**Primary components (always validated):**
+- `AppShell.tsx` — Main shell wrapper
+- `MainNav.tsx` — Navigation component
+- `UserMenu.tsx` — User menu component
+- `index.ts` — Component exports
+
+**Secondary components (validate if they exist):**
+- `NotificationsDrawer.tsx`
+- `SearchModal.tsx`
+- `ThemeToggle.tsx`
+- `SettingsModal.tsx`
+- `ProfileModal.tsx`
+- `HelpPanel.tsx`
+- `FeedbackModal.tsx`
+- `MobileMenuDrawer.tsx`
+
+**List all shell components to validate:**
+
+```bash
+# Get all shell components (excluding index.ts)
+SHELL_COMPONENTS=$(ls -1 src/shell/components/*.tsx 2>/dev/null | xargs -I {} basename {} .tsx)
+echo "Validating shell components: $SHELL_COMPONENTS"
+```
+
+For EACH shell component file, validate:
 
 1. **Check imports:**
    - [ ] No static data imports: `import data from '@/../product/...'`
@@ -782,8 +835,13 @@ If shell components exist at `src/shell/components/`, validate each file:
 2. **Check component structure:**
    - [ ] Component accepts all data via props
    - [ ] All callbacks are optional and use optional chaining: `onAction?.()`
-   - [ ] No state management code (useState, useContext, etc.)
+   - [ ] No state management code (useState, useContext, etc.) — *EXCEPTION: Secondary components like ThemeToggle MAY use useState for local UI state*
    - [ ] No routing logic or navigation calls
+
+**Note:** Secondary components (drawers, modals) may use local useState for their open/close state. This is acceptable as long as:
+- Data still comes via props
+- Callbacks notify parent components
+- No global state management (Zustand, Redux, etc.)
 
 ### Validate Section Components
 
@@ -1125,11 +1183,64 @@ This ensures implementation agents have access to the aesthetic direction when b
 
 **Skip this section if `INCLUDE_SHELL` is false** (user chose to proceed without shell in Step 1).
 
-Copy from `src/shell/components/` to `product-plan/shell/components/`:
+Copy ALL files from `src/shell/components/` to `product-plan/shell/components/`:
 
+**Primary components (always copied if shell exists):**
+- `AppShell.tsx` — Main shell wrapper
+- `MainNav.tsx` — Navigation component
+- `UserMenu.tsx` — User menu component
+- `index.ts` — Component exports
+
+**Secondary components (copy if they exist):**
+- `NotificationsDrawer.tsx`
+- `SearchModal.tsx`
+- `ThemeToggle.tsx`
+- `SettingsModal.tsx`
+- `ProfileModal.tsx`
+- `HelpPanel.tsx`
+- `FeedbackModal.tsx`
+- `MobileMenuDrawer.tsx`
+
+**Copy all shell components:**
+
+```bash
+# Copy all .tsx files from shell/components
+for file in src/shell/components/*.tsx; do
+  if [ -f "$file" ]; then
+    cp "$file" product-plan/shell/components/
+    echo "Copied: $(basename $file)"
+  fi
+done
+
+# Copy index.ts
+if [ -f "src/shell/components/index.ts" ]; then
+  cp src/shell/components/index.ts product-plan/shell/components/
+  echo "Copied: index.ts"
+fi
+```
+
+For each copied file:
 - Transform import paths from `@/...` to relative paths
 - Remove any Design OS-specific imports
 - Ensure components are self-contained
+
+**Shell data and types (if they exist):**
+
+Also copy shell data and types if they exist:
+
+```bash
+# Copy shell data.json (rename to sample-data.json)
+if [ -f "product/shell/data.json" ]; then
+  cp product/shell/data.json product-plan/shell/sample-data.json
+  echo "Copied: data.json -> sample-data.json"
+fi
+
+# Copy shell types.ts
+if [ -f "product/shell/types.ts" ]; then
+  cp product/shell/types.ts product-plan/shell/types.ts
+  echo "Copied: types.ts"
+fi
+```
 
 ### Section Components
 
@@ -1286,6 +1397,134 @@ When copying section specs to export, check for `## View Relationships` in `prod
 **What TO export:**
 - Relationship documentation — helps developers understand the intended UX
 - Implementation patterns — provides starting points for wiring
+
+## Step 10.5: Generate Shell README
+
+**Skip this section if `INCLUDE_SHELL` is false** (user chose to proceed without shell in Step 1).
+
+Create `product-plan/shell/README.md` to document the shell design and all its components:
+
+````markdown
+# Application Shell
+
+## Overview
+
+[From product/shell/spec.md overview section]
+
+## Layout Pattern
+
+[From spec.md - sidebar, top nav, or minimal]
+
+## Components
+
+### Primary Components
+
+| Component | Purpose | Props |
+|-----------|---------|-------|
+| `AppShell` | Main shell wrapper | children, navigationItems, user, onNavigate, onLogout, ... |
+| `MainNav` | Navigation sidebar/bar | items, onNavigate, collapsed |
+| `UserMenu` | User dropdown menu | user, onLogout, onProfileClick, onSettingsClick |
+
+### Secondary Components
+
+[List only components that were created. Skip if none exist.]
+
+| Component | Type | Purpose | Props |
+|-----------|------|---------|-------|
+| `NotificationsDrawer` | drawer | Shows user notifications | notifications, onClose, onMarkRead |
+| `SearchModal` | modal | Command palette (Cmd+K) | onClose, onSelect, recentItems |
+| `ThemeToggle` | inline | Theme switcher | (uses local state) |
+| `SettingsModal` | modal | App settings | settings, onClose, onSave |
+| `ProfileModal` | modal | User profile editor | user, onClose, onSave |
+| `HelpPanel` | drawer | Help and documentation | topics, onClose |
+| `FeedbackModal` | modal | Feedback form | onClose, onSubmit |
+| `MobileMenuDrawer` | drawer | Mobile navigation | navigationItems, onClose, onNavigate |
+
+## Shell Relationships
+
+[From product/shell/spec.md ## Shell Relationships section, if exists]
+
+These relationships show how shell triggers connect to secondary components:
+
+| Trigger | Action | Component | Type | Data |
+|---------|--------|-----------|------|------|
+| HeaderAction | notifications | NotificationsDrawer | drawer | notifications |
+| HeaderAction | search | SearchModal | modal | none |
+| UserMenu | profile | ProfileModal | modal | user |
+| UserMenu | settings | SettingsModal | modal | settings |
+
+**Implementation pattern for shell secondary components:**
+
+```tsx
+// In your app shell or layout component
+const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
+const [isSearchOpen, setIsSearchOpen] = useState(false)
+
+// Keyboard shortcuts
+useEffect(() => {
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault()
+      setIsSearchOpen(true)
+    }
+  }
+  window.addEventListener('keydown', handleKeyDown)
+  return () => window.removeEventListener('keydown', handleKeyDown)
+}, [])
+
+return (
+  <>
+    <AppShell
+      onHeaderAction={(actionId) => {
+        if (actionId === 'notifications') setIsNotificationsOpen(true)
+        if (actionId === 'search') setIsSearchOpen(true)
+      }}
+      onProfileClick={() => setIsProfileOpen(true)}
+      onSettingsClick={() => setIsSettingsOpen(true)}
+    >
+      {children}
+    </AppShell>
+
+    <Sheet open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
+      <SheetContent>
+        <NotificationsDrawer
+          notifications={notifications}
+          onClose={() => setIsNotificationsOpen(false)}
+        />
+      </SheetContent>
+    </Sheet>
+
+    <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+      <DialogContent>
+        <SearchModal onClose={() => setIsSearchOpen(false)} />
+      </DialogContent>
+    </Dialog>
+  </>
+)
+```
+
+## Sample Data
+
+See `sample-data.json` for example data for shell components (notifications, user, settings).
+
+## Types
+
+See `types.ts` for TypeScript interfaces for all shell component props.
+
+## Visual Reference
+
+See `screenshot.png` for the shell visual design (if captured).
+
+## Responsive Behavior
+
+- **Desktop:** [From spec.md responsive behavior]
+- **Tablet:** [From spec.md]
+- **Mobile:** [From spec.md]
+
+## Design Notes
+
+[From spec.md design notes section, if exists]
+````
 
 ## Step 11: Consolidate Data Model Types
 

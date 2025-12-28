@@ -6,8 +6,14 @@ import { ArrowLeft, Maximize2, GripVertical, Layout, Smartphone, Tablet, Monitor
 import { Button } from '@/components/ui/button'
 import { ThemeToggle, THEME_CHANNEL } from '@/components/ThemeToggle'
 import { loadScreenDesignComponent, sectionUsesShell } from '@/lib/section-loader'
-import { loadAppShell, hasShellComponents, getShellProps } from '@/lib/shell-loader'
-import type { ShellProps } from '@/lib/shell-loader'
+import {
+  loadAppShell,
+  hasShellComponents,
+  getShellProps,
+  loadShellComponent,
+  getSecondaryShellComponentNames
+} from '@/lib/shell-loader'
+import type { ShellProps, ShellRelationship } from '@/lib/shell-loader'
 import { loadProductData } from '@/lib/product-loader'
 import { getNavigationCategories, defaultUser } from '@/shell/navigation-config'
 
@@ -395,12 +401,35 @@ export function ScreenDesignFullscreen() {
           onContextSelect?: (id: string) => void
           onBreadcrumbClick?: (href: string) => void
           onHeaderAction?: (actionId: string) => void
+          // Secondary component callbacks
+          onNotificationsClick?: () => void
+          onSearchClick?: () => void
+          onHelpClick?: () => void
+          onProfileClick?: () => void
+          onSettingsClick?: () => void
+          onFeedbackClick?: () => void
+          onMobileMenuToggle?: () => void
         }
 
         // Safe to cast now - we've validated it's a function
         const ShellComponent = rawComponent as React.ComponentType<ShellComponentProps>
 
-        // Create a wrapper that passes ALL props from shell spec
+        // Pre-load secondary shell components
+        const secondaryComponentNames = getSecondaryShellComponentNames()
+        const secondaryComponentLoaders: Record<string, () => Promise<{ default: React.ComponentType<unknown> }>> = {}
+
+        for (const name of secondaryComponentNames) {
+          const loader = loadShellComponent(name)
+          if (loader) {
+            secondaryComponentLoaders[name] = loader as () => Promise<{ default: React.ComponentType<unknown> }>
+          }
+        }
+
+        if (import.meta.env.DEV) {
+          console.log('[ScreenDesignFullscreen] Secondary shell components:', secondaryComponentNames)
+        }
+
+        // Create a wrapper that passes ALL props from shell spec + manages secondary component state
         const ShellWrapper = ({ children }: { children?: React.ReactNode }) => {
           // Get ALL shell props from spec - complete passthrough pattern
           const shellProps = getShellProps(sectionId, screenDesignName)
@@ -408,44 +437,213 @@ export function ScreenDesignFullscreen() {
           // Get navigation categories with current section marked as active
           const categories = getNavigationCategories(sectionId)
 
+          // State for secondary shell components
+          const [openComponent, setOpenComponent] = useState<string | null>(null)
+          const [secondaryComponents, setSecondaryComponents] = useState<Record<string, React.ComponentType<unknown>>>({})
+
+          // Load secondary components lazily on first use
+          const loadSecondaryComponent = useCallback(async (componentName: string) => {
+            if (secondaryComponents[componentName]) return // Already loaded
+
+            const loader = secondaryComponentLoaders[componentName]
+            if (!loader) return
+
+            try {
+              const module = await loader()
+              if (module && typeof module.default === 'function') {
+                setSecondaryComponents(prev => ({
+                  ...prev,
+                  [componentName]: module.default
+                }))
+              }
+            } catch (e) {
+              if (import.meta.env.DEV) {
+                console.error(`[ScreenDesignFullscreen] Failed to load secondary component: ${componentName}`, e)
+              }
+            }
+          }, [secondaryComponents])
+
+          // Map action IDs to component names based on shell relationships
+          const getComponentForAction = useCallback((actionId: string): string | null => {
+            const relationships = shellProps.shellRelationships as ShellRelationship[] | undefined
+            if (!relationships) return null
+
+            // Find relationship for this action
+            const relationship = relationships.find(r =>
+              r.action === actionId || r.component.toLowerCase().includes(actionId.toLowerCase())
+            )
+
+            return relationship?.component ?? null
+          }, [shellProps.shellRelationships])
+
+          // Handle header action - open secondary component
+          const handleHeaderAction = useCallback((actionId: string) => {
+            if (import.meta.env.DEV) {
+              console.log('[ScreenDesignFullscreen] Header action:', actionId)
+            }
+
+            // Try to find matching secondary component
+            const componentName = getComponentForAction(actionId)
+            if (componentName && secondaryComponentNames.includes(componentName)) {
+              loadSecondaryComponent(componentName)
+              setOpenComponent(componentName)
+            }
+          }, [getComponentForAction, loadSecondaryComponent])
+
+          // Specific callbacks for secondary components
+          const handleNotificationsClick = useCallback(() => {
+            if (secondaryComponentNames.includes('NotificationsDrawer')) {
+              loadSecondaryComponent('NotificationsDrawer')
+              setOpenComponent('NotificationsDrawer')
+            } else if (import.meta.env.DEV) {
+              console.log('[ScreenDesignFullscreen] Notifications clicked (no component)')
+            }
+          }, [loadSecondaryComponent])
+
+          const handleSearchClick = useCallback(() => {
+            if (secondaryComponentNames.includes('SearchModal')) {
+              loadSecondaryComponent('SearchModal')
+              setOpenComponent('SearchModal')
+            } else if (import.meta.env.DEV) {
+              console.log('[ScreenDesignFullscreen] Search clicked (no component)')
+            }
+          }, [loadSecondaryComponent])
+
+          const handleHelpClick = useCallback(() => {
+            if (secondaryComponentNames.includes('HelpPanel')) {
+              loadSecondaryComponent('HelpPanel')
+              setOpenComponent('HelpPanel')
+            } else if (import.meta.env.DEV) {
+              console.log('[ScreenDesignFullscreen] Help clicked (no component)')
+            }
+          }, [loadSecondaryComponent])
+
+          const handleProfileClick = useCallback(() => {
+            if (secondaryComponentNames.includes('ProfileModal')) {
+              loadSecondaryComponent('ProfileModal')
+              setOpenComponent('ProfileModal')
+            } else if (import.meta.env.DEV) {
+              console.log('[ScreenDesignFullscreen] Profile clicked (no component)')
+            }
+          }, [loadSecondaryComponent])
+
+          const handleSettingsClick = useCallback(() => {
+            if (secondaryComponentNames.includes('SettingsModal')) {
+              loadSecondaryComponent('SettingsModal')
+              setOpenComponent('SettingsModal')
+            } else if (import.meta.env.DEV) {
+              console.log('[ScreenDesignFullscreen] Settings clicked (no component)')
+            }
+          }, [loadSecondaryComponent])
+
+          const handleFeedbackClick = useCallback(() => {
+            if (secondaryComponentNames.includes('FeedbackModal')) {
+              loadSecondaryComponent('FeedbackModal')
+              setOpenComponent('FeedbackModal')
+            } else if (import.meta.env.DEV) {
+              console.log('[ScreenDesignFullscreen] Feedback clicked (no component)')
+            }
+          }, [loadSecondaryComponent])
+
+          const handleMobileMenuToggle = useCallback(() => {
+            if (secondaryComponentNames.includes('MobileMenuDrawer')) {
+              loadSecondaryComponent('MobileMenuDrawer')
+              setOpenComponent('MobileMenuDrawer')
+            } else if (import.meta.env.DEV) {
+              console.log('[ScreenDesignFullscreen] Mobile menu toggled (no component)')
+            }
+          }, [loadSecondaryComponent])
+
+          // Close handler for secondary components
+          const handleCloseSecondary = useCallback(() => {
+            setOpenComponent(null)
+          }, [])
+
+          // Keyboard shortcuts (Cmd+K for search, Escape to close)
+          useEffect(() => {
+            const handleKeyDown = (e: KeyboardEvent) => {
+              // Cmd+K or Ctrl+K for search
+              if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault()
+                handleSearchClick()
+              }
+              // Escape to close any open secondary component
+              if (e.key === 'Escape' && openComponent) {
+                handleCloseSecondary()
+              }
+            }
+
+            window.addEventListener('keydown', handleKeyDown)
+            return () => window.removeEventListener('keydown', handleKeyDown)
+          }, [handleSearchClick, handleCloseSecondary, openComponent])
+
+          // Render secondary component if open
+          const renderSecondaryComponent = () => {
+            if (!openComponent || !secondaryComponents[openComponent]) return null
+
+            const SecondaryComponent = secondaryComponents[openComponent]
+
+            // Common props for all secondary components
+            const commonProps = {
+              onClose: handleCloseSecondary,
+            }
+
+            // Note: In a full implementation, we'd wrap these in Sheet/Dialog
+            // based on the relationship type (drawer/modal). For now, render directly.
+            // The actual Shell component should handle the wrapping.
+            return (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={handleCloseSecondary}>
+                <div className="relative" onClick={e => e.stopPropagation()}>
+                  <SecondaryComponent {...commonProps} />
+                </div>
+              </div>
+            )
+          }
+
           // Spread all shell props + add navigation and callbacks
           // The spread order ensures:
           // 1. shellProps: everything from spec (breadcrumbs, contextSelector, headerActions, etc.)
           // 2. categories/user: navigation from existing config
-          // 3. callbacks: preview handlers (log to console in DEV)
+          // 3. callbacks: wired handlers for secondary components
           return (
-            <ShellComponent
-              {...shellProps}
-              categories={categories}
-              user={defaultUser}
-              onNavigate={(href) => {
-                if (import.meta.env.DEV) {
-                  console.log('[ScreenDesignFullscreen] Navigate:', href)
-                }
-              }}
-              onLogout={() => {
-                if (import.meta.env.DEV) {
-                  console.log('[ScreenDesignFullscreen] Logout')
-                }
-              }}
-              onContextSelect={(id) => {
-                if (import.meta.env.DEV) {
-                  console.log('[ScreenDesignFullscreen] Context select:', id)
-                }
-              }}
-              onBreadcrumbClick={(href) => {
-                if (import.meta.env.DEV) {
-                  console.log('[ScreenDesignFullscreen] Breadcrumb click:', href)
-                }
-              }}
-              onHeaderAction={(actionId) => {
-                if (import.meta.env.DEV) {
-                  console.log('[ScreenDesignFullscreen] Header action:', actionId)
-                }
-              }}
-            >
-              {children}
-            </ShellComponent>
+            <>
+              <ShellComponent
+                {...shellProps}
+                categories={categories}
+                user={defaultUser}
+                onNavigate={(href) => {
+                  if (import.meta.env.DEV) {
+                    console.log('[ScreenDesignFullscreen] Navigate:', href)
+                  }
+                }}
+                onLogout={() => {
+                  if (import.meta.env.DEV) {
+                    console.log('[ScreenDesignFullscreen] Logout')
+                  }
+                }}
+                onContextSelect={(id) => {
+                  if (import.meta.env.DEV) {
+                    console.log('[ScreenDesignFullscreen] Context select:', id)
+                  }
+                }}
+                onBreadcrumbClick={(href) => {
+                  if (import.meta.env.DEV) {
+                    console.log('[ScreenDesignFullscreen] Breadcrumb click:', href)
+                  }
+                }}
+                onHeaderAction={handleHeaderAction}
+                onNotificationsClick={handleNotificationsClick}
+                onSearchClick={handleSearchClick}
+                onHelpClick={handleHelpClick}
+                onProfileClick={handleProfileClick}
+                onSettingsClick={handleSettingsClick}
+                onFeedbackClick={handleFeedbackClick}
+                onMobileMenuToggle={handleMobileMenuToggle}
+              >
+                {children}
+              </ShellComponent>
+              {renderSecondaryComponent()}
+            </>
           )
         }
 

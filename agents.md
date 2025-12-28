@@ -101,7 +101,7 @@ Generate the complete export package with all components, types, and handoff doc
 | `/product-roadmap`   | `product-roadmap.md`                                                                                            | `product/`                                                                        |
 | `/data-model`        | `data-model.md`                                                                                                 | `product/data-model/`                                                             |
 | `/design-tokens`     | `colors.json`, `typography.json`                                                                                | `product/design-system/`                                                          |
-| `/design-shell`      | `spec.md`, `design-direction.md`, `AppShell.tsx`, `MainNav.tsx`, `UserMenu.tsx`, `index.ts`, `ShellPreview.tsx` | `product/shell/`, `product/design-system/`, `src/shell/components/`, `src/shell/` |
+| `/design-shell`      | `spec.md`, `data.json`, `types.ts`, `design-direction.md`, Primary components (`AppShell.tsx`, `MainNav.tsx`, `UserMenu.tsx`), Secondary components (based on selection: `NotificationsDrawer.tsx`, `SearchModal.tsx`, `ThemeToggle.tsx`, etc.), `index.ts`, `ShellPreview.tsx` | `product/shell/`, `product/design-system/`, `src/shell/components/`, `src/shell/` |
 | `/shape-section`     | `spec.md`                                                                                                       | `product/sections/[section-id]/`                                                  |
 | `/sample-data`       | `data.json`, `types.ts`                                                                                         | `product/sections/[section-id]/`                                                  |
 | `/design-screen`     | `[ViewName].tsx`, `components/*.tsx`, `components/index.ts`                                                     | `src/sections/[section-id]/`                                                      |
@@ -110,18 +110,18 @@ Generate the complete export package with all components, types, and handoff doc
 
 ### Command Prerequisites
 
-| Command              | Required                                    | Optional                                    |
-| -------------------- | ------------------------------------------- | ------------------------------------------- |
-| `/product-vision`    | —                                           | —                                           |
-| `/product-roadmap`   | `product-overview.md`                       | —                                           |
-| `/data-model`        | `product-overview.md`                       | `product-roadmap.md`                        |
-| `/design-tokens`     | `product-overview.md`                       | —                                           |
-| `/design-shell`      | `product-overview.md`                       | Design tokens, Sections (for navigation)    |
-| `/shape-section`     | `product-overview.md`, `product-roadmap.md` | Data model, Shell spec                      |
-| `/sample-data`       | Section `spec.md`                           | Data model                                  |
-| `/design-screen`     | Section `spec.md`, `data.json`, `types.ts`  | Design tokens, Shell components, `SKILL.md` |
-| `/screenshot-design` | Screen design components                    | Playwright MCP                              |
-| `/export-product`    | `product-overview.md`, at least one section | Shell components, All sections              |
+| Command              | Required                                    | Optional                                                     |
+| -------------------- | ------------------------------------------- | ------------------------------------------------------------ |
+| `/product-vision`    | —                                           | —                                                            |
+| `/product-roadmap`   | `product-overview.md`                       | —                                                            |
+| `/data-model`        | `product-overview.md`                       | `product-roadmap.md`                                         |
+| `/design-tokens`     | `product-overview.md`                       | —                                                            |
+| `/design-shell`      | `product-overview.md`                       | Design tokens, Sections, UI components (Sheet, Dialog), `SKILL.md` |
+| `/shape-section`     | `product-overview.md`, `product-roadmap.md` | Data model, Shell spec                                       |
+| `/sample-data`       | Section `spec.md`                           | Data model                                                   |
+| `/design-screen`     | Section `spec.md`, `data.json`, `types.ts`  | Design tokens, Shell components, `SKILL.md`                  |
+| `/screenshot-design` | Screen design components                    | Playwright MCP                                               |
+| `/export-product`    | `product-overview.md`, at least one section | Shell components, All sections                               |
 
 **Legend:**
 
@@ -182,7 +182,9 @@ product/                           # Product definition (portable)
 │   └── typography.json            # { heading, body, mono }
 │
 ├── shell/                         # Application shell
-│   └── spec.md                    # Shell specification
+│   ├── spec.md                    # Shell specification (includes Shell Relationships)
+│   ├── data.json                  # Sample data for shell components
+│   └── types.ts                   # TypeScript interfaces for shell
 │
 └── sections/
     └── [section-name]/
@@ -200,11 +202,19 @@ This transformation happens during `/export-product` to clarify the file's purpo
 src/
 ├── shell/                         # Shell design components
 │   ├── components/
-│   │   ├── AppShell.tsx
-│   │   ├── MainNav.tsx
-│   │   ├── UserMenu.tsx
-│   │   └── index.ts
-│   └── ShellPreview.tsx
+│   │   ├── AppShell.tsx           # Main shell wrapper (always created)
+│   │   ├── MainNav.tsx            # Navigation component (always created)
+│   │   ├── UserMenu.tsx           # User menu component (always created)
+│   │   ├── NotificationsDrawer.tsx # (optional - if selected)
+│   │   ├── SearchModal.tsx        # Command palette (optional - if selected)
+│   │   ├── ThemeToggle.tsx        # Theme switcher (optional - if selected)
+│   │   ├── SettingsModal.tsx      # Settings form (optional - if selected)
+│   │   ├── ProfileModal.tsx       # Profile editor (optional - if selected)
+│   │   ├── HelpPanel.tsx          # Help drawer (optional - if selected)
+│   │   ├── FeedbackModal.tsx      # Feedback form (optional - if selected)
+│   │   ├── MobileMenuDrawer.tsx   # Mobile nav drawer (optional - if selected)
+│   │   └── index.ts               # Exports all created components
+│   └── ShellPreview.tsx           # Wired preview wrapper (Design OS only)
 │
 └── sections/
     └── [section-name]/
@@ -754,6 +764,144 @@ View relationships are documented but preview wrappers are NOT exported:
 
 ---
 
+## Shell Relationships
+
+Similar to View Relationships for sections, Shell Relationships wire interactive shell elements (header actions, user menu items) to their corresponding secondary components (drawers, modals).
+
+### Defining Relationships in shell spec.md
+
+The `/design-shell` command (Step 3.6) asks about interactive elements and stores relationships in the spec:
+
+```markdown
+## Shell Relationships
+
+- HeaderAction.notifications -> NotificationsDrawer (drawer, notifications)
+- HeaderAction.search -> SearchModal (modal, none)
+- HeaderAction.help -> HelpPanel (drawer, helpTopics)
+- HeaderAction.theme -> ThemeToggle (inline, none)
+- UserMenu.profile -> ProfileModal (modal, user)
+- UserMenu.settings -> SettingsModal (modal, settings)
+- UserMenu.feedback -> FeedbackModal (modal, none)
+- MobileNav.toggle -> MobileMenuDrawer (drawer, none)
+```
+
+**Format:** `[Trigger].[action] -> [Component] ([type], [dataRef])`
+
+### Trigger Types
+
+| Trigger        | Source                           | Example Action        |
+| -------------- | -------------------------------- | --------------------- |
+| `HeaderAction` | Header toolbar buttons           | `notifications`, `search`, `help` |
+| `UserMenu`     | User dropdown menu items         | `profile`, `settings`, `feedback` |
+| `MobileNav`    | Mobile navigation                | `toggle`              |
+
+### Relationship Types
+
+| Type     | UI Component | Use Case                                    |
+| -------- | ------------ | ------------------------------------------- |
+| `drawer` | `<Sheet>`    | Side panel for notifications, help, mobile menu |
+| `modal`  | `<Dialog>`   | Centered overlay for search, settings, profile |
+| `inline` | Direct render | Theme toggle button rendered directly in header |
+
+### Data References
+
+| Ref             | Description                        | Props Interface                     |
+| --------------- | ---------------------------------- | ----------------------------------- |
+| `notifications` | Notification list from shell data  | `NotificationsDrawerProps`          |
+| `user`          | User profile data                  | `ProfileModalProps`                 |
+| `settings`      | Settings configuration             | `SettingsModalProps`                |
+| `helpTopics`    | Help documentation                 | `HelpPanelProps`                    |
+| `none`          | No data needed (just callbacks)    | Component-specific callbacks only   |
+
+### How It Works
+
+1. **`/design-shell` Step 3.6** — Asks about interactive elements, records selections
+2. **`/design-shell` Step 6.6** — Adds `## Shell Relationships` to spec.md
+3. **`/design-shell` Step 6.7-6.8** — Creates `data.json` and `types.ts` for shell
+4. **`/design-shell` Step 7** — Creates secondary components based on selections
+5. **`/design-shell` Step 8** — Creates wired ShellPreview with state management
+6. **Preview** — Click works! Opens drawer/modal with actual data
+
+### Wired Shell Preview Pattern
+
+ShellPreview uses state to wire handlers instead of console.log:
+
+```tsx
+// Wired shell preview (Design OS only)
+export default function ShellPreview() {
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  // ... state for each secondary component
+
+  return (
+    <>
+      <AppShell
+        onHeaderAction={(actionId) => {
+          if (actionId === 'notifications') setIsNotificationsOpen(true)
+          if (actionId === 'search') setIsSearchOpen(true)
+        }}
+        onProfileClick={() => setIsProfileOpen(true)}
+        // ... other wired handlers
+      >
+        {/* Content */}
+      </AppShell>
+
+      <Sheet open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
+        <SheetContent>
+          <NotificationsDrawer
+            notifications={data.notifications}
+            onClose={() => setIsNotificationsOpen(false)}
+            // ... other props
+          />
+        </SheetContent>
+      </Sheet>
+
+      {/* ... other secondary components */}
+    </>
+  )
+}
+```
+
+### Shell Data & Types
+
+**`product/shell/data.json`** — Sample data for secondary components:
+
+```json
+{
+  "_meta": {
+    "description": "Sample data for shell interactive components",
+    "generatedBy": "/design-shell",
+    "models": {
+      "notifications": "List of user notifications",
+      "user": "Current user profile",
+      "settings": "User preferences"
+    }
+  },
+  "notifications": [...],
+  "user": {...},
+  "settings": {...}
+}
+```
+
+**`product/shell/types.ts`** — TypeScript interfaces for all shell components.
+
+### Keyboard Shortcuts
+
+When SearchModal is selected, ShellPreview wires keyboard shortcuts:
+
+- **Cmd+K / Ctrl+K** — Opens search modal
+- **Escape** — Closes any open modal/drawer
+
+### Export Behavior
+
+Shell relationships are documented but ShellPreview is NOT exported:
+
+- Secondary components are exported to `product-plan/shell/components/`
+- Shell README.md documents the relationships
+- Wiring implementation depends on target codebase's state management
+
+---
+
 ## Design Direction Document
 
 The Design Direction document captures aesthetic decisions made during shell design and ensures consistency across all sections.
@@ -871,14 +1019,39 @@ When you need a new feature in AppShell:
 
 ### Shell Spec Sections
 
-| Section               | Prop              | Description                          |
-| --------------------- | ----------------- | ------------------------------------ |
-| `## Context Selector` | `contextSelector` | Organization/client/workspace picker |
-| `## Breadcrumbs`      | `breadcrumbs`     | Navigation hierarchy paths           |
-| `## Header Actions`   | `headerActions`   | Header action buttons                |
-| `## Layout Pattern`   | `layoutVariant`   | Shell layout style                   |
+| Section                 | Prop                | Description                                 |
+| ----------------------- | ------------------- | ------------------------------------------- |
+| `## Context Selector`   | `contextSelector`   | Organization/client/workspace picker        |
+| `## Breadcrumbs`        | `breadcrumbs`       | Navigation hierarchy paths                  |
+| `## Header Actions`     | `headerActions`     | Header action buttons                       |
+| `## Layout Pattern`     | `layoutVariant`     | Shell layout style                          |
+| `## Shell Relationships`| `shellRelationships`| Mapping of triggers to secondary components |
 
 > **Note:** Additional props like `categories`, `user`, `currentSection`, and `currentView` are provided by `ScreenDesignPage` at runtime to enable navigation and context display. These are not parsed from spec.md.
+
+### Secondary Component Passthrough
+
+When viewing screen designs, ScreenDesignPage also manages secondary shell components:
+
+1. **Shell relationships parsed** — `getShellProps()` parses `## Shell Relationships` from spec.md
+2. **State managed in ScreenDesignPage** — State for each secondary component (isNotificationsOpen, etc.)
+3. **Handlers wired** — onHeaderAction, onProfileClick, etc. update state
+4. **Secondary components rendered** — Sheet/Dialog wrappers with actual components
+
+**Key callbacks passed to AppShell:**
+
+| Callback               | Purpose                           | Wires To                    |
+| ---------------------- | --------------------------------- | --------------------------- |
+| `onHeaderAction`       | Header button clicks              | Opens drawer/modal by ID    |
+| `onNotificationsClick` | Bell icon click                   | `setIsNotificationsOpen(true)` |
+| `onSearchClick`        | Search icon / Cmd+K               | `setIsSearchOpen(true)`     |
+| `onHelpClick`          | Help icon click                   | `setIsHelpOpen(true)`       |
+| `onProfileClick`       | Profile menu item                 | `setIsProfileOpen(true)`    |
+| `onSettingsClick`      | Settings menu item                | `setIsSettingsOpen(true)`   |
+| `onFeedbackClick`      | Feedback menu item                | `setIsFeedbackOpen(true)`   |
+| `onMobileMenuToggle`   | Mobile hamburger menu             | `setIsMobileMenuOpen(true)` |
+
+This ensures secondary shell components work in preview just like section view relationships.
 
 ### Example: Context Selector
 
