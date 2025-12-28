@@ -896,6 +896,8 @@ grep -rh 'p-[0-9]\+\|px-[0-9]\+\|py-[0-9]\+' src/sections/*/components/*.tsx 2>/
 
 ## Step 6: Create the Props-Based Component
 
+> **Note:** This step creates an **exportable component** — portable to any React codebase because it receives all data via props. It never imports data directly. The preview wrapper (Step 8) handles loading sample data for Design OS previews.
+
 ### Create Directory
 
 First, create the necessary directories if they don't exist:

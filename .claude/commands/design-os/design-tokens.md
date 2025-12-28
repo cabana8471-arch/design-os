@@ -62,6 +62,8 @@ Use AskUserQuestion to gather their preferences if they're unsure:
 
 ## Step 4: Choose Typography
 
+> **Note:** All fonts must be available on Google Fonts. Before suggesting a font, verify it exists at fonts.google.com. If a user requests a font that's not on Google Fonts, suggest the closest available alternative.
+
 Help the user select Google Fonts:
 
 "For typography, we'll use Google Fonts for easy web integration.

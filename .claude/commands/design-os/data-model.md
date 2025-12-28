@@ -2,6 +2,8 @@
 
 You are helping the user define the core data model for their product. This establishes the "nouns" of the system — the entities and their relationships.
 
+> **Scope:** The data model defines global entities shared across sections. Individual sections may have additional local entities. When running `/sample-data` for a section, entity names should match those defined here for consistency.
+
 ## Step 1: Check Prerequisites
 
 First, verify that the product overview and roadmap exist:

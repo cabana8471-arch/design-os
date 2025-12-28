@@ -141,6 +141,8 @@ Before proceeding, verify all 12 required template files exist. If any are missi
 - `.claude/templates/design-os/section/clarifying-questions.md`
 - `.claude/templates/design-os/section/tdd-workflow.md`
 
+> **See also:** `.claude/templates/design-os/README.md` for complete documentation on the template system, including assembly order and variable substitution.
+
 **Required skill file:**
 
 - `.claude/skills/frontend-design/SKILL.md` — Design guidance (copied to export in Step 7)

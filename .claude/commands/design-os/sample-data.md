@@ -380,6 +380,9 @@ If a data model exists at `product/data-model/data-model.md`, verify entity name
 | types.ts interfaces | Singular PascalCase | `Invoice`, `Customer`   |
 
 ```bash
+# Prerequisite: SECTION_ID must be set (e.g., SECTION_ID="invoices")
+# This is typically set earlier when the user selects which section to work on.
+
 # Check if data model exists
 if [ -f "product/data-model/data-model.md" ]; then
   # Extract entity names from data model
