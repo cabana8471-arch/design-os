@@ -150,7 +150,15 @@ If shell exists, the screen design will render inside the shell in Design OS. If
 
 If design direction exists, read it and display a confirmation:
 
-"I found your Design Direction document. I'll ensure this screen design follows the established aesthetic."
+"I found your Design Direction document. I'll ensure this screen design follows the established aesthetic: [aesthetic tone from document]"
+
+Read the key sections:
+
+- **Visual Signatures** — Elements that MUST appear consistently
+- **Color Application** — How primary/secondary/neutral colors are used
+- **Motion & Interaction** — Animation style and timing
+- **Typography Treatment** — How typography creates hierarchy
+- **Consistency Guidelines** — Rules that MUST remain consistent
 
 ### Parse Design Direction
 
