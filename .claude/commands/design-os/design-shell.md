@@ -385,7 +385,7 @@ The shell spec supports additional sections for enhanced functionality:
 
 These sections are parsed by `getShellProps()` in `shell-loader.ts` and passed to AppShell automatically via the complete passthrough pattern.
 
-## Multi-View Navigation Routing
+### Multi-View Navigation Routing
 
 When a section has multiple views (e.g., ListView and DetailView), here's how routing works:
 
