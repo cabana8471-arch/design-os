@@ -95,33 +95,33 @@ Generate the complete export package with all components, types, and handoff doc
 
 ### Files Generated Per Command
 
-| Command              | Creates                                                                                                         | Location                                                                          |
-| -------------------- | --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `/product-vision`    | `product-overview.md`                                                                                           | `product/`                                                                        |
-| `/product-roadmap`   | `product-roadmap.md`                                                                                            | `product/`                                                                        |
-| `/data-model`        | `data-model.md`                                                                                                 | `product/data-model/`                                                             |
-| `/design-tokens`     | `colors.json`, `typography.json`                                                                                | `product/design-system/`                                                          |
-| `/design-shell`      | `spec.md`, `data.json`, `types.ts`, `design-direction.md`, Primary components (`AppShell.tsx`, `MainNav.tsx`, `UserMenu.tsx`), Secondary components (based on selection: `NotificationsDrawer.tsx`, `SearchModal.tsx`, `ThemeToggle.tsx`, etc.), `index.ts`, `ShellPreview.tsx` | `product/shell/`, `product/design-system/`, `src/shell/components/`, `src/shell/` |
-| `/shape-section`     | `spec.md`                                                                                                       | `product/sections/[section-id]/`                                                  |
-| `/sample-data`       | `data.json`, `types.ts`                                                                                         | `product/sections/[section-id]/`                                                  |
-| `/design-screen`     | `[ViewName].tsx`, `components/*.tsx`, `components/index.ts`                                                     | `src/sections/[section-id]/`                                                      |
-| `/screenshot-design` | `[view-name].png`                                                                                               | `product/sections/[section-id]/`                                                  |
-| `/export-product`    | Complete export package                                                                                         | `product-plan/`                                                                   |
+| Command              | Creates                                                                                                                                                                                                                                                     | Location                                                            |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `/product-vision`    | `product-overview.md`                                                                                                                                                                                                                                       | `product/`                                                          |
+| `/product-roadmap`   | `product-roadmap.md`                                                                                                                                                                                                                                        | `product/`                                                          |
+| `/data-model`        | `data-model.md`                                                                                                                                                                                                                                             | `product/data-model/`                                               |
+| `/design-tokens`     | `colors.json`, `typography.json`                                                                                                                                                                                                                            | `product/design-system/`                                            |
+| `/design-shell`      | `spec.md`, `data.json`, `types.ts`, `design-direction.md`, Primary components (`AppShell.tsx`, `MainNav.tsx`, `UserMenu.tsx`), Secondary components (based on selection: `NotificationsDrawer.tsx`, `SearchModal.tsx`, `ThemeToggle.tsx`, etc.), `index.ts` | `product/shell/`, `product/design-system/`, `src/shell/components/` |
+| `/shape-section`     | `spec.md`                                                                                                                                                                                                                                                   | `product/sections/[section-id]/`                                    |
+| `/sample-data`       | `data.json`, `types.ts`                                                                                                                                                                                                                                     | `product/sections/[section-id]/`                                    |
+| `/design-screen`     | `[ViewName].tsx`, `components/*.tsx`, `components/index.ts`                                                                                                                                                                                                 | `src/sections/[section-id]/`                                        |
+| `/screenshot-design` | `[view-name].png`                                                                                                                                                                                                                                           | `product/sections/[section-id]/`                                    |
+| `/export-product`    | Complete export package                                                                                                                                                                                                                                     | `product-plan/`                                                     |
 
 ### Command Prerequisites
 
-| Command              | Required                                    | Optional                                                     |
-| -------------------- | ------------------------------------------- | ------------------------------------------------------------ |
-| `/product-vision`    | —                                           | —                                                            |
-| `/product-roadmap`   | `product-overview.md`                       | —                                                            |
-| `/data-model`        | `product-overview.md`                       | `product-roadmap.md`                                         |
-| `/design-tokens`     | `product-overview.md`                       | —                                                            |
+| Command              | Required                                    | Optional                                                           |
+| -------------------- | ------------------------------------------- | ------------------------------------------------------------------ |
+| `/product-vision`    | —                                           | —                                                                  |
+| `/product-roadmap`   | `product-overview.md`                       | —                                                                  |
+| `/data-model`        | `product-overview.md`                       | `product-roadmap.md`                                               |
+| `/design-tokens`     | `product-overview.md`                       | —                                                                  |
 | `/design-shell`      | `product-overview.md`                       | Design tokens, Sections, UI components (Sheet, Dialog), `SKILL.md` |
-| `/shape-section`     | `product-overview.md`, `product-roadmap.md` | Data model, Shell spec                                       |
-| `/sample-data`       | Section `spec.md`                           | Data model                                                   |
-| `/design-screen`     | Section `spec.md`, `data.json`, `types.ts`  | Design tokens, Shell components, `SKILL.md`                  |
-| `/screenshot-design` | Screen design components                    | Playwright MCP                                               |
-| `/export-product`    | `product-overview.md`, at least one section | Shell components, All sections                               |
+| `/shape-section`     | `product-overview.md`, `product-roadmap.md` | Data model, Shell spec                                             |
+| `/sample-data`       | Section `spec.md`                           | Data model                                                         |
+| `/design-screen`     | Section `spec.md`, `data.json`, `types.ts`  | Design tokens, Shell components, `SKILL.md`                        |
+| `/screenshot-design` | Screen design components                    | Playwright MCP                                                     |
+| `/export-product`    | `product-overview.md`, at least one section | Shell components, All sections                                     |
 
 **Legend:**
 
@@ -214,7 +214,9 @@ src/
 │   │   ├── FeedbackModal.tsx      # Feedback form (optional - if selected)
 │   │   ├── MobileMenuDrawer.tsx   # Mobile nav drawer (optional - if selected)
 │   │   └── index.ts               # Exports all created components
-│   └── ShellPreview.tsx           # Wired preview wrapper (Design OS only)
+│   ├── hooks/                     # Shell utility hooks
+│   │   └── index.ts               # Exports all hooks
+│   └── index.ts                   # Main shell module export
 │
 └── sections/
     └── [section-name]/
@@ -789,29 +791,29 @@ The `/design-shell` command (Step 3.6) asks about interactive elements and store
 
 ### Trigger Types
 
-| Trigger        | Source                           | Example Action        |
-| -------------- | -------------------------------- | --------------------- |
-| `HeaderAction` | Header toolbar buttons           | `notifications`, `search`, `help` |
-| `UserMenu`     | User dropdown menu items         | `profile`, `settings`, `feedback` |
-| `MobileNav`    | Mobile navigation                | `toggle`              |
+| Trigger        | Source                   | Example Action                    |
+| -------------- | ------------------------ | --------------------------------- |
+| `HeaderAction` | Header toolbar buttons   | `notifications`, `search`, `help` |
+| `UserMenu`     | User dropdown menu items | `profile`, `settings`, `feedback` |
+| `MobileNav`    | Mobile navigation        | `toggle`                          |
 
 ### Relationship Types
 
-| Type     | UI Component | Use Case                                    |
-| -------- | ------------ | ------------------------------------------- |
-| `drawer` | `<Sheet>`    | Side panel for notifications, help, mobile menu |
-| `modal`  | `<Dialog>`   | Centered overlay for search, settings, profile |
+| Type     | UI Component  | Use Case                                        |
+| -------- | ------------- | ----------------------------------------------- |
+| `drawer` | `<Sheet>`     | Side panel for notifications, help, mobile menu |
+| `modal`  | `<Dialog>`    | Centered overlay for search, settings, profile  |
 | `inline` | Direct render | Theme toggle button rendered directly in header |
 
 ### Data References
 
-| Ref             | Description                        | Props Interface                     |
-| --------------- | ---------------------------------- | ----------------------------------- |
-| `notifications` | Notification list from shell data  | `NotificationsDrawerProps`          |
-| `user`          | User profile data                  | `ProfileModalProps`                 |
-| `settings`      | Settings configuration             | `SettingsModalProps`                |
-| `helpTopics`    | Help documentation                 | `HelpPanelProps`                    |
-| `none`          | No data needed (just callbacks)    | Component-specific callbacks only   |
+| Ref             | Description                       | Props Interface                   |
+| --------------- | --------------------------------- | --------------------------------- |
+| `notifications` | Notification list from shell data | `NotificationsDrawerProps`        |
+| `user`          | User profile data                 | `ProfileModalProps`               |
+| `settings`      | Settings configuration            | `SettingsModalProps`              |
+| `helpTopics`    | Help documentation                | `HelpPanelProps`                  |
+| `none`          | No data needed (just callbacks)   | Component-specific callbacks only |
 
 ### How It Works
 
@@ -829,16 +831,16 @@ ShellPreview uses state to wire handlers instead of console.log:
 ```tsx
 // Wired shell preview (Design OS only)
 export default function ShellPreview() {
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   // ... state for each secondary component
 
   return (
     <>
       <AppShell
         onHeaderAction={(actionId) => {
-          if (actionId === 'notifications') setIsNotificationsOpen(true)
-          if (actionId === 'search') setIsSearchOpen(true)
+          if (actionId === "notifications") setIsNotificationsOpen(true);
+          if (actionId === "search") setIsSearchOpen(true);
         }}
         onProfileClick={() => setIsProfileOpen(true)}
         // ... other wired handlers
@@ -858,7 +860,7 @@ export default function ShellPreview() {
 
       {/* ... other secondary components */}
     </>
-  )
+  );
 }
 ```
 
@@ -1019,13 +1021,13 @@ When you need a new feature in AppShell:
 
 ### Shell Spec Sections
 
-| Section                 | Prop                | Description                                 |
-| ----------------------- | ------------------- | ------------------------------------------- |
-| `## Context Selector`   | `contextSelector`   | Organization/client/workspace picker        |
-| `## Breadcrumbs`        | `breadcrumbs`       | Navigation hierarchy paths                  |
-| `## Header Actions`     | `headerActions`     | Header action buttons                       |
-| `## Layout Pattern`     | `layoutVariant`     | Shell layout style                          |
-| `## Shell Relationships`| `shellRelationships`| Mapping of triggers to secondary components |
+| Section                  | Prop                 | Description                                 |
+| ------------------------ | -------------------- | ------------------------------------------- |
+| `## Context Selector`    | `contextSelector`    | Organization/client/workspace picker        |
+| `## Breadcrumbs`         | `breadcrumbs`        | Navigation hierarchy paths                  |
+| `## Header Actions`      | `headerActions`      | Header action buttons                       |
+| `## Layout Pattern`      | `layoutVariant`      | Shell layout style                          |
+| `## Shell Relationships` | `shellRelationships` | Mapping of triggers to secondary components |
 
 > **Note:** Additional props like `categories`, `user`, `currentSection`, and `currentView` are provided by `ScreenDesignPage` at runtime to enable navigation and context display. These are not parsed from spec.md.
 
@@ -1040,16 +1042,16 @@ When viewing screen designs, ScreenDesignPage also manages secondary shell compo
 
 **Key callbacks passed to AppShell:**
 
-| Callback               | Purpose                           | Wires To                    |
-| ---------------------- | --------------------------------- | --------------------------- |
-| `onHeaderAction`       | Header button clicks              | Opens drawer/modal by ID    |
-| `onNotificationsClick` | Bell icon click                   | `setIsNotificationsOpen(true)` |
-| `onSearchClick`        | Search icon / Cmd+K               | `setIsSearchOpen(true)`     |
-| `onHelpClick`          | Help icon click                   | `setIsHelpOpen(true)`       |
-| `onProfileClick`       | Profile menu item                 | `setIsProfileOpen(true)`    |
-| `onSettingsClick`      | Settings menu item                | `setIsSettingsOpen(true)`   |
-| `onFeedbackClick`      | Feedback menu item                | `setIsFeedbackOpen(true)`   |
-| `onMobileMenuToggle`   | Mobile hamburger menu             | `setIsMobileMenuOpen(true)` |
+| Callback               | Purpose               | Wires To                       |
+| ---------------------- | --------------------- | ------------------------------ |
+| `onHeaderAction`       | Header button clicks  | Opens drawer/modal by ID       |
+| `onNotificationsClick` | Bell icon click       | `setIsNotificationsOpen(true)` |
+| `onSearchClick`        | Search icon / Cmd+K   | `setIsSearchOpen(true)`        |
+| `onHelpClick`          | Help icon click       | `setIsHelpOpen(true)`          |
+| `onProfileClick`       | Profile menu item     | `setIsProfileOpen(true)`       |
+| `onSettingsClick`      | Settings menu item    | `setIsSettingsOpen(true)`      |
+| `onFeedbackClick`      | Feedback menu item    | `setIsFeedbackOpen(true)`      |
+| `onMobileMenuToggle`   | Mobile hamburger menu | `setIsMobileMenuOpen(true)`    |
 
 This ensures secondary shell components work in preview just like section view relationships.
 
@@ -1491,38 +1493,34 @@ Utility components and hooks available in `src/shell/` for building shell featur
 
 **Components (`src/shell/components/`):**
 
-| Component | Priority | Purpose |
-|-----------|----------|---------|
-| `SkipLink` | High | Skip-to-content accessibility link |
-| `ShellErrorBoundary` | High | Error boundary for secondary components |
-| `LogoArea` | Medium | Customizable logo/branding area |
-| `ThemeToggle` | Medium | Light/dark/system theme switcher |
-| `ShellSkeleton` | Medium | Loading skeleton states |
-| `ShellFooter` | Low | Optional footer with version/links |
+| Component            | Priority | Purpose                                 |
+| -------------------- | -------- | --------------------------------------- |
+| `SkipLink`           | High     | Skip-to-content accessibility link      |
+| `ShellErrorBoundary` | High     | Error boundary for secondary components |
+| `LogoArea`           | Medium   | Customizable logo/branding area         |
+| `ThemeToggle`        | Medium   | Light/dark/system theme switcher        |
+| `ShellSkeleton`      | Medium   | Loading skeleton states                 |
+| `ShellFooter`        | Low      | Optional footer with version/links      |
 
 **Hooks (`src/shell/hooks/`):**
 
-| Hook | Priority | Purpose |
-|------|----------|---------|
-| `useFocusManagement` | High | Focus trap and restoration for modals |
-| `useShellShortcuts` | Medium | Global keyboard shortcuts (Cmd+K, etc.) |
-| `useShellState` | Medium | Persistent UI state (sidebar, nav groups) |
-| `useSessionTimeout` | Low | Session inactivity timeout with warning |
+| Hook                 | Priority | Purpose                                   |
+| -------------------- | -------- | ----------------------------------------- |
+| `useFocusManagement` | High     | Focus trap and restoration for modals     |
+| `useShellShortcuts`  | Medium   | Global keyboard shortcuts (Cmd+K, etc.)   |
+| `useShellState`      | Medium   | Persistent UI state (sidebar, nav groups) |
+| `useSessionTimeout`  | Low      | Session inactivity timeout with warning   |
 
 **Usage:**
 
 ```tsx
-import {
-  SkipLink,
-  ShellErrorBoundary,
-  ThemeToggle
-} from '@/shell/components'
+import { SkipLink, ShellErrorBoundary, ThemeToggle } from "@/shell/components";
 
 import {
   useFocusManagement,
   useShellShortcuts,
-  useShellState
-} from '@/shell/hooks'
+  useShellState,
+} from "@/shell/hooks";
 ```
 
 ---
