@@ -559,6 +559,14 @@ Example rules:
 - **Skill file used**: [Yes/No]
 - **User choices**: Recorded in Step 3.5 of /design-shell
 - **Design tokens**: [colors.json and typography.json if available]
+- **Fallback tone**: [If skill file not used, which aesthetic tone was chosen from fallback options]
+
+**Populate the document by:**
+
+1. Extracting the aesthetic choices made when applying the frontend-design skill (or fallback options)
+2. Documenting the layout pattern selected and key visual decisions from the shell design
+3. Recording specific color, typography, and motion patterns used in the shell components
+4. Noting any distinctive elements that make this shell unique (visual signatures, special interactions)
 ```
 
 ### How to Generate the AI Sections
