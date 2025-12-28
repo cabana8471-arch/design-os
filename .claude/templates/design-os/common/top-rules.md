@@ -1,4 +1,5 @@
 <!-- v1.0.0 -->
+<!-- Usage: Include at the start of both one-shot and section prompts as critical rules -->
 
 ## TOP 4 RULES FOR IMPLEMENTATION
 

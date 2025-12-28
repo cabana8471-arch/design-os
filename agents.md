@@ -114,7 +114,7 @@ Generate the complete export package with all components, types, and handoff doc
 | -------------------- | ------------------------------------------- | ------------------------------------------------------------------ |
 | `/product-vision`    | —                                           | —                                                                  |
 | `/product-roadmap`   | `product-overview.md`                       | —                                                                  |
-| `/data-model`        | `product-overview.md`                       | `product-roadmap.md`                                               |
+| `/data-model`        | `product-overview.md`, `product-roadmap.md` | —                                                                  |
 | `/design-tokens`     | `product-overview.md`                       | —                                                                  |
 | `/design-shell`      | `product-overview.md`                       | Design tokens, Sections, UI components (Sheet, Dialog), `SKILL.md` |
 | `/shape-section`     | `product-overview.md`, `product-roadmap.md` | Data model, Shell spec                                             |
@@ -998,6 +998,8 @@ Design OS separates concerns between its own UI and the product being designed:
 ## Shell Props Passthrough
 
 When viewing screen designs in Design OS, `ScreenDesignPage.tsx` wraps them in AppShell. To ensure ALL shell features appear in preview (breadcrumbs, context selector, header actions, etc.), Design OS uses a **complete passthrough pattern**.
+
+> **Note:** `ScreenDesignPage` uses iframe isolation for CSS encapsulation. The actual shell wrapping occurs in `ScreenDesignFullscreen` (the `/fullscreen` route), which calls `getShellProps()` and passes props to AppShell.
 
 ### How It Works
 

@@ -325,6 +325,8 @@ Then validate the directory was created:
 if [ ! -d "product/design-system" ]; then
   echo "Error: product/design-system/ - Directory creation failed. Check write permissions."
   exit 1
+else
+  echo "Directory product/design-system/ validated successfully"
 fi
 ```
 

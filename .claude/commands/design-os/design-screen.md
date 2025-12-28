@@ -972,12 +972,12 @@ The component MUST:
 
 Components in Design OS use relative import paths. Here's how imports work for different file types:
 
-| File Type                               | Import From Component  | Example                                                                                       |
-| --------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------- |
-| **Types** (types.ts in product/)        | Alias path via product | `import type { InvoiceListProps } from '@/../product/sections/invoices/types'`                |
-| **Sample data** (data.json in product/) | Alias path via product | `import invoiceData from '@/../product/sections/invoices/data.json'` (preview wrappers only!) |
-| **Sub-components** (in same directory)  | Relative path          | `import { StatusBadge } from './StatusBadge'`                                                 |
-| **UI components** (shared library)      | Alias path             | `import { Button } from '@/components/ui/button'`                                             |
+| File Type                               | Import Strategy         | Example                                                                                       |
+| --------------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------- |
+| **Types** (types.ts in product/)        | Relative via `@/` alias | `import type { InvoiceListProps } from '@/../product/sections/invoices/types'`                |
+| **Sample data** (data.json in product/) | Relative via `@/` alias | `import invoiceData from '@/../product/sections/invoices/data.json'` (preview wrappers only!) |
+| **Sub-components** (in same directory)  | Relative path           | `import { StatusBadge } from './StatusBadge'`                                                 |
+| **UI components** (shared library)      | Alias path              | `import { Button } from '@/components/ui/button'`                                             |
 
 **Path Resolution:**
 

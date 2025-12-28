@@ -71,22 +71,24 @@ section/tdd-workflow.md
 
 ### Cross-Template References
 
-| Template                      | References                                           |
-| ----------------------------- | ---------------------------------------------------- |
-| `one-shot/prompt-template.md` | References files in `product-plan/` structure        |
-| `section/prompt-template.md`  | References section-specific files only               |
-| `common/tdd-workflow.md`      | References `01-foundation.md` instructions           |
-| `section/tdd-workflow.md`     | References section `tests.md` and `sample-data.json` |
+| Template                      | References                                                |
+| ----------------------------- | --------------------------------------------------------- |
+| `one-shot/prompt-template.md` | References files in `product-plan/` structure             |
+| `section/prompt-template.md`  | References section-specific files only                    |
+| `common/tdd-workflow.md`      | Describes TDD approach for full implementation (tests.md) |
+| `section/tdd-workflow.md`     | Describes TDD approach for sections (tests.md, types.ts)  |
 
 ### Variable Substitution
 
-Section templates use placeholder variables that users must replace:
+Section templates use placeholder variables. **Only the assembled `section-prompt.md` requires user substitution** — these variables are left in place for users to fill in for each section they implement:
 
-| Variable       | Description                  | Example              |
-| -------------- | ---------------------------- | -------------------- |
-| `SECTION_NAME` | Human-readable section title | "Invoice Management" |
-| `SECTION_ID`   | URL-safe section identifier  | "invoice-management" |
-| `NN`           | Two-digit milestone number   | "02", "03", etc.     |
+| Variable       | Used In                                             | Description                  | Example              |
+| -------------- | --------------------------------------------------- | ---------------------------- | -------------------- |
+| `SECTION_NAME` | `section/preamble.md`                               | Human-readable section title | "Invoice Management" |
+| `SECTION_ID`   | `section/preamble.md`, `section/prompt-template.md` | URL-safe section identifier  | "invoice-management" |
+| `NN`           | `section/preamble.md`, `section/prompt-template.md` | Two-digit milestone number   | "02", "03", etc.     |
+
+> **Note:** Templates in `common/` and `section/clarifying-questions.md`, `section/tdd-workflow.md` do not use these variables — they work as-is.
 
 ---
 

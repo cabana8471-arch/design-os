@@ -6,6 +6,67 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-28 21:45] Critical Analysis: 12 Issues Fixed
+
+### Description
+
+Comprehensive critical analysis of all Design OS boilerplate files. Identified and fixed 12 genuine issues (2 High, 5 Medium, 5 Low priority). Analysis used 3 parallel exploration agents covering: command files, agents.md/source files, and templates/skills.
+
+### Issues Fixed
+
+#### High Priority (2)
+
+| Issue                                                     | File                         | Fix                                                                                                           |
+| --------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| H1: ShellPreview.tsx documented but doesn't exist         | `agents.md`                  | Removed from Files Generated table (line 104) and file structure (line 217), added actual hooks/ and index.ts |
+| H2: product-roadmap.md should be required for /data-model | `data-model.md`, `agents.md` | Changed from optional to required per user preference                                                         |
+
+#### Medium Priority (5)
+
+| Issue                                               | File                              | Fix                                                                          |
+| --------------------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------- |
+| M1: Error message format inconsistent               | `design-tokens.md`                | Changed `Missing:` → `Error:` format (line 14)                               |
+| M2: Import path documentation misleading            | `design-screen.md`                | Changed "Alias path via product" → "Relative via `@/` alias" (lines 975-978) |
+| M3: Entity singularization has false positives      | `data-model.md`                   | Extended regex to exclude `-ss, -us, -is, -ness, -ess` endings (line 176)    |
+| M4: Template version missing -section suffix        | `section/clarifying-questions.md` | Changed `v1.1.0` → `v1.1.0-section`                                          |
+| M5: Template cross-references overstate specificity | `templates/README.md`             | Updated table to accurately describe template content                        |
+
+#### Low Priority (5)
+
+| Issue                                                | File                  | Fix                                                                         |
+| ---------------------------------------------------- | --------------------- | --------------------------------------------------------------------------- |
+| L1: Motion library reference vague                   | `SKILL.md`            | Clarified "Framer Motion for React if available, otherwise CSS transitions" |
+| L2: Shell Props Passthrough documentation imprecise  | `agents.md`           | Added note about iframe isolation and ScreenDesignFullscreen                |
+| L3: Usage comments inconsistently applied            | `common/*.md`         | Added usage comments to 4 templates                                         |
+| L4: Variable substitution documentation incomplete   | `templates/README.md` | Expanded table with "Used In" column                                        |
+| L5: Missing success message after directory creation | `design-tokens.md`    | Added success message to validation block                                   |
+
+### Modified Files
+
+| File                                                           | Changes                                                       |
+| -------------------------------------------------------------- | ------------------------------------------------------------- |
+| `agents.md`                                                    | H1 (removed ShellPreview.tsx, added hooks/), L2 (iframe note) |
+| `.claude/commands/design-os/data-model.md`                     | H2 (required prerequisite), M3 (regex fix)                    |
+| `.claude/commands/design-os/design-tokens.md`                  | M1 (error format), L5 (success message)                       |
+| `.claude/commands/design-os/design-screen.md`                  | M2 (import path clarification)                                |
+| `.claude/templates/design-os/section/clarifying-questions.md`  | M4 (version suffix)                                           |
+| `.claude/templates/design-os/README.md`                        | M5 (cross-references), L4 (variable table)                    |
+| `.claude/skills/frontend-design/SKILL.md`                      | L1 (Motion clarification)                                     |
+| `.claude/templates/design-os/common/reporting-protocol.md`     | L3 (usage comment)                                            |
+| `.claude/templates/design-os/common/top-rules.md`              | L3 (usage comment)                                            |
+| `.claude/templates/design-os/common/clarifying-questions.md`   | L3 (usage comment)                                            |
+| `.claude/templates/design-os/common/verification-checklist.md` | L3 (usage comment)                                            |
+
+### Verification
+
+- All "Error:" messages follow standard format
+- No references to non-existent files (ShellPreview.tsx removed)
+- Prerequisites correctly marked as required/optional
+- Template version comments follow convention
+- Import path documentation matches actual behavior
+
+---
+
 ## [2025-12-28 19:06] Critical Analysis: 7 Issues Fixed
 
 ### Description

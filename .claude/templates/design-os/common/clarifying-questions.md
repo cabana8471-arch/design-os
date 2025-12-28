@@ -1,4 +1,5 @@
 <!-- v1.0.0 -->
+<!-- Usage: Include in one-shot prompts to gather tech stack and implementation preferences -->
 
 ## Before You Begin
 
