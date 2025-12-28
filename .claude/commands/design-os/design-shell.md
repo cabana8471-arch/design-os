@@ -435,12 +435,17 @@ mkdir -p product/design-system
 
 ### Create the Design Direction Document
 
-Create `/product/design-system/design-direction.md` using the choices from Step 3.5:
+Create `/product/design-system/design-direction.md` using the choices from Step 3.5 AND AI-generated specific guidance.
+
+**Document Structure:** The design direction document has TWO parts:
+
+1. **User Preferences** — The predefined choices from Step 3.5 (structured table)
+2. **AI-Generated Guidance** — Specific visual signatures and rules generated based on the product and choices
 
 ```markdown
 # Design Direction for [Product Name]
 
-## User Preferences (from Step 3.5)
+## User Preferences
 
 | Setting                 | Choice                                                         |
 | ----------------------- | -------------------------------------------------------------- |
@@ -449,89 +454,134 @@ Create `/product/design-system/design-direction.md` using the choices from Step 
 | **Information Density** | [User's choice: Compact/Comfortable/Spacious]                  |
 | **Responsive Priority** | [User's choice: Desktop-first/Mobile-first/Balanced]           |
 
-## Aesthetic Guidelines
+---
 
-Based on the **[Aesthetic Tone]** tone:
+## Aesthetic Tone
 
-### If Professional:
+[One sentence capturing the specific visual feeling for THIS product based on the chosen tone]
 
-- Muted color palette, clear visual hierarchy
-- Conservative typography (no playful fonts)
-- Minimal decorative elements
-- Border radius: rounded-md (subtle)
+Example: "Clean, purposeful interface with subtle depth through shadows and a muted color palette that builds trust."
 
-### If Modern:
+## Visual Signatures
 
-- High contrast color combinations
-- Bold typography with strong weight differences
-- Geometric shapes and clean lines
-- Border radius: rounded-lg to rounded-xl
+Three distinctive visual elements that MUST appear consistently across all screens:
 
-### If Minimal:
+1. **[Signature 1]** — [Specific implementation description]
+2. **[Signature 2]** — [Specific implementation description]
+3. **[Signature 3]** — [Specific implementation description]
 
-- Maximum whitespace usage
-- Monochromatic or limited color palette
-- Very subtle shadows (shadow-sm or none)
-- Border radius: rounded-sm or sharp corners
+Example signatures:
 
-### If Playful:
+- "Pill-shaped action buttons with subtle gradient on hover"
+- "Left accent border (2px primary color) on active/selected items"
+- "Subtle background blur on overlay cards and modals"
 
-- Warm, inviting color palette
-- Rounded corners throughout (rounded-xl to rounded-2xl)
-- Friendly typography choices
-- Generous padding, breathing room
+## Color Application
 
-### If Technical:
+How to apply the design token colors consistently:
 
-- Dense layouts, efficient use of space
-- Monospace fonts for data/IDs
-- Neutral colors with functional accents
-- Minimal border radius (rounded or rounded-sm)
+- **Primary usage:** [When and how to use primary color - specific scenarios]
+- **Accent pattern:** [How accents are applied - specific treatment]
+- **Neutral treatment:** [Background/border/text hierarchy - specific shades]
 
-## Animation Timing
+Example:
 
-Based on **[Animation Style]**:
+- "Primary: Reserved for CTAs and active navigation only — never for decorative elements"
+- "Accent: Status indicators and badges — success/warning/error semantic colors"
+- "Neutral: stone-50 backgrounds, stone-200 borders, stone-600 secondary text"
 
-| Style    | Hover | Entry/Exit | Micro-interactions |
-| -------- | ----- | ---------- | ------------------ |
-| None     | 0ms   | 0ms        | Disabled           |
-| Subtle   | 150ms | 200ms      | Fade only          |
-| Standard | 200ms | 300ms      | Fade + scale       |
-| Rich     | 250ms | 400ms      | Full animations    |
+## Motion & Interaction
+
+Animation approach based on the chosen style:
+
+- **Animation style:** [Specific description of motion personality]
+- **Key interactions:** [Primary interaction patterns that feel distinctive]
+- **Timing:** [Specific durations - hover, entry, exit, micro-interactions]
+
+Example:
+
+- "Animation: Subtle and professional — fade + slight vertical slide (8px)"
+- "Key interactions: Cards lift on hover (shadow-md → shadow-lg), buttons scale 1.02x on press"
+- "Timing: 150ms hover, 200ms entry, 150ms exit, 100ms micro-interactions"
+
+## Typography Treatment
+
+How typography creates hierarchy and personality:
+
+- **Heading style:** [Weight, tracking, case treatment]
+- **Body approach:** [Line height, paragraph spacing]
+- **Distinctive choices:** [One unique typographic decision for this product]
+
+Example:
+
+- "Headings: font-semibold (600), tight tracking (-0.02em), sentence case"
+- "Body: 1.6 line height, generous paragraph spacing (1.5em margin)"
+- "Distinctive: Monospace for data values and IDs (IBM Plex Mono)"
 
 ## Spacing Scale
 
 Based on **[Information Density]**:
 
-| Density     | Card Padding | Section Gap | Base Unit |
-| ----------- | ------------ | ----------- | --------- |
-| Compact     | p-3          | gap-4       | 4px       |
-| Comfortable | p-5          | gap-6       | 8px       |
-| Spacious    | p-8          | gap-10      | 12px      |
+| Context      | Compact | Comfortable | Spacious |
+| ------------ | ------- | ----------- | -------- |
+| Card Padding | p-3     | p-5         | p-8      |
+| Section Gap  | gap-4   | gap-6       | gap-10   |
+| Base Unit    | 4px     | 8px         | 12px     |
 
 ## Responsive Approach
 
 Based on **[Responsive Priority]**:
 
-| Priority      | Design First | Then Adapt      | Breakpoint Focus       |
-| ------------- | ------------ | --------------- | ---------------------- |
-| Desktop-first | 1280px+      | Down to 375px   | lg:, xl: first         |
-| Mobile-first  | 375px        | Up to 1920px    | Default, then sm:, md: |
-| Balanced      | 768px        | Both directions | All breakpoints equal  |
+| Aspect           | Desktop-first  | Mobile-first      | Balanced        |
+| ---------------- | -------------- | ----------------- | --------------- |
+| Design starts at | 1280px+        | 375px             | 768px           |
+| Then adapts      | Down to 375px  | Up to 1920px      | Both directions |
+| Breakpoint focus | lg:, xl: first | Default, then sm: | All equally     |
+
+## Consistency Guidelines
+
+Three rules that ensure visual consistency across all screens:
+
+1. **[Rule 1]** — [Specific consistency requirement]
+2. **[Rule 2]** — [Specific consistency requirement]
+3. **[Rule 3]** — [Specific consistency requirement]
+
+Example rules:
+
+- "All interactive elements use the same hover state (bg-stone-100 dark:bg-stone-800)"
+- "Empty states always include an icon (from lucide), heading, and single CTA"
+- "Card shadows are consistent: shadow-sm resting, shadow-md on hover"
+
+---
 
 ## Applied From
 
 - **Skill file used**: [Yes/No]
 - **User choices**: Recorded in Step 3.5 of /design-shell
+- **Design tokens**: [colors.json and typography.json if available]
 ```
 
-**Populate the document using:**
+### How to Generate the AI Sections
 
-1. The user's explicit answers from Step 3.5 (Aesthetic Tone, Animation Style, etc.)
-2. The conditional sections that match their choices
-3. Design tokens if available (colors.json, typography.json)
+**For each AI-generated section, base your content on:**
 
-**Why this matters:** This document serves as the definitive reference for all subsequent `/design-screen` commands. When designing sections, the agent will read this file to ensure visual consistency with the shell.
+1. **Product context** — What does this product do? Who is it for?
+2. **Aesthetic tone chosen** — Professional, Modern, Minimal, Playful, or Technical
+3. **Animation style** — None, Subtle, Standard, or Rich
+4. **Design tokens** — If colors.json and typography.json exist, reference specific colors
+
+**Guidelines for each section:**
+
+| Section                | Must Include                        | Be Specific About                              |
+| ---------------------- | ----------------------------------- | ---------------------------------------------- |
+| Aesthetic Tone         | One sentence capturing the feeling  | The emotional quality, not just adjectives     |
+| Visual Signatures      | 3 concrete elements                 | Implementation details (sizes, colors, timing) |
+| Color Application      | Primary, Accent, Neutral usage      | When to use each, specific shades              |
+| Motion & Interaction   | Style, Key interactions, Timing     | Actual durations, specific effects             |
+| Typography Treatment   | Heading, Body, Distinctive choice   | Weights, line heights, one unique decision     |
+| Consistency Guidelines | 3 rules for maintaining consistency | Specific scenarios, exact values               |
+
+**Why this matters:** This document serves as the definitive reference for all subsequent `/design-screen` commands. The combination of structured tables (for quick reference) and AI-generated specifics (for implementation guidance) ensures both consistency and distinctiveness.
 
 > **Recovery:** If this step fails, manually create the file at `product/design-system/design-direction.md` with the template above. The `/design-screen` command will warn if this file is missing but can still proceed.
 

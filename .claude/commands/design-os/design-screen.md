@@ -210,6 +210,72 @@ Based on the **Responsive Priority** value:
 | Mobile-first  | Design for default (mobile) first, enhance with md:, lg:     |
 | Balanced      | Design all breakpoints equally, test at 375px, 768px, 1024px |
 
+### Parse AI-Generated Guidance Sections
+
+In addition to the User Preferences table, the design-direction.md contains AI-generated specific guidance that MUST be applied:
+
+**6. Visual Signatures:**
+
+Extract the 3 distinctive elements from `## Visual Signatures`:
+
+```
+Visual Signatures to apply:
+1. [Signature 1] — implement consistently across all components
+2. [Signature 2] — implement consistently across all components
+3. [Signature 3] — implement consistently across all components
+```
+
+**How to apply:** These are mandatory visual patterns. Every component you create must include these signatures where applicable (e.g., if signature is "left accent border on active items", apply it to all active/selected states).
+
+**7. Color Application:**
+
+Extract the rules from `## Color Application`:
+
+| Color Type | Application Rule                       |
+| ---------- | -------------------------------------- |
+| Primary    | [Extracted primary usage rule]         |
+| Accent     | [Extracted accent pattern]             |
+| Neutral    | [Extracted neutral treatment + shades] |
+
+**How to apply:** Follow these rules exactly. If primary is "reserved for CTAs only", never use it for decorative elements.
+
+**8. Motion & Interaction:**
+
+Extract from `## Motion & Interaction`:
+
+| Aspect           | Value                           |
+| ---------------- | ------------------------------- |
+| Animation style  | [Description of motion feel]    |
+| Key interactions | [Specific interaction patterns] |
+| Timing           | [Exact durations]               |
+
+**How to apply:** Use these exact timings and effects. If "cards lift on hover", implement `hover:shadow-lg` consistently.
+
+**9. Typography Treatment:**
+
+Extract from `## Typography Treatment`:
+
+| Aspect              | Value                         |
+| ------------------- | ----------------------------- |
+| Heading style       | [Weight, tracking, case]      |
+| Body approach       | [Line height, spacing]        |
+| Distinctive choices | [Unique typographic decision] |
+
+**How to apply:** Apply heading styles to all headings, body styles to all body text. The distinctive choice should appear at least once per view.
+
+**10. Consistency Guidelines:**
+
+Extract the 3 rules from `## Consistency Guidelines`:
+
+```
+Consistency rules:
+1. [Rule 1] — apply everywhere applicable
+2. [Rule 2] — apply everywhere applicable
+3. [Rule 3] — apply everywhere applicable
+```
+
+**How to apply:** These are non-negotiable consistency requirements. Verify each component follows all 3 rules before finalizing.
+
 ### Display Confirmation
 
 After parsing, show the user what will be applied:
@@ -220,6 +286,16 @@ Design Direction loaded:
 - Animation: [Animation Style] — [timing to be used]
 - Density: [Information Density] — [spacing to be applied]
 - Responsive: [Responsive Priority] — [approach to be taken]
+
+Visual Signatures:
+1. [Signature 1]
+2. [Signature 2]
+3. [Signature 3]
+
+Consistency Rules:
+1. [Rule 1]
+2. [Rule 2]
+3. [Rule 3]
 ```
 
 If design direction doesn't exist but shell exists, show a warning:

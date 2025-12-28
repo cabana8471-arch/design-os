@@ -6,6 +6,106 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-28 12:45] Enhanced Design Direction with AI-Generated Guidance Sections
+
+### Description
+
+Enhanced the design direction document to include both **User Preferences** (structured table from predefined choices) AND **AI-Generated Guidance** sections that provide specific, actionable design rules for implementation.
+
+### Problem Solved
+
+The previous update replaced detailed design guidance sections with a simpler predefined choices table. This lost valuable implementation details like:
+
+- Visual Signatures (3 concrete elements to apply consistently)
+- Color Application (specific usage rules per color type)
+- Motion & Interaction (exact timing and effects)
+- Typography Treatment (weights, tracking, distinctive choices)
+- Consistency Guidelines (3 rules for visual consistency)
+
+### Solution
+
+Combined BOTH approaches:
+
+1. **User Preferences Table** — Quick reference from Step 3.5 choices
+2. **AI-Generated Sections** — Specific implementation guidance generated based on product context and chosen preferences
+
+### Modified Files
+
+| File                                          | Modification                                                                                                                                                                                          |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-shell.md`  | Updated Step 6.5 template to include both User Preferences table AND AI-generated sections (Visual Signatures, Color Application, Motion & Interaction, Typography Treatment, Consistency Guidelines) |
+| `.claude/commands/design-os/design-screen.md` | Added parsing for AI-generated sections (steps 6-10) with "How to apply" guidance for each section                                                                                                    |
+
+### Updated design-direction.md Schema
+
+```markdown
+# Design Direction for [Product Name]
+
+## User Preferences
+
+| Setting             | Choice                                        |
+| ------------------- | --------------------------------------------- |
+| Aesthetic Tone      | Professional/Modern/Minimal/Playful/Technical |
+| Animation Style     | None/Subtle/Standard/Rich                     |
+| Information Density | Compact/Comfortable/Spacious                  |
+| Responsive Priority | Desktop-first/Mobile-first/Balanced           |
+
+---
+
+## Aesthetic Tone
+
+[One sentence capturing the specific visual feeling]
+
+## Visual Signatures
+
+1. [Signature 1] — [implementation]
+2. [Signature 2] — [implementation]
+3. [Signature 3] — [implementation]
+
+## Color Application
+
+- Primary usage: [specific rule]
+- Accent pattern: [specific rule]
+- Neutral treatment: [specific shades]
+
+## Motion & Interaction
+
+- Animation style: [description]
+- Key interactions: [patterns]
+- Timing: [exact durations]
+
+## Typography Treatment
+
+- Heading style: [weight, tracking, case]
+- Body approach: [line height, spacing]
+- Distinctive choices: [unique decision]
+
+## Spacing Scale / Responsive Approach
+
+[Tables based on density/priority choices]
+
+## Consistency Guidelines
+
+1. [Rule 1]
+2. [Rule 2]
+3. [Rule 3]
+
+## Applied From
+
+- Skill file used: Yes/No
+- User choices: From Step 3.5
+- Design tokens: colors.json, typography.json
+```
+
+### Benefits
+
+- **Best of both worlds**: Structured choices for quick reference + detailed guidance for implementation
+- **Consistent implementation**: AI-generated signatures and rules ensure visual consistency across all sections
+- **Actionable guidance**: Each section includes "How to apply" instructions for the design-screen command
+- **Product-specific**: AI generates guidance based on actual product context, not generic templates
+
+---
+
 ## [2025-12-28 11:20] Workflow Enhancement: Comprehensive Questioning & Language Standardization
 
 ### Description
