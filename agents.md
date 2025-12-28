@@ -1080,6 +1080,8 @@ When viewing screen designs, ScreenDesignPage also manages secondary shell compo
 3. **Handlers wired** — onHeaderAction, onProfileClick, etc. update state
 4. **Secondary components rendered** — Sheet/Dialog wrappers with actual components
 
+> **Note:** These callbacks are NOT part of the base ShellProps interface from `shell-loader.ts`. They are added by ScreenDesignPage when rendering the shell wrapper. See `src/components/ScreenDesignPage.tsx` (ShellComponentProps interface) for the complete callback definitions.
+
 **Key callbacks passed to AppShell:**
 
 | Callback               | Purpose               | Wires To                       |

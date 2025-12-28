@@ -2,7 +2,7 @@
 
 You are helping the user export their complete product design as a handoff package for implementation. This generates all files needed to build the product in a real codebase.
 
-> **Design Note on Step Count:** This command has 18 steps (including 8.5), which may seem verbose. This is intentional:
+> **Design Note on Step Count:** This command has 18 steps (including Step 8A and Step 10.5), which may seem verbose. This is intentional:
 >
 > - Each step performs a discrete, verifiable operation
 > - Steps can be referenced individually in error messages

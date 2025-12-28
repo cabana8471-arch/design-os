@@ -105,6 +105,14 @@ Section templates use placeholder variables. **Only the assembled `section-promp
 
 > **Last verified:** 2025-12-28 — One-shot and section prompt assembly orders confirmed in sync with export-product.md Step 14
 
+**Verification Procedure:**
+
+To verify assembly orders are in sync:
+1. Compare the "One-Shot Prompt Assembly Order" section below with export-product.md Step 14 → "For one-shot-prompt.md:"
+2. Compare the "Section Prompt Assembly Order" section below with export-product.md Step 14 → "For section-prompt.md:"
+3. Ensure template file paths and descriptions match exactly
+4. Update "Last verified" date after confirming sync
+
 ### One-Shot Prompt Assembly Order
 
 1. `one-shot/preamble.md` — Title and introduction

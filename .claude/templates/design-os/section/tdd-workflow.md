@@ -15,7 +15,7 @@ Use test-driven development for this section:
 - Test components in isolation using the Props interfaces from `types.ts`
 - Verify callbacks are invoked correctly for user actions
 - Test edge cases mentioned in the section spec (empty states, loading, errors)
-- Ensure components work with the sample data from `data.json`
+- Ensure components work with the sample data from `sample-data.json`
 
 When the section's tests pass, the section is ready for integration.
 

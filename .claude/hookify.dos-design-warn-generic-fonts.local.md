@@ -36,7 +36,7 @@ Choose distinctive fonts from Google Fonts that match the product's aesthetic:
 
 | Aesthetic             | Font Suggestions                               |
 | --------------------- | ---------------------------------------------- |
-| Modern/Tech           | Space Grotesk, JetBrains Mono, Outfit          |
+| Modern/Tech           | Rubik, JetBrains Mono, Outfit                  |
 | Elegant/Luxury        | Playfair Display, Cormorant, Libre Baskerville |
 | Friendly/Approachable | Nunito, Quicksand, Poppins                     |
 | Bold/Statement        | Bebas Neue, Anton, Oswald                      |

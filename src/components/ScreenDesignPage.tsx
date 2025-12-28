@@ -4,6 +4,8 @@ import type { ErrorInfo, ReactNode } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Maximize2, GripVertical, Layout, Smartphone, Tablet, Monitor, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent } from '@/components/ui/sheet'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { ThemeToggle, THEME_CHANNEL } from '@/components/ThemeToggle'
 import { loadScreenDesignComponent, sectionUsesShell } from '@/lib/section-loader'
 import {
@@ -577,26 +579,41 @@ export function ScreenDesignFullscreen() {
             return () => window.removeEventListener('keydown', handleKeyDown)
           }, [handleSearchClick, handleCloseSecondary, openComponent])
 
-          // Render secondary component if open
+          // Render secondary component if open, using Sheet for drawers and Dialog for modals
+          // This follows the pattern documented in agents.md "Shell Relationships" section
           const renderSecondaryComponent = () => {
             if (!openComponent || !secondaryComponents[openComponent]) return null
 
             const SecondaryComponent = secondaryComponents[openComponent]
+
+            // Find the relationship type for this component
+            const relationships = shellProps.shellRelationships as ShellRelationship[] | undefined
+            const relationship = relationships?.find(r => r.component === openComponent)
+            const isDrawer = relationship?.type === 'drawer'
 
             // Common props for all secondary components
             const commonProps = {
               onClose: handleCloseSecondary,
             }
 
-            // Note: In a full implementation, we'd wrap these in Sheet/Dialog
-            // based on the relationship type (drawer/modal). For now, render directly.
-            // The actual Shell component should handle the wrapping.
+            // Use Sheet for drawer types, Dialog for modal types
+            if (isDrawer) {
+              return (
+                <Sheet open={true} onOpenChange={(open) => !open && handleCloseSecondary()}>
+                  <SheetContent>
+                    <SecondaryComponent {...commonProps} />
+                  </SheetContent>
+                </Sheet>
+              )
+            }
+
+            // Default to Dialog for modals and unspecified types
             return (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={handleCloseSecondary}>
-                <div className="relative" onClick={e => e.stopPropagation()}>
+              <Dialog open={true} onOpenChange={(open) => !open && handleCloseSecondary()}>
+                <DialogContent>
                   <SecondaryComponent {...commonProps} />
-                </div>
-              </div>
+                </DialogContent>
+              </Dialog>
             )
           }
 

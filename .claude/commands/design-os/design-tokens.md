@@ -67,7 +67,7 @@ Help the user select Google Fonts:
 "For typography, we'll use Google Fonts for easy web integration.
 
 **Heading font** (titles, section headers):
-Popular choices: `DM Sans`, `Inter`, `Poppins`, `Manrope`, `Space Grotesk`, `Outfit`
+Popular choices: `DM Sans`, `Poppins`, `Manrope`, `Rubik`, `Outfit`
 
 **Body font** (paragraphs, UI text):
 Often the same as heading, or: `Inter`, `Source Sans 3`, `Nunito Sans`, `Open Sans`
@@ -397,7 +397,7 @@ These are starting suggestions — feel free to explore [Google Fonts](https://f
 - **Modern & Clean:** DM Sans + DM Sans + IBM Plex Mono
 - **Professional:** Inter + Inter + JetBrains Mono
 - **Friendly:** Nunito Sans + Nunito Sans + Fira Code
-- **Bold & Modern:** Space Grotesk + Inter + Source Code Pro
+- **Bold & Modern:** Outfit + Manrope + Source Code Pro
 - **Geometric:** Outfit + Outfit + Source Code Pro
 - **Humanist:** Manrope + Manrope + Fira Code
 - **Minimal:** Work Sans + Work Sans + JetBrains Mono

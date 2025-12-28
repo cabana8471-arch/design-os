@@ -24,6 +24,13 @@
  * populate the navigation based on your product roadmap.
  */
 
+// Import canonical types from shell-loader (source of truth)
+import type { NavigationCategory, UserConfig } from '@/lib/shell-loader'
+
+// Re-export NavigationCategory for backwards compatibility
+export type { NavigationCategory }
+
+// NavigationItem is local to this file (more specific than shell-loader's inline type)
 export interface NavigationItem {
   id: string
   label: string
@@ -31,18 +38,8 @@ export interface NavigationItem {
   icon?: string
 }
 
-export interface NavigationCategory {
-  id: string
-  label: string
-  items: NavigationItem[]
-}
-
-export interface User {
-  id: string
-  name: string
-  email: string
-  avatar?: string
-}
+// User is an alias for UserConfig for backwards compatibility
+export type User = UserConfig
 
 /**
  * Returns navigation categories with the active section marked.
@@ -60,6 +57,7 @@ export interface User {
  * @param _activeSectionId - Currently unused in stub
  * @returns Empty array - shell components receive data via props instead
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Intentional: stub function signature matches future implementation
 export function getNavigationCategories(_activeSectionId?: string): NavigationCategory[] {
   // Return empty array - this is intentional.
   // See JSDoc above for explanation.
@@ -74,7 +72,7 @@ export function getNavigationCategories(_activeSectionId?: string): NavigationCa
  * component's expected props match this interface. If the shell component
  * expects additional fields (e.g., avatarUrl), they should be optional.
  */
-export const defaultUser: User = {
+export const defaultUser: UserConfig = {
   id: 'default',
   name: 'Demo User',
   email: 'demo@example.com',
@@ -87,7 +85,7 @@ export const defaultUser: User = {
  * @param user - The user object to validate
  * @returns true if valid, false otherwise (with console warning in DEV)
  */
-export function isValidUser(user: unknown): user is User {
+export function isValidUser(user: unknown): user is UserConfig {
   if (user === null || user === undefined) {
     if (import.meta.env.DEV) {
       console.warn('[navigation-config] User object is null or undefined')
