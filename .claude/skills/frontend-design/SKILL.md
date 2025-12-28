@@ -6,8 +6,8 @@ license: Complete terms in LICENSE.txt
 
 <!--
 Referenced by:
-- /design-shell (Step 1: Validate Design Guidance)
-- /design-screen (Step 1: Validate Design Guidance)
+- /design-shell (Step 5: Apply Design Guidance)
+- /design-screen (Step 1: Validate Skill File)
 
 Changes to this file affect both shell and screen design quality.
 -->

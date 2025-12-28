@@ -1,4 +1,5 @@
 <!-- v1.1.0-section -->
+<!-- Usage: Include in section-specific prompts for incremental implementation -->
 
 ## Before You Begin
 
@@ -34,4 +35,4 @@ Please ask me clarifying questions about this section:
    - Empty states, error handling, loading states
    - Pagination, filtering, or search behavior
 
-**Note:** This prompt is for section-specific implementation. Tech stack and global authentication questions were addressed during foundation setup (see one-shot prompt).
+**Note:** This prompt is for section-specific implementation. Tech stack and global authentication questions were addressed during foundation setup (see `common/clarifying-questions.md` in the one-shot prompt).

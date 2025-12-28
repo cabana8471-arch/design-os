@@ -6,6 +6,86 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-28 21:30] Critical Analysis: 18 Documentation & Consistency Fixes
+
+### Description
+
+Comprehensive critical analysis of all Design OS boilerplate files. Used 3 parallel Explore agents covering: command files, agents.md/source files, and templates/skills. Identified and fixed **18 real issues** (2 High, 8 Medium, 8 Low priority). No critical bugs that would break functionality — all issues are documentation/consistency improvements.
+
+### Issues Fixed
+
+#### High Priority (2)
+
+| Issue                                                       | File        | Fix                                                                             |
+| ----------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------- |
+| **H1:** ThemeToggle listed as generated but is pre-existing | `agents.md` | Changed "(optional - if selected)" to "(pre-existing utility)" at line 210      |
+| **H2:** SKILL.md cross-reference has wrong step numbers     | `SKILL.md`  | Changed design-shell reference from "Step 1" to "Step 5: Apply Design Guidance" |
+
+#### Medium Priority (8)
+
+| Issue                                                      | File                                  | Fix                                                                                  |
+| ---------------------------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------ |
+| **M1:** Missing [Product Name] variable in template README | `templates/README.md`                 | Added `[Product Name]` row to Variable Substitution table                            |
+| **M2:** Vague reference "(see one-shot prompt)"            | `section/clarifying-questions.md`     | Changed to "see `common/clarifying-questions.md` in the one-shot prompt"             |
+| **M3:** Step 8.5 breaks integer step numbering             | `export-product.md`                   | Renamed to "Step 8A: Validate Design Coherence"                                      |
+| **M4:** Steps 0-0.7 before Step 1 confusing                | `design-shell.md`                     | Added workflow structure note explaining pre-flight checks                           |
+| **M5:** Error message path prefix inconsistent             | `shape-section.md`, `design-shell.md` | Added `product/` prefix to error messages                                            |
+| **M6:** Directory trailing slash inconsistent              | `product-vision.md`                   | Changed "product" to "product/" in error message                                     |
+| **M7:** Shell Props callbacks table incomplete             | `agents.md`                           | Added 4 missing callbacks (onNavigate, onLogout, onContextSelect, onBreadcrumbClick) |
+| **M8:** ShellProps interface not documented                | `agents.md`                           | Added complete ShellProps Interface table with all 10 properties                     |
+
+#### Low Priority (6 applied, 2 skipped)
+
+| Issue                                            | File                              | Fix                                                              |
+| ------------------------------------------------ | --------------------------------- | ---------------------------------------------------------------- |
+| **L1:** Missing Usage comment                    | `section/preamble.md`             | Added `<!-- Usage: ... -->` comment                              |
+| **L2:** Missing Usage comment                    | `section/clarifying-questions.md` | Added `<!-- Usage: ... -->` comment                              |
+| **L3:** README.md not clarified as documentation | `templates/README.md`             | Added note explaining README.md is documentation, not a template |
+| **L7:** Fallback reference not specific          | `design-screen.md`                | Updated reference to include path to subsection and agents.md    |
+| **L8:** Verification timestamp vague             | `templates/README.md`             | Expanded to explain what was verified                            |
+
+**Skipped (not real issues):**
+
+- L4: Section ID rules correctly structured (inline + cross-reference to agents.md)
+- L5: Preview wrapper terminology appropriately varied for context
+- L6: Skill file path formatting already consistent
+
+### Modified Files
+
+| File                                                          | Changes                                                                  |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `agents.md`                                                   | H1 (ThemeToggle annotation), M7 (4 callbacks), M8 (ShellProps interface) |
+| `.claude/skills/frontend-design/SKILL.md`                     | H2 (step number references)                                              |
+| `.claude/templates/design-os/README.md`                       | M1 (variable table), L3 (documentation note), L8 (timestamp)             |
+| `.claude/templates/design-os/section/clarifying-questions.md` | M2 (vague reference), L2 (Usage comment)                                 |
+| `.claude/templates/design-os/section/preamble.md`             | L1 (Usage comment)                                                       |
+| `.claude/commands/design-os/export-product.md`                | M3 (Step 8.5 → 8A)                                                       |
+| `.claude/commands/design-os/design-shell.md`                  | M4 (workflow note), M5 (error paths)                                     |
+| `.claude/commands/design-os/design-screen.md`                 | L7 (fallback reference)                                                  |
+| `.claude/commands/design-os/shape-section.md`                 | M5 (error paths)                                                         |
+| `.claude/commands/design-os/product-vision.md`                | M6 (trailing slash)                                                      |
+
+### False Positives Excluded
+
+| Item                               | Why Not a Problem                                                                 |
+| ---------------------------------- | --------------------------------------------------------------------------------- |
+| Section ID rules duplicated        | Correctly structured: inline for convenience + cross-reference to agents.md       |
+| Preview wrapper terminology varies | Terms "ShellPreview", "preview wrapper", "wired preview" serve different purposes |
+| Skill file path formatting         | Already consistent with backticks throughout                                      |
+| Secondary shell components missing | Correct — they're GENERATED by /design-shell, not pre-existing                    |
+
+### Verification
+
+- ThemeToggle now correctly marked as pre-existing utility component
+- SKILL.md references correct step numbers for both commands
+- All error messages include full path prefix (product/...)
+- All directories use trailing slash in error messages
+- ShellProps interface fully documented with source column
+- All section templates have Usage comments
+- Codebase remains production ready
+
+---
+
 ## [2025-12-28 20:15] Critical Analysis: 7 Documentation Fixes
 
 ### Description

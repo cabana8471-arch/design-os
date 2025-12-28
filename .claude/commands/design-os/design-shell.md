@@ -2,6 +2,8 @@
 
 You are helping the user design the application shell — the persistent navigation and layout that wraps all sections. This is a screen design, not implementation code.
 
+> **Workflow Structure:** Steps 0-0.7 are **pre-flight checks** (audit/detection) that only run when a shell already exists. For fresh creation, these are skipped and the workflow starts at Step 1.
+
 ## Step 0: Detect Existing Shell
 
 Before starting, check if a shell already exists:
@@ -268,13 +270,13 @@ If any required file is missing, show a specific error message:
 **If `/product/product-overview.md` is missing:**
 
 ```
-Error: product-overview.md - File not found. Run /product-vision to create it.
+Error: product/product-overview.md - File not found. Run /product-vision to create it.
 ```
 
 **If `/product/product-roadmap.md` is missing:**
 
 ```
-Error: product-roadmap.md - File not found. Run /product-roadmap to create it.
+Error: product/product-roadmap.md - File not found. Run /product-roadmap to create it.
 ```
 
 Stop here if any required file is missing.

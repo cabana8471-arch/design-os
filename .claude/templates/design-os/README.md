@@ -4,6 +4,8 @@ This directory contains modular templates for generating implementation prompts 
 
 ## Directory Structure
 
+> **Note:** This README.md is documentation about the template system, not a template file itself. Only `.md` files inside `common/`, `one-shot/`, and `section/` directories are actual templates.
+
 ```
 design-os/
 ├── common/                          # Shared templates (used in both prompt types)
@@ -82,11 +84,12 @@ section/tdd-workflow.md
 
 Section templates use placeholder variables. **Only the assembled `section-prompt.md` requires user substitution** — these variables are left in place for users to fill in for each section they implement:
 
-| Variable       | Used In                                             | Description                  | Example              |
-| -------------- | --------------------------------------------------- | ---------------------------- | -------------------- |
-| `SECTION_NAME` | `section/preamble.md`                               | Human-readable section title | "Invoice Management" |
-| `SECTION_ID`   | `section/preamble.md`, `section/prompt-template.md` | URL-safe section identifier  | "invoice-management" |
-| `NN`           | `section/preamble.md`, `section/prompt-template.md` | Two-digit milestone number   | "02", "03", etc.     |
+| Variable         | Used In                                             | Description                  | Example              |
+| ---------------- | --------------------------------------------------- | ---------------------------- | -------------------- |
+| `[Product Name]` | `one-shot/preamble.md`                              | Product name from overview   | "InvoiceApp"         |
+| `SECTION_NAME`   | `section/preamble.md`                               | Human-readable section title | "Invoice Management" |
+| `SECTION_ID`     | `section/preamble.md`, `section/prompt-template.md` | URL-safe section identifier  | "invoice-management" |
+| `NN`             | `section/preamble.md`, `section/prompt-template.md` | Two-digit milestone number   | "02", "03", etc.     |
 
 > **Note:** Templates in `common/` and `section/clarifying-questions.md`, `section/tdd-workflow.md` do not use these variables — they work as-is.
 
@@ -98,7 +101,7 @@ Section templates use placeholder variables. **Only the assembled `section-promp
 
 > **Source of Truth:** The authoritative template assembly order is defined in `/export-product` Step 14. This section provides a summary for quick reference. If there's any discrepancy, export-product.md takes precedence.
 
-> **Last verified:** 2025-12-28 (in sync with export-product.md Step 14)
+> **Last verified:** 2025-12-28 — One-shot and section prompt assembly orders confirmed in sync with export-product.md Step 14
 
 ### One-Shot Prompt Assembly Order
 

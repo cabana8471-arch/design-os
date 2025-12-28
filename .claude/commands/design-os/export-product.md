@@ -30,12 +30,14 @@ Verify the minimum requirements exist:
 **Shell Components (optional but recommended):**
 
 Primary Components:
+
 - `src/shell/components/AppShell.tsx` — Application shell wrapper
 - `src/shell/components/MainNav.tsx` — Navigation component
 - `src/shell/components/UserMenu.tsx` — User menu component
 - `src/shell/components/index.ts` — Component exports
 
 Secondary Components (optional - based on /design-shell Step 3.6 selections):
+
 - `src/shell/components/NotificationsDrawer.tsx`
 - `src/shell/components/SearchModal.tsx`
 - `src/shell/components/ThemeToggle.tsx`
@@ -68,10 +70,10 @@ else
 fi
 ```
 
-| Shell Status             | Action                                                    |
-| ------------------------ | --------------------------------------------------------- |
+| Shell Status             | Action                                                                   |
+| ------------------------ | ------------------------------------------------------------------------ |
 | Shell components exist   | Include shell in export (Step 8-9 will validate and copy all components) |
-| Shell components missing | Show warning, offer to proceed without shell              |
+| Shell components missing | Show warning, offer to proceed without shell                             |
 
 **If shell is missing:**
 
@@ -800,12 +802,14 @@ Before proceeding with export, validate that all components are portable and fol
 Validate ALL shell components at `src/shell/components/` (primary AND secondary):
 
 **Primary components (always validated):**
+
 - `AppShell.tsx` — Main shell wrapper
 - `MainNav.tsx` — Navigation component
 - `UserMenu.tsx` — User menu component
 - `index.ts` — Component exports
 
 **Secondary components (validate if they exist):**
+
 - `NotificationsDrawer.tsx`
 - `SearchModal.tsx`
 - `ThemeToggle.tsx`
@@ -835,10 +839,11 @@ For EACH shell component file, validate:
 2. **Check component structure:**
    - [ ] Component accepts all data via props
    - [ ] All callbacks are optional and use optional chaining: `onAction?.()`
-   - [ ] No state management code (useState, useContext, etc.) — *EXCEPTION: Secondary components like ThemeToggle MAY use useState for local UI state*
+   - [ ] No state management code (useState, useContext, etc.) — _EXCEPTION: Secondary components like ThemeToggle MAY use useState for local UI state_
    - [ ] No routing logic or navigation calls
 
 **Note:** Secondary components (drawers, modals) may use local useState for their open/close state. This is acceptable as long as:
+
 - Data still comes via props
 - Callbacks notify parent components
 - No global state management (Zustand, Redux, etc.)
@@ -1028,7 +1033,7 @@ Continue to Step 9 with confidence.
    - If validation passes, continue to Step 9 and subsequent steps
    - If earlier steps (1-7) were not completed, re-run `/export-product` from the beginning instead
 
-## Step 8.5: Validate Design Coherence
+## Step 8A: Validate Design Coherence
 
 Before copying components, perform a design coherence check across all sections to ensure consistent styling.
 
@@ -1186,12 +1191,14 @@ This ensures implementation agents have access to the aesthetic direction when b
 Copy ALL files from `src/shell/components/` to `product-plan/shell/components/`:
 
 **Primary components (always copied if shell exists):**
+
 - `AppShell.tsx` — Main shell wrapper
 - `MainNav.tsx` — Navigation component
 - `UserMenu.tsx` — User menu component
 - `index.ts` — Component exports
 
 **Secondary components (copy if they exist):**
+
 - `NotificationsDrawer.tsx`
 - `SearchModal.tsx`
 - `ThemeToggle.tsx`
@@ -1220,6 +1227,7 @@ fi
 ```
 
 For each copied file:
+
 - Transform import paths from `@/...` to relative paths
 - Remove any Design OS-specific imports
 - Ensure components are self-contained
@@ -1380,7 +1388,7 @@ const handleCreate = () => {
 
 > **Note:** In Design OS, preview wrappers handle this wiring. In your production codebase, implement state management using your preferred pattern (useState, Zustand, Redux, etc.).
 
-````
+`````
 
 ### View Relationships Documentation
 
@@ -1524,7 +1532,7 @@ See `screenshot.png` for the shell visual design (if captured).
 ## Design Notes
 
 [From spec.md design notes section, if exists]
-````
+`````
 
 ## Step 11: Consolidate Data Model Types
 
@@ -1546,11 +1554,11 @@ Create `product-plan/data-model/types.ts` by consolidating types from all sectio
 
    When the same type name appears in multiple sections with different definitions:
 
-   | Scenario | Resolution | Action |
-   |----------|------------|--------|
-   | Global data model exists | Global model is authoritative | Use the definition from `/product/data-model/data-model.md` |
-   | No global model, types differ | First section wins | Use the first section's definition (alphabetical order) |
-   | No global model, types identical | Dedupe | Use shared definition once |
+   | Scenario                         | Resolution                    | Action                                                      |
+   | -------------------------------- | ----------------------------- | ----------------------------------------------------------- |
+   | Global data model exists         | Global model is authoritative | Use the definition from `/product/data-model/data-model.md` |
+   | No global model, types differ    | First section wins            | Use the first section's definition (alphabetical order)     |
+   | No global model, types identical | Dedupe                        | Use shared definition once                                  |
 
    **When global data model exists but section type diverges:**
 
@@ -1605,17 +1613,17 @@ Create `product-plan/data-model/types.ts` by consolidating types from all sectio
 
 /** Represents a user in the system */
 export interface User {
-  id: string
-  name: string
-  email: string
+  id: string;
+  name: string;
+  email: string;
   // ... other fields
 }
 
 /** Represents a project managed by users */
 export interface Project {
-  id: string
-  name: string
-  ownerId: string  // References User.id
+  id: string;
+  name: string;
+  ownerId: string; // References User.id
   // ... other fields
 }
 
@@ -1625,15 +1633,15 @@ export interface Project {
 
 // From [Section 1]
 export interface Task {
-  id: string
-  projectId: string  // References Project.id
+  id: string;
+  projectId: string; // References Project.id
   // ... other fields
 }
 
 // From [Section 2]
 export interface Document {
-  id: string
-  projectId: string
+  id: string;
+  projectId: string;
   // ... other fields
 }
 
@@ -1647,7 +1655,7 @@ export interface Document {
  * - Project "contains" many Tasks
  * - Project "contains" many Documents
  */
-````
+```
 
 ### Create data-model/README.md
 

@@ -12,8 +12,8 @@ First, verify that both required files exist:
 If either file is missing:
 
 ```
-Error: product-roadmap.md - File not found. Run /product-roadmap to create it.
-Error: product-overview.md - File not found. Run /product-vision to create it.
+Error: product/product-roadmap.md - File not found. Run /product-roadmap to create it.
+Error: product/product-overview.md - File not found. Run /product-vision to create it.
 ```
 
 Stop here if any required file doesn't exist.

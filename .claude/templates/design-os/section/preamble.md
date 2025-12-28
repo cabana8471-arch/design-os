@@ -1,4 +1,5 @@
 <!-- v1.0.0 -->
+<!-- Usage: Include as the opening section of section-specific prompts -->
 <!-- Note: SECTION_NAME, SECTION_ID, and NN are placeholders for user substitution during use -->
 
 # Section Implementation Prompt
