@@ -42,9 +42,9 @@ Use AskUserQuestion with options:
 - "Continue with basic design principles" — Proceed using fallback guidance
 - "Stop — I'll add the skill file first" — END COMMAND
 
-Track user's choice - if continuing without skill file, use the **fallback design principles** defined in `/design-shell` Step 1.
+Track user's choice - if continuing without skill file, use the **fallback design principles** defined in `agents.md`.
 
-> **Note:** The full fallback design principles are defined in `.claude/commands/design-os/design-shell.md` Step 1 → "Validate Design Guidance (Skill File)" subsection (lines 322-428), under "Enhanced Fallback Design Principles". They include: Aesthetic Tone Options, Visual Hierarchy, Spacing System, Color Application, Typography Choices, Motion & Interaction, Responsive Breakpoints, and Dark Mode. See also `agents.md` → "Enhanced Fallback Design Guidance" for the canonical documentation.
+> **Note:** The full fallback design principles are documented in `agents.md` → "Enhanced Fallback Design Guidance" section. This includes: Aesthetic Tone Options, Visual Hierarchy, Color Application, Typography Choices, Motion & Interaction, and Distinctiveness Requirements. Use the `frontend-design` skill invocation pattern from `agents.md` → "Skill Invocation Standard Pattern".
 
 ### Validate UI Components for Wiring
 

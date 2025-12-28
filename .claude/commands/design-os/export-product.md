@@ -879,6 +879,40 @@ For each section, validate all component files in `src/sections/[section-id]/com
    - [ ] No state management code (useState, useContext, etc.)
    - [ ] No routing logic or navigation calls
 
+**Automated Props-Based Validation Script:**
+
+```bash
+# Validate section components are props-based (don't import data.json directly)
+VALIDATION_ERRORS=0
+
+for section_dir in src/sections/*/; do
+  section_id=$(basename "$section_dir")
+
+  for component in "$section_dir"components/*.tsx; do
+    [ -f "$component" ] || continue
+    component_name=$(basename "$component")
+
+    # Check for direct data.json imports
+    if grep -qE "import.*from.*data\.json" "$component"; then
+      echo "Error: $section_id/$component_name imports data.json directly. Components must receive data via props."
+      VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+    fi
+
+    # Check for product directory imports
+    if grep -qE "from ['\"].*product/" "$component"; then
+      echo "Error: $section_id/$component_name imports from product/ directory. Use relative imports or props instead."
+      VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+    fi
+  done
+done
+
+if [ $VALIDATION_ERRORS -gt 0 ]; then
+  echo ""
+  echo "Found $VALIDATION_ERRORS props-based validation error(s). Fix before exporting."
+  exit 1
+fi
+```
+
 ### Validate Sub-Components (Recursive)
 
 Components may import other components. Validate the full dependency tree with a **maximum depth of 10 levels** to prevent infinite loops from circular imports.

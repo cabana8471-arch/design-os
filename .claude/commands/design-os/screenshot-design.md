@@ -91,16 +91,20 @@ Start the dev server yourself using Bash. Do NOT ask the user if the server is r
 
 ```bash
 # Check if dev server is already running on port 3000 (configured in vite.config.ts)
+DEV_SERVER_PREEXISTING=false
+
 if lsof -i :3000 > /dev/null 2>&1; then
   echo "Dev server already running on port 3000"
-  # Set flag: DEV_SERVER_PREEXISTING=true
+  DEV_SERVER_PREEXISTING=true
 else
   echo "Starting dev server..."
   npm run dev &
-  # Set flag: DEV_SERVER_PREEXISTING=false
+  DEV_SERVER_PREEXISTING=false
   # Wait for server to be ready
   sleep 5
 fi
+
+echo "DEV_SERVER_PREEXISTING=$DEV_SERVER_PREEXISTING"
 ```
 
 **Track the dev server state:**
