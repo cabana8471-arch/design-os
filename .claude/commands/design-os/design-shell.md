@@ -41,6 +41,8 @@ What would you like to do?
 4. **Full Rebuild** — Delete everything and start fresh
 ```
 
+> **Note:** Audit modes (1-2) are useful when a shell partially exists (e.g., adding relationships to an existing shell or checking for issues). For a brand new shell, select **Full Rebuild** or start directly with `/design-shell` on a fresh codebase.
+
 Use AskUserQuestion with these options. Based on the choice:
 
 - **Audit & Report**: Go to Step 0.5, then STOP after displaying report
@@ -54,115 +56,129 @@ Run the comprehensive audit checklist. For each category, check all items and re
 
 ### A. Spec Compliance
 
-| Check | Verification | Fix Action |
-|-------|--------------|------------|
-| A1 | `product/shell/spec.md` exists? | Create |
-| A2 | `## Overview` section complete? | Warning |
-| A3 | `## Navigation Structure` valid? | Warning |
-| A4 | `## Layout Pattern` defined? | Warning |
-| A5 | `## Shell Relationships` exists? | Create based on components |
-| A6 | `design-direction.md` exists and complete? | Regenerate |
+| Check | Verification                               | Fix Action                 |
+| ----- | ------------------------------------------ | -------------------------- |
+| A1    | `product/shell/spec.md` exists?            | Create                     |
+| A2    | `## Overview` section complete?            | Warning                    |
+| A3    | `## Navigation Structure` valid?           | Warning                    |
+| A4    | `## Layout Pattern` defined?               | Warning                    |
+| A5    | `## Shell Relationships` exists?           | Create based on components |
+| A6    | `design-direction.md` exists and complete? | Regenerate                 |
 
 ### B. Component Completeness
 
-| Check | Verification | Fix Action |
-|-------|--------------|------------|
-| B1 | `AppShell.tsx` exists? | Create |
-| B2 | `MainNav.tsx` exists? | Create |
-| B3 | `UserMenu.tsx` exists? | Create |
-| B4 | `index.ts` exports all components? | Update |
-| B5 | Each relationship in spec has component? | List missing |
-| B6 | `ShellPreview.tsx` exists? | Create |
+| Check | Verification                             | Fix Action   |
+| ----- | ---------------------------------------- | ------------ |
+| B1    | `AppShell.tsx` exists?                   | Create       |
+| B2    | `MainNav.tsx` exists?                    | Create       |
+| B3    | `UserMenu.tsx` exists?                   | Create       |
+| B4    | `index.ts` exports all components?       | Update       |
+| B5    | Each relationship in spec has component? | List missing |
+| B6    | `ShellPreview.tsx` exists?               | Create       |
 
 ### C. Wiring Validation
 
-| Check | Verification | Fix Action |
-|-------|--------------|------------|
-| C1 | ShellPreview has state for each secondary? | Add state |
-| C2 | Handlers wired (not console.log)? | Wire handlers |
-| C3 | All relationships from spec are connected? | Connect |
-| C4 | Sheet/Dialog imports present? | Add imports |
+| Check | Verification                               | Fix Action    |
+| ----- | ------------------------------------------ | ------------- |
+| C1    | ShellPreview has state for each secondary? | Add state     |
+| C2    | Handlers wired (not console.log)?          | Wire handlers |
+| C3    | All relationships from spec are connected? | Connect       |
+| C4    | Sheet/Dialog imports present?              | Add imports   |
 
 ### D. Data & Types
 
-| Check | Verification | Fix Action |
-|-------|--------------|------------|
-| D1 | `product/shell/data.json` exists? | Create |
-| D2 | data.json has `_meta` valid? | Add |
-| D3 | Data for each secondary component? | Add |
-| D4 | `product/shell/types.ts` exists? | Create |
-| D5 | Props interface for each component? | Add |
+| Check | Verification                        | Fix Action |
+| ----- | ----------------------------------- | ---------- |
+| D1    | `product/shell/data.json` exists?   | Create     |
+| D2    | data.json has `_meta` valid?        | Add        |
+| D3    | Data for each secondary component?  | Add        |
+| D4    | `product/shell/types.ts` exists?    | Create     |
+| D5    | Props interface for each component? | Add        |
 
 ### E. Design Token Consistency
 
-| Check | Verification | Fix Action |
-|-------|--------------|------------|
-| E1 | Colors match `colors.json`? | Report differences |
-| E2 | Typography match `typography.json`? | Report differences |
-| E3 | Spacing match Information Density from design-direction? | Report |
-| E4 | Visual Signatures applied consistently? | Report |
+| Check | Verification                                             | Fix Action         |
+| ----- | -------------------------------------------------------- | ------------------ |
+| E1    | Colors match `colors.json`?                              | Report differences |
+| E2    | Typography match `typography.json`?                      | Report differences |
+| E3    | Spacing match Information Density from design-direction? | Report             |
+| E4    | Visual Signatures applied consistently?                  | Report             |
 
 ### F. Accessibility & UX
 
-| Check | Verification | Fix Action |
-|-------|--------------|------------|
-| F1 | ARIA labels on interactive elements? | List missing |
-| F2 | Keyboard navigation (Tab, Escape)? | Suggest |
-| F3 | Focus visible states? | Suggest |
-| F4 | Screen reader friendly? | Suggest |
+| Check | Verification                         | Fix Action   |
+| ----- | ------------------------------------ | ------------ |
+| F1    | ARIA labels on interactive elements? | List missing |
+| F2    | Keyboard navigation (Tab, Escape)?   | Suggest      |
+| F3    | Focus visible states?                | Suggest      |
+| F4    | Screen reader friendly?              | Suggest      |
 
 ### G. Dark Mode Consistency
 
-| Check | Verification | Fix Action |
-|-------|--------------|------------|
-| G1 | All elements have `dark:` variants? | List missing |
-| G2 | Sufficient contrast in dark mode? | Report |
-| G3 | Borders/shadows visible in dark? | Report |
+| Check | Verification                        | Fix Action   |
+| ----- | ----------------------------------- | ------------ |
+| G1    | All elements have `dark:` variants? | List missing |
+| G2    | Sufficient contrast in dark mode?   | Report       |
+| G3    | Borders/shadows visible in dark?    | Report       |
 
 ### H. Export Readiness
 
-| Check | Verification | Fix Action |
-|-------|--------------|------------|
-| H1 | No `import data from` in exportable components? | List violations |
-| H2 | Props-based (no hardcoded data)? | List violations |
-| H3 | No Design OS specific imports? | List |
-| H4 | Relative imports transformable? | Verify |
+| Check | Verification                                    | Fix Action      |
+| ----- | ----------------------------------------------- | --------------- |
+| H1    | No `import data from` in exportable components? | List violations |
+| H2    | Props-based (no hardcoded data)?                | List violations |
+| H3    | No Design OS specific imports?                  | List            |
+| H4    | Relative imports transformable?                 | Verify          |
 
 ### I. Focus & Keyboard
 
-| Check | Verification | Fix Action |
-|-------|--------------|------------|
-| I1 | Skip link present in AppShell? | Add SkipLink |
-| I2 | Focus trap in modals/drawers? | Implement |
-| I3 | Escape closes modals? | Add handler |
-| I4 | Keyboard shortcuts functional? | Wire |
+| Check | Verification                   | Fix Action   |
+| ----- | ------------------------------ | ------------ |
+| I1    | Skip link present in AppShell? | Add SkipLink |
+| I2    | Focus trap in modals/drawers?  | Implement    |
+| I3    | Escape closes modals?          | Add handler  |
+| I4    | Keyboard shortcuts functional? | Wire         |
 
 ### J. Error Handling
 
-| Check | Verification | Fix Action |
-|-------|--------------|------------|
-| J1 | Error boundaries on secondary components? | Wrap |
-| J2 | Fallback UI defined? | Add error state |
-| J3 | Retry mechanism? | Add retry button |
+| Check | Verification                              | Fix Action       |
+| ----- | ----------------------------------------- | ---------------- |
+| J1    | Error boundaries on secondary components? | Wrap             |
+| J2    | Fallback UI defined?                      | Add error state  |
+| J3    | Retry mechanism?                          | Add retry button |
 
 ### K. Loading & Performance
 
-| Check | Verification | Fix Action |
-|-------|--------------|------------|
-| K1 | Skeleton loaders defined? | Create |
-| K2 | Lazy loading for secondary? | Wrap in React.lazy |
-| K3 | Suspense boundaries? | Add Suspense |
+| Check | Verification                | Fix Action         |
+| ----- | --------------------------- | ------------------ |
+| K1    | Skeleton loaders defined?   | Create             |
+| K2    | Lazy loading for secondary? | Wrap in React.lazy |
+| K3    | Suspense boundaries?        | Add Suspense       |
 
 ### L. Theme & Dark Mode
 
-| Check | Verification | Fix Action |
-|-------|--------------|------------|
-| L1 | Anti-flicker script in index.html `<head>`? | Add sync script |
-| L2 | Script is FIRST in `<head>` (before CSS)? | Move script |
-| L3 | `dark` class on `<html>` not `<body>`? | Correct selector |
-| L4 | ThemeToggle reads localStorage at init? | Add lazy init |
-| L5 | System preference listener exists? | Add mediaQuery listener |
-| L6 | All components have `dark:` variants? | Add variants |
+| Check | Verification                                | Fix Action              |
+| ----- | ------------------------------------------- | ----------------------- |
+| L1    | Anti-flicker script in index.html `<head>`? | Add sync script         |
+| L2    | Script is FIRST in `<head>` (before CSS)?   | Move script             |
+| L3    | `dark` class on `<html>` not `<body>`?      | Correct selector        |
+| L4    | ThemeToggle reads localStorage at init?     | Add lazy init           |
+| L5    | System preference listener exists?          | Add mediaQuery listener |
+| L6    | All components have `dark:` variants?       | Add variants            |
+
+### M. Shell Utility Components (Optional)
+
+If accessibility or UX enhancements are priorities, validate use of utility components from `src/shell/`:
+
+| Check | Verification                                   | Fix Action                 |
+| ----- | ---------------------------------------------- | -------------------------- |
+| M1    | SkipLink included in AppShell?                 | Add for accessibility      |
+| M2    | ShellErrorBoundary wraps secondary components? | Wrap for error handling    |
+| M3    | useFocusManagement hook in modals/drawers?     | Add for focus trap         |
+| M4    | ThemeToggle uses useShellShortcuts?            | Add for keyboard shortcuts |
+| M5    | ShellSkeleton used for loading states?         | Add for loading UX         |
+
+> **See also:** `agents.md` → "Shell Utility Components" section for component descriptions and usage.
 
 ## Step 0.6: Display Audit Report
 
@@ -185,7 +201,8 @@ Run the comprehensive audit checklist. For each category, check all items and re
 ║ ├─ Focus & Keyboard:     [X]/4 [✓/!]                          ║
 ║ ├─ Error Handling:       [X]/3 [✓/!]                          ║
 ║ ├─ Loading:              [X]/3 [✓/!]                          ║
-║ └─ Theme:                [X]/6 [✓/!]                          ║
+║ ├─ Theme:                [X]/6 [✓/!]                          ║
+║ └─ Utility Components:   [X]/5 [✓/!] (optional)               ║
 ╠════════════════════════════════════════════════════════════════╣
 ║ ISSUES FOUND                                                   ║
 ║                                                                 ║
@@ -551,16 +568,16 @@ SELECTED_INTERACTIVE_ELEMENTS:
 
 **Map Elements to Components:**
 
-| Element | Component | Type | Data Ref |
-|---------|-----------|------|----------|
+| Element       | Component           | Type   | Data Ref      |
+| ------------- | ------------------- | ------ | ------------- |
 | notifications | NotificationsDrawer | drawer | notifications |
-| search | SearchModal | modal | none |
-| help | HelpPanel | drawer | helpTopics |
-| theme_toggle | ThemeToggle | inline | none |
-| profile | ProfileModal | modal | user |
-| settings | SettingsModal | modal | settings |
-| feedback | FeedbackModal | modal | none |
-| mobile_menu | MobileMenuDrawer | drawer | none |
+| search        | SearchModal         | modal  | none          |
+| help          | HelpPanel           | drawer | helpTopics    |
+| theme_toggle  | ThemeToggle         | inline | none          |
+| profile       | ProfileModal        | modal  | user          |
+| settings      | SettingsModal       | modal  | settings      |
+| feedback      | FeedbackModal       | modal  | none          |
+| mobile_menu   | MobileMenuDrawer    | drawer | none          |
 
 **Important:** If user selects `theme_toggle`, mark for Step 9.5 (anti-flicker script injection).
 
@@ -638,6 +655,8 @@ if [ ! -d "src/shell/components" ]; then
   echo "Error: src/shell/components/ - Directory creation failed. Check write permissions."
   exit 1
 fi
+
+echo "Directories created successfully"
 ```
 
 ### Create the Specification File
@@ -723,12 +742,12 @@ _(Generated based on Step 3.6 selections)_
 
 The shell spec supports additional sections for enhanced functionality:
 
-| Section | Purpose | Required |
-| --------------------- | --------------------------------------------------- | -------- |
-| `## Context Selector` | Organization/client/workspace picker | No |
-| `## Breadcrumbs` | Navigation hierarchy paths | No |
-| `## Header Actions` | Header action buttons (notifications, search, help) | No |
-| `## Shell Relationships` | Mapping of triggers to secondary components | No |
+| Section                  | Purpose                                             | Required |
+| ------------------------ | --------------------------------------------------- | -------- |
+| `## Context Selector`    | Organization/client/workspace picker                | No       |
+| `## Breadcrumbs`         | Navigation hierarchy paths                          | No       |
+| `## Header Actions`      | Header action buttons (notifications, search, help) | No       |
+| `## Shell Relationships` | Mapping of triggers to secondary components         | No       |
 
 These sections are parsed by `getShellProps()` in `shell-loader.ts` and passed to AppShell automatically via the complete passthrough pattern.
 
@@ -794,12 +813,12 @@ Create `/product/design-system/design-direction.md` using the choices from Step 
 
 ## User Preferences
 
-| Setting | Choice |
+| Setting                 | Choice                                                         |
 | ----------------------- | -------------------------------------------------------------- |
-| **Aesthetic Tone** | [User's choice: Professional/Modern/Minimal/Playful/Technical] |
-| **Animation Style** | [User's choice: None/Subtle/Standard/Rich] |
-| **Information Density** | [User's choice: Compact/Comfortable/Spacious] |
-| **Responsive Priority** | [User's choice: Desktop-first/Mobile-first/Balanced] |
+| **Aesthetic Tone**      | [User's choice: Professional/Modern/Minimal/Playful/Technical] |
+| **Animation Style**     | [User's choice: None/Subtle/Standard/Rich]                     |
+| **Information Density** | [User's choice: Compact/Comfortable/Spacious]                  |
+| **Responsive Priority** | [User's choice: Desktop-first/Mobile-first/Balanced]           |
 
 ---
 
@@ -869,22 +888,22 @@ Example:
 
 Based on **[Information Density]**:
 
-| Context | Compact | Comfortable | Spacious |
+| Context           | Compact           | Comfortable       | Spacious          |
 | ----------------- | ----------------- | ----------------- | ----------------- |
 | Container Padding | px-3 py-3 sm:px-4 | px-4 py-4 sm:px-6 | px-6 py-6 sm:px-8 |
-| Card Padding | p-3 | p-5 | p-8 |
-| Section Gap | gap-4 | gap-6 | gap-10 |
-| Base Unit | 4px | 8px | 12px |
+| Card Padding      | p-3               | p-5               | p-8               |
+| Section Gap       | gap-4             | gap-6             | gap-10            |
+| Base Unit         | 4px               | 8px               | 12px              |
 
 ## Responsive Approach
 
 Based on **[Responsive Priority]**:
 
-| Aspect | Desktop-first | Mobile-first | Balanced |
+| Aspect           | Desktop-first  | Mobile-first      | Balanced        |
 | ---------------- | -------------- | ----------------- | --------------- |
-| Design starts at | 1280px+ | 375px | 768px |
-| Then adapts | Down to 375px | Up to 1920px | Both directions |
-| Breakpoint focus | lg:, xl: first | Default, then sm: | All equally |
+| Design starts at | 1280px+        | 375px             | 768px           |
+| Then adapts      | Down to 375px  | Up to 1920px      | Both directions |
+| Breakpoint focus | lg:, xl: first | Default, then sm: | All equally     |
 
 ## Consistency Guidelines
 
@@ -928,14 +947,14 @@ Example rules:
 
 **Guidelines for each section:**
 
-| Section | Must Include | Be Specific About |
+| Section                | Must Include                        | Be Specific About                              |
 | ---------------------- | ----------------------------------- | ---------------------------------------------- |
-| Aesthetic Tone | One sentence capturing the feeling | The emotional quality, not just adjectives |
-| Visual Signatures | 3 concrete elements | Implementation details (sizes, colors, timing) |
-| Color Application | Primary, Accent, Neutral usage | When to use each, specific shades |
-| Motion & Interaction | Style, Key interactions, Timing | Actual durations, specific effects |
-| Typography Treatment | Heading, Body, Distinctive choice | Weights, line heights, one unique decision |
-| Consistency Guidelines | 3 rules for maintaining consistency | Specific scenarios, exact values |
+| Aesthetic Tone         | One sentence capturing the feeling  | The emotional quality, not just adjectives     |
+| Visual Signatures      | 3 concrete elements                 | Implementation details (sizes, colors, timing) |
+| Color Application      | Primary, Accent, Neutral usage      | When to use each, specific shades              |
+| Motion & Interaction   | Style, Key interactions, Timing     | Actual durations, specific effects             |
+| Typography Treatment   | Heading, Body, Distinctive choice   | Weights, line heights, one unique decision     |
+| Consistency Guidelines | 3 rules for maintaining consistency | Specific scenarios, exact values               |
 
 **Why this matters:** This document serves as the definitive reference for all subsequent `/design-screen` commands. The combination of structured tables (for quick reference) and AI-generated specifics (for implementation guidance) ensures both consistency and distinctiveness.
 
@@ -962,21 +981,30 @@ Example rules:
 
 **Relationship Types:**
 
-| Type | UI Component | Use Case |
-|------|--------------|----------|
-| `drawer` | `<Sheet>` | Side panel for notifications, help, mobile menu |
-| `modal` | `<Dialog>` | Centered overlay for search, settings, profile |
-| `inline` | Direct render | Theme toggle button in header |
+| Type     | UI Component  | Use Case                                        |
+| -------- | ------------- | ----------------------------------------------- |
+| `drawer` | `<Sheet>`     | Side panel for notifications, help, mobile menu |
+| `modal`  | `<Dialog>`    | Centered overlay for search, settings, profile  |
+| `inline` | Direct render | Theme toggle button in header                   |
 
 **Data References:**
 
-| Ref | Description | Props |
-|-----|-------------|-------|
+| Ref             | Description                       | Props                           |
+| --------------- | --------------------------------- | ------------------------------- |
 | `notifications` | Notification list from shell data | `notifications: Notification[]` |
-| `user` | User profile data | `user: User` |
-| `settings` | Settings configuration | `settings: Settings` |
-| `helpTopics` | Help documentation | `topics: HelpTopic[]` |
-| `none` | No data needed | Just callbacks |
+| `user`          | User profile data                 | `user: User`                    |
+| `settings`      | Settings configuration            | `settings: Settings`            |
+| `helpTopics`    | Help documentation                | `topics: HelpTopic[]`           |
+| `none`          | No data needed                    | Just callbacks                  |
+
+> **Note:** Shell Relationships are distinct from View Relationships:
+>
+> | Concept             | Scope            | Defined In       |
+> | ------------------- | ---------------- | ---------------- |
+> | View Relationships  | Within a section | `/shape-section` |
+> | Shell Relationships | Global shell UI  | `/design-shell`  |
+>
+> View Relationships wire views within a section (e.g., list → detail drawer). Shell Relationships wire global shell elements (e.g., header action → notifications drawer).
 
 ## Step 6.7: Create Shell Sample Data
 
@@ -1068,9 +1096,24 @@ mkdir -p product/shell
     { "id": "r2", "label": "Create Invoice", "href": "/sections/invoices/new" }
   ],
   "searchShortcuts": [
-    { "id": "s1", "label": "New Invoice", "shortcut": "Cmd+N", "action": "create-invoice" },
-    { "id": "s2", "label": "Search", "shortcut": "Cmd+K", "action": "open-search" },
-    { "id": "s3", "label": "Settings", "shortcut": "Cmd+,", "action": "open-settings" }
+    {
+      "id": "s1",
+      "label": "New Invoice",
+      "shortcut": "Cmd+N",
+      "action": "create-invoice"
+    },
+    {
+      "id": "s2",
+      "label": "Search",
+      "shortcut": "Cmd+K",
+      "action": "open-search"
+    },
+    {
+      "id": "s3",
+      "label": "Settings",
+      "shortcut": "Cmd+,",
+      "action": "open-settings"
+    }
   ]
 }
 ```
@@ -1089,120 +1132,120 @@ mkdir -p product/shell
 
 // Notification types
 export interface Notification {
-  id: string
-  type: 'info' | 'success' | 'warning' | 'error'
-  title: string
-  message: string
-  timestamp: string
-  read: boolean
+  id: string;
+  type: "info" | "success" | "warning" | "error";
+  title: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
   action?: {
-    label: string
-    href: string
-  }
+    label: string;
+    href: string;
+  };
 }
 
 export interface NotificationsDrawerProps {
-  notifications: Notification[]
-  onClose: () => void
-  onMarkRead: (id: string) => void
-  onMarkAllRead: () => void
-  onClear: (id: string) => void
+  notifications: Notification[];
+  onClose: () => void;
+  onMarkRead: (id: string) => void;
+  onMarkAllRead: () => void;
+  onClear: (id: string) => void;
 }
 
 // User types
 export interface User {
-  id: string
-  name: string
-  email: string
-  avatar?: string | null
-  role?: string
-  initials?: string
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string | null;
+  role?: string;
+  initials?: string;
 }
 
 export interface ProfileModalProps {
-  user: User
-  onClose: () => void
-  onSave: (user: Partial<User>) => void
+  user: User;
+  onClose: () => void;
+  onSave: (user: Partial<User>) => void;
 }
 
 // Settings types
 export interface Settings {
-  theme: 'light' | 'dark' | 'system'
+  theme: "light" | "dark" | "system";
   notifications: {
-    email: boolean
-    push: boolean
-    digest: 'none' | 'daily' | 'weekly'
-  }
-  language: string
-  timezone: string
+    email: boolean;
+    push: boolean;
+    digest: "none" | "daily" | "weekly";
+  };
+  language: string;
+  timezone: string;
 }
 
 export interface SettingsModalProps {
-  settings: Settings
-  onClose: () => void
-  onSave: (settings: Partial<Settings>) => void
+  settings: Settings;
+  onClose: () => void;
+  onSave: (settings: Partial<Settings>) => void;
 }
 
 // Help types
 export interface HelpTopic {
-  id: string
-  title: string
-  icon?: string
-  content: string
+  id: string;
+  title: string;
+  icon?: string;
+  content: string;
 }
 
 export interface HelpPanelProps {
-  topics: HelpTopic[]
-  onClose: () => void
-  onTopicSelect: (id: string) => void
+  topics: HelpTopic[];
+  onClose: () => void;
+  onTopicSelect: (id: string) => void;
 }
 
 // Search types
 export interface SearchItem {
-  id: string
-  label: string
-  href?: string
-  icon?: string
-  category?: string
+  id: string;
+  label: string;
+  href?: string;
+  icon?: string;
+  category?: string;
 }
 
 export interface SearchShortcut {
-  id: string
-  label: string
-  shortcut: string
-  action: string
+  id: string;
+  label: string;
+  shortcut: string;
+  action: string;
 }
 
 export interface SearchModalProps {
-  onClose: () => void
-  onSelect: (item: SearchItem) => void
-  recentItems?: SearchItem[]
-  shortcuts?: SearchShortcut[]
+  onClose: () => void;
+  onSelect: (item: SearchItem) => void;
+  recentItems?: SearchItem[];
+  shortcuts?: SearchShortcut[];
 }
 
 // Feedback types
 export interface FeedbackModalProps {
-  onClose: () => void
-  onSubmit: (feedback: { type: string; message: string }) => void
+  onClose: () => void;
+  onSubmit: (feedback: { type: string; message: string }) => void;
 }
 
 // Mobile menu types
 export interface MobileMenuDrawerProps {
-  navigationItems: Array<{ label: string; href: string; icon?: string }>
-  user?: User
-  onClose: () => void
-  onNavigate: (href: string) => void
-  onLogout: () => void
+  navigationItems: Array<{ label: string; href: string; icon?: string }>;
+  user?: User;
+  onClose: () => void;
+  onNavigate: (href: string) => void;
+  onLogout: () => void;
 }
 
 // Shell data structure
 export interface ShellData {
-  notifications?: Notification[]
-  user?: User
-  settings?: Settings
-  helpTopics?: HelpTopic[]
-  searchRecent?: SearchItem[]
-  searchShortcuts?: SearchShortcut[]
+  notifications?: Notification[];
+  user?: User;
+  settings?: Settings;
+  helpTopics?: HelpTopic[];
+  searchRecent?: SearchItem[];
+  searchShortcuts?: SearchShortcut[];
 }
 ```
 
@@ -1312,8 +1355,13 @@ Create each secondary component only if it was selected in Step 3.6.
 #### NotificationsDrawer.tsx
 
 ```tsx
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import type { NotificationsDrawerProps } from '@/product/shell/types'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import type { NotificationsDrawerProps } from "../../../product/shell/types";
 
 export function NotificationsDrawer({
   notifications,
@@ -1322,7 +1370,7 @@ export function NotificationsDrawer({
   onMarkAllRead,
   onClear,
 }: NotificationsDrawerProps) {
-  const unreadCount = notifications.filter(n => !n.read).length
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
     <>
@@ -1341,21 +1389,23 @@ export function NotificationsDrawer({
         {notifications.length === 0 ? (
           <p className="text-center text-stone-500 py-8">No notifications</p>
         ) : (
-          notifications.map(notification => (
+          notifications.map((notification) => (
             <div
               key={notification.id}
               className={cn(
                 "p-3 rounded-lg border",
                 notification.read
                   ? "bg-stone-50 dark:bg-stone-900"
-                  : "bg-white dark:bg-stone-800 border-primary-200"
+                  : "bg-white dark:bg-stone-800 border-primary-200",
               )}
             >
               <div className="flex items-start gap-3">
                 <NotificationIcon type={notification.type} />
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm">{notification.title}</p>
-                  <p className="text-sm text-stone-500 mt-1">{notification.message}</p>
+                  <p className="text-sm text-stone-500 mt-1">
+                    {notification.message}
+                  </p>
                   <p className="text-xs text-stone-400 mt-2">
                     {formatRelativeTime(notification.timestamp)}
                   </p>
@@ -1374,16 +1424,22 @@ export function NotificationsDrawer({
         )}
       </div>
     </>
-  )
+  );
 }
 ```
 
 #### SearchModal.tsx (Command Palette)
 
 ```tsx
-import { Dialog, DialogContent } from '@/components/ui/dialog'
-import { Command, CommandInput, CommandList, CommandGroup, CommandItem } from '@/components/ui/command'
-import type { SearchModalProps } from '@/product/shell/types'
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandGroup,
+  CommandItem,
+} from "@/components/ui/command";
+import type { SearchModalProps } from "../../../product/shell/types";
 
 export function SearchModal({
   onClose,
@@ -1391,19 +1447,19 @@ export function SearchModal({
   recentItems,
   shortcuts,
 }: SearchModalProps) {
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState("");
 
   // Handle keyboard shortcut to open
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault()
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
         // Focus is managed by Dialog
       }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <Command className="rounded-lg border shadow-md">
@@ -1415,11 +1471,8 @@ export function SearchModal({
       <CommandList>
         {recentItems && recentItems.length > 0 && (
           <CommandGroup heading="Recent">
-            {recentItems.map(item => (
-              <CommandItem
-                key={item.id}
-                onSelect={() => onSelect(item)}
-              >
+            {recentItems.map((item) => (
+              <CommandItem key={item.id} onSelect={() => onSelect(item)}>
                 {item.label}
               </CommandItem>
             ))}
@@ -1427,7 +1480,7 @@ export function SearchModal({
         )}
         {shortcuts && shortcuts.length > 0 && (
           <CommandGroup heading="Shortcuts">
-            {shortcuts.map(shortcut => (
+            {shortcuts.map((shortcut) => (
               <CommandItem key={shortcut.id}>
                 <span className="flex-1">{shortcut.label}</span>
                 <kbd className="text-xs bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded">
@@ -1439,57 +1492,59 @@ export function SearchModal({
         )}
       </CommandList>
     </Command>
-  )
+  );
 }
 ```
 
 #### ThemeToggle.tsx
 
 ```tsx
-import { Sun, Moon, Monitor, Check } from 'lucide-react'
+import { Sun, Moon, Monitor, Check } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
-type Theme = 'light' | 'dark' | 'system'
+type Theme = "light" | "dark" | "system";
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('theme') as Theme) || 'system'
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("theme") as Theme) || "system";
     }
-    return 'system'
-  })
+    return "system";
+  });
 
   useEffect(() => {
-    const root = document.documentElement
-    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const root = document.documentElement;
+    const systemDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
 
-    if (theme === 'dark' || (theme === 'system' && systemDark)) {
-      root.classList.add('dark')
+    if (theme === "dark" || (theme === "system" && systemDark)) {
+      root.classList.add("dark");
     } else {
-      root.classList.remove('dark')
+      root.classList.remove("dark");
     }
 
-    localStorage.setItem('theme', theme)
-  }, [theme])
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
   // Listen for system preference changes
   useEffect(() => {
-    if (theme !== 'system') return
+    if (theme !== "system") return;
 
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handler = (e: MediaQueryListEvent) => {
-      document.documentElement.classList.toggle('dark', e.matches)
-    }
+      document.documentElement.classList.toggle("dark", e.matches);
+    };
 
-    mediaQuery.addEventListener('change', handler)
-    return () => mediaQuery.removeEventListener('change', handler)
-  }, [theme])
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, [theme]);
 
   return (
     <DropdownMenu>
@@ -1501,24 +1556,30 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme('light')}>
+        <DropdownMenuItem onClick={() => setTheme("light")}>
           <Sun className="mr-2 h-4 w-4" strokeWidth={1.5} />
           Light
-          {theme === 'light' && <Check className="ml-auto h-4 w-4" strokeWidth={2} />}
+          {theme === "light" && (
+            <Check className="ml-auto h-4 w-4" strokeWidth={2} />
+          )}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>
+        <DropdownMenuItem onClick={() => setTheme("dark")}>
           <Moon className="mr-2 h-4 w-4" strokeWidth={1.5} />
           Dark
-          {theme === 'dark' && <Check className="ml-auto h-4 w-4" strokeWidth={2} />}
+          {theme === "dark" && (
+            <Check className="ml-auto h-4 w-4" strokeWidth={2} />
+          )}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('system')}>
+        <DropdownMenuItem onClick={() => setTheme("system")}>
           <Monitor className="mr-2 h-4 w-4" strokeWidth={1.5} />
           System
-          {theme === 'system' && <Check className="ml-auto h-4 w-4" strokeWidth={2} />}
+          {theme === "system" && (
+            <Check className="ml-auto h-4 w-4" strokeWidth={2} />
+          )}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }
 ```
 
@@ -1538,19 +1599,19 @@ Export all components:
 
 ```typescript
 // Primary components
-export { AppShell } from './AppShell'
-export { MainNav } from './MainNav'
-export { UserMenu } from './UserMenu'
+export { AppShell } from "./AppShell";
+export { MainNav } from "./MainNav";
+export { UserMenu } from "./UserMenu";
 
 // Secondary components (only export if created)
-export { NotificationsDrawer } from './NotificationsDrawer'
-export { SearchModal } from './SearchModal'
-export { ThemeToggle } from './ThemeToggle'
-export { SettingsModal } from './SettingsModal'
-export { ProfileModal } from './ProfileModal'
-export { HelpPanel } from './HelpPanel'
-export { FeedbackModal } from './FeedbackModal'
-export { MobileMenuDrawer } from './MobileMenuDrawer'
+export { NotificationsDrawer } from "./NotificationsDrawer";
+export { SearchModal } from "./SearchModal";
+export { ThemeToggle } from "./ThemeToggle";
+export { SettingsModal } from "./SettingsModal";
+export { ProfileModal } from "./ProfileModal";
+export { HelpPanel } from "./HelpPanel";
+export { FeedbackModal } from "./FeedbackModal";
+export { MobileMenuDrawer } from "./MobileMenuDrawer";
 ```
 
 **Component Requirements:**
@@ -1567,75 +1628,75 @@ export { MobileMenuDrawer } from './MobileMenuDrawer'
 **UPDATED:** Create `src/shell/ShellPreview.tsx` as a **wired preview** with state management for all secondary components.
 
 ```tsx
-import { useState } from 'react'
-import { AppShell } from './components/AppShell'
-import { Sheet, SheetContent } from '@/components/ui/sheet'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { useState } from "react";
+import { AppShell } from "./components/AppShell";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 // Import secondary components (only those that were created)
-import { NotificationsDrawer } from './components/NotificationsDrawer'
-import { SearchModal } from './components/SearchModal'
-import { SettingsModal } from './components/SettingsModal'
-import { ProfileModal } from './components/ProfileModal'
-import { HelpPanel } from './components/HelpPanel'
-import { MobileMenuDrawer } from './components/MobileMenuDrawer'
+import { NotificationsDrawer } from "./components/NotificationsDrawer";
+import { SearchModal } from "./components/SearchModal";
+import { SettingsModal } from "./components/SettingsModal";
+import { ProfileModal } from "./components/ProfileModal";
+import { HelpPanel } from "./components/HelpPanel";
+import { MobileMenuDrawer } from "./components/MobileMenuDrawer";
 
 // Import shell data and types
-import shellData from '@/product/shell/data.json'
-import type { ShellData } from '@/product/shell/types'
+import shellData from "../../../product/shell/data.json";
+import type { ShellData } from "../../../product/shell/types";
 
 export default function ShellPreview() {
   // State for each secondary component
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
-  const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const [isHelpOpen, setIsHelpOpen] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Type the shell data
-  const data = shellData as ShellData
+  const data = shellData as ShellData;
 
   // Navigation items from product roadmap
   const navigationItems = [
-    { label: 'Dashboard', href: '/sections/dashboard', isActive: true },
-    { label: 'Invoices', href: '/sections/invoice-management' },
-    { label: 'Reports', href: '/sections/reports-and-analytics' },
-  ]
+    { label: "Dashboard", href: "/sections/dashboard", isActive: true },
+    { label: "Invoices", href: "/sections/invoice-management" },
+    { label: "Reports", href: "/sections/reports-and-analytics" },
+  ];
 
   // Keyboard shortcut for search (Cmd+K)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault()
-        setIsSearchOpen(true)
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setIsSearchOpen(true);
       }
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         // Close whichever is open
-        setIsNotificationsOpen(false)
-        setIsSearchOpen(false)
-        setIsSettingsOpen(false)
-        setIsProfileOpen(false)
-        setIsHelpOpen(false)
-        setIsMobileMenuOpen(false)
+        setIsNotificationsOpen(false);
+        setIsSearchOpen(false);
+        setIsSettingsOpen(false);
+        setIsProfileOpen(false);
+        setIsHelpOpen(false);
+        setIsMobileMenuOpen(false);
       }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <>
       <AppShell
         navigationItems={navigationItems}
         user={data.user}
-        onNavigate={(href) => console.log('Navigate:', href)}
-        onLogout={() => console.log('Logout')}
+        onNavigate={(href) => console.log("Navigate:", href)}
+        onLogout={() => console.log("Logout")}
         // Wired handlers for header actions
         onHeaderAction={(actionId) => {
-          if (actionId === 'notifications') setIsNotificationsOpen(true)
-          if (actionId === 'search') setIsSearchOpen(true)
-          if (actionId === 'help') setIsHelpOpen(true)
+          if (actionId === "notifications") setIsNotificationsOpen(true);
+          if (actionId === "search") setIsSearchOpen(true);
+          if (actionId === "help") setIsHelpOpen(true);
         }}
         // Wired handlers for user menu
         onProfileClick={() => setIsProfileOpen(true)}
@@ -1656,9 +1717,9 @@ export default function ShellPreview() {
           <NotificationsDrawer
             notifications={data.notifications || []}
             onClose={() => setIsNotificationsOpen(false)}
-            onMarkRead={(id) => console.log('Mark read:', id)}
-            onMarkAllRead={() => console.log('Mark all read')}
-            onClear={(id) => console.log('Clear:', id)}
+            onMarkRead={(id) => console.log("Mark read:", id)}
+            onMarkAllRead={() => console.log("Mark all read")}
+            onClear={(id) => console.log("Clear:", id)}
           />
         </SheetContent>
       </Sheet>
@@ -1669,8 +1730,8 @@ export default function ShellPreview() {
           <SearchModal
             onClose={() => setIsSearchOpen(false)}
             onSelect={(item) => {
-              console.log('Search select:', item)
-              setIsSearchOpen(false)
+              console.log("Search select:", item);
+              setIsSearchOpen(false);
             }}
             recentItems={data.searchRecent}
             shortcuts={data.searchShortcuts}
@@ -1682,11 +1743,18 @@ export default function ShellPreview() {
       <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
         <DialogContent>
           <SettingsModal
-            settings={data.settings || { theme: 'system', notifications: { email: true, push: true, digest: 'daily' }, language: 'en', timezone: 'UTC' }}
+            settings={
+              data.settings || {
+                theme: "system",
+                notifications: { email: true, push: true, digest: "daily" },
+                language: "en",
+                timezone: "UTC",
+              }
+            }
             onClose={() => setIsSettingsOpen(false)}
             onSave={(settings) => {
-              console.log('Save settings:', settings)
-              setIsSettingsOpen(false)
+              console.log("Save settings:", settings);
+              setIsSettingsOpen(false);
             }}
           />
         </DialogContent>
@@ -1696,11 +1764,13 @@ export default function ShellPreview() {
       <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
         <DialogContent>
           <ProfileModal
-            user={data.user || { id: 'u1', name: 'User', email: 'user@example.com' }}
+            user={
+              data.user || { id: "u1", name: "User", email: "user@example.com" }
+            }
             onClose={() => setIsProfileOpen(false)}
             onSave={(user) => {
-              console.log('Save profile:', user)
-              setIsProfileOpen(false)
+              console.log("Save profile:", user);
+              setIsProfileOpen(false);
             }}
           />
         </DialogContent>
@@ -1712,7 +1782,7 @@ export default function ShellPreview() {
           <HelpPanel
             topics={data.helpTopics || []}
             onClose={() => setIsHelpOpen(false)}
-            onTopicSelect={(id) => console.log('Topic selected:', id)}
+            onTopicSelect={(id) => console.log("Topic selected:", id)}
           />
         </SheetContent>
       </Sheet>
@@ -1725,15 +1795,15 @@ export default function ShellPreview() {
             user={data.user}
             onClose={() => setIsMobileMenuOpen(false)}
             onNavigate={(href) => {
-              console.log('Navigate:', href)
-              setIsMobileMenuOpen(false)
+              console.log("Navigate:", href);
+              setIsMobileMenuOpen(false);
             }}
-            onLogout={() => console.log('Logout')}
+            onLogout={() => console.log("Logout")}
           />
         </SheetContent>
       </Sheet>
     </>
-  )
+  );
 }
 ```
 
@@ -1843,12 +1913,14 @@ Read `index.html` and inject the following script **immediately after `<head>` a
 <script>
   // Anti-flicker: aplică tema SINCRON înainte de render
   // Generated by /design-shell
-  (function() {
+  (function () {
     try {
-      var theme = localStorage.getItem('theme') || 'system';
-      var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (theme === 'dark' || (theme === 'system' && systemDark)) {
-        document.documentElement.classList.add('dark');
+      var theme = localStorage.getItem("theme") || "system";
+      var systemDark = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches;
+      if (theme === "dark" || (theme === "system" && systemDark)) {
+        document.documentElement.classList.add("dark");
       }
     } catch (e) {}
   })();
@@ -1868,12 +1940,14 @@ Read `index.html` and inject the following script **immediately after `<head>` a
     <script>
       // Anti-flicker: Apply theme synchronously before render
       // Generated by /design-shell
-      (function() {
+      (function () {
         try {
-          var theme = localStorage.getItem('theme') || 'system';
-          var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (theme === 'dark' || (theme === 'system' && systemDark)) {
-            document.documentElement.classList.add('dark');
+          var theme = localStorage.getItem("theme") || "system";
+          var systemDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          if (theme === "dark" || (theme === "system" && systemDark)) {
+            document.documentElement.classList.add("dark");
           }
         } catch (e) {}
       })();
@@ -1908,12 +1982,14 @@ Let the user know:
 **Created files:**
 
 **Specification & Data:**
+
 - `/product/shell/spec.md` — Shell specification with relationships
 - `/product/shell/data.json` — Sample data for shell components
 - `/product/shell/types.ts` — TypeScript interfaces
 - `/product/design-system/design-direction.md` — Design direction for consistency
 
 **Primary Components:**
+
 - `src/shell/components/AppShell.tsx` — Main shell wrapper
 - `src/shell/components/MainNav.tsx` — Navigation component
 - `src/shell/components/UserMenu.tsx` — User menu component
@@ -1921,6 +1997,7 @@ Let the user know:
 - `src/shell/ShellPreview.tsx` — Wired preview wrapper
 
 **Secondary Components:** (based on your selections)
+
 - [List each created secondary component]
 
 **Shell features:**

@@ -762,6 +762,15 @@ Output: {
 }
 ```
 
+> **Note:** View Relationships are distinct from Shell Relationships:
+>
+> | Concept             | Scope            | Defined In       |
+> | ------------------- | ---------------- | ---------------- |
+> | View Relationships  | Within a section | `/shape-section` |
+> | Shell Relationships | Global shell UI  | `/design-shell`  |
+>
+> View Relationships wire views within a section (e.g., list → detail drawer). Shell Relationships wire global shell elements (e.g., header action → notifications drawer).
+
 **Important:**
 
 - Set `shell: true` if the section should display inside the app shell (this is the default)

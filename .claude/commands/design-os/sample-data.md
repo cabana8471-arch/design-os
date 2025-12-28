@@ -23,11 +23,11 @@ fi
 
 **Handle the following cases:**
 
-| Condition                         | Action                                                                                                                           |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Directory doesn't exist           | Show error: "Error: product/sections/[section-id]/ - Directory not found. Run /shape-section to create it."                      |
-| Directory exists, spec.md missing | Show error: "Error: spec.md - File not found in product/sections/[section-id]/. Run /shape-section to create the specification." |
-| Directory exists, spec.md exists  | Continue to Step 2                                                                                                               |
+| Condition                         | Action                                                                                                      |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Directory doesn't exist           | Show error: "Error: product/sections/[section-id]/ - Directory not found. Run /shape-section to create it." |
+| Directory exists, spec.md missing | Show error: "Error: spec.md - File not found. Run /shape-section to create it."                             |
+| Directory exists, spec.md exists  | Continue to Step 2                                                                                          |
 
 **If the spec doesn't exist:**
 
