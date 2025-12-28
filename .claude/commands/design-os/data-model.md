@@ -171,10 +171,13 @@ echo "$CONTENT" | grep -E "^### " | while read -r line; do
   if [[ ! "$entity_name" =~ ^[A-Z][a-zA-Z0-9]*$ ]]; then
     echo "Warning: Entity '$entity_name' doesn't follow PascalCase naming (expected format: EntityName)"
   fi
-  # Check for plural form (ends in 's' but exclude common singular endings)
-  # Excluded: -ss (Address, Class), -us (Status, Campus), -is (Analysis, Thesis), -ness (Business), -ess (Process)
-  if [[ "$entity_name" =~ s$ ]] && [[ ! "$entity_name" =~ (ss|us|is|ness|ess)$ ]]; then
-    echo "Warning: Entity '$entity_name' may be plural. Consider using singular form (e.g., '${entity_name%s}')."
+  # Check for obvious plural forms only (conservative to avoid false positives)
+  # Only warn about clear plurals: -ies (Companies→Company), -ves (Shelves→Shelf)
+  # Skip: singular nouns ending in s (Canvas, Atlas, Nexus, Alias, Status, Address, etc.)
+  if [[ "$entity_name" =~ ies$ ]]; then
+    echo "Warning: Entity '$entity_name' appears plural (ends in 'ies'). Consider: '${entity_name%ies}y'"
+  elif [[ "$entity_name" =~ ves$ ]]; then
+    echo "Warning: Entity '$entity_name' appears plural (ends in 'ves'). Consider singular form."
   fi
 done
 

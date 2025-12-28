@@ -50,10 +50,11 @@ Options:
 - **Standard** — Full feature set for primary use cases. Covers main user flows and common scenarios. Best for: most production products.
 - **Enterprise / Comprehensive** — All features plus advanced capabilities (analytics, admin panels, integrations). Best for: mature products, B2B SaaS, complex workflows.
 
-Record the choice for use throughout the planning process:
+Record the user's choice for use throughout the planning process:
 
-```
-PRODUCT_SCOPE: [MVP / Standard / Enterprise]
+```bash
+# Set based on user's selection
+PRODUCT_SCOPE="MVP"  # or "Standard" or "Enterprise"
 ```
 
 ### AI-Generated Feature Suggestions

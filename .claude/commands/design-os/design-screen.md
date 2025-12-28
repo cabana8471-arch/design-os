@@ -1896,3 +1896,61 @@ export default defineConfig({
   },
 });
 ```
+
+---
+
+## Recovery Pattern
+
+If component creation fails, follow these recovery steps:
+
+### Directory Issues
+
+```bash
+# Check write permissions
+ls -la src/sections/[section-id]/
+
+# Verify directory exists, create if missing
+mkdir -p src/sections/[section-id]/components
+
+# Retry the component creation step
+```
+
+### TypeScript Compilation Errors
+
+```bash
+# See all TypeScript errors
+npm run type-check
+
+# Common fixes:
+# 1. Verify props interfaces match data.json structure
+# 2. Check that all imports resolve correctly
+# 3. Ensure component uses correct prop types from types.ts
+```
+
+### Import Resolution Errors
+
+| Error                                 | Cause                     | Fix                                 |
+| ------------------------------------- | ------------------------- | ----------------------------------- |
+| `Cannot find module '@/...'`          | Path alias not configured | Check tsconfig.json paths           |
+| `Cannot find module '../product/...'` | Wrong relative path       | Use `@/../product/` prefix          |
+| `Type 'X' is not assignable`          | Props mismatch            | Compare component props to types.ts |
+
+### Preview Not Loading
+
+```bash
+# Check dev server is running
+lsof -i :3000
+
+# Start if needed
+npm run dev
+
+# Navigate to: http://localhost:3000/sections/[section-id]/[view-name]
+```
+
+### Rollback Steps
+
+If the component is fundamentally broken:
+
+1. Delete the generated files: `rm -rf src/sections/[section-id]/`
+2. Review the spec.md for clarity
+3. Re-run `/design-screen` with clearer instructions

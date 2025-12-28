@@ -186,10 +186,15 @@ When assembling prompts during `/export-product`:
 
 ```
 1. Read template file content
-2. If first line matches pattern `<!-- v[0-9]+\.[0-9]+\.[0-9]+ -->`, remove it
+2. Strip ALL leading HTML comments (version AND usage comments):
+   - Pattern: /^(<!--[\s\S]*?-->\s*\n?)+/
+   - Handles: `<!-- v1.0.0 -->`, `<!-- v1.2.0-section -->`, `<!-- Usage: ... -->`
 3. Trim leading whitespace from remaining content
 4. Concatenate with other templates
 ```
+
+> **Note:** This procedure follows the standardized regex patterns defined in
+> `.claude/commands/design-os/export-product.md` (Step 1 → Standardized Regex Patterns).
 
 **Version numbering convention:**
 
@@ -327,6 +332,14 @@ Templates may include an optional usage comment after the version comment to exp
 
 ## Template Content
 ```
+
+**After stripping:**
+
+```markdown
+## Template Content
+```
+
+Both version and usage comments are removed during template assembly.
 
 **Usage comment guidelines:**
 
