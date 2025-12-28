@@ -11,7 +11,7 @@ Read `/product/product-overview.md` to understand what the product is.
 If it doesn't exist:
 
 ```
-Missing: product/product-overview.md. Run /product-vision to create it.
+Error: product/product-overview.md - File not found. Run /product-vision to create it.
 ```
 
 Stop here if the prerequisite is missing.
@@ -21,6 +21,7 @@ Stop here if the prerequisite is missing.
 "Let's define the visual identity for **[Product Name]**.
 
 I'll help you choose:
+
 1. **Colors** — A primary accent, secondary accent, and neutral palette
 2. **Typography** — Fonts for headings, body text, and code
 
@@ -46,6 +47,7 @@ Should complement your primary — often a different hue or a neutral variation
 Options: `slate` (cool gray), `gray` (pure gray), `zinc` (slightly warm), `neutral`, `stone` (warm gray)
 
 Based on [Product Name], I'd suggest:
+
 - **Primary:** [suggestion] — [why it fits]
 - **Secondary:** [suggestion] — [why it complements]
 - **Neutral:** [suggestion] — [why it works]
@@ -74,6 +76,7 @@ Often the same as heading, or: `Inter`, `Source Sans 3`, `Nunito Sans`, `Open Sa
 Options: `IBM Plex Mono`, `JetBrains Mono`, `Fira Code`, `Source Code Pro`
 
 My suggestions for [Product Name]:
+
 - **Heading:** [suggestion] — [why]
 - **Body:** [suggestion] — [why]
 - **Mono:** [suggestion] — [why]
@@ -86,13 +89,13 @@ If the user doesn't specify a mono font, detect this scenario and apply the defa
 
 **Detection Priority Order:**
 
-| Priority | User Response Pattern | Action | Rationale |
-|----------|----------------------|--------|-----------|
-| 1 | Explicit font name (e.g., "JetBrains Mono") | USE USER CHOICE | Direct selection takes precedence |
-| 2 | Explicit skip ("skip mono", "default is fine", "doesn't matter") | USE IBM Plex Mono | User explicitly defers to default |
-| 3 | Only heading/body mentioned, no mono context | USE IBM Plex Mono + NOTIFY | Implicit skip, inform user |
-| 4 | Mentions "mono", "code", "monospace" without specific font | ASK for clarification | User is thinking about it but hasn't decided |
-| 5 | Ambiguous or unclear | ASK user directly | Cannot determine intent |
+| Priority | User Response Pattern                                            | Action                     | Rationale                                    |
+| -------- | ---------------------------------------------------------------- | -------------------------- | -------------------------------------------- |
+| 1        | Explicit font name (e.g., "JetBrains Mono")                      | USE USER CHOICE            | Direct selection takes precedence            |
+| 2        | Explicit skip ("skip mono", "default is fine", "doesn't matter") | USE IBM Plex Mono          | User explicitly defers to default            |
+| 3        | Only heading/body mentioned, no mono context                     | USE IBM Plex Mono + NOTIFY | Implicit skip, inform user                   |
+| 4        | Mentions "mono", "code", "monospace" without specific font       | ASK for clarification      | User is thinking about it but hasn't decided |
+| 5        | Ambiguous or unclear                                             | ASK user directly          | Cannot determine intent                      |
 
 **Detection Algorithm:**
 
@@ -133,15 +136,16 @@ function detectMonoFontChoice(userResponse):
 
 **Edge Cases Handled:**
 
-| User Says | Detected As | Action |
-|-----------|-------------|--------|
-| "I need a mono font for code" | Mono interest without font | ASK for specific font |
-| "Just heading and body for now" | Implicit skip | USE_DEFAULT + notify |
-| "Default mono is fine" | Explicit skip | USE_DEFAULT |
-| "JetBrains Mono" | Explicit selection | FONT_SELECTED |
-| "I'm not sure about mono" | Ambiguous | ASK user |
+| User Says                       | Detected As                | Action                |
+| ------------------------------- | -------------------------- | --------------------- |
+| "I need a mono font for code"   | Mono interest without font | ASK for specific font |
+| "Just heading and body for now" | Implicit skip              | USE_DEFAULT + notify  |
+| "Default mono is fine"          | Explicit skip              | USE_DEFAULT           |
+| "JetBrains Mono"                | Explicit selection         | FONT_SELECTED         |
+| "I'm not sure about mono"       | Ambiguous                  | ASK user              |
 
 **Detection criteria (any of these indicates no mono font specified):**
+
 - User says "I don't need a mono font"
 - User says "skip mono" or similar
 - User only specifies heading and body fonts
@@ -149,6 +153,7 @@ function detectMonoFontChoice(userResponse):
 
 **When no mono font is specified (explicit skip):**
 If the user explicitly skips mono (Priority 2):
+
 ```
 "I'll use IBM Plex Mono as the default mono font for code blocks. If you'd prefer a different option, just let me know."
 ```
@@ -159,6 +164,7 @@ Then set `"mono": "IBM Plex Mono"` in typography.json.
 If the user mentions heading/body but not mono, briefly confirm their intent:
 
 Use AskUserQuestion with options:
+
 - "Use IBM Plex Mono (Recommended)" — Apply default mono font
 - "Choose a different mono font" — Ask for user's preference
 - "Skip mono — my product doesn't display code" — No mono needed
@@ -167,6 +173,7 @@ This distinguishes between users who forgot to mention mono vs. those who intent
 
 **When detection is ambiguous (Priority 5):**
 If the algorithm reaches `ASK_USER` due to unclear intent:
+
 ```
 "For the mono font (used in code blocks and technical content), would you like to:
 - Use the default (IBM Plex Mono)
@@ -220,6 +227,7 @@ Before finalizing, help the user visualize how their color choices will look in 
 "Let's preview your colors in both light and dark mode to make sure they work well:
 
 **Light Mode Preview:**
+
 - Background: `[neutral]-50` or `[neutral]-100`
 - Text: `[neutral]-900` or `[neutral]-800`
 - Primary buttons: `bg-[primary]-600 text-white`
@@ -227,6 +235,7 @@ Before finalizing, help the user visualize how their color choices will look in 
 - Borders: `[neutral]-200` or `[neutral]-300`
 
 **Dark Mode Preview:**
+
 - Background: `[neutral]-900` or `[neutral]-950`
 - Text: `[neutral]-100` or `[neutral]-50`
 - Primary buttons: `bg-[primary]-500 text-white` (slightly lighter for dark backgrounds)
@@ -238,18 +247,21 @@ Before finalizing, help the user visualize how their color choices will look in 
 Before proceeding, verify each combination passes minimum contrast requirements (WCAG AA: 4.5:1 for text, 3:1 for large text/UI):
 
 **Light Mode Validation:**
+
 - [ ] Primary button text (`white` on `[primary]-600`) — Should have 4.5:1 contrast
 - [ ] Body text (`[neutral]-800` on `[neutral]-50`) — Should have 4.5:1 contrast
 - [ ] Secondary text (`[secondary]-800` on `[secondary]-100`) — Should have 4.5:1 contrast
 - [ ] Border visibility (`[neutral]-200` on `[neutral]-50`) — Should be distinguishable
 
 **Dark Mode Validation:**
+
 - [ ] Primary button text (`white` on `[primary]-500`) — Should have 4.5:1 contrast
 - [ ] Body text (`[neutral]-100` on `[neutral]-900`) — Should have 4.5:1 contrast
 - [ ] Secondary text (`[secondary]-200` on `[secondary]-900`) — Should have 4.5:1 contrast
 - [ ] Border visibility (`[neutral]-700` on `[neutral]-900`) — Should be distinguishable
 
 **Interactive State Validation (Both Modes):**
+
 - [ ] **Disabled elements** (`[neutral]-400` text/icons) — Should have lower contrast (2.5:1-3:1) to indicate non-interactive state
 - [ ] **Hover states** — Should have visible change from default (background shift or text color change)
 - [ ] **Focus indicators** — Should have 3:1 minimum contrast for visible focus rings (WCAG 2.4.7)
@@ -257,6 +269,7 @@ Before proceeding, verify each combination passes minimum contrast requirements 
   - Dark mode: `[primary]-400` or lighter ring
 
 **Colors Known to Have Dark Mode Issues:**
+
 - `yellow` (500 and below often too light on dark backgrounds)
 - `lime` (needs 600+ for dark mode visibility)
 - `amber` (500 and below may need adjustment)
@@ -275,16 +288,19 @@ Once they've reviewed both modes:
 "Here's your design system:
 
 **Colors:**
+
 - Primary: `[color]`
 - Secondary: `[color]`
 - Neutral: `[color]`
 
 **Typography:**
+
 - Heading: [Font Name]
 - Body: [Font Name]
 - Mono: [Font Name]
 
 **Verified for:**
+
 - ✓ Light mode readability
 - ✓ Dark mode readability
 - ✓ Sufficient contrast
@@ -298,11 +314,13 @@ Once approved:
 ### Create Directory
 
 First, ensure the design-system directory exists:
+
 ```bash
 mkdir -p product/design-system
 ```
 
 Then validate the directory was created:
+
 ```bash
 if [ ! -d "product/design-system" ]; then
   echo "Error: product/design-system/ - Directory creation failed. Check write permissions."
@@ -315,6 +333,7 @@ fi
 Then create two files:
 
 **File 1:** `/product/design-system/colors.json`
+
 ```json
 {
   "primary": "[color]",
@@ -324,6 +343,7 @@ Then create two files:
 ```
 
 **File 2:** `/product/design-system/typography.json`
+
 ```json
 {
   "heading": "[Font Name]",
@@ -337,15 +357,18 @@ Then create two files:
 Let the user know:
 
 "I've saved your design tokens:
+
 - `/product/design-system/colors.json`
 - `/product/design-system/typography.json`
 
 **Your palette:**
+
 - Primary: `[color]` — for buttons, links, key actions
 - Secondary: `[color]` — for tags, highlights, secondary elements
 - Neutral: `[color]` — for backgrounds, text, borders
 
 **Your fonts:**
+
 - [Heading Font] for headings
 - [Body Font] for body text
 - [Mono Font] for code
@@ -357,6 +380,7 @@ Next step: Run `/design-shell` to design your application's navigation and layou
 ## Reference: Tailwind Color Palette
 
 Available colors (each has shades 50-950):
+
 - **Warm:** `red`, `orange`, `amber`, `yellow`, `lime`
 - **Cool:** `green`, `emerald`, `teal`, `cyan`, `sky`, `blue`
 - **Purple:** `indigo`, `violet`, `purple`, `fuchsia`, `pink`, `rose`
@@ -367,6 +391,7 @@ Available colors (each has shades 50-950):
 These are starting suggestions — feel free to explore [Google Fonts](https://fonts.google.com/) for other combinations that match your product's personality.
 
 ### Sans-Serif Pairings
+
 - **Modern & Clean:** DM Sans + DM Sans + IBM Plex Mono
 - **Professional:** Inter + Inter + JetBrains Mono
 - **Friendly:** Nunito Sans + Nunito Sans + Fira Code
@@ -377,17 +402,20 @@ These are starting suggestions — feel free to explore [Google Fonts](https://f
 - **Approachable:** Poppins + Poppins + IBM Plex Mono
 
 ### Serif + Sans Combinations
+
 - **Editorial:** Playfair Display + Source Sans 3 + IBM Plex Mono
 - **Classic Modern:** Merriweather + Open Sans + Fira Code
 - **Elegant:** Libre Baskerville + Lato + Source Code Pro
 - **Sophisticated:** Cormorant Garamond + Raleway + JetBrains Mono
 
 ### Technical/Developer Focus
+
 - **Tech-forward:** JetBrains Mono + Inter + JetBrains Mono
 - **Hacker:** Fira Code + Fira Sans + Fira Code
 - **Developer:** Source Code Pro + Source Sans 3 + Source Code Pro
 
 ### Tips for Custom Pairings
+
 - Pair fonts with contrasting weights (bold heading + regular body)
 - Keep heading and body from the same family for consistency
 - Use mono fonts that complement your primary font's style
@@ -408,12 +436,14 @@ Before saving colors, validate that each color name is a valid Tailwind v4 palet
 `red`, `orange`, `amber`, `yellow`, `lime`, `green`, `emerald`, `teal`, `cyan`, `sky`, `blue`, `indigo`, `violet`, `purple`, `fuchsia`, `pink`, `rose`, `slate`, `gray`, `zinc`, `neutral`, `stone`
 
 **Invalid color names to reject:**
+
 - Custom/hex colors (e.g., `#3B82F6`) — Use the closest Tailwind equivalent
 - Misspelled colors (e.g., `purle`, `organge`)
 - Non-existent colors (e.g., `turquoise`, `coral`, `navy`)
 - Old Tailwind v3 colors that no longer exist in v4
 
 If the user provides an invalid color name:
+
 ```
 "[color] isn't a standard Tailwind color. Did you mean [suggestion]? Here are the available options: [list relevant colors]"
 ```
@@ -433,11 +463,13 @@ Before saving fonts, validate that each font name exactly matches the Google Fon
 | `Open sans` | `Open Sans` |
 
 **Validation Steps:**
+
 1. Check for exact casing (most fonts use Title Case with spaces)
 2. Check for version numbers where applicable (e.g., `Source Sans 3`)
 3. Check for font weight suffixes that should be separate (e.g., `Inter` not `Inter Bold`)
 
 If the user provides a potentially incorrect font name:
+
 ```
 "Just checking — did you mean '[Correct Font Name]'? Font names need to match Google Fonts exactly for proper loading."
 ```
@@ -447,18 +479,19 @@ If the user provides a potentially incorrect font name:
 ### Font Matching Between CSS and Design Tokens
 
 When design tokens are exported, fonts must be properly connected between:
+
 1. **typography.json** — The font names chosen by the user
 2. **index.html** — The Google Fonts `<link>` tag for loading
 3. **CSS/Tailwind** — The font-family declarations
 
 **Ensuring Fonts Match:**
 
-| Location | Format | Example |
-|----------|--------|---------|
-| typography.json | Exact Google Font name | `"heading": "DM Sans"` |
-| index.html | URL-encoded for Google Fonts | `family=DM+Sans:wght@400;500;700` |
-| CSS | CSS font-family with fallback | `font-family: 'DM Sans', sans-serif;` |
-| Tailwind class | Custom font class | `font-heading` |
+| Location        | Format                        | Example                               |
+| --------------- | ----------------------------- | ------------------------------------- |
+| typography.json | Exact Google Font name        | `"heading": "DM Sans"`                |
+| index.html      | URL-encoded for Google Fonts  | `family=DM+Sans:wght@400;500;700`     |
+| CSS             | CSS font-family with fallback | `font-family: 'DM Sans', sans-serif;` |
+| Tailwind class  | Custom font class             | `font-heading`                        |
 
 **Common Mismatch Issues:**
 
@@ -478,6 +511,7 @@ When design tokens are exported, fonts must be properly connected between:
 **Verification Checklist:**
 
 Before finalizing design tokens, verify:
+
 - [ ] Font names in typography.json exactly match Google Fonts
 - [ ] index.html includes the correct Google Fonts URL with all weights
 - [ ] CSS custom properties reference the correct font-family
@@ -490,13 +524,13 @@ Before finalizing typography choices, ensure all font weights needed for UI comp
 
 **Common Weight Usage in UI Components:**
 
-| UI Element | Typical Weight | Tailwind Class |
-|------------|----------------|----------------|
-| Body text | 400 (Regular) | `font-normal` |
-| Emphasized text | 500 (Medium) | `font-medium` |
-| Subheadings | 600 (Semibold) | `font-semibold` |
-| Headings | 700 (Bold) | `font-bold` |
-| Code/mono | 400-500 | `font-normal`/`font-medium` |
+| UI Element      | Typical Weight | Tailwind Class              |
+| --------------- | -------------- | --------------------------- |
+| Body text       | 400 (Regular)  | `font-normal`               |
+| Emphasized text | 500 (Medium)   | `font-medium`               |
+| Subheadings     | 600 (Semibold) | `font-semibold`             |
+| Headings        | 700 (Bold)     | `font-bold`                 |
+| Code/mono       | 400-500        | `font-normal`/`font-medium` |
 
 **Validation Process:**
 
@@ -504,19 +538,22 @@ Before finalizing typography choices, ensure all font weights needed for UI comp
 2. **Verify weights are loaded** — Ensure the Google Fonts URL includes all needed weights:
    ```html
    <!-- Example: Loading 400, 500, 600, 700 weights -->
-   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap">
+   <link
+     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"
+   />
    ```
 3. **Test fallback behavior** — If a weight isn't loaded, the browser substitutes the nearest available weight, which may look incorrect
 
 **Common Issues:**
 
-| Problem | Symptom | Solution |
-|---------|---------|----------|
+| Problem                | Symptom                                   | Solution                  |
+| ---------------------- | ----------------------------------------- | ------------------------- |
 | Missing semibold (600) | `font-semibold` looks like bold or normal | Add `;600` to weight list |
-| Missing medium (500) | `font-medium` looks like normal | Add `;500` to weight list |
-| Only 400 loaded | All text looks the same weight | Add needed weights to URL |
+| Missing medium (500)   | `font-medium` looks like normal           | Add `;500` to weight list |
+| Only 400 loaded        | All text looks the same weight            | Add needed weights to URL |
 
 **Minimum Recommended Weights:**
+
 - **Heading font:** 400, 500, 600, 700
 - **Body font:** 400, 500, 600 (700 optional)
 - **Mono font:** 400, 500 (for code highlighting)
@@ -534,16 +571,19 @@ Before finalizing typography choices, ensure all font weights needed for UI comp
 
 ```html
 <!-- index.html -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
 ```
 
 ```css
 /* CSS custom properties */
 :root {
-  --font-heading: 'DM Sans', sans-serif;
-  --font-body: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-heading: "DM Sans", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 }
 ```
