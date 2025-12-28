@@ -116,7 +116,7 @@ Generate the complete export package with all components, types, and handoff doc
 | `/product-roadmap`   | `product-overview.md`                       | —                                                                  |
 | `/data-model`        | `product-overview.md`, `product-roadmap.md` | —                                                                  |
 | `/design-tokens`     | `product-overview.md`                       | —                                                                  |
-| `/design-shell`      | `product-overview.md`                       | Design tokens, Sections, UI components (Sheet, Dialog), `SKILL.md` |
+| `/design-shell`      | `product-overview.md`, `product-roadmap.md` | Design tokens, Sections, UI components (Sheet, Dialog), `SKILL.md` |
 | `/shape-section`     | `product-overview.md`, `product-roadmap.md` | Data model, Shell spec                                             |
 | `/sample-data`       | Section `spec.md`                           | Data model                                                         |
 | `/design-screen`     | Section `spec.md`, `data.json`, `types.ts`  | Design tokens, Shell components, `SKILL.md`                        |

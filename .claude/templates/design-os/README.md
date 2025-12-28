@@ -82,7 +82,9 @@ section/tdd-workflow.md
 
 ### Variable Substitution
 
-Section templates use placeholder variables. **Only the assembled `section-prompt.md` requires user substitution** — these variables are left in place for users to fill in for each section they implement:
+Section templates use placeholder variables. **Only the assembled `section-prompt.md` requires user substitution** — these variables are left in place for users to fill in for each section they implement.
+
+> **Notation:** One-shot variables use bracket notation `[variable]` (auto-substituted by `/export-product`). Section variables use uppercase `VARIABLE` (user substitutes manually for each section).
 
 | Variable         | Used In                                             | Description                  | Example              |
 | ---------------- | --------------------------------------------------- | ---------------------------- | -------------------- |

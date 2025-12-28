@@ -1,5 +1,5 @@
 <!-- v1.1.0-section -->
-<!-- Usage: Include in section-specific prompts for incremental implementation -->
+<!-- Usage: Include in section-specific prompts (assumes Foundation complete, asks about data relationships & integration) -->
 
 ## Before You Begin
 
