@@ -1,6 +1,6 @@
 <!-- v1.0.0 -->
 
-## TOP 3 RULES FOR IMPLEMENTATION
+## TOP 4 RULES FOR IMPLEMENTATION
 
 These rules prevent common implementation mistakes. Follow them strictly.
 

@@ -7,7 +7,7 @@ This directory contains modular templates for generating implementation prompts 
 ```
 design-os/
 ├── common/                          # Shared templates (used in both prompt types)
-│   ├── top-rules.md                # TOP 3 RULES FOR IMPLEMENTATION
+│   ├── top-rules.md                # TOP 4 RULES FOR IMPLEMENTATION
 │   ├── reporting-protocol.md        # Implementation Reporting Protocol
 │   ├── model-guidance.md            # Suggested Model Usage
 │   ├── verification-checklist.md    # Final Verification Checklist
@@ -71,22 +71,22 @@ section/tdd-workflow.md
 
 ### Cross-Template References
 
-| Template | References |
-|----------|-----------|
-| `one-shot/prompt-template.md` | References files in `product-plan/` structure |
-| `section/prompt-template.md` | References section-specific files only |
-| `common/tdd-workflow.md` | References `01-foundation.md` instructions |
-| `section/tdd-workflow.md` | References section `tests.md` and `sample-data.json` |
+| Template                      | References                                           |
+| ----------------------------- | ---------------------------------------------------- |
+| `one-shot/prompt-template.md` | References files in `product-plan/` structure        |
+| `section/prompt-template.md`  | References section-specific files only               |
+| `common/tdd-workflow.md`      | References `01-foundation.md` instructions           |
+| `section/tdd-workflow.md`     | References section `tests.md` and `sample-data.json` |
 
 ### Variable Substitution
 
 Section templates use placeholder variables that users must replace:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
+| Variable       | Description                  | Example              |
+| -------------- | ---------------------------- | -------------------- |
 | `SECTION_NAME` | Human-readable section title | "Invoice Management" |
-| `SECTION_ID` | URL-safe section identifier | "invoice-management" |
-| `NN` | Two-digit milestone number | "02", "03", etc. |
+| `SECTION_ID`   | URL-safe section identifier  | "invoice-management" |
+| `NN`           | Two-digit milestone number   | "02", "03", etc.     |
 
 ---
 
@@ -124,11 +124,11 @@ Section templates use placeholder variables that users must replace:
 
 The section prompt uses specialized templates that differ from the one-shot versions:
 
-| Template | Section Version Differences |
-|----------|----------------------------|
-| `section/preamble.md` | Includes SECTION_NAME, SECTION_ID, NN variables for user substitution |
-| `section/prompt-template.md` | References section-specific files only, not full product |
-| `section/tdd-workflow.md` | Focuses on component testing, props validation, section integration |
+| Template                          | Section Version Differences                                                                                                    |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `section/preamble.md`             | Includes SECTION_NAME, SECTION_ID, NN variables for user substitution                                                          |
+| `section/prompt-template.md`      | References section-specific files only, not full product                                                                       |
+| `section/tdd-workflow.md`         | Focuses on component testing, props validation, section integration                                                            |
 | `section/clarifying-questions.md` | Asks about data relationships, integration points, section permissions — NOT full auth, user modeling, or tech stack questions |
 
 This distinction matters because section prompts are used after Foundation is complete, so they assume auth and core infrastructure already exist. They focus on integrating new functionality rather than building from scratch.
@@ -136,17 +136,20 @@ This distinction matters because section prompts are used after Foundation is co
 ### Clarifying Questions: Common vs Section
 
 **`common/clarifying-questions.md` (v1.0.0)**
+
 - Used in **one-shot prompts** for full product implementation
 - Asks about: Authentication, user modeling, tech stack, backend logic
 - Purpose: Establish foundational decisions before building anything
 
 **`section/clarifying-questions.md` (v1.1.0)**
+
 - Used in **section-specific prompts** for incremental implementation
 - Asks about: Data relationships, integration points, section permissions, navigation
 - Purpose: Integrate a new section into an already-running codebase
 - Assumes: Auth, tech stack, and user modeling already decided (from Foundation milestone)
 
 **When to use which:**
+
 - Building from scratch → Use common/ templates (one-shot prompt)
 - Adding features to existing app → Use section/ templates (section prompt)
 
@@ -169,6 +172,7 @@ When assembling prompts during `/export-product`:
 3. **Preserve template versions:** Keep version comments in the source template files for maintenance tracking
 
 **Procedure for stripping:**
+
 ```
 1. Read template file content
 2. If first line matches pattern `<!-- v[0-9]+\.[0-9]+\.[0-9]+ -->`, remove it
@@ -177,11 +181,13 @@ When assembling prompts during `/export-product`:
 ```
 
 **Version numbering convention:**
+
 - **Major (v2.0.0):** Breaking changes to prompt structure or required variables
 - **Minor (v1.1.0):** New content additions that don't break existing integrations
 - **Patch (v1.0.1):** Fixes, clarifications, or minor wording improvements
 
 **Version suffix convention:**
+
 - **`-section`:** Section-specific variant of a common template (e.g., `v1.2.0-section`)
   - Used when section templates diverge from common templates
   - Example: `section/tdd-workflow.md` may use `v1.2.0-section` while `common/tdd-workflow.md` uses `v1.2.0`
@@ -195,11 +201,11 @@ When modifying templates, follow these guidelines for version updates:
 
 ### When to Update Versions
 
-| Change Type | Version Bump | Examples |
-|-------------|--------------|----------|
-| **Major** | v1.0.0 → v2.0.0 | Removing required variables, restructuring prompt format, changing template assembly order |
-| **Minor** | v1.0.0 → v1.1.0 | Adding new sections, new variables, expanding guidance content |
-| **Patch** | v1.0.0 → v1.0.1 | Fixing typos, clarifying wording, improving formatting |
+| Change Type | Version Bump    | Examples                                                                                   |
+| ----------- | --------------- | ------------------------------------------------------------------------------------------ |
+| **Major**   | v1.0.0 → v2.0.0 | Removing required variables, restructuring prompt format, changing template assembly order |
+| **Minor**   | v1.0.0 → v1.1.0 | Adding new sections, new variables, expanding guidance content                             |
+| **Patch**   | v1.0.0 → v1.0.1 | Fixing typos, clarifying wording, improving formatting                                     |
 
 ### Update Process
 
@@ -212,6 +218,7 @@ When modifying templates, follow these guidelines for version updates:
 ### Breaking Change Checklist
 
 Before making a major version bump, verify:
+
 - [ ] All commands using this template are updated
 - [ ] Variable substitutions still work
 - [ ] Export output is validated
@@ -220,6 +227,7 @@ Before making a major version bump, verify:
 ### Version Synchronization
 
 When updating shared templates in `common/`:
+
 - All commands using that template automatically get the update
 - Consider whether section-specific overrides need updates too
 - Document any divergence between common and section variants
@@ -283,6 +291,7 @@ When stripping version comments (`<!-- v1.0.0 -->`):
 ```
 
 **Example:**
+
 ```markdown
 <!-- v1.0.0 -->
 
@@ -290,8 +299,8 @@ When stripping version comments (`<!-- v1.0.0 -->`):
 ```
 
 After stripping:
-```markdown
 
+```markdown
 ## Template Content
 ```
 
@@ -317,9 +326,9 @@ Templates may include an optional usage comment after the version comment to exp
 
 **Currently used in:**
 
-| Template | Usage Context |
-|----------|---------------|
-| `common/tdd-workflow.md` | One-shot prompts for full product implementation |
+| Template                  | Usage Context                                           |
+| ------------------------- | ------------------------------------------------------- |
+| `common/tdd-workflow.md`  | One-shot prompts for full product implementation        |
 | `section/tdd-workflow.md` | Section-specific prompts for incremental implementation |
 
 Usage comments are optional but recommended for templates that have context-specific variations.
@@ -353,28 +362,29 @@ product-plan/
 
 ### 2. Prompt Files (assembly order matters)
 
-| Order | File | Assembled From |
-|-------|------|----------------|
-| 1 | `prompts/one-shot-prompt.md` | See "One-Shot Prompt Assembly Order" above |
-| 2 | `prompts/section-prompt.md` | See "Section Prompt Assembly Order" above |
+| Order | File                         | Assembled From                             |
+| ----- | ---------------------------- | ------------------------------------------ |
+| 1     | `prompts/one-shot-prompt.md` | See "One-Shot Prompt Assembly Order" above |
+| 2     | `prompts/section-prompt.md`  | See "Section Prompt Assembly Order" above  |
 
 ### 3. Instruction Files
 
-| Order | File | Source |
-|-------|------|--------|
-| 1 | `instructions/one-shot-instructions.md` | All milestones combined |
-| 2 | `instructions/incremental/01-foundation.md` | Foundation milestone |
-| 3+ | `instructions/incremental/[NN]-[section-id].md` | Section milestones (02, 03, etc.) |
+| Order | File                                            | Source                            |
+| ----- | ----------------------------------------------- | --------------------------------- |
+| 1     | `instructions/one-shot-instructions.md`         | All milestones combined           |
+| 2     | `instructions/incremental/01-foundation.md`     | Foundation milestone              |
+| 3+    | `instructions/incremental/[NN]-[section-id].md` | Section milestones (02, 03, etc.) |
 
 ### 4. Design Guidance
 
-| Order | File | Source |
-|-------|------|--------|
-| 1 | `design-guidance/frontend-design.md` | `.claude/skills/frontend-design/SKILL.md` |
+| Order | File                                 | Source                                    |
+| ----- | ------------------------------------ | ----------------------------------------- |
+| 1     | `design-guidance/frontend-design.md` | `.claude/skills/frontend-design/SKILL.md` |
 
 ### 5. Supporting Files
 
 Copied in any order (no dependencies):
+
 - `product-overview.md`
 - `design-system/colors.json`
 - `design-system/typography.json`
@@ -424,10 +434,10 @@ exit 0
 
 ### Validation Behavior
 
-| Condition | Result | Message |
-|-----------|--------|---------|
-| File missing | STOP or WARN | "Error: SKILL.md - File not found..." |
-| File empty or < 100 chars | WARN | "Warning: SKILL.md - Insufficient content..." |
-| File valid | Continue | "Skill file valid..." |
+| Condition                 | Result       | Message                                       |
+| ------------------------- | ------------ | --------------------------------------------- |
+| File missing              | STOP or WARN | "Error: SKILL.md - File not found..."         |
+| File empty or < 100 chars | WARN         | "Warning: SKILL.md - Insufficient content..." |
+| File valid                | Continue     | "Skill file valid..."                         |
 
 Commands may offer to continue with fallback guidance when skill file is missing.

@@ -6,6 +6,38 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-28 14:30] Documentation Polish: TOP 4 RULES & Cross-Reference Fix
+
+### Description
+
+Critical analysis of the `.claude` folder after December 28 changes identified 3 minor documentation inconsistencies. These fixes ensure all references are accurate and consistent.
+
+### Issues Fixed
+
+| Issue                      | File                  | Fix                                                                                   |
+| -------------------------- | --------------------- | ------------------------------------------------------------------------------------- |
+| Rule count mismatch        | `top-rules.md`        | Title said "TOP 3 RULES" but file had 4 rules (Rule 4: ENGLISH OUTPUT ONLY was added) |
+| README outdated            | `templates/README.md` | Comment referenced "TOP 3 RULES"                                                      |
+| Incomplete cross-reference | `design-screen.md`    | Fallback principles list didn't match actual content in design-shell.md Step 1        |
+
+### Modified Files
+
+| File                                              | Change                                                        |
+| ------------------------------------------------- | ------------------------------------------------------------- |
+| `.claude/templates/design-os/common/top-rules.md` | Line 3: "TOP 3 RULES" → "TOP 4 RULES"                         |
+| `.claude/templates/design-os/README.md`           | Line 10: Comment updated to "TOP 4 RULES"                     |
+| `.claude/commands/design-os/design-screen.md`     | Lines 47: Improved note with complete list and line reference |
+
+### Verification
+
+After this fix, all documentation is consistent:
+
+- top-rules.md has 4 rules and the title reflects this
+- README.md accurately describes the template content
+- design-screen.md references the correct fallback principles list
+
+---
+
 ## [2025-12-28 14:20] Content Container Standard: Consistent Section Padding
 
 ### Description
