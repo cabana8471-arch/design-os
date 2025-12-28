@@ -110,18 +110,18 @@ Generate the complete export package with all components, types, and handoff doc
 
 ### Command Prerequisites
 
-| Command              | Required                                    | Optional                                                           |
-| -------------------- | ------------------------------------------- | ------------------------------------------------------------------ |
-| `/product-vision`    | —                                           | —                                                                  |
-| `/product-roadmap`   | `product-overview.md`                       | —                                                                  |
-| `/data-model`        | `product-overview.md`, `product-roadmap.md` | —                                                                  |
-| `/design-tokens`     | `product-overview.md`                       | —                                                                  |
-| `/design-shell`      | `product-overview.md`, `product-roadmap.md` | Design tokens, Sections, UI components (Sheet, Dialog), `SKILL.md` |
-| `/shape-section`     | `product-overview.md`, `product-roadmap.md` | Data model, Shell spec                                             |
-| `/sample-data`       | Section `spec.md`                           | Data model                                                         |
-| `/design-screen`     | Section `spec.md`, `data.json`, `types.ts`  | Design tokens, Shell components, `SKILL.md`                        |
-| `/screenshot-design` | Screen design components                    | Playwright MCP                                                     |
-| `/export-product`    | `product-overview.md`, at least one section | Shell components, All sections                                     |
+| Command              | Required                                    | Optional                                    |
+| -------------------- | ------------------------------------------- | ------------------------------------------- |
+| `/product-vision`    | —                                           | —                                           |
+| `/product-roadmap`   | `product-overview.md`                       | —                                           |
+| `/data-model`        | `product-overview.md`, `product-roadmap.md` | —                                           |
+| `/design-tokens`     | `product-overview.md`                       | —                                           |
+| `/design-shell`      | `product-overview.md`, `product-roadmap.md` | Design tokens, Sections, `SKILL.md`         |
+| `/shape-section`     | `product-overview.md`, `product-roadmap.md` | Data model, Shell spec                      |
+| `/sample-data`       | Section `spec.md`                           | Data model                                  |
+| `/design-screen`     | Section `spec.md`, `data.json`, `types.ts`  | Design tokens, Shell components, `SKILL.md` |
+| `/screenshot-design` | Screen design components                    | Playwright MCP                              |
+| `/export-product`    | `product-overview.md`, at least one section | Shell components, All sections              |
 
 **Legend:**
 
@@ -701,6 +701,8 @@ Design OS supports wiring views together for functional previews. When a section
 
 The `/shape-section` command (Step 4.6) asks about view relationships and stores them in the spec:
 
+> **Note on step numbers:** Step numbers like "Step 4.6" use decimal notation to indicate sub-steps within a major workflow phase. These refer to steps within the command file itself (e.g., `.claude/commands/design-os/shape-section.md`). Check the command file for the complete step breakdown.
+
 ```markdown
 ## View Relationships
 
@@ -942,6 +944,15 @@ The Design Direction document captures aesthetic decisions made during shell des
 
 ```markdown
 # Design Direction for [Product Name]
+
+## User Preferences
+
+| Setting                 | Choice                                                |
+| ----------------------- | ----------------------------------------------------- |
+| **Aesthetic Tone**      | Professional / Modern / Minimal / Playful / Technical |
+| **Animation Style**     | None / Subtle / Standard / Rich                       |
+| **Information Density** | Compact / Comfortable / Spacious                      |
+| **Responsive Priority** | Desktop-first / Mobile-first / Balanced               |
 
 ## Aesthetic Tone
 
@@ -1686,9 +1697,9 @@ ls .claude/hookify.dos-*.local.md
 
 ### Full Documentation
 
-See `.claude/hookify/README.md` for complete documentation including:
+See individual `.claude/hookify.*.local.md` files for rule definitions. Each file contains:
 
-- All rules and their purposes
-- Rule file format and syntax
-- Creating custom rules
-- Troubleshooting guide
+- Rule purpose and trigger conditions
+- Match patterns and file filters
+- Action type (warn or block)
+- Enabled/disabled status

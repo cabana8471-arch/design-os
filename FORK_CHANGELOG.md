@@ -6,7 +6,60 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-29 13:30] Critical Analysis - Cross-References & Documentation Clarity
+## [2025-12-29 01:30] Critical Analysis - Comprehensive 12-Issue Fix
+
+### Description
+
+Comprehensive critical analysis of all files in `.claude/` folder plus `agents.md`. Identified 12 issues across 4 severity levels (1 Critical, 2 High, 5 Medium, 4 Low). Focus on fixing regex errors, schema alignment, validation timing, documentation accuracy, and step numbering consistency.
+
+### New Files Created
+
+_None_
+
+### Modified Files
+
+| File                                           | Modification                                                                                     |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `.claude/commands/design-os/export-product.md` | Fixed critical regex pattern: `\*` → `*` in template stripping (line 2175)                       |
+| `.claude/commands/design-os/design-screen.md`  | Renumbered steps: 7.5→8, 8→9, 9→10, 10→11 for consistency                                        |
+| `.claude/commands/design-os/sample-data.md`    | Moved Multi-View Props validation from Step 6 to new Step 7.5 (after types.ts generation)        |
+| `.claude/commands/design-os/shape-section.md`  | Changed "Update existing spec" → "Revise existing spec" with clearer behavior description        |
+| `.claude/templates/design-os/README.md`        | Fixed usage comments documentation: "2 templates" → "All 13 templates"                           |
+| `agents.md`                                    | Added `## User Preferences` section to design-direction.md schema (lines 946-953)                |
+| `agents.md`                                    | Added decimal step notation note at first usage (line 704)                                       |
+| `agents.md`                                    | Removed "UI components (Sheet, Dialog)" from /design-shell prerequisites (always in boilerplate) |
+| `agents.md`                                    | Fixed hookify README reference to point to individual rule files                                 |
+
+### Gaps Resolved
+
+- **CRITICAL:** export-product.md regex `\*` caused template stripping to fail (version comments leaked into final prompts)
+- **HIGH #2:** design-direction.md schema missing `## User Preferences` section that design-screen.md expects to parse
+- **HIGH #3:** sample-data.md validated Props in Step 6, but types.ts isn't created until Step 7
+- **MEDIUM #4:** templates/README.md incorrectly stated only 2 templates have usage comments (all 13 do)
+- **MEDIUM #5:** shape-section.md "Update existing spec" implied partial merge that wasn't implemented
+- **MEDIUM #7:** design-screen.md used Step 7.5 inconsistently with other commands
+- **LOW #10:** First decimal step reference (Step 4.6) appeared before explanation of notation
+- **LOW #11:** Prerequisites table listed "UI components" as optional but they're always present
+- **LOW #12:** Hookify documentation referenced non-existent `.claude/hookify/README.md`
+
+### Statistics
+
+- Files modified: 6
+- Lines changed: ~100
+- Issues resolved: 12 (1 Critical, 2 High, 5 Medium, 4 Low)
+
+### Verification
+
+- ✅ Regex pattern now correctly strips ALL leading HTML comments from templates
+- ✅ design-screen.md can parse `## User Preferences` from design-direction.md
+- ✅ Multi-View Props validation runs AFTER types.ts is generated
+- ✅ Step numbering is now sequential (1-11) without decimal sub-steps
+- ✅ Documentation accurately reflects actual template usage patterns
+- ✅ Hookify reference points to actual rule files
+
+---
+
+## [2025-12-29 00:00] Critical Analysis - Cross-References & Documentation Clarity
 
 ### Description
 

@@ -149,15 +149,16 @@ What would you like to do?"
 
 Use AskUserQuestion with options:
 
-- "Update existing spec" — Preserve existing content, modify specific sections
-- "Start fresh" — Replace the existing spec entirely
+- "Revise existing spec" — Use current spec as reference, regenerate with modifications
+- "Start fresh" — Replace the existing spec entirely (ignores current content)
 - "View current spec" — Read and display the current specification first
 
-**If user chooses "Update existing spec":**
+**If user chooses "Revise existing spec":**
 
-- Read the current spec.md
-- Ask which parts they want to modify
-- Update only those sections, preserving the rest
+- Read the current spec.md to understand existing structure
+- Ask which aspects they want to change or improve
+- Regenerate the full spec, incorporating requested changes
+- Note: This replaces the file but uses existing content as context
 
 **If user chooses "Start fresh":**
 

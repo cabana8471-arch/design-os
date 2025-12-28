@@ -647,60 +647,6 @@ Verify that Props interfaces in types.ts correctly reference entity types:
 
 This bidirectional check prevents subtle bugs where types and data diverge.
 
-### Multi-View Props Interface Validation
-
-For sections with multiple views (defined in the spec's `## Views` section), verify that `types.ts` contains Props interfaces for EACH view:
-
-**1. Extract views from spec.md:**
-
-```bash
-# Count views defined in spec
-VIEW_COUNT=$(grep -E '^- [A-Z]' product/sections/[section-id]/spec.md | wc -l)
-echo "Found $VIEW_COUNT views in spec.md"
-```
-
-**2. Verify Props interfaces exist for each view:**
-
-For each view extracted from `## Views` section (e.g., `ListView`, `DetailView`, `CreateForm`), verify a corresponding Props interface exists in `types.ts`:
-
-| View Name    | Expected Props Interface |
-| ------------ | ------------------------ |
-| `ListView`   | `ListViewProps`          |
-| `DetailView` | `DetailViewProps`        |
-| `CreateForm` | `CreateFormProps`        |
-
-**3. Validation script:**
-
-```bash
-# Check each view has a Props interface
-SPEC_FILE="product/sections/[section-id]/spec.md"
-TYPES_FILE="product/sections/[section-id]/types.ts"
-
-# Extract view names from spec (handles multi-word names like "Edit Form")
-# View format in spec: "- ViewName — Description" or "- EditForm — Description"
-# Note: View names should be PascalCase (e.g., "EditForm" not "Edit Form")
-
-grep -E '^- [A-Z]' "$SPEC_FILE" | sed 's/^- //' | sed 's/ *[—-].*$//' | sed 's/ *$//' | while read -r VIEW; do
-  # Remove any spaces in view name for Props interface (e.g., "Edit Form" → "EditFormProps")
-  PROPS_NAME="$(echo "$VIEW" | tr -d ' ')Props"
-  if ! grep -q "export interface $PROPS_NAME" "$TYPES_FILE"; then
-    echo "Warning: Missing Props interface '$PROPS_NAME' for view '$VIEW'"
-  fi
-done
-```
-
-**4. If Props interfaces are missing:**
-
-```
-Warning: types.ts is missing Props interfaces for some views defined in spec.md:
-- Missing: DetailViewProps (for DetailView)
-- Missing: CreateFormProps (for CreateForm)
-
-Each view component needs a Props interface. Please add them to types.ts before running /design-screen.
-```
-
-This validation ensures that all views have properly typed props before screen design creation.
-
 ## Step 7: Generate TypeScript Types
 
 After creating data.json, generate `product/sections/[section-id]/types.ts` based on the data structure.
@@ -1038,6 +984,62 @@ Secondary views receive full entities (`agent: Agent`) because:
 - The preview wrapper does the lookup before rendering
 - The secondary view doesn't need to know about the data source
 - Components stay decoupled and portable
+
+## Step 7.5: Validate Multi-View Props Interfaces
+
+After generating types.ts, verify that Props interfaces were created for ALL views defined in the spec. This validation runs AFTER types.ts generation to ensure completeness.
+
+**1. Extract views from spec.md:**
+
+```bash
+# Count views defined in spec
+VIEW_COUNT=$(grep -E '^- [A-Z]' product/sections/[section-id]/spec.md | wc -l)
+echo "Found $VIEW_COUNT views in spec.md"
+```
+
+**2. Verify Props interfaces exist for each view:**
+
+For each view extracted from `## Views` section (e.g., `ListView`, `DetailView`, `CreateForm`), verify a corresponding Props interface exists in `types.ts`:
+
+| View Name    | Expected Props Interface |
+| ------------ | ------------------------ |
+| `ListView`   | `ListViewProps`          |
+| `DetailView` | `DetailViewProps`        |
+| `CreateForm` | `CreateFormProps`        |
+
+**3. Validation script:**
+
+```bash
+# Check each view has a Props interface
+SPEC_FILE="product/sections/[section-id]/spec.md"
+TYPES_FILE="product/sections/[section-id]/types.ts"
+
+# Extract view names from spec (handles multi-word names like "Edit Form")
+# View format in spec: "- ViewName — Description" or "- EditForm — Description"
+# Note: View names should be PascalCase (e.g., "EditForm" not "Edit Form")
+
+grep -E '^- [A-Z]' "$SPEC_FILE" | sed 's/^- //' | sed 's/ *[—-].*$//' | sed 's/ *$//' | while read -r VIEW; do
+  # Remove any spaces in view name for Props interface (e.g., "Edit Form" → "EditFormProps")
+  PROPS_NAME="$(echo "$VIEW" | tr -d ' ')Props"
+  if ! grep -q "export interface $PROPS_NAME" "$TYPES_FILE"; then
+    echo "Warning: Missing Props interface '$PROPS_NAME' for view '$VIEW'"
+  fi
+done
+```
+
+**4. If Props interfaces are missing:**
+
+```
+Warning: types.ts is missing Props interfaces for some views defined in spec.md:
+- Missing: DetailViewProps (for DetailView)
+- Missing: CreateFormProps (for CreateForm)
+
+Adding missing interfaces now...
+```
+
+**5. Auto-fix missing Props:**
+
+If any Props interfaces are missing, generate and add them to types.ts before proceeding. This ensures `/design-screen` won't fail due to missing type definitions.
 
 ## Step 8: Confirm and Next Steps
 

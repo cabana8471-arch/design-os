@@ -358,14 +358,9 @@ Both version and usage comments are removed during template assembly.
 - **Purpose:** Helps maintainers understand the template's intended context
 - **Stripping:** Usage comments are stripped during template assembly (same as version comments)
 
-**Currently used in:**
+**Currently used in:** All 13 template files have usage comments on line 2. This is the standard pattern for all Design OS templates.
 
-| Template                  | Usage Context                                           |
-| ------------------------- | ------------------------------------------------------- |
-| `common/tdd-workflow.md`  | One-shot prompts for full product implementation        |
-| `section/tdd-workflow.md` | Section-specific prompts for incremental implementation |
-
-Usage comments are optional but recommended for templates that have context-specific variations.
+Usage comments are recommended for all templates to help maintainers understand the template's intended context.
 
 ### Trailing Newlines
 

@@ -1213,7 +1213,7 @@ export function InvoiceList({
 }
 ```
 
-## Step 7.5: Create Secondary View Components (If Relationships Exist)
+## Step 8: Create Secondary View Components (If Relationships Exist)
 
 If `CREATE_WIRED_PREVIEW = True` (from Step 4), create the secondary view components now.
 
@@ -1401,7 +1401,7 @@ export default function AgentDetailDrawerPreview() {
 }
 ```
 
-## Step 8: Create the Preview Wrapper
+## Step 9: Create the Preview Wrapper
 
 Create a preview wrapper at `src/sections/[section-id]/[ViewName].tsx` (note: this is in the section root, not in components/).
 
@@ -1705,7 +1705,7 @@ src/sections/invoices/
 - Passes relevant data to its specific component
 - Can reference other views via callbacks (e.g., `onViewDetail` navigates to detail view)
 
-## Step 9: Create Component Index
+## Step 10: Create Component Index
 
 Create an index file at `src/sections/[section-id]/components/index.ts` to cleanly export all components.
 
@@ -1773,7 +1773,7 @@ Keep components private (don't export) if:
 
 **Note:** During export (`/export-product`), the import paths will be transformed to relative paths (e.g., `../types`).
 
-## Step 10: Confirm and Next Steps
+## Step 11: Confirm and Next Steps
 
 Let the user know:
 
