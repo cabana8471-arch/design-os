@@ -459,6 +459,24 @@ if len(views) == 0:
   views.append({ name: sectionTitle + "View", description: "Main view" })
 ```
 
+**View Name Validation (PascalCase):**
+
+After extracting view names, validate they follow PascalCase convention:
+
+```
+For each view in views:
+  if view.name does NOT match pattern "^[A-Z][a-zA-Z0-9]*$":
+    print "Warning: View name '[view.name]' doesn't follow PascalCase convention."
+    print "Expected format: ListView, DetailView, DashboardView, etc."
+    print "Consider renaming in spec.md before continuing."
+```
+
+This helps catch common mistakes:
+
+- `listView` → should be `ListView`
+- `list-view` → should be `ListView`
+- `LIST_VIEW` → should be `ListView`
+
 **Common view patterns:**
 
 | Pattern              | Views                                  | Use Case                               |

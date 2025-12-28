@@ -1,4 +1,5 @@
 <!-- v1.0.0 -->
+<!-- Usage: Include in section-specific prompts as the main implementation instructions -->
 
 ## Instructions
 
@@ -8,6 +9,7 @@ Please carefully read and analyze the following files:
 2. **@product-plan/instructions/incremental/NN-SECTION_ID.md** — Specific instructions for this section (e.g., `02-invoices.md`)
 
 Also review the section assets:
+
 - **@product-plan/design-guidance/frontend-design.md** — Design principles and guidance
 - **@product-plan/design-system/design-direction.md** — Aesthetic direction for consistency (if available)
 - **@product-plan/sections/SECTION_ID/README.md** — Feature overview and design intent

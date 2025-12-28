@@ -202,18 +202,30 @@ This transformation happens during `/export-product` to clarify the file's purpo
 src/
 ├── shell/                         # Shell design components
 │   ├── components/
+│   │   │
+│   │   │ # --- Primary (created by /design-shell) ---
 │   │   ├── AppShell.tsx           # Main shell wrapper (always created)
 │   │   ├── MainNav.tsx            # Navigation component (always created)
 │   │   ├── UserMenu.tsx           # User menu component (always created)
-│   │   ├── NotificationsDrawer.tsx # (optional - if selected)
-│   │   ├── SearchModal.tsx        # Command palette (optional - if selected)
-│   │   ├── ThemeToggle.tsx        # Theme switcher (pre-existing utility)
-│   │   ├── SettingsModal.tsx      # Settings form (optional - if selected)
-│   │   ├── ProfileModal.tsx       # Profile editor (optional - if selected)
-│   │   ├── HelpPanel.tsx          # Help drawer (optional - if selected)
-│   │   ├── FeedbackModal.tsx      # Feedback form (optional - if selected)
-│   │   ├── MobileMenuDrawer.tsx   # Mobile nav drawer (optional - if selected)
-│   │   └── index.ts               # Exports all created components
+│   │   │
+│   │   │ # --- Secondary (generated if selected) ---
+│   │   ├── NotificationsDrawer.tsx # (if notifications selected)
+│   │   ├── SearchModal.tsx        # Command palette (if search selected)
+│   │   ├── SettingsModal.tsx      # Settings form (if settings selected)
+│   │   ├── ProfileModal.tsx       # Profile editor (if profile selected)
+│   │   ├── HelpPanel.tsx          # Help drawer (if help selected)
+│   │   ├── FeedbackModal.tsx      # Feedback form (if feedback selected)
+│   │   ├── MobileMenuDrawer.tsx   # Mobile nav drawer (if mobile selected)
+│   │   │
+│   │   │ # --- Pre-existing utilities (in boilerplate) ---
+│   │   ├── SkipLink.tsx           # Skip-to-content accessibility link
+│   │   ├── ShellErrorBoundary.tsx # Error boundary for secondary components
+│   │   ├── LogoArea.tsx           # Customizable logo/branding area
+│   │   ├── ThemeToggle.tsx        # Light/dark/system theme switcher
+│   │   ├── ShellSkeleton.tsx      # Loading skeleton states
+│   │   ├── ShellFooter.tsx        # Optional footer with version/links
+│   │   │
+│   │   └── index.ts               # Exports all components
 │   ├── hooks/                     # Shell utility hooks
 │   │   └── index.ts               # Exports all hooks
 │   └── index.ts                   # Main shell module export
@@ -1029,18 +1041,21 @@ When you need a new feature in AppShell:
 
 The complete `ShellProps` interface (from `src/lib/shell-loader.ts`):
 
-| Property             | Type                             | Source           | Description                          |
-| -------------------- | -------------------------------- | ---------------- | ------------------------------------ |
-| `categories`         | `NavigationCategory[]`           | ScreenDesignPage | Navigation menu structure            |
-| `user`               | `UserConfig`                     | ScreenDesignPage | Current user profile                 |
-| `contextSelector`    | `ContextSelectorConfig`          | spec.md          | Organization/client/workspace picker |
-| `breadcrumbs`        | `BreadcrumbItem[]`               | spec.md          | Navigation hierarchy paths           |
-| `headerActions`      | `HeaderAction[]`                 | spec.md          | Header action buttons                |
-| `shellRelationships` | `ShellRelationship[]`            | spec.md          | Trigger-to-component mappings        |
-| `sidebarCollapsed`   | `boolean`                        | User preference  | Sidebar collapse state               |
-| `layoutVariant`      | `'sidebar'\|'topnav'\|'minimal'` | spec.md          | Shell layout style                   |
-| `currentSection`     | `string`                         | ScreenDesignPage | Active section ID                    |
-| `currentView`        | `string`                         | ScreenDesignPage | Active view name                     |
+| Property             | Type                             | Source           | Description                             |
+| -------------------- | -------------------------------- | ---------------- | --------------------------------------- |
+| `categories`         | `NavigationCategory[]`           | ScreenDesignPage | Navigation menu structure               |
+| `user`               | `UserConfig`                     | ScreenDesignPage | Current user profile                    |
+| `contextSelector`    | `ContextSelectorConfig`          | spec.md          | Organization/client/workspace picker    |
+| `breadcrumbs`        | `BreadcrumbItem[]`               | spec.md          | Navigation hierarchy paths              |
+| `headerActions`      | `HeaderAction[]`                 | spec.md          | Header action buttons                   |
+| `shellRelationships` | `ShellRelationship[]`            | spec.md          | Trigger-to-component mappings           |
+| `sidebarCollapsed`   | `boolean`                        | User preference  | Sidebar collapse state                  |
+| `layoutVariant`      | `'sidebar'\|'topnav'\|'minimal'` | spec.md          | Shell layout style                      |
+| `currentSection`     | `string`                         | ScreenDesignPage | Active section ID                       |
+| `currentView`        | `string`                         | ScreenDesignPage | Active view name                        |
+| `[key: string]`      | `unknown`                        | spec.md          | Additional custom props (extensibility) |
+
+> **Note:** The interface includes a catchall `[key: string]: unknown` allowing additional props from spec.md to pass through to AppShell. This enables custom shell features without modifying the interface.
 
 ### Shell Spec Sections
 
