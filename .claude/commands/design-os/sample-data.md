@@ -848,6 +848,154 @@ export interface ProjectListProps {
 }
 ```
 
+### Secondary View Props (Drawers, Modals, Inline Panels)
+
+If the spec contains a `## View Relationships` section, also generate Props interfaces for secondary views.
+
+**Parse View Relationships:**
+
+```markdown
+## View Relationships
+
+- AgentListView.onView -> AgentDetailDrawer (drawer, entityId)
+- AgentListView.onCreate -> CreateAgentModal (modal, none)
+```
+
+**Generate Props for each secondary view:**
+
+| Secondary View      | Type   | Data Ref | Props Pattern                                 |
+| ------------------- | ------ | -------- | --------------------------------------------- |
+| `AgentDetailDrawer` | drawer | entityId | Receives full entity + close/action callbacks |
+| `CreateAgentModal`  | modal  | none     | Receives only close/save callbacks            |
+
+**Drawer/Detail View Props Pattern:**
+
+When `dataRef = entityId` or `dataRef = entity`, the secondary view receives the full entity:
+
+```typescript
+// =============================================================================
+// Secondary View Props
+// =============================================================================
+
+/** Props for AgentDetailDrawer - displays agent details in a side panel */
+export interface AgentDetailDrawerProps {
+  /** The agent to display */
+  agent: Agent;
+  /** Called when user closes the drawer */
+  onClose?: () => void;
+  /** Called when user wants to edit the agent */
+  onEdit?: () => void;
+  /** Called when user wants to delete the agent */
+  onDelete?: () => void;
+}
+```
+
+**Create/Edit Modal Props Pattern:**
+
+When `dataRef = none`, the secondary view is a create form (no entity passed):
+
+```typescript
+/** Props for CreateAgentModal - form for creating a new agent */
+export interface CreateAgentModalProps {
+  /** Called when user closes the modal without saving */
+  onClose?: () => void;
+  /** Called when user saves the new agent */
+  onSave?: (agent: Partial<Agent>) => void;
+}
+
+/** Props for EditAgentModal - form for editing an existing agent */
+export interface EditAgentModalProps {
+  /** The agent to edit */
+  agent: Agent;
+  /** Called when user closes the modal without saving */
+  onClose?: () => void;
+  /** Called when user saves changes */
+  onSave?: (agent: Agent) => void;
+}
+```
+
+**Inline Panel Props Pattern:**
+
+For `type = inline`, the panel expands within the list:
+
+```typescript
+/** Props for AgentDetailInline - inline expandable panel */
+export interface AgentDetailInlineProps {
+  /** The agent to display */
+  agent: Agent;
+  /** Called when user collapses the panel */
+  onClose?: () => void;
+  /** Called when user wants to edit */
+  onEdit?: () => void;
+}
+```
+
+**Example Complete types.ts with Secondary Views:**
+
+```typescript
+// =============================================================================
+// Entity Models
+// =============================================================================
+
+export interface Agent {
+  id: string;
+  name: string;
+  status: "online" | "offline" | "error";
+  lastSeen: string;
+  version: string;
+}
+
+// =============================================================================
+// Primary View Props
+// =============================================================================
+
+/** Props for AgentList - main list view */
+export interface AgentListProps {
+  /** List of agents to display */
+  agents: Agent[];
+  /** Called when user clicks to view agent details */
+  onView?: (id: string) => void;
+  /** Called when user clicks to edit an agent */
+  onEdit?: (id: string) => void;
+  /** Called when user clicks to delete an agent */
+  onDelete?: (id: string) => void;
+  /** Called when user clicks to create a new agent */
+  onCreate?: () => void;
+}
+
+// =============================================================================
+// Secondary View Props (from View Relationships)
+// =============================================================================
+
+/** Props for AgentDetailDrawer - side panel for agent details */
+export interface AgentDetailDrawerProps {
+  agent: Agent;
+  onClose?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+}
+
+/** Props for CreateAgentModal - modal for creating new agent */
+export interface CreateAgentModalProps {
+  onClose?: () => void;
+  onSave?: (agent: Partial<Agent>) => void;
+}
+```
+
+**Why Secondary Views Get Full Entities:**
+
+Primary views receive callbacks with entity IDs (`onView?: (id: string) => void`) because:
+
+- They already have the full entity in their data list
+- Passing IDs keeps the interface simple
+- The preview wrapper does the lookup
+
+Secondary views receive full entities (`agent: Agent`) because:
+
+- The preview wrapper does the lookup before rendering
+- The secondary view doesn't need to know about the data source
+- Components stay decoupled and portable
+
 ## Step 8: Confirm and Next Steps
 
 Let the user know:

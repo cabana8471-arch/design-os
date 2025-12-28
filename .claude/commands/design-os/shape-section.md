@@ -335,6 +335,103 @@ LAYOUT_PREFERENCES:
 
 These choices will be documented in the spec.md and used by `/design-screen` when creating components.
 
+### Step 4.6: Define View Relationships (If Multiple Views)
+
+If the section has multiple views (identified in Step 4) AND uses a layout pattern that implies secondary views (Table + Drawer, Split View, etc.), ask the user to define view relationships.
+
+**What are View Relationships?**
+
+View relationships define how views connect to each other in the UI:
+
+- Which callback in the primary view opens which secondary view
+- What type of UI element the secondary view uses (drawer, modal, inline expansion)
+- What data is passed (entity ID, full entity, or none)
+
+**Detect Potential Relationships:**
+
+Based on layout pattern and view names, identify potential relationships:
+
+| Layout Pattern    | Likely Primary       | Likely Secondary     | Inferred Relationship                        |
+| ----------------- | -------------------- | -------------------- | -------------------------------------------- |
+| Table + Drawer    | `*ListView`, `*List` | `*Drawer`, `*Detail` | `onView -> SecondaryView (drawer, entityId)` |
+| Split View        | `*ListView`, `*List` | `*Panel`, `*Detail`  | `onView -> SecondaryView (inline, entityId)` |
+| Card Grid + Modal | `*GridView`, `*Grid` | `*Modal`, `*Form`    | `onView -> SecondaryView (modal, entityId)`  |
+
+**Ask User to Confirm Relationships:**
+
+If potential relationships are detected:
+
+```
+Your layout pattern (**[Desktop Pattern]**) suggests these view connections:
+
+**[PrimaryView].onView → [SecondaryView]**
+- Type: [drawer/modal/inline] (slides in from right / centered overlay / expands in place)
+- Data: entityId (receives the clicked item's ID)
+
+Is this correct?
+```
+
+Use AskUserQuestion with options:
+
+- "Yes, wire these together" — Confirm the relationship
+- "Modify the relationship" — Ask for specific callback/type/data
+- "Skip wiring" — Callbacks will console.log in preview (legacy behavior)
+
+**Relationship Types:**
+
+| Type     | Description               | UI Component       | Best For                            |
+| -------- | ------------------------- | ------------------ | ----------------------------------- |
+| `drawer` | Panel slides in from side | `<Sheet>`          | Details, editing, contextual info   |
+| `modal`  | Centered overlay dialog   | `<Dialog>`         | Forms, confirmations, focused tasks |
+| `inline` | Expands within the list   | Conditional render | Quick preview, accordion-style      |
+
+**Data References:**
+
+| Reference  | Description                                          | When to Use                              |
+| ---------- | ---------------------------------------------------- | ---------------------------------------- |
+| `entityId` | Callback receives ID, secondary view looks up entity | Most common - keeps components decoupled |
+| `entity`   | Full entity object passed directly                   | When entity is already loaded            |
+| `none`     | No data passed                                       | Create forms, new item modals            |
+
+**Multiple Relationships:**
+
+A primary view can have multiple relationships (e.g., onView opens drawer, onCreate opens modal):
+
+```
+I see **AgentListView** has multiple actions that could open secondary views:
+
+1. **onView** (click row to see details) → opens **AgentDetailDrawer** (drawer)
+2. **onCreate** (create new agent) → opens **CreateAgentModal** (modal)
+
+Should I wire both of these?
+```
+
+**Record Relationships:**
+
+Store for use in Step 7 (Spec file):
+
+```
+VIEW_RELATIONSHIPS:
+  - primary: AgentListView
+    callback: onView
+    secondary: AgentDetailDrawer
+    type: drawer
+    data: entityId
+  - primary: AgentListView
+    callback: onCreate
+    secondary: CreateAgentModal
+    type: modal
+    data: none
+```
+
+**Skip if Not Applicable:**
+
+If the section:
+
+- Has only one view → Skip this step
+- Uses "Full-Page Detail" layout → Skip (navigation-based, not relationship-based)
+- User chose "Skip wiring" → Record `VIEW_RELATIONSHIPS: []`
+
 ## Step 5: Ask About Shell Configuration
 
 Check if a shell design has been created for this project by checking for all shell files:
@@ -609,9 +706,51 @@ Use the section-id validated in Step 2 to create the file at `product/sections/[
 - **Mobile/Tablet:** [Card Stack / Compact List / Bottom Sheet / Accordion]
 - **Responsive Behavior:** [Same pattern, adapted / Different patterns / Mobile-first progressive]
 
+## View Relationships
+
+[Only include this section if relationships were defined in Step 4.6]
+
+- [PrimaryView].[callback] -> [SecondaryView] ([type], [dataRef])
+
+Example:
+
+- AgentListView.onView -> AgentDetailDrawer (drawer, entityId)
+- AgentListView.onCreate -> CreateAgentModal (modal, none)
+
+[If no relationships were defined, omit this section entirely]
+
 ## Configuration
 
 - shell: [true/false]
+```
+
+### View Relationships Format
+
+The `## View Relationships` section uses a specific format that `/design-screen` will parse:
+
+```
+- [PrimaryView].[callback] -> [SecondaryView] ([type], [dataRef])
+```
+
+**Components:**
+
+- `PrimaryView` — The view that triggers the action (e.g., `AgentListView`)
+- `callback` — The callback prop name (e.g., `onView`, `onCreate`, `onEdit`)
+- `SecondaryView` — The view that opens (e.g., `AgentDetailDrawer`)
+- `type` — UI type: `drawer`, `modal`, or `inline`
+- `dataRef` — Data passing: `entityId`, `entity`, or `none`
+
+**Parsing Example:**
+
+```
+Input:  "- AgentListView.onView -> AgentDetailDrawer (drawer, entityId)"
+Output: {
+  primary: "AgentListView",
+  callback: "onView",
+  secondary: "AgentDetailDrawer",
+  type: "drawer",
+  dataRef: "entityId"
+}
 ```
 
 **Important:**

@@ -615,6 +615,97 @@ Even without the full skill file, make at least ONE distinctive choice:
 
 ---
 
+## View Relationships
+
+Design OS supports wiring views together for functional previews. When a section has multiple views (e.g., list + drawer), they can be connected so clicking an item in the list actually opens the drawer.
+
+### Defining Relationships in spec.md
+
+The `/shape-section` command (Step 4.6) asks about view relationships and stores them in the spec:
+
+```markdown
+## View Relationships
+
+- AgentListView.onView -> AgentDetailDrawer (drawer, entityId)
+- AgentListView.onCreate -> CreateAgentModal (modal, none)
+```
+
+**Format:** `- [PrimaryView].[callback] -> [SecondaryView] ([type], [dataRef])`
+
+### Relationship Types
+
+| Type     | UI Component       | Use Case                                  |
+| -------- | ------------------ | ----------------------------------------- |
+| `drawer` | `<Sheet>`          | Side panel for details, editing           |
+| `modal`  | `<Dialog>`         | Centered overlay for forms, confirmations |
+| `inline` | Conditional render | Expand in place, accordion-style          |
+
+### Data References
+
+| Ref        | Description                                          | Example                         |
+| ---------- | ---------------------------------------------------- | ------------------------------- |
+| `entityId` | Callback receives ID, secondary view looks up entity | `onView?: (id: string) => void` |
+| `entity`   | Full entity passed directly                          | Less common                     |
+| `none`     | No data (create forms)                               | `onCreate?: () => void`         |
+
+### How It Works
+
+1. **`/shape-section`** — Asks about view relationships, saves to spec.md
+2. **`/sample-data`** — Generates Props interfaces for both primary and secondary views
+3. **`/design-screen`** — Creates all related views together + wired preview wrapper
+4. **Preview** — Click works! Opens drawer/modal with actual content
+
+### Wired Preview Pattern
+
+Instead of `console.log` callbacks, wired previews use state:
+
+```tsx
+// Wired preview wrapper (Design OS only)
+export default function AgentListPreview() {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const selectedAgent = selectedId
+    ? data.agents.find((a) => a.id === selectedId)
+    : null;
+
+  return (
+    <>
+      <AgentList
+        agents={data.agents}
+        onView={(id) => {
+          setSelectedId(id);
+          setIsDrawerOpen(true);
+        }}
+      />
+      <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <SheetContent>
+          {selectedAgent && <AgentDetailDrawer agent={selectedAgent} />}
+        </SheetContent>
+      </Sheet>
+    </>
+  );
+}
+```
+
+### Backwards Compatibility
+
+Sections without `## View Relationships`:
+
+- Continue to work with `console.log` callbacks
+- No automatic wiring attempted
+- Upgrade by adding the section to spec.md and re-running `/design-screen`
+
+### Export Behavior
+
+View relationships are documented but preview wrappers are NOT exported:
+
+- Relationship info goes in section README.md
+- Implementation patterns included as guidance
+- Actual wiring depends on target codebase's state management
+
+---
+
 ## Design Direction Document
 
 The Design Direction document captures aesthetic decisions made during shell design and ensures consistency across all sections.

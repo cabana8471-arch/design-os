@@ -3,6 +3,7 @@
 You are helping the user export their complete product design as a handoff package for implementation. This generates all files needed to build the product in a real codebase.
 
 > **Design Note on Step Count:** This command has 15 steps, which may seem verbose. This is intentional:
+>
 > - Each step performs a discrete, verifiable operation
 > - Steps can be referenced individually in error messages
 > - The granularity aids debugging when exports fail
@@ -15,16 +16,19 @@ You are helping the user export their complete product design as a handoff packa
 Verify the minimum requirements exist:
 
 **Required:**
+
 - `/product/product-overview.md` — Product overview
 - `/product/product-roadmap.md` — Sections defined
 - At least one section with screen designs in `src/sections/[section-id]/`
 
 **Recommended (show warning if missing):**
+
 - `/product/data-model/data-model.md` — Global data model
 - `/product/design-system/colors.json` — Color tokens
 - `/product/design-system/typography.json` — Typography tokens
 
 **Shell Components (optional but recommended):**
+
 - `src/shell/components/AppShell.tsx` — Application shell
 
 **Shell Prerequisite Check:**
@@ -37,10 +41,10 @@ if [ ! -f "src/shell/components/AppShell.tsx" ]; then
 fi
 ```
 
-| Shell Status | Action |
-|--------------|--------|
-| Shell components exist | Include shell in export (Step 8-9 will validate and copy) |
-| Shell components missing | Show warning, offer to proceed without shell |
+| Shell Status             | Action                                                    |
+| ------------------------ | --------------------------------------------------------- |
+| Shell components exist   | Include shell in export (Step 8-9 will validate and copy) |
+| Shell components missing | Show warning, offer to proceed without shell              |
 
 **If shell is missing:**
 
@@ -55,6 +59,7 @@ Most products benefit from a shell for consistent navigation. However, if your p
 ```
 
 Use AskUserQuestion with options:
+
 - "Proceed without shell (Recommended if shell not needed)" — Continue export, skip shell steps
 - "Stop — I'll create the shell first" — END COMMAND
 
@@ -63,6 +68,7 @@ Track the user's choice with a `INCLUDE_SHELL` flag for Steps 8-9.
 **If any required file is missing:**
 
 Output error message:
+
 ```
 "To export your product, you need at minimum:
 - A product overview (`/product-vision`)
@@ -81,15 +87,18 @@ Before proceeding, verify all 12 required template files exist. If any are missi
 > **What this validates:** These are boilerplate files that ship with Design OS, NOT user-created files. This check ensures the installation is complete and uncorrupted.
 >
 > **If validation fails:**
+>
 > - **Likely cause:** Incomplete clone, accidental deletion, or corrupted installation
 > - **Resolution:** Re-clone the Design OS boilerplate from the source repository
 > - **Not a user error:** Users don't create these files — they come with the template
 
 > **Severity Levels:**
+>
 > - **File existence** → STOP if missing (cannot proceed without templates)
 > - **Version comments** → WARNING if missing (proceed but warn for maintenance)
 
 **Required templates:**
+
 - `.claude/templates/design-os/common/top-rules.md`
 - `.claude/templates/design-os/common/reporting-protocol.md`
 - `.claude/templates/design-os/common/model-guidance.md`
@@ -104,6 +113,7 @@ Before proceeding, verify all 12 required template files exist. If any are missi
 - `.claude/templates/design-os/section/tdd-workflow.md`
 
 **Required skill file:**
+
 - `.claude/skills/frontend-design/SKILL.md` — Design guidance (copied to export in Step 7)
 
 **If any template is missing:**
@@ -122,13 +132,14 @@ Before assembling prompts, verify all templates have valid version comments at l
 
 All version regex patterns should follow this standardized format:
 
-| Context | Pattern | Description |
-|---------|---------|-------------|
-| **Bash validation** | `^<!-- v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)? -->$` | Match version at line start with optional suffix |
-| **Template stripping** | `^<!-- v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)? -->\n?` | Strip version and optional newline |
-| **Validation check** | `<!-- v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)? -->` | Find any remaining version comments |
+| Context                | Pattern                                                | Description                                      |
+| ---------------------- | ------------------------------------------------------ | ------------------------------------------------ |
+| **Bash validation**    | `^<!-- v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)? -->$`   | Match version at line start with optional suffix |
+| **Template stripping** | `^<!-- v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)? -->\n?` | Strip version and optional newline               |
+| **Validation check**   | `<!-- v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)? -->`     | Find any remaining version comments              |
 
 Valid examples:
+
 - `<!-- v1.0.0 -->`
 - `<!-- v1.2.0-section -->`
 - `<!-- v2.0.0-beta -->`
@@ -173,13 +184,13 @@ For critical files, verify they contain meaningful content, not just that they e
 
 **Content validation rules:**
 
-| File | Minimum Requirements |
-|------|---------------------|
-| `product-overview.md` | Contains `# ` heading and at least 50 characters of content |
-| `product-roadmap.md` | Contains at least one `## ` section heading |
-| `spec.md` (per section) | Contains `## Overview` or `## User Flows` section |
-| `data.json` (per section) | Valid JSON with at least one key besides `_meta` |
-| `types.ts` (per section) | Contains at least one `export interface` declaration |
+| File                      | Minimum Requirements                                        |
+| ------------------------- | ----------------------------------------------------------- |
+| `product-overview.md`     | Contains `# ` heading and at least 50 characters of content |
+| `product-roadmap.md`      | Contains at least one `## ` section heading                 |
+| `spec.md` (per section)   | Contains `## Overview` or `## User Flows` section           |
+| `data.json` (per section) | Valid JSON with at least one key besides `_meta`            |
+| `types.ts` (per section)  | Contains at least one `export interface` declaration        |
 
 **Validation script (conceptual):**
 
@@ -202,6 +213,7 @@ Continue with export but note the warning in the README.
 If recommended files are missing, show warnings but continue:
 
 "Note: Some recommended items are missing:
+
 - [ ] Data model — Run `/data-model` for consistent entity definitions
 - [ ] Design tokens — Run `/design-tokens` for consistent styling
 - [ ] Application shell — Run `/design-shell` for navigation structure
@@ -243,6 +255,7 @@ mkdir -p product-plan/shell/components
 ```
 
 Then validate all directories were created:
+
 ```bash
 for dir in product-plan product-plan/prompts product-plan/instructions/incremental product-plan/design-guidance product-plan/design-system product-plan/data-model product-plan/shell/components; do
   if [ ! -d "$dir" ]; then
@@ -253,7 +266,6 @@ done
 ```
 
 The complete structure will be:
-
 
 ```
 product-plan/
@@ -323,7 +335,7 @@ Create `product-plan/product-overview.md`:
 
 1. **[Section 1]** — [Description]
 2. **[Section 2]** — [Description]
-...
+   ...
 
 ## Data Model
 
@@ -333,11 +345,13 @@ Create `product-plan/product-overview.md`:
 ## Design System
 
 **Colors:**
+
 - Primary: [color or "Not defined"]
 - Secondary: [color or "Not defined"]
 - Neutral: [color or "Not defined"]
 
 **Typography:**
+
 - Heading: [font or "Not defined"]
 - Body: [font or "Not defined"]
 - Mono: [font or "Not defined"]
@@ -349,7 +363,7 @@ Build this product in milestones:
 1. **Foundation** — Set up design tokens, data model types, and application shell
 2. **[Section 1]** — [Brief description]
 3. **[Section 2]** — [Brief description]
-...
+   ...
 
 Each milestone has a dedicated instruction document in `product-plan/instructions/`.
 ```
@@ -359,16 +373,19 @@ Each milestone has a dedicated instruction document in `product-plan/instruction
 ### Preamble Handling for One-Shot vs Incremental
 
 **One-Shot Prompt (`one-shot-prompt.md`):**
+
 - Include the preamble **once at the top** of the file
 - All milestone instructions follow in sequence
 - The preamble applies to the entire implementation
 
 **Incremental Instructions (`instructions/incremental/*.md`):**
+
 - **Each milestone file includes its own preamble** at the top
 - This ensures the preamble is always visible when providing a single milestone
 - Preamble can be customized per milestone if needed (e.g., different context for foundation vs sections)
 
 **Why separate preambles?**
+
 - Incremental files are meant to be provided independently
 - User may skip earlier milestones or provide them in different sessions
 - Each file should be self-contained with full context
@@ -474,6 +491,7 @@ Connect navigation to your routing:
 **User Menu:**
 
 The user menu expects:
+
 - User name
 - Avatar URL (optional)
 - Logout callback
@@ -481,6 +499,7 @@ The user menu expects:
 [If shell doesn't exist:]
 
 Design and implement your own application shell with:
+
 - Navigation for all sections
 - User menu
 - Responsive layout
@@ -523,6 +542,7 @@ Implement the [Section Title] feature — [brief description from roadmap].
 [One paragraph describing what this section enables users to do. Focus on the user's perspective and the value they get from this feature. Extract from spec.md overview.]
 
 **Key Functionality:**
+
 - [Bullet point 1 — e.g., "View a list of all projects with status indicators"]
 - [Bullet point 2 — e.g., "Create new projects with name, description, and due date"]
 - [Bullet point 3 — e.g., "Edit existing project details inline"]
@@ -536,6 +556,7 @@ Implement the [Section Title] feature — [brief description from roadmap].
 Before implementing this section, **write tests first** based on the test specifications provided.
 
 See `product-plan/sections/[section-id]/tests.md` for detailed test-writing instructions including:
+
 - Key user flows to test (success and failure paths)
 - Specific UI elements, button labels, and interactions to verify
 - Expected behaviors and assertions
@@ -543,6 +564,7 @@ See `product-plan/sections/[section-id]/tests.md` for detailed test-writing inst
 The test instructions are framework-agnostic — adapt them to your testing setup (Jest, Vitest, Playwright, Cypress, RSpec, Minitest, PHPUnit, etc.).
 
 **TDD Workflow:**
+
 1. Read `tests.md` and write failing tests for the key user flows
 2. Implement the feature to make tests pass
 3. Refactor while keeping tests green
@@ -562,6 +584,7 @@ The components expect these data shapes:
 [Key types from types.ts]
 
 You'll need to:
+
 - Create API endpoints or data fetching logic
 - Connect real data to the components
 
@@ -640,6 +663,7 @@ Create `product-plan/instructions/one-shot-instructions.md` by combining all mil
 ## About These Instructions
 
 **What you're receiving:**
+
 - Finished UI designs (React components with full styling)
 - Data model definitions (TypeScript types and sample data)
 - UI/UX specifications (user flows, requirements, screenshots)
@@ -647,6 +671,7 @@ Create `product-plan/instructions/one-shot-instructions.md` by combining all mil
 - Test-writing instructions for each section (for TDD approach)
 
 **What you need to build:**
+
 - Backend API endpoints and database schema
 - Authentication and authorization
 - Data fetching and state management
@@ -654,6 +679,7 @@ Create `product-plan/instructions/one-shot-instructions.md` by combining all mil
 - Integration of the provided UI components with real data
 
 **Important guidelines:**
+
 - **DO NOT** redesign or restyle the provided components — use them as-is
 - **DO** wire up the callback props to your routing and API calls
 - **DO** replace sample data with real data from your backend
@@ -671,7 +697,7 @@ Build this product in milestones:
 1. **Foundation** — Design tokens, data model types, routing structure, and application shell (all together)
 2. **[Section 1]** — [Brief description]
 3. **[Section 2]** — [Brief description]
-[List all sections]
+   [List all sections]
 
 Start with the Foundation milestone which sets up the core infrastructure, then build each section in order.
 
@@ -682,12 +708,14 @@ Start with the Foundation milestone which sets up the core infrastructure, then 
 Each section includes a `tests.md` file with detailed test-writing instructions. These are **framework-agnostic** — adapt them to your testing setup (Jest, Vitest, Playwright, Cypress, RSpec, Minitest, PHPUnit, etc.).
 
 **For each section:**
+
 1. Read `product-plan/sections/[section-id]/tests.md`
 2. Write failing tests for key user flows (success and failure paths)
 3. Implement the feature to make tests pass
 4. Refactor while keeping tests green
 
 The test instructions include:
+
 - Specific UI elements, button labels, and interactions to verify
 - Expected success and failure behaviors
 - Empty state handling (when no records exist yet)
@@ -780,12 +808,12 @@ Components may import other components. Validate the full dependency tree with a
 
 **Recursion Limits and Stopping Conditions:**
 
-| Condition | Action |
-|-----------|--------|
-| Max depth reached (10 levels) | Stop recursion, warn user |
+| Condition                                 | Action                                 |
+| ----------------------------------------- | -------------------------------------- |
+| Max depth reached (10 levels)             | Stop recursion, warn user              |
 | Component already visited in current path | Circular import detected, report error |
-| No more local imports | Stop recursion (base case) |
-| Import file doesn't exist | Report missing dependency, stop branch |
+| No more local imports                     | Stop recursion (base case)             |
+| Import file doesn't exist                 | Report missing dependency, stop branch |
 
 **Step 1: Build dependency graph**
 
@@ -802,6 +830,7 @@ done
 **Step 2: Validate all imported components (with depth tracking)**
 
 For each component referenced in imports:
+
 1. Check if current depth > 10 → Stop with warning: "Max recursion depth reached. Component tree may be too deep or contain cycles."
 2. Check if component is already in the current validation path → Circular import detected, report error
 3. Check if the imported file exists in `components/`
@@ -836,6 +865,7 @@ function validateComponent(path, depth = 0, visited = [], errors = []):
 ```
 
 **Validation Behavior:**
+
 - Collect ALL validation errors before reporting
 - Continue checking other components even if one has issues
 - Report comprehensive summary at the end
@@ -854,6 +884,7 @@ Please ensure all sub-components are created before export.
 **Step 4: Validate sub-component portability**
 
 All sub-components must also pass the portability checks:
+
 - No data imports
 - Props-based architecture
 - No state management or routing
@@ -895,6 +926,7 @@ Continue to Step 9 with confidence.
    - Component uses state management
 
 2. **Provide fix instructions** — Tell the user:
+
    ```
    The following components cannot be exported as-is:
    - [Component1] - imports data directly
@@ -946,6 +978,7 @@ done
 ```
 
 **Check for inconsistencies:**
+
 - Different primary colors across sections (e.g., `lime` in one, `blue` in another)
 - Inconsistent shade usage (e.g., `-600` in one section, `-400` in another)
 - Mixed color systems (e.g., some using `stone`, others using `slate`)
@@ -996,6 +1029,7 @@ Proceed with export? (y/n)
 ```
 
 Use AskUserQuestion with options:
+
 - "Proceed — differences are intentional" — Continue with export
 - "Stop — I'll fix the inconsistencies first" — END COMMAND
 
@@ -1050,12 +1084,13 @@ For each section, copy from `src/sections/[section-id]/components/` to `product-
 
 The `src/sections/[section-id]/` folder contains two types of files:
 
-| Location | Type | Exported? | Purpose |
-|----------|------|-----------|---------|
-| `components/*.tsx` | Exportable components | ✅ Yes | Props-based UI components for production use |
-| `*.tsx` (root level) | Preview wrappers | ❌ No | Design OS preview files that load sample data |
+| Location             | Type                  | Exported? | Purpose                                       |
+| -------------------- | --------------------- | --------- | --------------------------------------------- |
+| `components/*.tsx`   | Exportable components | ✅ Yes    | Props-based UI components for production use  |
+| `*.tsx` (root level) | Preview wrappers      | ❌ No     | Design OS preview files that load sample data |
 
 Preview wrappers (files like `InvoiceListView.tsx` at the root of a section folder) are **Design OS-only** files. They:
+
 - Import sample data from `data.json`
 - Pass data to exportable components for preview
 - Are NOT portable and should NEVER be copied to the export package
@@ -1066,15 +1101,15 @@ Preview wrappers (files like `InvoiceListView.tsx` at the root of a section fold
 
 When copying components to the export package, transform all import paths to relative paths for portability:
 
-| Design OS Path | Exported Path | Notes |
-|----------------|---------------|-------|
-| `@/../product/sections/[section-id]/types` | `../types` | Type imports become relative |
-| `@/../product/sections/[section-id]/data.json` | ❌ Remove | Data should come via props |
-| `@/components/ui/*` | ❌ Remove or inline | UI components need to be included or replaced |
-| `@/lib/*` | ❌ Remove or inline | Utilities need to be included or replaced |
-| `./[ComponentName]` | `./[ComponentName]` | Relative imports stay unchanged |
-| `../[ComponentName]` | `../[ComponentName]` | Relative imports stay unchanged |
-| `react`, `lucide-react`, etc. | Unchanged | External library imports stay as-is |
+| Design OS Path                                 | Exported Path        | Notes                                         |
+| ---------------------------------------------- | -------------------- | --------------------------------------------- |
+| `@/../product/sections/[section-id]/types`     | `../types`           | Type imports become relative                  |
+| `@/../product/sections/[section-id]/data.json` | ❌ Remove            | Data should come via props                    |
+| `@/components/ui/*`                            | ❌ Remove or inline  | UI components need to be included or replaced |
+| `@/lib/*`                                      | ❌ Remove or inline  | Utilities need to be included or replaced     |
+| `./[ComponentName]`                            | `./[ComponentName]`  | Relative imports stay unchanged               |
+| `../[ComponentName]`                           | `../[ComponentName]` | Relative imports stay unchanged               |
+| `react`, `lucide-react`, etc.                  | Unchanged            | External library imports stay as-is           |
 
 **Key transformation rules:**
 
@@ -1096,7 +1131,7 @@ Copy `product/sections/[section-id]/data.json` to `product-plan/sections/[sectio
 
 For each section, create `product-plan/sections/[section-id]/README.md`:
 
-```markdown
+````markdown
 # [Section Title]
 
 ## Overview
@@ -1128,15 +1163,70 @@ See `screenshot.png` for the target UI design.
 
 ## Callback Props
 
-| Callback | Description |
-|----------|-------------|
-| `onView` | Called when user clicks to view details |
-| `onEdit` | Called when user clicks to edit |
-| `onDelete` | Called when user clicks to delete |
-| `onCreate` | Called when user clicks to create new |
+| Callback   | Description                             |
+| ---------- | --------------------------------------- |
+| `onView`   | Called when user clicks to view details |
+| `onEdit`   | Called when user clicks to edit         |
+| `onDelete` | Called when user clicks to delete       |
+| `onCreate` | Called when user clicks to create new   |
 
 [Adjust based on actual Props interface]
+
+## View Relationships
+
+[Only include this section if spec.md contains a `## View Relationships` section]
+
+These relationships show how views connect. Implement state management in your app to wire callbacks to secondary views.
+
+| Primary View  | Callback | Secondary View    | Type   | Notes                               |
+| ------------- | -------- | ----------------- | ------ | ----------------------------------- |
+| AgentListView | onView   | AgentDetailDrawer | drawer | Opens side panel with agent details |
+| AgentListView | onCreate | CreateAgentModal  | modal  | Opens centered dialog for new agent |
+
+**Implementation pattern for drawers:**
+
+```tsx
+const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+const [selectedId, setSelectedId] = useState<string | null>(null);
+
+// Wire callback to open drawer
+const handleView = (id: string) => {
+  setSelectedId(id);
+  setIsDrawerOpen(true);
+};
 ```
+````
+
+**Implementation pattern for modals:**
+
+```tsx
+const [isModalOpen, setIsModalOpen] = useState(false);
+
+// Wire callback to open modal
+const handleCreate = () => {
+  setIsModalOpen(true);
+};
+```
+
+> **Note:** In Design OS, preview wrappers handle this wiring. In your production codebase, implement state management using your preferred pattern (useState, Zustand, Redux, etc.).
+
+````
+
+### View Relationships Documentation
+
+When copying section specs to export, check for `## View Relationships` in `product/sections/[section-id]/spec.md`. If present:
+
+1. **Copy to README.md:** Include the "View Relationships" section in the section README (template above)
+2. **Add implementation hints:** Include the state management patterns shown above
+3. **Note the wiring:** Explain that callbacks need to be connected to state
+
+**What NOT to export:**
+- Preview wrappers (`src/sections/[id]/[ViewName].tsx`) — these are Design OS specific
+- Wiring code — implementation depends on the target codebase's state management
+
+**What TO export:**
+- Relationship documentation — helps developers understand the intended UX
+- Implementation patterns — provides starting points for wiring
 
 ## Step 11: Consolidate Data Model Types
 
@@ -1259,7 +1349,7 @@ export interface Document {
  * - Project "contains" many Tasks
  * - Project "contains" many Documents
  */
-```
+````
 
 ### Create data-model/README.md
 
@@ -1276,12 +1366,14 @@ Create `product-plan/data-model/README.md` to document the data model:
 ## Entities
 
 ### [Entity 1]
+
 [Description from data model or inferred from types]
 
 - Fields: [List key fields]
 - Relationships: [How it connects to other entities]
 
 ### [Entity 2]
+
 [Repeat for all entities]
 
 ## Relationships
@@ -1299,6 +1391,7 @@ See `sample-data.json` for example data for each entity.
 ## Usage in Implementation
 
 When building the product, these entity types should map to:
+
 - Database schema
 - API response models
 - Component props and state
@@ -1324,13 +1417,19 @@ Consolidate sample data from all sections:
     ]
   },
   "users": [
-    { /* sample user data */ }
+    {
+      /* sample user data */
+    }
   ],
   "projects": [
-    { /* sample project data */ }
+    {
+      /* sample project data */
+    }
   ],
   "tasks": [
-    { /* sample task data */ }
+    {
+      /* sample task data */
+    }
   ]
 }
 ```
@@ -1339,7 +1438,7 @@ Consolidate sample data from all sections:
 
 For each section, create `product-plan/sections/[section-id]/tests.md` with detailed test-writing instructions based on the section's spec, user flows, and UI design.
 
-```markdown
+````markdown
 # Test Instructions: [Section Title]
 
 These test-writing instructions are **framework-agnostic**. Adapt them to your testing setup (Jest, Vitest, Playwright, Cypress, React Testing Library, RSpec, Minitest, PHPUnit, etc.).
@@ -1359,10 +1458,12 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 #### Success Path
 
 **Setup:**
+
 - [Preconditions - what state the app should be in]
 - [Sample data to use - reference types from types.ts]
 
 **Steps:**
+
 1. User navigates to [page/route]
 2. User sees [specific UI element - be specific about labels, text]
 3. User clicks [specific button/link with exact label]
@@ -1370,6 +1471,7 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 5. User clicks [submit button with exact label]
 
 **Expected Results:**
+
 - [ ] [Specific UI change - e.g., "Success toast appears with message 'Item created'"]
 - [ ] [Data assertion - e.g., "New item appears in the list"]
 - [ ] [State change - e.g., "Form is cleared and reset to initial state"]
@@ -1378,12 +1480,15 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 #### Failure Path: [Specific Failure Scenario]
 
 **Setup:**
+
 - [Conditions that will cause failure - e.g., "Server returns 500 error"]
 
 **Steps:**
+
 1. [Same steps as success path, or modified steps]
 
 **Expected Results:**
+
 - [ ] [Error handling - e.g., "Error message appears: 'Unable to save. Please try again.'"]
 - [ ] [UI state - e.g., "Form data is preserved, not cleared"]
 - [ ] [User can retry - e.g., "Submit button remains enabled"]
@@ -1391,13 +1496,16 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 #### Failure Path: [Validation Error]
 
 **Setup:**
+
 - [Conditions - e.g., "User submits empty required field"]
 
 **Steps:**
+
 1. User leaves [specific field] empty
 2. User clicks [submit button]
 
 **Expected Results:**
+
 - [ ] [Validation message - e.g., "Field shows error: 'Name is required'"]
 - [ ] [Form state - e.g., "Form is not submitted"]
 - [ ] [Focus - e.g., "Focus moves to first invalid field"]
@@ -1419,9 +1527,11 @@ Empty states are critical for first-time users and when records are deleted. Tes
 **Scenario:** User has no [primary records] yet (first-time or all deleted)
 
 **Setup:**
+
 - [Primary data collection] is empty (`[]`)
 
 **Expected Results:**
+
 - [ ] [Empty state message is visible - e.g., "Shows heading 'No projects yet'"]
 - [ ] [Helpful description - e.g., "Shows text 'Create your first project to get started'"]
 - [ ] [Primary CTA is visible - e.g., "Shows button 'Create Project'"]
@@ -1433,10 +1543,12 @@ Empty states are critical for first-time users and when records are deleted. Tes
 **Scenario:** A [parent record] exists but has no [child records] yet
 
 **Setup:**
+
 - [Parent record] exists with valid data
 - [Child records collection] is empty (`[]`)
 
 **Expected Results:**
+
 - [ ] [Parent renders correctly with its data]
 - [ ] [Child section shows empty state - e.g., "Shows 'No tasks yet' in the tasks panel"]
 - [ ] [CTA to add child record - e.g., "Shows 'Add Task' button"]
@@ -1447,9 +1559,11 @@ Empty states are critical for first-time users and when records are deleted. Tes
 **Scenario:** User applies filters or search that returns no results
 
 **Setup:**
+
 - Data exists but filter/search matches nothing
 
 **Expected Results:**
+
 - [ ] [Clear message - e.g., "Shows 'No results found'"]
 - [ ] [Guidance - e.g., "Shows 'Try adjusting your filters' or similar"]
 - [ ] [Reset option - e.g., "Shows 'Clear filters' link"]
@@ -1461,15 +1575,18 @@ Empty states are critical for first-time users and when records are deleted. Tes
 ### [Component Name]
 
 **Renders correctly:**
+
 - [ ] [Specific element is visible - e.g., "Displays item title 'Sample Item'"]
 - [ ] [Data display - e.g., "Shows formatted date 'Dec 12, 2025'"]
 
 **User interactions:**
+
 - [ ] [Click behavior - e.g., "Clicking 'Edit' button calls onEdit with item id"]
 - [ ] [Hover behavior - e.g., "Hovering row shows action buttons"]
 - [ ] [Keyboard - e.g., "Pressing Escape closes the modal"]
 
 **Loading and error states:**
+
 - [ ] [Loading - e.g., "Shows skeleton loader while data is fetching"]
 - [ ] [Error - e.g., "Shows error message when data fails to load"]
 
@@ -1508,7 +1625,7 @@ const mockItem = {
   // ... other fields from types.ts
 };
 
-const mockItems = [mockItem, /* ... more items */];
+const mockItems = [mockItem /* ... more items */];
 
 // Example test data - empty states
 const mockEmptyList = [];
@@ -1522,9 +1639,10 @@ const mockItemWithNoChildren = {
 // Example test data - error states
 const mockErrorResponse = {
   status: 500,
-  message: "Internal server error"
+  message: "Internal server error",
 };
 ```
+````
 
 ---
 
@@ -1537,7 +1655,8 @@ const mockErrorResponse = {
 - Ensure error boundaries catch and display errors gracefully
 - **Always test empty states** — Pass empty arrays to verify helpful empty state UI appears (not blank screens)
 - Test transitions: empty → first item created, last item deleted → empty state returns
-```
+
+````
 
 ### Guidelines for Writing tests.md
 
@@ -1571,7 +1690,7 @@ When generating tests.md for each section:
   --font-body: '[Body Font]', sans-serif;
   --font-mono: '[Mono Font]', monospace;
 }
-```
+````
 
 ### tailwind-colors.md
 
@@ -1593,7 +1712,7 @@ Neutral text: `text-[neutral]-600 dark:text-[neutral]-400`
 
 ### fonts.md
 
-```markdown
+````markdown
 # Typography Configuration
 
 ## Google Fonts Import
@@ -1601,16 +1720,21 @@ Neutral text: `text-[neutral]-600 dark:text-[neutral]-400`
 Add to your HTML `<head>` or CSS:
 
 ```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=[Heading+Font]&family=[Body+Font]&family=[Mono+Font]&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=[Heading+Font]&family=[Body+Font]&family=[Mono+Font]&display=swap"
+  rel="stylesheet"
+/>
 ```
+````
 
 ## Font Usage
 
 - **Headings:** [Heading Font]
 - **Body text:** [Body Font]
 - **Code/technical:** [Mono Font]
+
 ```
 
 ## Step 14: Generate Prompt Files
@@ -1628,8 +1752,10 @@ Before generating prompts, verify that key files from earlier steps were created
 
 If any required file is missing:
 ```
+
 STOP: Missing required file: `product-plan/[path]`
 Earlier export steps may have failed. Re-run `/export-product` from the beginning.
+
 ```
 
 ### Template System Overview
@@ -1661,18 +1787,19 @@ This algorithm describes the template assembly process. When implementing, follo
 **Process:**
 
 ```
+
 1. Initialize empty result string
 
 2. FOR each templatePath in templateOrder:
    a. Read file content from templatePath
    b. If file doesn't exist → STOP with error "Missing template file: [path]"
    c. Strip ALL leading HTML comments from top of content:
-      - Match pattern: /^(<!--[\s\S]*?-->\s*\n?)+/
-      - This removes all consecutive HTML comments at the start (version, usage notes, etc.)
-      - Handles: `<!-- v1.0.0 -->`, `<!-- Usage: ... -->`, `<!-- Note: ... -->`
-      - Remove all matched comments and trailing whitespace
-   d. If result is not empty, append "\n\n" (blank line separator)
-   e. Append stripped content to result
+   - Match pattern: /^(<!--[\s\S]*?-->\s\*\n?)+/
+   - This removes all consecutive HTML comments at the start (version, usage notes, etc.)
+   - Handles: `<!-- v1.0.0 -->`, `<!-- Usage: ... -->`, `<!-- Note: ... -->`
+   - Remove all matched comments and trailing whitespace
+     d. If result is not empty, append "\n\n" (blank line separator)
+     e. Append stripped content to result
 
 3. FOR each (placeholder, value) in variables:
    a. Replace ALL occurrences of placeholder with value in result
@@ -1688,7 +1815,8 @@ This algorithm describes the template assembly process. When implementing, follo
    - If found → STOP with error "Version comments not fully stripped"
 
 6. Return assembled result
-```
+
+````
 
 **Output:**
 - Assembled prompt string ready to write to `product-plan/prompts/`
@@ -1709,13 +1837,15 @@ For one-shot prompts, substitute:
 ```bash
 # Get the product name from the first level-1 heading in product-overview.md
 PRODUCT_NAME=$(head -1 product/product-overview.md | sed 's/^# //')
-```
+````
 
 The product name is the text from the first `# ` heading in `product/product-overview.md`.
+
 - Example: `# InvoiceApp` → Product Name = "InvoiceApp"
 - If no level-1 heading exists, STOP and warn: "Cannot extract product name. product-overview.md must start with a `# Product Name` heading."
 
 For section prompts, substitute:
+
 - `SECTION_NAME` → Human-readable section name (e.g., "Invoices", "Project Dashboard")
 - `SECTION_ID` → Folder name from `product/sections/` (e.g., "invoices", "project-dashboard")
 - `NN` → Milestone number (e.g., "02" for the first section, "03" for the second)
@@ -1724,6 +1854,7 @@ For section prompts, substitute:
 The templates are designed to be concatenated in a specific order. Do NOT reorder or skip templates:
 
 **For one-shot-prompt.md:**
+
 1. `one-shot/preamble.md` — Title and introduction
 2. `common/model-guidance.md` — Model selection guidance
 3. `one-shot/prompt-template.md` — Instructions and file references
@@ -1734,6 +1865,7 @@ The templates are designed to be concatenated in a specific order. Do NOT reorde
 8. `common/verification-checklist.md` — Final verification checklist
 
 **For section-prompt.md:**
+
 1. `section/preamble.md` — Title, section variables, and introduction
 2. `common/model-guidance.md` — Model selection guidance
 3. `section/prompt-template.md` — Instructions and file references
@@ -1747,37 +1879,42 @@ The templates are designed to be concatenated in a specific order. Do NOT reorde
 
 Unlike one-shot-prompt.md, section-prompt.md is a **template** that users fill in for each section. The substitution rules are:
 
-| Variable | Substitute During Export? | Reason |
-|----------|--------------------------|--------|
-| `[Product Name]` | ✅ YES — from product-overview.md | Same for all sections |
-| `SECTION_NAME` | ❌ NO — leave as placeholder | User fills in (e.g., "Invoices") |
-| `SECTION_ID` | ❌ NO — leave as placeholder | User fills in (e.g., "invoices") |
-| `NN` | ❌ NO — leave as placeholder | User fills in (e.g., "02", "03") |
+| Variable         | Substitute During Export?         | Reason                           |
+| ---------------- | --------------------------------- | -------------------------------- |
+| `[Product Name]` | ✅ YES — from product-overview.md | Same for all sections            |
+| `SECTION_NAME`   | ❌ NO — leave as placeholder      | User fills in (e.g., "Invoices") |
+| `SECTION_ID`     | ❌ NO — leave as placeholder      | User fills in (e.g., "invoices") |
+| `NN`             | ❌ NO — leave as placeholder      | User fills in (e.g., "02", "03") |
 
 This means when assembling section-prompt.md:
+
 1. Read the product name from `product/product-overview.md`
 2. Replace all `[Product Name]` occurrences with the actual product name
 3. Leave `SECTION_NAME`, `SECTION_ID`, and `NN` unchanged for user substitution
 
 **4. Version Comment Handling**
+
 - Strip all version comments from the top of each template before concatenating
 - Version formats: `<!-- v1.0.0 -->`, `<!-- v1.2.0-section -->`, etc.
 - These comments are used for template version tracking only and should NOT appear in the final assembled prompt
 - Do not add version comments to the final prompt — the prompt should be clean and ready to use
 
 **5. Whitespace and Formatting**
+
 - Preserve formatting within each template
 - Add a single blank line between concatenated templates to separate sections
 - Ensure the final document has proper spacing for readability
 
 **6. Error Handling**
 If a template file is missing:
+
 - **STOP the export process**
 - Report to the user: "Missing template file: `.claude/templates/design-os/[path]`. Cannot generate prompts."
 - Do not create partial or incomplete prompts
 
 **7. Validation**
 After assembling each prompt:
+
 - Verify all variables have been substituted (no unsubstituted `SECTION_NAME`, `SECTION_ID`, `NN`, or `[Product Name]` remain)
 - Verify all template files were included (no skipped sections)
 - Check that the final prompt is readable and properly formatted
@@ -1797,6 +1934,7 @@ Before saving each assembled prompt, perform these validation checks:
 ```
 
 **If validation fails:**
+
 ```
 STOP: Prompt assembly validation failed for [prompt-file]:
 - [Specific issue found]
@@ -1805,6 +1943,7 @@ Review the template files and assembly process before continuing.
 ```
 
 **Common Assembly Issues:**
+
 - Version comments appearing in output → Template reading not stripping comments
 - Duplicate content → Same template included multiple times in order
 - Missing sections → Template file not found or skipped
@@ -1864,12 +2003,12 @@ fi
 
 **Validation differences explained:**
 
-| Variable | one-shot-prompt.md | section-prompt.md |
-|----------|-------------------|-------------------|
-| `[Product Name]` | ❌ Must be substituted | ❌ Must be substituted |
-| `SECTION_NAME` | ❌ Must be substituted | ✅ Must remain (user fills) |
-| `SECTION_ID` | ❌ Must be substituted | ✅ Must remain (user fills) |
-| `NN` | ❌ Must be substituted | ✅ Must remain (user fills) |
+| Variable         | one-shot-prompt.md     | section-prompt.md           |
+| ---------------- | ---------------------- | --------------------------- |
+| `[Product Name]` | ❌ Must be substituted | ❌ Must be substituted      |
+| `SECTION_NAME`   | ❌ Must be substituted | ✅ Must remain (user fills) |
+| `SECTION_ID`     | ❌ Must be substituted | ✅ Must remain (user fills) |
+| `NN`             | ❌ Must be substituted | ✅ Must remain (user fills) |
 
 These commands provide concrete verification that the assembly process worked correctly for each prompt type.
 
@@ -1902,6 +2041,7 @@ Please carefully read and analyze the following files:
 2. **@product-plan/instructions/one-shot-instructions.md** — Complete implementation instructions for all milestones
 
 After reading these, also review:
+
 - **@product-plan/design-guidance/frontend-design.md** — Design principles and guidance
 - **@product-plan/design-system/** — Color and typography tokens
 - **@product-plan/data-model/** — Entity types and relationships
@@ -1913,52 +2053,61 @@ After reading these, also review:
 These rules prevent common implementation mistakes. Follow them strictly.
 
 ### Rule 1: NEVER FABRICATE REQUIREMENTS
+
 - Only implement features explicitly described in the spec files
 - If a requirement is unclear or ambiguous, ASK the user - don't guess
 - Use the Read tool to verify every requirement before implementing
 
 **Common violations to avoid:**
+
 - (INCORRECT) Adding authentication features not mentioned in spec
 - (INCORRECT) Creating admin panels not requested
 - (INCORRECT) Adding "nice to have" features without approval
 - (INCORRECT) Inventing API endpoints not in data model
 
 **How to follow:**
+
 - (CORRECT) Read product-overview.md and instructions completely before planning
 - (CORRECT) Ask clarifying questions if anything is unclear
 - (CORRECT) Stick to EXACTLY what's specified in tests.md files
 
 ### Rule 2: INTEGRATION > REDESIGN
+
 - DO NOT restyle or redesign the provided components
 - DO NOT change the design tokens (colors, fonts, spacing)
 - DO NOT modify component props or structure
 - Your job is to integrate components into a working application
 
 **Common violations to avoid:**
+
 - (INCORRECT) "I'll make this component more modern by changing the colors"
 - (INCORRECT) "Let me improve the layout by adding more padding"
 - (INCORRECT) "I'll replace DM Sans with Inter because I prefer it"
 - (INCORRECT) "This component would look better with shadows"
 
 **How to follow:**
+
 - (CORRECT) Use components exactly as provided
 - (CORRECT) Pass data via props as designed
 - (CORRECT) Focus on backend logic, routing, and state management
 - (CORRECT) If component seems wrong, ask the user before changing
 
 ### Rule 3: READ BEFORE BUILDING
+
 - Read ALL referenced files before creating your implementation plan
 - Don't skip files because they seem optional
 - Don't make assumptions about what files contain
 - If you didn't read it with the Read tool, don't reference it
 
 **Common violations to avoid:**
+
 - (INCORRECT) Skipping tests.md and guessing what tests to write
 - (INCORRECT) Not reading sample-data.json and creating wrong data structures
 - (INCORRECT) Ignoring types.ts and defining duplicate types
 - (INCORRECT) Assuming shell structure without reading AppShell.tsx
 
 **How to follow:**
+
 - (CORRECT) Read product-overview.md to understand product context
 - (CORRECT) Read ALL instruction files before planning
 - (CORRECT) Read tests.md for EACH section before implementing
@@ -1973,13 +2122,16 @@ As you implement each milestone/feature, write brief progress updates to reduce 
 
 **Format:**
 ```
+
 [DONE] [Milestone/Feature] complete
 Files: [key files created/modified]
 Tests: [number passing]
+
 ```
 
 **Example:**
 ```
+
 [DONE] Milestone 1 (Foundation) complete
 Files: src/app/layout.tsx, src/lib/theme.tsx, src/app/page.tsx
 Tests: 12 passing
@@ -1987,6 +2139,7 @@ Tests: 12 passing
 [DONE] Authentication system complete
 Files: src/lib/auth.ts, src/app/login/page.tsx
 Tests: 8 passing
+
 ```
 
 **DO NOT:**
@@ -2115,6 +2268,7 @@ Please carefully read and analyze the following files:
 2. **@product-plan/instructions/incremental/NN-SECTION_ID.md** — Specific instructions for this section
 
 Also review the section assets:
+
 - **@product-plan/design-guidance/frontend-design.md** — Design principles and guidance
 - **@product-plan/sections/SECTION_ID/README.md** — Feature overview and design intent
 - **@product-plan/sections/SECTION_ID/tests.md** — Test-writing instructions (use TDD approach)
@@ -2127,52 +2281,61 @@ Also review the section assets:
 These rules prevent common implementation mistakes. Follow them strictly.
 
 ### Rule 1: NEVER FABRICATE REQUIREMENTS
+
 - Only implement features explicitly described in the spec files
 - If a requirement is unclear or ambiguous, ASK the user - don't guess
 - Use the Read tool to verify every requirement before implementing
 
 **Common violations to avoid:**
+
 - (INCORRECT) Adding authentication features not mentioned in spec
 - (INCORRECT) Creating admin panels not requested
 - (INCORRECT) Adding "nice to have" features without approval
 - (INCORRECT) Inventing API endpoints not in data model
 
 **How to follow:**
+
 - (CORRECT) Read product-overview.md and instructions completely before planning
 - (CORRECT) Ask clarifying questions if anything is unclear
 - (CORRECT) Stick to EXACTLY what's specified in tests.md files
 
 ### Rule 2: INTEGRATION > REDESIGN
+
 - DO NOT restyle or redesign the provided components
 - DO NOT change the design tokens (colors, fonts, spacing)
 - DO NOT modify component props or structure
 - Your job is to integrate components into a working application
 
 **Common violations to avoid:**
+
 - (INCORRECT) "I'll make this component more modern by changing the colors"
 - (INCORRECT) "Let me improve the layout by adding more padding"
 - (INCORRECT) "I'll replace DM Sans with Inter because I prefer it"
 - (INCORRECT) "This component would look better with shadows"
 
 **How to follow:**
+
 - (CORRECT) Use components exactly as provided
 - (CORRECT) Pass data via props as designed
 - (CORRECT) Focus on backend logic, routing, and state management
 - (CORRECT) If component seems wrong, ask the user before changing
 
 ### Rule 3: READ BEFORE BUILDING
+
 - Read ALL referenced files before creating your implementation plan
 - Don't skip files because they seem optional
 - Don't make assumptions about what files contain
 - If you didn't read it with the Read tool, don't reference it
 
 **Common violations to avoid:**
+
 - (INCORRECT) Skipping tests.md and guessing what tests to write
 - (INCORRECT) Not reading sample-data.json and creating wrong data structures
 - (INCORRECT) Ignoring types.ts and defining duplicate types
 - (INCORRECT) Assuming shell structure without reading AppShell.tsx
 
 **How to follow:**
+
 - (CORRECT) Read product-overview.md to understand product context
 - (CORRECT) Read ALL instruction files before planning
 - (CORRECT) Read tests.md for EACH section before implementing
@@ -2187,13 +2350,16 @@ As you implement each milestone/feature, write brief progress updates to reduce 
 
 **Format:**
 ```
+
 [DONE] [Milestone/Feature] complete
 Files: [key files created/modified]
 Tests: [number passing]
+
 ```
 
 **Example:**
 ```
+
 [DONE] Milestone 1 (Foundation) complete
 Files: src/app/layout.tsx, src/lib/theme.tsx, src/app/page.tsx
 Tests: 12 passing
@@ -2201,6 +2367,7 @@ Tests: 12 passing
 [DONE] Authentication system complete
 Files: src/lib/auth.ts, src/app/login/page.tsx
 Tests: 8 passing
+
 ```
 
 **DO NOT:**
@@ -2312,15 +2479,18 @@ This folder contains everything needed to implement [Product Name].
 ## What's Included
 
 **Ready-to-Use Prompts:**
+
 - `prompts/one-shot-prompt.md` — Prompt template for full implementation
 - `prompts/section-prompt.md` — Prompt template for section-by-section implementation
 
 **Instructions:**
+
 - `product-overview.md` — Product summary (provide with every implementation)
 - `instructions/one-shot-instructions.md` — All milestones combined for full implementation
 - `instructions/incremental/` — Milestone-by-milestone instructions (foundation, then sections)
 
 **Design Assets:**
+
 - `design-guidance/` — Frontend design principles and guidance for creating distinctive components
 - `design-system/` — Colors, fonts, design tokens
 - `data-model/` — Core entities and TypeScript types
@@ -2374,12 +2544,13 @@ The test instructions are **framework-agnostic** — they describe WHAT to test,
 
 ---
 
-*Generated by Design OS*
+_Generated by Design OS_
 ```
 
 ## Step 16: Copy Screenshots
 
 Copy any `.png` files from:
+
 - `product/shell/` → `product-plan/shell/`
 - `product/sections/[section-id]/` → `product-plan/sections/[section-id]/`
 
@@ -2388,6 +2559,7 @@ Copy any `.png` files from:
 Track which screenshots exist and were copied. Report the results to the user:
 
 **Step 1: Check for shell screenshots**
+
 ```bash
 if ls product/shell/*.png 1> /dev/null 2>&1; then
   cp product/shell/*.png product-plan/shell/
@@ -2399,6 +2571,7 @@ fi
 
 **Step 2: Check for section screenshots**
 For each section, check and report:
+
 ```bash
 for section in product/sections/*/; do
   section_id=$(basename "$section")
@@ -2418,12 +2591,14 @@ After copying, validate that screenshot filenames follow the naming convention. 
 **Expected naming convention:** `[screen-design-name].png` or `[screen-design-name]-[variant].png`
 
 Valid examples:
+
 - `invoice-list.png` (main view)
 - `invoice-list-dark.png` (dark mode variant)
 - `invoice-detail-mobile.png` (mobile variant)
 - `dashboard-empty.png` (empty state)
 
 Invalid examples:
+
 - `screenshot1.png` (non-descriptive)
 - `Screen Shot 2024-01-15.png` (system default name)
 - `IMG_1234.png` (camera roll naming)
@@ -2445,6 +2620,7 @@ done
 ```
 
 If warnings are reported, inform the user but continue with the export:
+
 ```
 Note: Some screenshot filenames don't follow the naming convention.
 Consider renaming them to match the pattern: [screen-design-name]-[variant].png
@@ -2453,6 +2629,7 @@ This improves documentation consistency but doesn't block the export.
 
 **Step 3: Report summary**
 After copying, provide a summary:
+
 ```
 Screenshot Summary:
 - Shell: [Copied / Not found]
@@ -2462,6 +2639,7 @@ Screenshot Summary:
 ```
 
 **If no screenshots exist for any section:**
+
 ```
 Warning: No screenshots were found for export.
 The sections/[section-id]/ folders will not include visual references.
@@ -2545,22 +2723,24 @@ echo "Zip contains $file_count files"
 
 **Validation Criteria:**
 
-| Check | Pass Criteria | On Failure |
-|-------|---------------|------------|
-| Zip exists | `product-plan.zip` file present | Retry zip creation |
-| Zip not empty | File size > 0 bytes | Retry zip creation |
-| Zip not corrupted | `unzip -t` passes | Delete and recreate |
-| Contains README | README.md in zip listing | Warning only |
-| Contains prompts | prompts/ directory present | Warning only |
+| Check             | Pass Criteria                   | On Failure          |
+| ----------------- | ------------------------------- | ------------------- |
+| Zip exists        | `product-plan.zip` file present | Retry zip creation  |
+| Zip not empty     | File size > 0 bytes             | Retry zip creation  |
+| Zip not corrupted | `unzip -t` passes               | Delete and recreate |
+| Contains README   | README.md in zip listing        | Warning only        |
+| Contains prompts  | prompts/ directory present      | Warning only        |
 
 ### Zip Cleanup Behavior
 
 The previous zip file is always replaced during export. This is intentional because:
+
 - Each export represents a complete, updated snapshot
 - Keeping old zips could cause confusion about which version to use
 - The product-plan/ folder is always preserved for comparison
 
 **If you need to preserve old exports:**
+
 - Rename the existing zip before running export: `mv product-plan.zip product-plan-backup.zip`
 - Or use version control to track export history
 
@@ -2575,15 +2755,18 @@ Let the user know:
 **What's Included:**
 
 **Ready-to-Use Prompts:**
+
 - `prompts/one-shot-prompt.md` — Prompt for full implementation
 - `prompts/section-prompt.md` — Prompt template for section-by-section
 
 **Instructions:**
+
 - `product-overview.md` — Product summary (always provide with instructions)
 - `instructions/one-shot-instructions.md` — All milestones combined
 - `instructions/incremental/` — [N] milestone instructions (foundation, then sections)
 
 **Design Assets:**
+
 - `design-system/` — Colors, fonts, tokens
 - `data-model/` — Entity types and sample data
 - `shell/` — Application shell components
@@ -2636,6 +2819,7 @@ fi
 **If Export Fails Mid-Process:**
 
 1. **Delete the partial export:**
+
    ```bash
    rm -rf product-plan/
    rm -f product-plan.zip
@@ -2647,13 +2831,13 @@ fi
 
 **If Export Completes But Has Issues:**
 
-| Problem | Solution |
-|---------|----------|
-| Missing components | Check Step 8-9 logs for validation failures. Re-run export after fixing component issues. |
-| Wrong import paths | Check Step 9 path transformations. May need to manually fix paths in copied files. |
-| Missing screenshots | Run `/screenshot-design` for each section, then re-run export. |
-| Corrupt prompts | Check template files in `.claude/templates/design-os/`. Restore from git if needed. |
-| Zip file corrupt | Delete `product-plan.zip` and recreate manually: `zip -r product-plan.zip product-plan/` |
+| Problem             | Solution                                                                                  |
+| ------------------- | ----------------------------------------------------------------------------------------- |
+| Missing components  | Check Step 8-9 logs for validation failures. Re-run export after fixing component issues. |
+| Wrong import paths  | Check Step 9 path transformations. May need to manually fix paths in copied files.        |
+| Missing screenshots | Run `/screenshot-design` for each section, then re-run export.                            |
+| Corrupt prompts     | Check template files in `.claude/templates/design-os/`. Restore from git if needed.       |
+| Zip file corrupt    | Delete `product-plan.zip` and recreate manually: `zip -r product-plan.zip product-plan/`  |
 
 **Restore from Backup:**
 
@@ -2698,11 +2882,13 @@ The export process is designed to be repeatable — running it multiple times wi
 During the export process, provide progress updates to keep the user informed:
 
 **Report at the start of each major step:**
+
 ```
 [Step X/18] Starting: [Step Name]...
 ```
 
 **Report after completing key milestones:**
+
 ```
 [DONE] Step 3: Created export directory structure
 [DONE] Step 4: Generated product-overview.md
@@ -2713,6 +2899,7 @@ During the export process, provide progress updates to keep the user informed:
 ```
 
 **For long-running steps, report progress within the step:**
+
 ```
 [Step 9] Copying section components...
   - invoices: 3 components copied
@@ -2721,6 +2908,7 @@ During the export process, provide progress updates to keep the user informed:
 ```
 
 **Summary at completion:**
+
 ```
 Export Complete!
 - Total steps: 18
@@ -2735,6 +2923,7 @@ This helps users understand what's happening during longer exports and provides 
 ### Performance Note
 
 This command performs many file operations and may take longer for products with many sections. The most resource-intensive steps are:
+
 - **Component validation** (Step 8) — Reads and validates all component files
 - **Prompt generation** (Step 14) — Reads and assembles multiple template files
 - **Zip creation** (Step 17) — Creates archive of entire export folder

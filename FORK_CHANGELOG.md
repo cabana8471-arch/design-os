@@ -6,6 +6,86 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-28 17:45] View Relationships: Functional Preview Wrappers with Drawers/Modals
+
+### Description
+
+Implemented a new "View Relationships" feature that allows `/design-screen` to create fully functional preview wrappers where clicking a list item actually opens a drawer or modal, instead of just logging to console.
+
+### Problem Solved
+
+When running `/shape-section` and `/design-screen` for sections with multiple views (e.g., List + Drawer):
+
+- Components were created separately and not connected
+- Preview wrappers only did `console.log()` for callbacks
+- Users couldn't see the complete experience (click on row → open drawer)
+
+### Solution
+
+1. **New spec section**: Added `## View Relationships` to section specs that define how views connect
+2. **Relationship types**: Support for `drawer` (Sheet), `modal` (Dialog), and `inline` (conditional render)
+3. **Data references**: `entityId` (callback receives ID, preview does lookup), `entity` (full object passed), `none` (no data)
+4. **Wired preview wrappers**: Preview files now use `useState` to manage drawer/modal state instead of console.log
+5. **Secondary view creation**: `/design-screen` creates all related views together in a single run
+
+### Relationship Format
+
+```markdown
+## View Relationships
+
+- AgentListView.onView -> AgentDetailDrawer (drawer, entityId)
+- AgentListView.onCreate -> CreateAgentModal (modal, none)
+```
+
+### Wired Preview Pattern
+
+```tsx
+export default function AgentListPreview() {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const selectedAgent = selectedId
+    ? (data.agents as Agent[]).find((a) => a.id === selectedId)
+    : null;
+
+  const handleView = (id: string) => {
+    setSelectedId(id);
+    setIsDrawerOpen(true);
+  };
+
+  return (
+    <>
+      <AgentList agents={data.agents} onView={handleView} />
+      <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <SheetContent>
+          {selectedAgent && <AgentDetailDrawer agent={selectedAgent} />}
+        </SheetContent>
+      </Sheet>
+    </>
+  );
+}
+```
+
+### Modified Files
+
+| File                                           | Modification                                                                                                                                                                                                                                                          |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/shape-section.md`  | Added Step 4.6: Define View Relationships; Updated Step 7 spec template with `## View Relationships` section                                                                                                                                                          |
+| `.claude/commands/design-os/design-screen.md`  | Added UI components validation (Sheet/Dialog check); Added view relationships parsing in Step 3; Added "Create Related Views Together" in Step 4; Added Step 7.5 for secondary view creation; Added wired preview wrapper templates (drawer, modal, inline, multiple) |
+| `.claude/commands/design-os/sample-data.md`    | Added "Secondary View Props" section for drawer/modal/inline panel props patterns                                                                                                                                                                                     |
+| `.claude/commands/design-os/export-product.md` | Added View Relationships documentation to section README template with implementation patterns                                                                                                                                                                        |
+| `agents.md`                                    | Added complete "View Relationships" documentation section with types, data references, and examples                                                                                                                                                                   |
+
+### Benefits
+
+- **Functional previews**: Click interactions actually work (open drawer, show modal)
+- **Complete experience**: See the full UX flow without leaving Design OS
+- **Portable components**: Exported components remain stateless and props-based
+- **Backwards compatible**: Existing sections without relationships continue to work with console.log
+- **Single run**: Create all related views together instead of multiple `/design-screen` runs
+
+---
+
 ## [2025-12-28 13:30] Restored Missing Design Direction Instructions
 
 ### Description

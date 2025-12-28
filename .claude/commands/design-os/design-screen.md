@@ -46,6 +46,50 @@ Track user's choice - if continuing without skill file, use the **fallback desig
 
 > **Note:** The fallback design principles (Visual Hierarchy, Spacing System, Component Patterns, Responsive Breakpoints, Dark Mode) are defined in `.claude/commands/design-os/design-shell.md` Step 1. This avoids duplication and ensures consistency between shell and screen design commands.
 
+### Validate UI Components for Wiring
+
+If the spec contains a `## View Relationships` section, check that the required UI components exist:
+
+```bash
+# Read spec to check for relationship types
+SPEC_FILE="product/sections/[section-id]/spec.md"
+
+# Check for drawer relationships
+if grep -q "(drawer," "$SPEC_FILE" 2>/dev/null; then
+  if [ ! -f "src/components/ui/sheet.tsx" ]; then
+    echo "Warning: Drawer relationship found but Sheet component is missing."
+    echo "Install with: npx shadcn@latest add sheet"
+    MISSING_SHEET=true
+  fi
+fi
+
+# Check for modal relationships
+if grep -q "(modal," "$SPEC_FILE" 2>/dev/null; then
+  if [ ! -f "src/components/ui/dialog.tsx" ]; then
+    echo "Warning: Modal relationship found but Dialog component is missing."
+    echo "Install with: npx shadcn@latest add dialog"
+    MISSING_DIALOG=true
+  fi
+fi
+```
+
+**If UI components are missing:**
+
+Use AskUserQuestion with options:
+
+- "Install missing components now" — Run the shadcn command to add them
+- "Continue without wiring" — Use console.log handlers (legacy behavior)
+- "Skip — I'll install manually" — Proceed, but warn that wiring may fail
+
+**Track the choice:**
+
+```
+UI_WIRING_AVAILABLE=true   # If all components exist or user installed them
+UI_WIRING_AVAILABLE=false  # If user chose to continue without wiring
+```
+
+This ensures we only attempt to generate wired preview wrappers when the required components are available.
+
 ### Identify Target Section
 
 Read `/product/product-roadmap.md` to get the list of available sections.
@@ -447,6 +491,70 @@ Note: No Layout Patterns specified in spec.md. I'll use sensible defaults based 
 - Forms → Single column (mobile), Two columns (desktop)
 ```
 
+### View Relationships Extraction from spec.md
+
+The `## View Relationships` section in spec.md defines how views connect to each other (added by `/shape-section` Step 4.6).
+
+**Expected spec.md format:**
+
+```markdown
+## View Relationships
+
+- AgentListView.onView -> AgentDetailDrawer (drawer, entityId)
+- AgentListView.onCreate -> CreateAgentModal (modal, none)
+```
+
+**Parsing algorithm:**
+
+```python
+relationships = []
+in_relationships_section = False
+
+for line in spec_lines:
+    if line.strip() == "## View Relationships":
+        in_relationships_section = True
+    elif line.startswith("## ") and in_relationships_section:
+        break  # Next section started
+    elif in_relationships_section and line.startswith("- "):
+        # Parse: "- PrimaryView.callback -> SecondaryView (type, dataRef)"
+        # Regex: ^- (\w+)\.(\w+) -> (\w+) \((\w+), (\w+)\)$
+        match = re.match(r'^- (\w+)\.(\w+) -> (\w+) \((\w+), (\w+)\)$', line.strip())
+        if match:
+            relationships.append({
+                'primary': match.group(1),
+                'callback': match.group(2),
+                'secondary': match.group(3),
+                'type': match.group(4),      # drawer | modal | inline
+                'dataRef': match.group(5)    # entityId | entity | none
+            })
+```
+
+**Relationship data structure:**
+
+| Field       | Description                       | Example Values                             |
+| ----------- | --------------------------------- | ------------------------------------------ |
+| `primary`   | The view that triggers the action | `AgentListView`                            |
+| `callback`  | The callback prop name            | `onView`, `onCreate`, `onEdit`, `onDelete` |
+| `secondary` | The view that opens               | `AgentDetailDrawer`, `CreateAgentModal`    |
+| `type`      | UI element type                   | `drawer`, `modal`, `inline`                |
+| `dataRef`   | Data passing method               | `entityId`, `entity`, `none`               |
+
+**If no relationships section exists:**
+
+```python
+relationships = []  # Empty list - use legacy console.log behavior
+```
+
+This is the backwards-compatible behavior for specs created before Step 4.6 was added.
+
+**Store relationships for later use:**
+
+The extracted relationships will be used in:
+
+- **Step 4:** Determine if we should create all related views together
+- **Step 7.5:** Create secondary view components
+- **Step 8:** Generate wired preview wrappers instead of console.log handlers
+
 ## Step 4: Clarify the Screen Design Scope
 
 ### Check for Existing Views
@@ -486,6 +594,81 @@ Which view should I create first?"
 "All views specified for **[Section Title]** have been created. Run `/screenshot-design` to capture screenshots, or `/export-product` when ready to export."
 
 If there's only one obvious view, proceed directly.
+
+### Create Related Views Together (If Relationships Exist)
+
+If the spec contains a `## View Relationships` section (parsed in Step 3), offer to create all related views in a single run.
+
+**Check for relationships:**
+
+```python
+# From Step 3 parsing
+relationships = [...]  # List of relationship objects
+
+# Find relationships where selected view is PRIMARY
+related_secondaries = [r for r in relationships if r['primary'] == selected_view]
+
+# Find relationships where selected view is SECONDARY
+related_primaries = [r for r in relationships if r['secondary'] == selected_view]
+```
+
+**If selected view is PRIMARY with related secondaries:**
+
+```
+I see **[PrimaryView]** is connected to secondary view(s):
+
+1. **[SecondaryView1]** — opens via `[callback1]` ([type1])
+2. **[SecondaryView2]** — opens via `[callback2]` ([type2])
+
+Would you like me to create all related views together?
+```
+
+Use AskUserQuestion with options:
+
+- "Yes, create all together (Recommended)" — Create primary + all secondaries + wired preview
+- "Create only [PrimaryView]" — Create just the primary, callbacks will console.log
+- "Create only [SecondaryView]" — Create a specific secondary in isolation
+
+**If user chooses "Create all together":**
+
+Track views to create:
+
+```python
+VIEWS_TO_CREATE = [
+    { 'name': selected_view, 'role': 'primary' },
+    { 'name': secondary1, 'role': 'secondary', 'relationship': rel1 },
+    { 'name': secondary2, 'role': 'secondary', 'relationship': rel2 },
+]
+CREATE_WIRED_PREVIEW = True
+```
+
+**If user chooses single view:**
+
+```python
+VIEWS_TO_CREATE = [{ 'name': selected_view, 'role': 'standalone' }]
+CREATE_WIRED_PREVIEW = False  # Use console.log handlers
+```
+
+**Output confirmation:**
+
+If creating multiple views:
+
+```
+I'll create these components:
+
+**Components** (exportable, props-based):
+- src/sections/[id]/components/[PrimaryView].tsx
+- src/sections/[id]/components/[SecondaryView1].tsx
+- src/sections/[id]/components/[SecondaryView2].tsx
+- src/sections/[id]/components/index.ts
+
+**Preview wrappers** (Design OS only):
+- src/sections/[id]/[PrimaryView].tsx — Wired preview with working [type]
+- src/sections/[id]/[SecondaryView1].tsx — Standalone preview for testing
+- src/sections/[id]/[SecondaryView2].tsx — Standalone preview for testing
+
+Proceeding...
+```
 
 ### Note on Multiple Views
 
@@ -877,6 +1060,194 @@ export function InvoiceList({
 }
 ```
 
+## Step 7.5: Create Secondary View Components (If Relationships Exist)
+
+If `CREATE_WIRED_PREVIEW = True` (from Step 4), create the secondary view components now.
+
+**For each secondary view in `VIEWS_TO_CREATE`:**
+
+### Secondary View Component Pattern
+
+Secondary views (drawers, modals, inline panels) receive the **full entity object** rather than just an ID, because the preview wrapper does the lookup.
+
+**Example: Drawer Component**
+
+```tsx
+// src/sections/[section-id]/components/AgentDetailDrawer.tsx
+import type {
+  Agent,
+  AgentDetailDrawerProps,
+} from "@/../product/sections/[section-id]/types";
+
+export function AgentDetailDrawer({
+  agent,
+  onClose,
+  onEdit,
+  onDelete,
+}: AgentDetailDrawerProps) {
+  return (
+    <div className="p-6 space-y-6">
+      {/* Header with close button */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold">{agent.name}</h2>
+        <button
+          onClick={onClose}
+          className="p-2 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-lg"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* Agent details */}
+      <div className="space-y-4">
+        <div>
+          <label className="text-sm text-stone-500">Status</label>
+          <p className="font-medium">{agent.status}</p>
+        </div>
+        <div>
+          <label className="text-sm text-stone-500">Last Seen</label>
+          <p className="font-medium">{agent.lastSeen}</p>
+        </div>
+        {/* Add more fields based on entity structure */}
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex gap-2 pt-4 border-t">
+        <button
+          onClick={onEdit}
+          className="flex-1 px-4 py-2 bg-lime-600 text-white rounded-lg hover:bg-lime-700"
+        >
+          Edit
+        </button>
+        <button
+          onClick={onDelete}
+          className="px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+**Example: Modal Component (Create Form)**
+
+```tsx
+// src/sections/[section-id]/components/CreateAgentModal.tsx
+import type { CreateAgentModalProps } from "@/../product/sections/[section-id]/types";
+
+export function CreateAgentModal({ onClose, onSave }: CreateAgentModalProps) {
+  return (
+    <div className="space-y-6">
+      {/* Modal header */}
+      <div>
+        <h2 className="text-xl font-semibold">Create New Agent</h2>
+        <p className="text-sm text-stone-500">Add a new agent to your system</p>
+      </div>
+
+      {/* Form fields */}
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Agent Name</label>
+          <input
+            type="text"
+            className="w-full px-3 py-2 border rounded-lg"
+            placeholder="Enter agent name"
+          />
+        </div>
+        {/* Add more fields as needed */}
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex gap-2 justify-end pt-4 border-t">
+        <button
+          onClick={onClose}
+          className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded-lg"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() =>
+            onSave?.({
+              /* form data */
+            })
+          }
+          className="px-4 py-2 bg-lime-600 text-white rounded-lg hover:bg-lime-700"
+        >
+          Create Agent
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+### Secondary View Props Pattern
+
+The Props interfaces for secondary views should be generated by `/sample-data` in `types.ts`:
+
+```typescript
+// For drawer/detail views - receive full entity
+export interface AgentDetailDrawerProps {
+  agent: Agent;
+  onClose?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+}
+
+// For create modals - no entity, just callbacks
+export interface CreateAgentModalProps {
+  onClose?: () => void;
+  onSave?: (agent: Partial<Agent>) => void;
+}
+
+// For edit modals - receive entity + save callback
+export interface EditAgentModalProps {
+  agent: Agent;
+  onClose?: () => void;
+  onSave?: (agent: Agent) => void;
+}
+```
+
+### Create Standalone Previews for Secondary Views
+
+Each secondary view also gets its own standalone preview wrapper for isolated testing:
+
+```tsx
+// src/sections/[section-id]/AgentDetailDrawerPreview.tsx
+import data from "@/../product/sections/[section-id]/data.json";
+import { AgentDetailDrawer } from "./components/AgentDetailDrawer";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import type { Agent } from "@/../product/sections/[section-id]/types";
+
+export default function AgentDetailDrawerPreview() {
+  // Use first entity from sample data for preview
+  const agent = (data.agents as Agent[])[0];
+
+  if (!agent) {
+    return (
+      <div className="p-8 text-center text-stone-500">
+        No sample data available. Run /sample-data first.
+      </div>
+    );
+  }
+
+  return (
+    <Sheet defaultOpen>
+      <SheetContent>
+        <AgentDetailDrawer
+          agent={agent}
+          onClose={() => console.log("Close drawer")}
+          onEdit={() => console.log("Edit agent:", agent.id)}
+          onDelete={() => console.log("Delete agent:", agent.id)}
+        />
+      </SheetContent>
+    </Sheet>
+  );
+}
+```
+
 ## Step 8: Create the Preview Wrapper
 
 Create a preview wrapper at `src/sections/[section-id]/[ViewName].tsx` (note: this is in the section root, not in components/).
@@ -910,6 +1281,243 @@ The preview wrapper:
 - Provides console.log handlers for callbacks (for testing interactions)
 - Is NOT exported to the user's codebase - it's only for Design OS
 - **Will render inside the shell** if one has been designed
+
+### Wired Preview Wrapper Templates
+
+If `CREATE_WIRED_PREVIEW = True` (from Step 4), use these templates instead of the console.log version.
+
+**Template: Drawer Pattern**
+
+When the spec defines a drawer relationship (e.g., `ListView.onView -> DetailDrawer (drawer, entityId)`):
+
+```tsx
+// src/sections/[section-id]/AgentListPreview.tsx
+import { useState } from "react";
+import data from "@/../product/sections/[section-id]/data.json";
+import { AgentList } from "./components/AgentList";
+import { AgentDetailDrawer } from "./components/AgentDetailDrawer";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import type { Agent } from "@/../product/sections/[section-id]/types";
+
+export default function AgentListPreview() {
+  // Drawer state
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // Lookup entity from sample data
+  const selectedAgent = selectedId
+    ? (data.agents as Agent[]).find((a) => a.id === selectedId)
+    : null;
+
+  // Wire onView callback to open drawer
+  const handleView = (id: string) => {
+    setSelectedId(id);
+    setIsDrawerOpen(true);
+  };
+
+  const handleCloseDrawer = () => {
+    setIsDrawerOpen(false);
+    setSelectedId(null);
+  };
+
+  return (
+    <>
+      <AgentList
+        agents={data.agents}
+        onView={handleView}
+        onEdit={(id) => console.log("Edit:", id)}
+        onCreate={() => console.log("Create")}
+      />
+
+      <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <SheetContent>
+          {selectedAgent ? (
+            <AgentDetailDrawer
+              agent={selectedAgent}
+              onClose={handleCloseDrawer}
+              onEdit={() => console.log("Edit:", selectedId)}
+              onDelete={() => {
+                console.log("Delete:", selectedId);
+                handleCloseDrawer();
+              }}
+            />
+          ) : selectedId ? (
+            <div className="p-4 text-red-500">
+              Error: Agent with ID "{selectedId}" not found in sample data
+            </div>
+          ) : null}
+        </SheetContent>
+      </Sheet>
+    </>
+  );
+}
+```
+
+**Template: Modal Pattern**
+
+When the spec defines a modal relationship (e.g., `ListView.onCreate -> CreateModal (modal, none)`):
+
+```tsx
+// src/sections/[section-id]/AgentListPreview.tsx
+import { useState } from "react";
+import data from "@/../product/sections/[section-id]/data.json";
+import { AgentList } from "./components/AgentList";
+import { CreateAgentModal } from "./components/CreateAgentModal";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+
+export default function AgentListPreview() {
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  return (
+    <>
+      <AgentList
+        agents={data.agents}
+        onView={(id) => console.log("View:", id)}
+        onCreate={() => setIsModalOpen(true)}
+        onEdit={(id) => console.log("Edit:", id)}
+      />
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <CreateAgentModal
+            onClose={() => setIsModalOpen(false)}
+            onSave={(agent) => {
+              console.log("Created:", agent);
+              setIsModalOpen(false);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+```
+
+**Template: Inline Pattern**
+
+When the spec defines an inline relationship (e.g., `ListView.onView -> DetailInline (inline, entityId)`):
+
+```tsx
+// src/sections/[section-id]/AgentListPreview.tsx
+import { useState } from "react";
+import data from "@/../product/sections/[section-id]/data.json";
+import { AgentList } from "./components/AgentList";
+import { AgentDetailInline } from "./components/AgentDetailInline";
+import type { Agent } from "@/../product/sections/[section-id]/types";
+
+export default function AgentListPreview() {
+  // Inline expansion state
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const handleToggle = (id: string) => {
+    setExpandedId((prev) => (prev === id ? null : id));
+  };
+
+  const expandedAgent = expandedId
+    ? (data.agents as Agent[]).find((a) => a.id === expandedId)
+    : null;
+
+  return (
+    <AgentList
+      agents={data.agents}
+      expandedId={expandedId}
+      expandedContent={
+        expandedAgent ? (
+          <AgentDetailInline
+            agent={expandedAgent}
+            onClose={() => setExpandedId(null)}
+          />
+        ) : null
+      }
+      onToggle={handleToggle}
+      onEdit={(id) => console.log("Edit:", id)}
+    />
+  );
+}
+```
+
+**Template: Multiple Relationships (Drawer + Modal)**
+
+When a primary view has multiple relationships:
+
+```tsx
+// src/sections/[section-id]/AgentListPreview.tsx
+import { useState } from "react";
+import data from "@/../product/sections/[section-id]/data.json";
+import { AgentList } from "./components/AgentList";
+import { AgentDetailDrawer } from "./components/AgentDetailDrawer";
+import { CreateAgentModal } from "./components/CreateAgentModal";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import type { Agent } from "@/../product/sections/[section-id]/types";
+
+export default function AgentListPreview() {
+  // Drawer state (for onView)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // Modal state (for onCreate)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  // Lookup selected entity
+  const selectedAgent = selectedId
+    ? (data.agents as Agent[]).find((a) => a.id === selectedId)
+    : null;
+
+  // Handlers
+  const handleView = (id: string) => {
+    setSelectedId(id);
+    setIsDrawerOpen(true);
+  };
+
+  const handleCloseDrawer = () => {
+    setIsDrawerOpen(false);
+    setSelectedId(null);
+  };
+
+  return (
+    <>
+      <AgentList
+        agents={data.agents}
+        onView={handleView}
+        onCreate={() => setIsCreateModalOpen(true)}
+        onEdit={(id) => console.log("Edit:", id)}
+      />
+
+      {/* Drawer for viewing details */}
+      <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <SheetContent>
+          {selectedAgent && (
+            <AgentDetailDrawer
+              agent={selectedAgent}
+              onClose={handleCloseDrawer}
+              onEdit={() => console.log("Edit:", selectedId)}
+              onDelete={() => {
+                console.log("Delete:", selectedId);
+                handleCloseDrawer();
+              }}
+            />
+          )}
+        </SheetContent>
+      </Sheet>
+
+      {/* Modal for creating new agent */}
+      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+        <DialogContent>
+          <CreateAgentModal
+            onClose={() => setIsCreateModalOpen(false)}
+            onSave={(agent) => {
+              console.log("Created:", agent);
+              setIsCreateModalOpen(false);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+```
 
 ### Multi-View Preview Wrappers
 
