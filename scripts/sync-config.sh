@@ -34,6 +34,8 @@ SYNC_FILES=(
   "src/main.tsx"
   "src/index.css"
   "src/vite-env.d.ts"
+  # Shell infrastructure (NOT user components)
+  "src/shell/navigation-config.ts"
 )
 
 # ============================================================================
