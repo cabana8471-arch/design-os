@@ -252,6 +252,15 @@ Ask for the mapping: "Which roadmap section should `[orphan-name]` be renamed to
 
 > **Version Control:** Before deleting or renaming sections, ensure your changes are committed to git. Run `git status` to verify your current state. This allows you to recover deleted files using `git checkout -- <path>` if needed.
 
+**User Choice to Command Mapping:**
+
+| User Choice       | Operation          | Bash Commands                                                               |
+| ----------------- | ------------------ | --------------------------------------------------------------------------- |
+| "Delete them"     | Permanent removal  | `rm -rf product/sections/[section-id]` + `rm -rf src/sections/[section-id]` |
+| "Archive them"    | Move to \_archive/ | `mkdir -p _archive && mv product/sections/[section-id] _archive/`           |
+| "Keep them"       | No action          | None — directories remain but won't appear in navigation                    |
+| "Rename to match" | Rename directories | `mv product/sections/[old-id] product/sections/[new-id]`                    |
+
 **2. For renamed sections:**
 
 - **Rename directories** to match the new section ID:

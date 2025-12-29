@@ -360,8 +360,16 @@ SKILL_AVAILABLE=false
 if [ ! -f "$SKILL_FILE" ]; then
   echo "Warning: SKILL.md - File not found at $SKILL_FILE"
 else
-  # Check file has meaningful content (>100 characters after frontmatter)
-  CONTENT_LENGTH=$(sed '/^---$/,/^---$/d' "$SKILL_FILE" | tr -d '[:space:]' | wc -c)
+  # Check file has meaningful content (>100 characters after frontmatter/metadata)
+  # Handle both files with frontmatter (--- delimiters) and without
+  if grep -q '^---$' "$SKILL_FILE"; then
+    # File has frontmatter - strip it before counting
+    CONTENT_LENGTH=$(sed '/^---$/,/^---$/d' "$SKILL_FILE" | tr -d '[:space:]' | wc -c)
+  else
+    # No frontmatter - count all content (excluding HTML comments at start)
+    CONTENT_LENGTH=$(sed '/^<!--.*-->$/d' "$SKILL_FILE" | tr -d '[:space:]' | wc -c)
+  fi
+
   if [ "$CONTENT_LENGTH" -lt 100 ]; then
     echo "Warning: SKILL.md - Insufficient content (< 100 chars). Add meaningful design guidance."
   else

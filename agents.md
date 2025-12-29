@@ -151,13 +151,13 @@ Design OS commands use decimal step notation for granularity:
 | `Step NA`    | Conditional branch                  | Step 8A: Shell validation         |
 | `Step N-N.M` | Range of steps (inclusive)          | Step 0-0.7: All audit steps       |
 
-**Range Notation:** `Step 0-0.7` means "Steps 0.0 through 0.7 inclusive"
+**Range Notation:** `Step 0-0.7` refers to discrete steps in that range (e.g., Steps 0, 0.5, 0.6, 0.7), not a continuous mathematical range. The actual steps included depend on what's defined in the command file.
 
 **Examples from /design-shell:**
 
-- Step 0-0.7: Audit steps (only run if shell already exists)
-- Step 1-2: Prerequisite checks (Steps 1 and 2)
-- Step 3.1-3.6: Shell configuration questions (all sub-steps)
+- Step 0-0.7: Audit steps — includes Step 0, 0.5, 0.6, 0.7 (discrete sub-steps)
+- Step 1-2: Prerequisite checks — includes Step 1, 2 (two major steps)
+- Step 3.1-3.6: Shell configuration questions — includes Steps 3.1, 3.2, 3.3, 3.4, 3.5, 3.6
 - Step 6.5: Create design-direction.md
 - Step 7: Create components
 
@@ -170,6 +170,8 @@ Example: "See `/design-shell` Step 6.5 for design direction creation"
 ---
 
 ## File Structure
+
+> **Note:** Empty directories in the boilerplate contain `.gitkeep` placeholder files. See "The .gitkeep Convention" section below for details. These placeholders are omitted from the diagram for clarity.
 
 ```
 .claude/
@@ -1426,7 +1428,9 @@ Product scope (MVP/Standard/Enterprise) is determined by `/product-vision` and p
 | **Standard**   | Full feature set   | Multiple views (2-4), common patterns            |
 | **Enterprise** | Comprehensive      | All views, advanced features, admin capabilities |
 
-**Commands that read scope:** `/shape-section`, `/sample-data`
+**Commands that read scope:** `/shape-section`
+
+> **Note:** `/sample-data` uses data volume preferences (Step 3.5) rather than product scope. The scope primarily affects section complexity during `/shape-section`.
 
 ### Standard Error Messages
 

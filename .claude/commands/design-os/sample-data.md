@@ -487,6 +487,13 @@ This prevents infinite regeneration loops when there's a fundamental misundersta
 
 **Important:** This is guidance for AI agent behavior — the agent must explicitly track and report retry attempts.
 
+**Implementation Note:** Maintain an internal `RETRY_COUNT` counter:
+
+- Initialize `RETRY_COUNT=0` before first generation attempt
+- Increment `RETRY_COUNT` after each failed validation
+- Check `RETRY_COUNT >= 3` before attempting any regeneration
+- This counter persists across steps until Step 7 is reached or command terminates
+
 **Retry Reporting Format:**
 
 When retrying, always include the attempt number in your response:

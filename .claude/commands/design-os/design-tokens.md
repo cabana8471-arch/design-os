@@ -503,6 +503,24 @@ If the user provides an invalid color name:
 "[color] isn't a standard Tailwind color. Did you mean [suggestion]? Here are the available options: [list relevant colors]"
 ```
 
+**Important:** Before suggesting an alternative color, verify that:
+
+1. The suggestion is in the valid Tailwind colors list above
+2. The suggestion is visually similar (e.g., "turquoise" → "teal" or "cyan", not "red")
+3. Multiple alternatives are offered if the intent is ambiguous
+
+**Suggestion mapping for common invalid colors:**
+| Invalid Color | Suggested Alternatives |
+|---------------|------------------------|
+| `turquoise` | `teal`, `cyan` |
+| `coral` | `rose`, `orange` |
+| `navy` | `blue`, `indigo` |
+| `maroon` | `rose`, `red` |
+| `gold` | `amber`, `yellow` |
+| `silver` | `gray`, `zinc` |
+| `aqua` | `cyan`, `teal` |
+| `crimson` | `red`, `rose` |
+
 ### Google Fonts Validation
 
 Before saving fonts, validate that each font name exactly matches the Google Fonts naming:

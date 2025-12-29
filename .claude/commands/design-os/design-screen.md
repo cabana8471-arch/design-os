@@ -707,6 +707,8 @@ relationships = []  # Empty list - use legacy console.log behavior
 
 This is the backwards-compatible behavior for specs created before Step 4.6 was added.
 
+> **Version Note:** The `## View Relationships` section (Step 4.6) was added to `/shape-section` as part of the multi-view workflow enhancement. Specs created before this enhancement won't have this section. To add view relationships to an existing spec, either re-run `/shape-section` or manually add the `## View Relationships` section following the format above.
+
 **Store relationships for later use:**
 
 The extracted relationships will be used in:
