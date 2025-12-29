@@ -8,9 +8,9 @@
 
 Before using this prompt, replace these placeholders:
 
-- **SECTION_NAME** = [Human-readable name, e.g., "Invoices" or "Project Dashboard"]
-- **SECTION_ID** = [Folder name in sections/, e.g., "invoices" or "project-dashboard"]
-- **NN** = [Two-digit milestone number, zero-padded: "02", "03", etc. Foundation is "01", so first section is always "02"]
+- **SECTION_NAME** = Human-readable name (e.g., "Invoices" or "Project Dashboard")
+- **SECTION_ID** = Folder name in sections/ (e.g., "invoices" or "project-dashboard")
+- **NN** = Two-digit milestone number, zero-padded (e.g., "02", "03". Foundation is "01", so first section is always "02")
 
 ---
 

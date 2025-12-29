@@ -89,5 +89,4 @@ These are applied at the theme level, not in components.
 ### See Also
 
 - `agents.md` > "Tailwind CSS Directives"
-- `agents.md` > "Design Token Shade Guide"
 - `/design-tokens` command

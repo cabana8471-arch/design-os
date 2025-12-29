@@ -90,8 +90,10 @@ Once a section is selected, immediately generate and validate its section-id:
 2. Replace spaces with hyphens
 3. Replace "&" with "-and-"
 4. Remove special characters except hyphens
-5. Cannot start or end with hyphen
-6. Maximum 50 characters
+5. Remove diacritics (e.g., "Café" → "cafe", "Señor" → "senor")
+6. Collapse consecutive hyphens to single hyphen
+7. Cannot start or end with hyphen
+8. Maximum 50 characters
 
 **Examples:**
 
@@ -108,7 +110,7 @@ Once a section is selected, immediately generate and validate its section-id:
 - "Reports..." → `reports` (trailing punctuation removed)
 - "100% Complete" → `100-complete` (special chars removed, numbers preserved)
 
-> **See also:** `agents.md` → "Section ID Generation Rules" for the standardized specification used across all commands.
+> **See also:** `agents.md` → "Standardized Prerequisite Checks" → "Section ID Generation Rules" for the standardized specification used across all commands.
 
 **Validate against roadmap:**
 
@@ -155,6 +157,8 @@ Use AskUserQuestion with options:
 
 - Read the current spec.md to understand existing structure
 - Ask which aspects they want to change or improve
+- Skip Step 3 (initial input) since existing spec provides context
+- Jump directly to Step 3.5 (Feature Suggestions) or Step 4 (Questions) based on what needs to change
 - Regenerate the full spec, incorporating requested changes
 - Note: This replaces the file but uses existing content as context
 
@@ -182,11 +186,13 @@ Wait for their response. The user may provide raw notes or ask to proceed with q
 
 ## Step 3.5: AI-Generated Feature Suggestions
 
-After receiving the user's initial input, dynamically generate feature suggestions based on:
+> **Conditional Step:** This step runs after Step 3. If the user provided initial notes, use them to tailor suggestions. If the user chose "proceed with questions" without providing notes, generate generic section-type suggestions based on the roadmap description.
+
+Generate feature suggestions based on:
 
 1. **The section title and description** (from roadmap)
 2. **The product scope** (from Step 1.5)
-3. **The user's initial notes** (from Step 3)
+3. **The user's initial notes** (from Step 3, if provided)
 
 ### Generate Section-Specific Suggestions
 

@@ -219,6 +219,12 @@ If the Hide button cannot be found or clicked, follow this fallback procedure:
 - `invoice-list.png` — Desktop (default, no suffix needed)
 - `invoice-list-mobile.png` — Mobile variant
 - `invoice-list-tablet.png` — Tablet variant
+- `invoice-list-dark.png` — Dark mode variant (desktop)
+
+**Combining suffixes:** When capturing both viewport and theme variants, use this order: `[screen-name]-[viewport]-[variant].png`. Examples:
+
+- `invoice-list-mobile-dark.png` — Mobile dark mode
+- `invoice-list-tablet-dark.png` — Tablet dark mode
 
 **Requirements:**
 
@@ -232,7 +238,7 @@ If the Hide button cannot be found or clicked, follow this fallback procedure:
 When using `browser_take_screenshot`:
 
 - Set `fullPage: true` to capture the entire page including content below the fold
-- Set viewport size before capturing: `browser_set_viewport_size` with width and height from the table above
+- **Important:** Set viewport size BEFORE navigating to the page: Call `browser_set_viewport_size(1280, 800)` at the start of Step 3, before `browser_navigate`. This ensures the page renders at the correct dimensions from the start.
 
 ## Step 4: Save the Screenshot
 
@@ -293,6 +299,8 @@ When all screenshots are complete, guide the user to the next step:
 ## Step 6: Clean Up - Kill Dev Server
 
 After you're done capturing screenshots, clean up the dev server process based on the detection from Step 2.
+
+> **Important:** The `DEV_SERVER_PREEXISTING` flag set in Step 2 must be preserved through all subsequent steps. Before executing cleanup, verify the value of this flag to avoid accidentally killing a pre-existing server.
 
 **If `DEV_SERVER_PREEXISTING=false` (you started the server in Step 2):**
 

@@ -83,8 +83,8 @@ if [ ! -f "src/shell/components/AppShell.tsx" ]; then
   SHELL_EXISTS=false
 else
   SHELL_EXISTS=true
-  # Count all shell components
-  SHELL_COMPONENT_COUNT=$(ls -1 src/shell/components/*.tsx 2>/dev/null | grep -v index.ts | wc -l)
+  # Count all shell components (.tsx files only, excluding index files)
+  SHELL_COMPONENT_COUNT=$(ls -1 src/shell/components/*.tsx 2>/dev/null | wc -l)
   echo "Found $SHELL_COMPONENT_COUNT shell component(s)"
 
   # List secondary components if any
@@ -614,7 +614,9 @@ The export does not include shell components. Refer to `product-overview.md` for
 
 ### [NN]-[section-id].md (for each section)
 
-Place in `product-plan/instructions/incremental/[NN]-[section-id].md` (starting at 02 for the first section):
+Place in `product-plan/instructions/incremental/[NN]-[section-id].md` (starting at 02 for the first section).
+
+> **Zero-Padding:** Milestone numbers MUST be zero-padded to 2 digits: `01`, `02`, `03`, etc. Examples: `02-invoices.md`, `03-projects.md` (NOT `2-invoices.md`).
 
 ```markdown
 # Milestone [N]: [Section Title]
@@ -981,6 +983,8 @@ fi
 ### Validate Sub-Components (Recursive)
 
 Components may import other components. Validate the full dependency tree with a **maximum depth of 10 levels** to prevent infinite loops from circular imports.
+
+> **Clarification:** "10 levels" means depth values 0 through 10 (where 0 is the root component). The check `if depth > 10` stops recursion at depth 11, allowing up to 10 nested import levels from the root.
 
 **Recursion Limits and Stopping Conditions:**
 

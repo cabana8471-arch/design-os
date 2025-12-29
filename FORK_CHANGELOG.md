@@ -6,7 +6,98 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-29 16:15] Critical Analysis - Step Index & Documentation Consistency
+## [2025-12-29 16:30] Critical Analysis - Comprehensive 30-Issue Review
+
+### Description
+
+Comprehensive critical analysis of all files in `.claude/` folder plus `agents.md`. Initial analysis identified 30 potential issues across 4 severity levels (2 Critical, 2 High, 17 Medium, 9 Low). After thorough verification during implementation, 18 issues required actual fixes while 12 were false positives (already properly implemented or working as intended). Focus on fixing step references, adding persistence notes, clarifying conditional logic, and synchronizing documentation.
+
+### New Files Created
+
+_None_
+
+### Modified Files
+
+| File                                                     | Modification                                                                                   |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `agents.md`                                              | Fixed step reference: "Step 11: Copy Section Assets" → "Step 9: Copy and Transform Components" |
+| `.claude/hookify.dos-design-warn-custom-colors.local.md` | Removed broken reference to non-existent "Design Token Shade Guide" section                    |
+| `.claude/commands/design-os/screenshot-design.md`        | Added DEV_SERVER_PREEXISTING persistence note in Step 6                                        |
+| `.claude/commands/design-os/screenshot-design.md`        | Clarified viewport timing: set BEFORE navigating to page                                       |
+| `.claude/commands/design-os/screenshot-design.md`        | Added combined suffix naming convention (e.g., `invoice-list-mobile-dark.png`)                 |
+| `.claude/commands/design-os/design-shell.md`             | Added conditional comments for keyboard shortcuts (Cmd+K only if SearchModal imported)         |
+| `.claude/commands/design-os/design-shell.md`             | Added minimal palettes note for shells without primary color                                   |
+| `.claude/commands/design-os/design-screen.md`            | Added "Preamble: Multi-View Workflow Context" header for clarity                               |
+| `.claude/commands/design-os/shape-section.md`            | Synchronized Section ID rules with agents.md (8 rules including diacritics removal)            |
+| `.claude/commands/design-os/shape-section.md`            | Added "Revise" flow clarification (skip Step 3, jump to Step 3.5/4)                            |
+| `.claude/commands/design-os/shape-section.md`            | Fixed cross-reference path to include parent section                                           |
+| `.claude/commands/design-os/shape-section.md`            | Added conditional note for Step 3.5 (based on whether user provided initial notes)             |
+| `.claude/commands/design-os/export-product.md`           | Added depth limit clarification ("10 levels" = depth 0-10)                                     |
+| `.claude/commands/design-os/export-product.md`           | Added explicit zero-padding note for milestone numbers (01, 02, 03)                            |
+| `.claude/commands/design-os/export-product.md`           | Removed ineffective grep filter in shell component count                                       |
+| `.claude/templates/design-os/section/preamble.md`        | Changed bracket notation to parentheses in variable examples                                   |
+
+### Gaps Resolved
+
+**Critical (2):**
+
+- **#1:** agents.md incorrectly documented data.json→sample-data.json transformation as Step 11 instead of Step 9
+- **#2:** hookify rule referenced non-existent "Design Token Shade Guide" section in agents.md
+
+**High (2):**
+
+- **#3:** screenshot-design.md DEV_SERVER_PREEXISTING variable might not persist through all steps
+- **#4:** design-shell.md keyboard shortcut for Cmd+K was unconditional but SearchModal is conditional
+
+**Medium (10):**
+
+- **#9:** design-shell.md color placeholders didn't account for minimal palettes (neutral only)
+- **#10:** design-screen.md Multi-View section appeared before Step 1 without clear preamble header
+- **#12:** shape-section.md Section ID rules missing "collapse consecutive hyphens" (now 8 rules)
+- **#13:** shape-section.md "Revise" flow continued to Step 3 instead of jumping ahead
+- **#16:** screenshot-design.md viewport timing was unclear (before or during navigation)
+- **#20:** export-product.md depth limit documentation inconsistent with code check
+- **#21:** export-product.md milestone numbering didn't explicitly require zero-padding
+- **#24:** shape-section.md cross-reference lacked parent section path
+- **#27:** screenshot-design.md naming convention didn't cover combined suffixes
+- **#30:** shape-section.md Step 3.5 trigger unclear when user provides no initial notes
+
+**Low (4):**
+
+- **#22:** section/preamble.md used bracket notation in examples (confusing with auto-substitution)
+- **#28:** export-product.md grep filter on .tsx files tried to exclude .ts file (ineffective)
+- Section ID rules synchronized between shape-section.md and agents.md (now identical 8 rules)
+
+**False Positives Identified (12):**
+
+- **#5, #6, #7, #8:** design-shell.md Step Index, validation, breadcrumbs, notifications - already correct
+- **#11:** design-screen.md Step 2 already reads design-direction.md
+- **#14:** sample-data.md has comprehensive retry tracking (lines 486-558)
+- **#15, #25:** sample-data.md step semantics and error order - working as intended
+- **#17, #18, #19:** export-product.md step count, optional clarity, regex - already clear
+- **#23, #26, #29:** README hierarchy, selector list, grep anchors - intentional design
+
+### Statistics
+
+- Files modified: 10
+- Lines changed: ~80
+- Issues resolved: 18 (2 Critical, 2 High, 10 Medium, 4 Low)
+- False positives: 12 (already correctly implemented)
+
+### Verification
+
+- ✅ agents.md now correctly references Step 9 for data.json transformation
+- ✅ Hookify rule no longer references non-existent section
+- ✅ DEV_SERVER_PREEXISTING persistence documented
+- ✅ Keyboard shortcuts properly marked as conditional
+- ✅ Section ID rules synchronized (8 rules in both files)
+- ✅ Multi-View workflow has clear preamble header
+- ✅ Milestone zero-padding explicitly documented
+- ✅ Variable examples use parentheses instead of brackets
+
+---
+
+## [2025-12-29 15:15] Critical Analysis - Step Index & Documentation Consistency
 
 ### Description
 

@@ -1821,21 +1821,25 @@ export default function ShellPreview() {
     { label: "Reports", href: "/sections/reports-and-analytics" },
   ];
 
-  // Keyboard shortcut for search (Cmd+K)
+  // CONDITIONAL KEYBOARD SHORTCUTS: Only include shortcuts for imported components
+  // Remove the Cmd+K handler if SearchModal is NOT in Shell Relationships
+  // Keep Escape handler but remove setters for non-imported components
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Cmd+K for search - INCLUDE ONLY IF SearchModal imported
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
         setIsSearchOpen(true);
       }
+      // Escape closes all - adjust setters based on imported components
       if (e.key === "Escape") {
-        // Close whichever is open
-        setIsNotificationsOpen(false);
-        setIsSearchOpen(false);
-        setIsSettingsOpen(false);
-        setIsProfileOpen(false);
-        setIsHelpOpen(false);
-        setIsMobileMenuOpen(false);
+        // Close whichever is open (remove setters for non-imported components)
+        setIsNotificationsOpen(false); // IF NotificationsDrawer imported
+        setIsSearchOpen(false); // IF SearchModal imported
+        setIsSettingsOpen(false); // IF SettingsModal imported
+        setIsProfileOpen(false); // IF ProfileModal imported
+        setIsHelpOpen(false); // IF HelpPanel imported
+        setIsMobileMenuOpen(false); // IF MobileMenuDrawer imported
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -2018,7 +2022,9 @@ If design tokens exist, apply them to the shell components:
 
 ### Shell-Specific Design Token Shades
 
-Use these specific shades for shell UI elements:
+Use these specific shades for shell UI elements.
+
+> **Note on Minimal Palettes:** If only a neutral color is defined (no primary), skip primary-specific styles and use neutral shades throughout. For active states without a primary color, use a darker neutral shade instead (e.g., `[neutral]-800` for active nav items).
 
 **Navigation Shades:**
 | Element | Light Mode | Dark Mode |

@@ -239,7 +239,7 @@ product/                           # Product definition (portable)
 | Design | `data.json` | `product/sections/[id]/` | Design OS preview data |
 | Export | `sample-data.json` | `product-plan/sections/[id]/` | Implementation test/seed data |
 
-**When:** The rename happens during `/export-product` (Step 11: Copy Section Assets).
+**When:** The rename happens during `/export-product` (Step 9: Copy and Transform Components).
 
 **Why:** In the target codebase, "sample-data" clarifies this is test/seed data for development, not production data. The file contains realistic examples for UI testing and component development.
 

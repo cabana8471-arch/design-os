@@ -2,6 +2,12 @@
 
 You are helping the user create a screen design for a section of their product. The screen design will be a props-based React component that can be exported and integrated into any React codebase.
 
+---
+
+## Preamble: Multi-View Workflow Context
+
+> **Read this section first** to understand how this command handles sections with multiple views. The actual command steps begin at "Step 1: Check Prerequisites" below.
+
 > **Multi-View Sections:** This command creates ONE view component per run. For sections with multiple views (e.g., ListView, DetailDrawer, CreateModal):
 >
 > 1. Run `/design-screen` once for each view
