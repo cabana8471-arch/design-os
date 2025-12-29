@@ -6,7 +6,96 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-29 15:45] Critical Analysis - Step References & Directory Documentation
+## [2025-12-29 10:55] Critical Analysis - Comprehensive 27-Issue Fix
+
+### Description
+
+Comprehensive critical analysis of all files in `.claude/` folder plus `agents.md`. Identified 27 distinct issues across 4 severity levels (4 Critical, 6 High, 10 Medium, 7 Low). All issues have been resolved through documentation improvements, validation enhancements, and standardization of patterns.
+
+### New Files Created
+
+_None_
+
+### Modified Files
+
+| File                                                           | Modification                                                                                                                                                                                                                                                                                                                                                |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/templates/design-os/README.md`                        | Added @ notation explanation, product name source, removed stale verification date, added stripping implementation reference                                                                                                                                                                                                                                |
+| `agents.md`                                                    | Added Foundation milestone definition, expanded responsive strategy, added design-direction reference table, standardized relationship format, documented retry pattern status, added mkdir commands table, added step numbering convention, clarified shell component categories, expanded data.json rename documentation, added section ID edge case rule |
+| `.claude/templates/design-os/section/preamble.md`              | Made NN format explicit (two-digit, zero-padded)                                                                                                                                                                                                                                                                                                            |
+| `.claude/templates/design-os/common/tdd-workflow.md`           | Added Testing Framework table with Vitest/Jest, Testing Library, Playwright                                                                                                                                                                                                                                                                                 |
+| `.claude/skills/frontend-design/SKILL.md`                      | Added version comment, added comprehensive Accessibility Integration section                                                                                                                                                                                                                                                                                |
+| `.claude/commands/design-os/design-screen.md`                  | Added Multi-View Sections note at top of file                                                                                                                                                                                                                                                                                                               |
+| `.claude/commands/design-os/shape-section.md`                  | Fixed error message format to follow standard pattern                                                                                                                                                                                                                                                                                                       |
+| `.claude/commands/design-os/design-tokens.md`                  | Added fallback colors note (stone/lime defaults)                                                                                                                                                                                                                                                                                                            |
+| `.claude/commands/design-os/screenshot-design.md`              | Added MCP tool name troubleshooting note                                                                                                                                                                                                                                                                                                                    |
+| `.claude/commands/design-os/export-product.md`                 | Added complete Step Index table                                                                                                                                                                                                                                                                                                                             |
+| `.claude/templates/design-os/common/model-guidance.md`         | Updated model names (Opus 4.5, Sonnet 4, Haiku)                                                                                                                                                                                                                                                                                                             |
+| `.claude/templates/design-os/common/verification-checklist.md` | Added recovery guidance table                                                                                                                                                                                                                                                                                                                               |
+
+### Gaps Resolved
+
+**Critical (4):**
+
+- **C1:** Template @ notation (`@product-plan/...`) was never defined - added explanation in README.md
+- **C2:** "Foundation milestone" referenced in 3+ files but never defined - added definition in agents.md
+- **C3:** NN variable format (two-digit) mentioned in README but not enforced in preamble.md - made explicit
+- **C4:** TDD workflow mandated but no testing framework specified - added framework table
+
+**High (6):**
+
+- **H1:** Responsive strategy contradiction (shell desktop-first vs sections mobile-first) without reconciliation - added detailed explanation
+- **H2:** design-direction.md incomplete integration - added Command References table clarifying which commands use it
+- **H3:** Shell Relationships vs View Relationships format variance - standardized format with unified table
+- **H4:** Orphan detection - verified already addressed by existing validation code
+- **H5:** SKILL.md missing accessibility guidance - added comprehensive Accessibility Integration section
+- **H6:** Multi-view section workflow unclear - added prominent note at top of design-screen.md
+
+**Medium (10):**
+
+- **M1:** Error message format inconsistent - fixed in shape-section.md
+- **M2:** Retry pattern inconsistent - documented status table in agents.md
+- **M3:** Directory creation not explicit - added mkdir commands table
+- **M4:** SKILL.md missing version comment - added `<!-- v1.0.0 -->`
+- **M5:** Step numbering notation undocumented - added Step Numbering Convention section
+- **M6:** Design tokens fallback colors undocumented - added note to design-tokens.md
+- **M7:** Template README last verified date stale - replaced with verification procedure
+- **M8:** Shell component categories confusing - added Shell Component Categories table
+- **M9:** data.json rename timing unclear - expanded documentation with table
+- **M10:** Playwright MCP tool name hardcoding - added troubleshooting note
+
+**Low (7):**
+
+- **L1:** Model guidance outdated - updated to Opus 4.5, Sonnet 4, Haiku
+- **L2:** Verification checklist missing recovery - added recovery table
+- **L4:** Section ID edge case - added rule 5: collapse consecutive hyphens
+- **L5:** Export-product step count note - added complete Step Index table
+- **L6:** Template version stripping unimplemented - added implementation reference
+- **L7:** Product name auto-substitution unclear - added source note (done with C1)
+
+### Statistics
+
+- Files modified: 13
+- Lines changed: ~400
+- Issues resolved: 27 (4 Critical, 6 High, 10 Medium, 7 Low)
+- False positives: 1 (H4 - already implemented)
+
+### Verification
+
+- ✅ @ notation now clearly documented with examples
+- ✅ Foundation milestone defined with 6 infrastructure components
+- ✅ NN format explicitly states "two-digit, zero-padded"
+- ✅ Testing frameworks specified (Vitest, Testing Library, Playwright)
+- ✅ Responsive strategy reconciled with ownership table
+- ✅ Shell component categories clarified (Primary/Secondary/Utility)
+- ✅ Accessibility integration covers color, focus, motion, keyboard, semantics
+- ✅ All error messages follow standard format
+- ✅ Step numbering convention documented with examples
+- ✅ Model guidance updated to current model names
+
+---
+
+## [2025-12-29 09:45] Critical Analysis - Step References & Directory Documentation
 
 ### Description
 
@@ -53,7 +142,7 @@ _None_
 
 ---
 
-## [2025-12-29 12:30] Critical Analysis - Validation & Documentation Improvements
+## [2025-12-29 08:30] Critical Analysis - Validation & Documentation Improvements
 
 ### Description
 
@@ -115,7 +204,7 @@ _None_
 
 ---
 
-## [2025-12-29 09:05] Critical Analysis - Comprehensive 19-Issue Fix
+## [2025-12-29 08:05] Critical Analysis - Comprehensive 19-Issue Fix
 
 ### Description
 

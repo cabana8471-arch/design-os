@@ -2,6 +2,15 @@
 
 You are helping the user create a screen design for a section of their product. The screen design will be a props-based React component that can be exported and integrated into any React codebase.
 
+> **Multi-View Sections:** This command creates ONE view component per run. For sections with multiple views (e.g., ListView, DetailDrawer, CreateModal):
+>
+> 1. Run `/design-screen` once for each view
+> 2. Start with the primary view (usually the list/dashboard)
+> 3. Create secondary views (detail, create, edit) in subsequent runs
+> 4. View Relationships (from spec.md) wire them together automatically
+>
+> The preview wrapper created for the first view will be updated to include subsequent views.
+
 ## Step 1: Check Prerequisites
 
 First, identify the target section and verify that all required files exist.

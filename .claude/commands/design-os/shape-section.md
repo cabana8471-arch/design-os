@@ -122,13 +122,11 @@ section_titles=$(grep -E '^### [0-9]+\.' product/product-roadmap.md | sed 's/###
 **If section title doesn't match any roadmap section:**
 
 ```
-Error: The section "[selected-title]" doesn't match any section in product-roadmap.md.
+Error: [selected-title] - Section not found in product-roadmap.md. Select from existing sections below.
 
 Existing roadmap sections:
 - [section-1-title]
 - [section-2-title]
-
-Did you mean one of these?
 ```
 
 Use AskUserQuestion with options from existing roadmap sections.

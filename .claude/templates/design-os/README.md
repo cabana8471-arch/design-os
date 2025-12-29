@@ -97,22 +97,25 @@ Section templates use placeholder variables. **Only the assembled `section-promp
 
 > **Note:** `NN` only appears in file path references (e.g., `NN-SECTION_ID.md`), not in the readable prompt content.
 
+### File Reference Notation
+
+Templates use the `@` prefix to indicate file references in prompts:
+
+- `@product-plan/...` — Reference to files in the export package
+- This notation helps implementation agents locate required files
+- The `@` prefix has no special behavior; it's a visual indicator for file paths
+
+**Example:** `@product-plan/design-guidance/frontend-design.md` means "read the file at `product-plan/design-guidance/frontend-design.md`"
+
+> **Product Name Source:** The `[Product Name]` variable is extracted from the first H1 heading in `product/product-overview.md` during export.
+
 ---
 
 ## How Prompts Are Assembled
 
 > **Source of Truth:** The authoritative template assembly order is defined in `/export-product` Step 14. This section provides a summary for quick reference. If there's any discrepancy, export-product.md takes precedence.
 
-> **Last verified:** 2025-12-28 — One-shot and section prompt assembly orders confirmed in sync with export-product.md Step 14
-
-**Verification Procedure:**
-
-To verify assembly orders are in sync:
-
-1. Compare the "One-Shot Prompt Assembly Order" section below with export-product.md Step 14 → "For one-shot-prompt.md:"
-2. Compare the "Section Prompt Assembly Order" section below with export-product.md Step 14 → "For section-prompt.md:"
-3. Ensure template file paths and descriptions match exactly
-4. Update "Last verified" date after confirming sync
+**Verification:** To verify assembly orders are in sync, compare this README with `.claude/commands/design-os/export-product.md` Step 14. Any discrepancy means export-product.md takes precedence.
 
 ### One-Shot Prompt Assembly Order
 
@@ -315,6 +318,8 @@ When stripping version comments (`<!-- v1.0.0 -->`):
    (the regex removes the comment AND its trailing newline, but NOT blank lines after)
 4. The second line becomes the new first line
 ```
+
+> **Implementation:** This stripping logic is implemented in `/export-product` Step 14 (Generate Prompt Files) during template assembly. See `.claude/commands/design-os/export-product.md` for the actual implementation.
 
 **Example:**
 

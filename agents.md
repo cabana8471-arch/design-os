@@ -136,6 +136,31 @@ Generate the complete export package with all components, types, and handoff doc
 
 **Note on Design Tokens for /design-shell:** While design tokens are optional, if they don't exist, `/design-shell` will use default stone/lime colors. For product-specific branding, run `/design-tokens` before `/design-shell`.
 
+### Step Numbering Convention
+
+Design OS commands use decimal step notation for granularity:
+
+| Notation   | Meaning                             | Example                           |
+| ---------- | ----------------------------------- | --------------------------------- |
+| `Step N`   | Major workflow phase                | Step 1: Check Prerequisites       |
+| `Step N.M` | Sub-step within phase               | Step 3.6: Ask about relationships |
+| `Step 0.N` | Audit/pre-check steps (conditional) | Step 0.5: Audit existing shell    |
+| `Step NA`  | Conditional branch                  | Step 8A: Shell validation         |
+
+**Examples from /design-shell:**
+
+- Step 0-0.7: Audit steps (only run if shell already exists)
+- Step 1-2: Prerequisite checks
+- Step 3.1-3.6: Shell configuration questions
+- Step 6.5: Create design-direction.md
+- Step 7: Create components
+
+**Cross-Command References:**
+
+When referencing steps in other commands, use format: `/[command] Step N.M`
+
+Example: "See `/design-shell` Step 6.5 for design direction creation"
+
 ---
 
 ## File Structure
@@ -201,11 +226,16 @@ product/                           # Product definition (portable)
         ├── types.ts               # TypeScript interfaces
         └── *.png                  # Screenshots
 
-**Note on data.json naming:**
-- In source (`product/sections/`): `data.json`
-- In export (`product-plan/sections/`): renamed to `sample-data.json`
+**data.json → sample-data.json Transformation:**
 
-This transformation happens during `/export-product` to clarify the file's purpose as sample/test data in the target codebase.
+| Phase | File Name | Location | Purpose |
+|-------|-----------|----------|---------|
+| Design | `data.json` | `product/sections/[id]/` | Design OS preview data |
+| Export | `sample-data.json` | `product-plan/sections/[id]/` | Implementation test/seed data |
+
+**When:** The rename happens during `/export-product` (Step 11: Copy Section Assets).
+
+**Why:** In the target codebase, "sample-data" clarifies this is test/seed data for development, not production data. The file contains realistic examples for UI testing and component development.
 
 src/
 ├── shell/                         # Shell design components
@@ -237,7 +267,17 @@ src/
 │   ├── hooks/                     # Shell utility hooks
 │   │   └── index.ts               # Exports all hooks
 │   └── index.ts                   # Main shell module export
-│
+
+**Shell Component Categories:**
+
+| Category | Created By | Examples | Exported to product-plan? |
+|----------|------------|----------|---------------------------|
+| **Primary** | `/design-shell` (always) | AppShell, MainNav, UserMenu | Yes |
+| **Secondary** | `/design-shell` (if selected in Step 3.6) | NotificationsDrawer, SearchModal, SettingsModal, etc. | Yes |
+| **Utility** | Pre-existing in boilerplate | SkipLink, ShellErrorBoundary, ThemeToggle, ShellSkeleton | No (Design OS internal) |
+
+> **Key Distinction:** Primary and Secondary components are GENERATED for the product design and get exported. Utility components are BOILERPLATE infrastructure for Design OS previews — they're not part of the export package.
+
 └── sections/
     └── [section-id]/
         ├── components/            # Exportable components (see note below)
@@ -816,7 +856,7 @@ The `/design-shell` command (Step 3.6) asks about interactive elements and store
 - MobileNav.toggle -> MobileMenuDrawer (drawer, none)
 ```
 
-**Format:** `[Trigger].[action] -> [Component] ([type], [dataRef])`
+**Format:** `- [Trigger].[action] -> [Component] ([type], [dataRef])`
 
 ### Trigger Types
 
@@ -931,6 +971,24 @@ Shell relationships are documented but ShellPreview is NOT exported:
 - Shell README.md documents the relationships
 - Wiring implementation depends on target codebase's state management
 
+### Relationship Format Standard
+
+Both View Relationships (sections) and Shell Relationships use the same format:
+
+```
+- [Source].[callback] -> [Target] ([type], [dataRef])
+```
+
+| Component | View Relationships                              | Shell Relationships                                    |
+| --------- | ----------------------------------------------- | ------------------------------------------------------ |
+| Source    | View component name (e.g., `AgentListView`)     | Trigger type (`HeaderAction`, `UserMenu`, `MobileNav`) |
+| callback  | Handler name (`onView`, `onCreate`)             | Action name (`notifications`, `search`, `profile`)     |
+| Target    | Secondary component (e.g., `AgentDetailDrawer`) | Secondary component (e.g., `NotificationsDrawer`)      |
+| type      | `drawer`, `modal`, `inline`                     | `drawer`, `modal`, `inline`                            |
+| dataRef   | `entityId`, `entity`, `none`                    | `notifications`, `user`, `settings`, `none`            |
+
+The `- ` prefix is required in spec.md files for markdown list parsing.
+
 ---
 
 ## Design Direction Document
@@ -1009,13 +1067,18 @@ These rules MUST remain consistent across all sections:
 
 The `/design-shell` command creates this document in Step 6.5, after defining the shell spec and before creating components.
 
-### Referenced By
+### Command References
 
-The `/design-screen` command:
+| Command           | How It Uses design-direction.md                            |
+| ----------------- | ---------------------------------------------------------- |
+| `/design-shell`   | **Creates** the document (Step 6.5)                        |
+| `/design-screen`  | **Reads and applies** aesthetics (Steps 2, 5)              |
+| `/shape-section`  | Does NOT reference (spec is functional, not visual)        |
+| `/sample-data`    | Does NOT reference (data structure, not presentation)      |
+| `/design-tokens`  | Does NOT reference (tokens are inputs TO design-direction) |
+| `/export-product` | **Copies** to export package                               |
 
-1. Checks for `product/design-system/design-direction.md` in Step 2
-2. Applies documented guidelines from `design-direction.md` in Step 5
-3. Cross-references existing section components for pattern consistency
+> **Note:** `/shape-section` and `/sample-data` intentionally don't reference design-direction.md because they define WHAT the section does, not HOW it looks. Visual design is applied later by `/design-screen`.
 
 ### Exported To
 
@@ -1208,6 +1271,21 @@ The `/export-product` command assembles these templates (see Step 14: Generate P
 
 See `.claude/templates/design-os/README.md` for template authoring and assembly details.
 
+### Foundation Milestone Definition
+
+The "Foundation" milestone (milestone 01) includes core infrastructure that all sections depend on:
+
+1. **Project Setup**: Package.json, build config, linting, TypeScript configuration
+2. **Authentication**: Auth provider integration, protected routes, session management
+3. **Core Layout**: Shell components (AppShell, MainNav, UserMenu)
+4. **Design System**: Theme provider, color tokens, typography classes
+5. **Routing**: Router setup, navigation structure, route guards
+6. **Data Layer**: API client setup, state management, data fetching patterns
+
+**In exports:** Foundation is always `instructions/incremental/01-foundation.md`. Section milestones start at `02-[section-id].md`.
+
+**In TDD workflow:** Foundation tests should be written and passing before implementing any section features. These tests cover routing, authentication, and the data layer.
+
 ---
 
 ## Design System (Design OS Application)
@@ -1339,6 +1417,20 @@ mkdir -p product/design-system
 mkdir -p src/shell/components
 ```
 
+**Commands and Required Directories:**
+
+| Command            | Directory to Create                                            |
+| ------------------ | -------------------------------------------------------------- |
+| `/product-vision`  | `mkdir -p product/`                                            |
+| `/product-roadmap` | `mkdir -p product/`                                            |
+| `/data-model`      | `mkdir -p product/data-model/`                                 |
+| `/design-tokens`   | `mkdir -p product/design-system/`                              |
+| `/shape-section`   | `mkdir -p product/sections/[section-id]/`                      |
+| `/sample-data`     | (Directory already exists from /shape-section)                 |
+| `/design-shell`    | `mkdir -p product/shell/` and `mkdir -p src/shell/components/` |
+| `/design-screen`   | `mkdir -p src/sections/[section-id]/components/`               |
+| `/export-product`  | `mkdir -p product-plan/` and subdirectories                    |
+
 ### File Validation Pattern
 
 After creating critical files, verify structure:
@@ -1399,8 +1491,9 @@ When creating section IDs from section titles, follow these standardized rules:
 2. **Replace spaces with hyphens** — "invoice management" → "invoice-management"
 3. **Replace "&" with "-and-"** — "Reports & Analytics" → "reports-and-analytics"
 4. **Remove special characters except hyphens** — Strip punctuation, quotes, etc.
-5. **Cannot start or end with hyphen** — Trim leading/trailing hyphens
-6. **Maximum 50 characters** — Truncate if necessary
+5. **Collapse consecutive hyphens** — "reports--and" → "reports-and" (multiple spaces or special chars become single hyphen)
+6. **Cannot start or end with hyphen** — Trim leading/trailing hyphens
+7. **Maximum 50 characters** — Truncate if necessary
 
 **Examples:**
 
@@ -1505,12 +1598,16 @@ Commands that involve validation loops should follow this consistent retry patte
 | 2/3         | Re-validate after user fixes, report remaining errors          |
 | 3/3 - FINAL | Last attempt, fail with complete error summary if unsuccessful |
 
-**Commands that use retry pattern:**
+**Commands and Retry Pattern Status:**
 
-- `/sample-data` — JSON structure and \_meta validation
-- `/design-tokens` — Font availability and weight validation
-- `/design-screen` — Component import and props validation
-- `/export-product` — Template and component validation
+| Command           | Validation Type                      | Implements Retry?              |
+| ----------------- | ------------------------------------ | ------------------------------ |
+| `/sample-data`    | JSON structure, \_meta validation    | YES (3 attempts)               |
+| `/design-tokens`  | Font availability, weight validation | SHOULD add                     |
+| `/design-screen`  | Component import, props validation   | SHOULD add                     |
+| `/export-product` | Template, component validation       | Complex — uses manual recovery |
+
+> **Note:** Commands marked "SHOULD add" would benefit from retry logic for consistency. Currently they fail on first validation error.
 
 **After 3 failed attempts:**
 
@@ -1554,6 +1651,29 @@ The shell and section components use different responsive approaches:
 - **Section components (`/design-screen`):** Mobile-first because content should work on small screens and enhance for larger ones
 
 Both must work at all breakpoints. The difference is which layout is designed first and enhanced for other sizes.
+
+**Reconciling Both Strategies:**
+
+Both strategies coexist because they serve different purposes:
+
+1. **Shell (Desktop-first):**
+   - Start with full sidebar navigation layout
+   - Add `md:hidden` to desktop nav, show hamburger menu on mobile
+   - Main content area uses responsive `w-full` container
+
+2. **Sections (Mobile-first):**
+   - Start with single-column mobile layout (stack cards vertically)
+   - Add `sm:grid-cols-2`, `lg:grid-cols-3` for larger screens
+   - Shell already handles navigation; sections focus on content
+
+**Breakpoint Ownership:**
+
+| Element  | Owns Breakpoint Logic For                                     |
+| -------- | ------------------------------------------------------------- |
+| Shell    | Navigation visibility, sidebar collapse/expand, header layout |
+| Sections | Content layout, card grids, data table columns, form layouts  |
+
+This separation means changes to mobile navigation don't affect section layouts, and vice versa.
 
 **Screenshot Naming Convention:**
 

@@ -2,6 +2,13 @@
 
 You are helping the user choose colors and typography for their product. These design tokens will be used consistently across all screen designs and the application shell.
 
+> **Fallback Colors:** If this command is skipped, downstream commands (`/design-shell`, `/design-screen`) use default colors:
+>
+> - **Neutral:** `stone` palette (stone-50 through stone-950)
+> - **Primary/Accent:** `lime` palette (lime-400 through lime-600)
+>
+> These defaults are applied automatically when `colors.json` doesn't exist. For product-specific branding, run this command before creating screen designs.
+
 ## Step 1: Check Prerequisites
 
 First, verify that the product overview exists:

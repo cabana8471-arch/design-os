@@ -57,3 +57,17 @@ Before considering this implementation complete, verify:
 - [ ] Database constraints properly implemented
 - [ ] Error messages are user-friendly
 - [ ] Data relationships maintain referential integrity
+
+### If Checks Fail
+
+| Check Category        | Recovery Action                                                     |
+| --------------------- | ------------------------------------------------------------------- |
+| Authentication        | Review auth implementation against clarifying questions answers     |
+| Component Integration | Check import paths; verify components weren't accidentally modified |
+| Design Consistency    | Re-read design-direction.md and shell components for patterns       |
+| Testing               | Re-read tests.md; ensure all scenarios are covered                  |
+| Responsive/A11y       | Test at each breakpoint; use browser DevTools accessibility audit   |
+| Deployment            | Run `npm run build`; check terminal output for specific errors      |
+| Data Integrity        | Review form validation logic; check database schema constraints     |
+
+> **Don't skip checks:** Each item exists because it's a common source of issues. Incomplete checks often lead to bugs discovered later.

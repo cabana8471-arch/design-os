@@ -1,6 +1,8 @@
----
+## <!-- v1.0.0 -->
+
 name: frontend-design
 description: Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, or applications. Generates creative, polished code that avoids generic AI aesthetics.
+
 ---
 
 <!--
@@ -97,3 +99,51 @@ When working with Tailwind CSS (especially v4), apply these techniques to achiev
 - Skip `rounded-md` everywhere — vary with `rounded-none`, `rounded-xl`, `rounded-3xl`
 - Don't default to `shadow-md` — try `shadow-2xl shadow-lime-500/20` for colored shadows
 - Avoid `p-4` uniformly — create rhythm with varied padding (`p-3`, `p-6`, `p-8`)
+
+## Accessibility Integration
+
+Distinctive design must ALSO be accessible. Apply these principles alongside aesthetic choices:
+
+**Color & Contrast:**
+
+- Minimum 4.5:1 contrast ratio for body text (WCAG AA)
+- Minimum 3:1 for large text (18pt+) and UI components
+- Never rely on color alone to convey meaning — add icons, patterns, or text labels
+- Test with grayscale filter to verify information is still clear
+
+**Focus States:**
+
+- All interactive elements need visible focus indicators
+- Use `focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[primary]`
+- Don't remove focus outlines without replacing them with equally visible alternatives
+- Focus indicators should have 3:1 contrast against adjacent colors
+
+**Motion & Animation:**
+
+- Wrap decorative animations in `motion-safe:` for users who prefer reduced motion
+- Use `motion-reduce:transition-none` for essential interactions
+- Keep functional animations under 300ms for responsiveness
+- Avoid flashing content (no more than 3 flashes per second)
+
+**Keyboard Navigation:**
+
+- All interactive elements must be reachable via Tab
+- Escape should close modals, drawers, and popovers
+- Arrow keys for menu and listbox navigation
+- Space/Enter for activation of buttons and links
+
+**Semantic Structure:**
+
+- Use proper heading hierarchy (h1 → h2 → h3, don't skip levels)
+- Use landmark regions (`<main>`, `<nav>`, `<aside>`, `<footer>`)
+- Add `aria-label` or `aria-labelledby` to icon-only buttons
+- Use `<button>` for actions, `<a>` for navigation
+
+**Screen Reader Support:**
+
+- Add `sr-only` class for visually hidden but screen-reader-accessible text
+- Use `aria-live` regions for dynamic content updates
+- Ensure form inputs have associated labels
+- Provide alt text for meaningful images; use `alt=""` for decorative images
+
+> **Remember:** Accessibility is not a constraint on creativity — it's a dimension of quality. The best designs are both beautiful AND usable by everyone.

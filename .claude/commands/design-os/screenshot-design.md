@@ -25,6 +25,13 @@ The Playwright MCP provides browser automation tools. Check for these **exact to
 
 **How to check:** The AI agent should examine its available tool list. If ANY Playwright browser tool is available (with or without the `mcp__playwright__` prefix), proceed. If no browser automation tools are found, show the installation message below.
 
+> **Troubleshooting Tool Names:** If tool calls fail with "unknown tool" errors:
+>
+> 1. Run `/mcp` to see available MCP servers and their tools
+> 2. Check the exact tool name prefixes used by your installation
+> 3. Custom MCP configs may use different prefixes (e.g., `custom__browser_*`)
+> 4. Update tool calls to match your available tool names
+
 ### If Playwright MCP is NOT Available
 
 Output this EXACT message to the user (copy it verbatim, do not modify or "correct" it):

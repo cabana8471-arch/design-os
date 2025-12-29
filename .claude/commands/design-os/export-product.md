@@ -11,6 +11,31 @@ You are helping the user export their complete product design as a handoff packa
 >
 > Do not attempt to consolidate steps — the verbosity ensures reliability.
 
+**Step Index:**
+
+| Step | Purpose                                                    |
+| ---- | ---------------------------------------------------------- |
+| 1    | Check prerequisites (product files, templates, skill file) |
+| 2    | Create product-plan directory structure                    |
+| 3    | Copy product overview                                      |
+| 4    | Copy design system files                                   |
+| 5    | Copy data model                                            |
+| 6    | Generate data model README                                 |
+| 7    | Copy design guidance (SKILL.md → frontend-design.md)       |
+| 8    | Copy shell components (if exist)                           |
+| 8A   | Validate shell components (conditional)                    |
+| 9    | Generate shell README                                      |
+| 10   | Identify sections to export                                |
+| 10.5 | Validate section components (conditional)                  |
+| 11   | Copy section assets (data.json → sample-data.json rename)  |
+| 12   | Generate section READMEs                                   |
+| 13   | Generate section tests.md files                            |
+| 14   | Generate prompt files (assemble templates)                 |
+| 15   | Generate instruction files (one-shot + incremental)        |
+| 16   | Generate top-level README                                  |
+| 17   | Final validation                                           |
+| 18   | Completion summary                                         |
+
 ## Step 1: Check Prerequisites
 
 Verify the minimum requirements exist:
