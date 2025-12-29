@@ -2,7 +2,7 @@
 
 You are helping the user export their complete product design as a handoff package for implementation. This generates all files needed to build the product in a real codebase.
 
-> **Design Note on Step Count:** This command has 18 steps (including Step 8A and Step 10.5), which may seem verbose. This is intentional:
+> **Design Note on Step Count:** This command has 18 primary steps (1-18), plus 2 conditional/sub-steps (Step 8A branches from Step 8, Step 10.5 is within Step 10). This may seem verbose, but it is intentional:
 >
 > - Each step performs a discrete, verifiable operation
 > - Steps can be referenced individually in error messages
@@ -146,12 +146,14 @@ fi
 Output error message:
 
 ```
-"To export your product, you need at minimum:
-- A product overview (`/product-vision`)
-- A roadmap with sections (`/product-roadmap`)
-- At least one section with screen designs
+Error: Prerequisites - Missing required files for export.
 
-Please complete these first."
+Required:
+- product/product-overview.md (run /product-vision)
+- product/product-roadmap.md (run /product-roadmap)
+- At least one section with screen designs in src/sections/
+
+Complete these prerequisites before running /export-product.
 ```
 
 **END COMMAND** — Do not proceed to Step 2. The export cannot continue without these files.

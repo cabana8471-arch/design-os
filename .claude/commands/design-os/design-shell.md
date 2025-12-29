@@ -4,6 +4,33 @@ You are helping the user design the application shell — the persistent navigat
 
 > **Workflow Structure:** Steps 0-0.7 are **pre-flight checks** (audit/detection) that only run when a shell already exists. For fresh creation, these are skipped and the workflow starts at Step 1.
 
+**Step Index:**
+
+| Step | Purpose                        |
+| ---- | ------------------------------ |
+| 0    | Detect Existing Shell          |
+| 0.5  | Run Audit Checklist            |
+| 0.6  | Display Audit Report           |
+| 0.7  | Post-Audit Actions             |
+| 1    | Check Prerequisites            |
+| 2    | Analyze Product Structure      |
+| 3    | Gather Design Details          |
+| 3.5  | Design Direction Preferences   |
+| 3.6  | Shell Interactive Elements     |
+| 4    | Present Shell Specification    |
+| 5    | Apply Design Guidance          |
+| 6    | Create the Shell Specification |
+| 6.5  | Document Design Direction      |
+| 6.6  | Define Shell Relationships     |
+| 6.7  | Create Shell Sample Data       |
+| 6.8  | Create Shell Types             |
+| 7    | Create Shell Components        |
+| 7.5  | Validate Section Availability  |
+| 8    | Create Wired Shell Preview     |
+| 9    | Apply Design Tokens            |
+| 9.5  | Inject Anti-Flicker Script     |
+| 10   | Confirm Completion             |
+
 ## Step 0: Detect Existing Shell
 
 Before starting, check if a shell already exists:
@@ -800,7 +827,7 @@ The shell receives these callbacks and performs actual navigation (which may var
 
 After creating the shell specification, document the user's design direction choices from Step 3.5. This ensures future `/design-screen` commands maintain visual consistency.
 
-### Step 6.5.1: Extract Skill File Guidance
+### Extract Skill File Guidance
 
 Before generating the design direction, read the skill file to inform AI-generated sections:
 

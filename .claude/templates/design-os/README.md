@@ -363,7 +363,7 @@ Both version and usage comments are removed during template assembly.
 - **Purpose:** Helps maintainers understand the template's intended context
 - **Stripping:** Usage comments are stripped during template assembly (same as version comments)
 
-**Currently used in:** All 13 template files have usage comments on line 2. This is the standard pattern for all Design OS templates.
+**Currently used in:** All 12 content templates (excluding this README) have usage comments on line 2. This is the standard pattern for all Design OS templates.
 
 Usage comments are recommended for all templates to help maintainers understand the template's intended context.
 

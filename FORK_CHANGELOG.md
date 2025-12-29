@@ -6,6 +6,72 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-29 16:15] Critical Analysis - Step Index & Documentation Consistency
+
+### Description
+
+Comprehensive critical analysis of all files in `.claude/` folder plus `agents.md`. Initial analysis identified 12 potential issues across 3 severity levels (1 High, 5 Medium, 6 Low). All 11 issues have been resolved. Focus on adding missing Step Index, fixing step references, standardizing error messages, and improving documentation cross-references.
+
+### New Files Created
+
+_None_
+
+### Modified Files
+
+| File                                           | Modification                                                                                            |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-shell.md`   | Added complete Step Index table (22 steps including 0-0.7 audit steps and all substeps)                 |
+| `.claude/commands/design-os/design-shell.md`   | Removed triple-level step numbering: `Step 6.5.1` → subsection header `### Extract Skill File Guidance` |
+| `.claude/commands/design-os/export-product.md` | Clarified step count: "18 steps" → "18 primary steps plus 2 conditional/sub-steps"                      |
+| `.claude/commands/design-os/export-product.md` | Standardized error message format to match agents.md pattern                                            |
+| `.claude/commands/design-os/design-screen.md`  | Standardized cross-reference format: added "section" suffix for consistency                             |
+| `.claude/templates/design-os/README.md`        | Clarified template count: "13 template files" → "12 content templates (excluding this README)"          |
+| `agents.md`                                    | Fixed Design Direction lifecycle table: Step 4 → Step 7 for /export-product                             |
+| `agents.md`                                    | Added Shell Utility Components cross-reference in File Structure section                                |
+| `agents.md`                                    | Fixed skill validation script comment: "YAML frontmatter" → "metadata section"                          |
+| `agents.md`                                    | Added responsive strategy note to Design Requirements section                                           |
+
+### Gaps Resolved
+
+**High (1):**
+
+- **#1:** design-shell.md had no Step Index table - users couldn't navigate the 22-step command; added complete index
+
+**Medium (5):**
+
+- **#2:** agents.md Design Direction lifecycle table incorrectly referenced Step 4 instead of Step 7 for /export-product
+- **#3:** design-shell.md used unique triple-level step notation (6.5.1) inconsistent with the rest of the system
+- **#4:** export-product.md step count description was ambiguous ("18 steps including 8A and 10.5")
+- **#5:** design-screen.md cross-references used inconsistent formats
+- **#6:** agents.md Shell Components documented in two places without cross-reference
+
+**Low (5):**
+
+- **#7:** export-product.md error message used narrative format instead of standard `Error: [Component] - [Issue]`
+- **#8:** agents.md skill validation script comment misleadingly said "YAML frontmatter"
+- **#9:** agents.md Design Requirements didn't mention shell vs section responsive strategy distinction
+- **#10:** template README.md said "13 template files" but should clarify "12 content templates"
+- **#11:** Step Numbering Convention table - resolved automatically when 6.5.1 was removed
+
+### Statistics
+
+- Files modified: 5
+- Lines changed: ~60
+- Issues resolved: 11 (1 High, 5 Medium, 5 Low)
+- False positives: 0
+
+### Verification
+
+- ✅ design-shell.md now has complete Step Index with all 22 steps
+- ✅ Step numbering uses only two levels (N and N.M) consistently
+- ✅ Design Direction lifecycle table references correct Step 7
+- ✅ Error messages follow standard format
+- ✅ Cross-references use consistent format with "section" suffix
+- ✅ Template count clarified as "12 content templates"
+- ✅ Responsive strategy documented in Design Requirements
+
+---
+
 ## [2025-12-29 14:50] Critical Analysis - Cross-References & Documentation Clarifications
 
 ### Description

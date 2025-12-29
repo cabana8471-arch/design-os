@@ -235,7 +235,7 @@ If this section has multiple views defined in `spec.md` (under `## Views`):
 1. This command creates **ONE view component per run**
 2. Run `/design-screen` multiple times (once per view)
 3. All views share the same `types.ts` and `data.json`
-4. See `/shape-section` → "Multiple Views Workflow" for complete guidance
+4. See `/shape-section` → "Multiple Views Workflow" section for complete guidance
 
 > **Tip:** When creating multi-view sections, start with the primary view (usually a list), then create secondary views (drawers, modals) in subsequent runs.
 
