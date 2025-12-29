@@ -1539,6 +1539,15 @@ All commands referencing viewport sizes must use these consistent dimensions:
 | `/design-shell`      | Design for all breakpoints, desktop is primary layout        |
 | `/export-product`    | Verification checklist includes 375px, 768px, 1024px, 1920px |
 
+**Responsive Strategy Clarification:**
+
+The shell and section components use different responsive approaches:
+
+- **Shell components (`/design-shell`):** Desktop-first because navigation chrome is optimized for desktop use; mobile gets a simplified drawer/hamburger menu
+- **Section components (`/design-screen`):** Mobile-first because content should work on small screens and enhance for larger ones
+
+Both must work at all breakpoints. The difference is which layout is designed first and enhanced for other sizes.
+
 **Screenshot Naming Convention:**
 
 ```

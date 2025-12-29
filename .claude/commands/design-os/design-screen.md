@@ -817,11 +817,13 @@ Before creating the screen design, apply the design guidance (validated in Step 
 
 **Scenario A: Skill file was validated in Step 1**
 
-If the skill file passed validation in Step 1, invoke the `frontend-design` skill now:
+If the skill file passed validation in Step 1, apply the `frontend-design` skill guidance now:
 
-1. Use the `Skill` tool with `skill: "frontend-design"` to apply design guidance
-2. Alternatively, read `.claude/skills/frontend-design/SKILL.md` directly
-3. Apply the guidance from the skill file to inform your design decisions
+1. Read `.claude/skills/frontend-design/SKILL.md` to load the design guidance
+2. Extract key principles from the "Design Thinking" and "Frontend Aesthetics Guidelines" sections
+3. Apply the guidance to inform your design decisions for this screen
+
+> **Note:** The `frontend-design` skill is a guidance file, not a slash command. Read it directly rather than invoking it.
 
 **Scenario B: User chose to continue without skill file in Step 1**
 

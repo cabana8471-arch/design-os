@@ -6,7 +6,69 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-29 02:15] Critical Analysis - Comprehensive 19-Issue Fix
+## [2025-12-29 12:30] Critical Analysis - Validation & Documentation Improvements
+
+### Description
+
+Comprehensive critical analysis of all files in `.claude/` folder plus `agents.md`. Identified 23 potential issues across 4 severity levels (5 Critical, 4 High, 8 Medium, 6 Low). After verification, 8 required actual fixes while 15 were already implemented correctly (false positives). Focus on fixing skill invocation patterns, enhancing `_meta` schema consistency, adding JSON validation, and clarifying responsive strategy documentation.
+
+### New Files Created
+
+_None_
+
+### Modified Files
+
+| File                                            | Modification                                                                                               |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-screen.md`   | Fixed skill invocation: changed from "Use Skill tool" to "Read SKILL.md file" (lines 820-826)              |
+| `.claude/commands/design-os/sample-data.md`     | Added `description` and `generatedBy` fields to `_meta` schema + validation (lines 221-322)                |
+| `.claude/commands/design-os/export-product.md`  | Added `[IF INCLUDE_SHELL=true/false]` conditional markers to Foundation milestone (lines 529-583)          |
+| `.claude/commands/design-os/export-product.md`  | Added Props interface validation check for section components (lines 937-941)                              |
+| `.claude/commands/design-os/design-shell.md`    | Added conditional comments and null checks (`??`) for ShellPreview secondary components                    |
+| `.claude/commands/design-os/design-tokens.md`   | Added JSON validation script after file creation (lines 361-401)                                           |
+| `.claude/commands/design-os/product-roadmap.md` | Added directory existence check before orphan detection (lines 178-183)                                    |
+| `agents.md`                                     | Added "Responsive Strategy Clarification" section explaining shell vs section approaches (lines 1542-1549) |
+
+### Gaps Resolved
+
+- **CRITICAL #1:** design-screen.md Step 5 incorrectly referenced Skill tool for invoking frontend-design (skill files are read, not invoked)
+- **CRITICAL #2:** sample-data.md `_meta` schema missing `description` and `generatedBy` fields present in shell data.json
+- **CRITICAL #3:** export-product.md Foundation milestone lacked conditional logic for `INCLUDE_SHELL=false` case
+- **CRITICAL #4:** design-shell.md ShellPreview imported all secondary components unconditionally (could crash if not all selected)
+- **HIGH #8:** design-tokens.md created JSON files without validation (malformed JSON would break downstream commands)
+- **HIGH #9:** export-product.md validated imports but not Props interface existence
+- **MEDIUM #11:** agents.md had conflicting guidance (mobile-first vs desktop-first) without clarification
+- **MEDIUM #17:** product-roadmap.md orphan detection script would error on fresh projects with no sections directory
+
+### False Positives Identified (15 issues verified as already correct)
+
+- **Critical #5:** agents.md prerequisite cross-reference already exists at line 1271
+- **High #6:** shape-section.md shell status check already verifies `src/shell/components/AppShell.tsx`
+- **Medium #10:** screenshot-design.md already has proper dev server cleanup with DEV_SERVER_PREEXISTING tracking
+- **Medium #12:** data-model.md already has entity naming validation with PascalCase and plural detection
+- **Low #23:** All commands (product-vision, data-model, design-tokens) already have `mkdir -p` before file creation
+
+### Statistics
+
+- Files modified: 7
+- Lines changed: ~120
+- Issues resolved: 8 (4 Critical, 2 High, 2 Medium)
+- False positives: 15 (already correctly implemented)
+
+### Verification
+
+- ✅ Skill file is now read directly instead of incorrectly invoked via Skill tool
+- ✅ `_meta` schema consistent between section data.json and shell data.json
+- ✅ Foundation milestone adapts based on INCLUDE_SHELL flag
+- ✅ ShellPreview only includes components that were selected in Step 3.6
+- ✅ JSON files validated after creation to catch syntax errors early
+- ✅ Props interface check warns about missing interfaces in exported components
+- ✅ Responsive strategy clarified: shell=desktop-first, sections=mobile-first
+- ✅ Orphan detection handles fresh projects without sections directories
+
+---
+
+## [2025-12-29 09:05] Critical Analysis - Comprehensive 19-Issue Fix
 
 ### Description
 

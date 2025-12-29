@@ -1726,32 +1726,41 @@ Example: HeaderAction.notifications -> NotificationsDrawer (drawer, notification
 
 Create `src/shell/ShellPreview.tsx` with state management ONLY for the components identified in Step 8.1.
 
+**IMPORTANT:** The template below shows ALL possible components. You MUST:
+
+1. Only import components that appear in the Shell Relationships parsed in Step 8.1
+2. Only create state for components that were imported
+3. Only render components that were imported
+4. Add null checks for data properties that may not exist if component wasn't selected
+
 ```tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppShell } from "./components/AppShell";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
-// Import secondary components (only those that were created)
-import { NotificationsDrawer } from "./components/NotificationsDrawer";
-import { SearchModal } from "./components/SearchModal";
-import { SettingsModal } from "./components/SettingsModal";
-import { ProfileModal } from "./components/ProfileModal";
-import { HelpPanel } from "./components/HelpPanel";
-import { MobileMenuDrawer } from "./components/MobileMenuDrawer";
+// CONDITIONAL IMPORTS: Only include components that appear in Shell Relationships
+// Remove any import for components NOT selected in Step 3.6
+import { NotificationsDrawer } from "./components/NotificationsDrawer"; // IF HeaderAction.notifications in relationships
+import { SearchModal } from "./components/SearchModal"; // IF HeaderAction.search in relationships
+import { SettingsModal } from "./components/SettingsModal"; // IF UserMenu.settings in relationships
+import { ProfileModal } from "./components/ProfileModal"; // IF UserMenu.profile in relationships
+import { HelpPanel } from "./components/HelpPanel"; // IF HeaderAction.help in relationships
+import { MobileMenuDrawer } from "./components/MobileMenuDrawer"; // IF MobileNav.toggle in relationships
 
 // Import shell data and types
 import shellData from "../../../product/shell/data.json";
 import type { ShellData } from "../../../product/shell/types";
 
 export default function ShellPreview() {
-  // State for each secondary component
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isHelpOpen, setIsHelpOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // CONDITIONAL STATE: Only create state for components that were imported
+  // Remove state for components NOT selected in Step 3.6
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false); // IF NotificationsDrawer imported
+  const [isSearchOpen, setIsSearchOpen] = useState(false); // IF SearchModal imported
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // IF SettingsModal imported
+  const [isProfileOpen, setIsProfileOpen] = useState(false); // IF ProfileModal imported
+  const [isHelpOpen, setIsHelpOpen] = useState(false); // IF HelpPanel imported
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // IF MobileMenuDrawer imported
 
   // Type the shell data
   const data = shellData as ShellData;
@@ -1810,11 +1819,14 @@ export default function ShellPreview() {
         </div>
       </AppShell>
 
-      {/* Notifications Drawer */}
+      {/* CONDITIONAL RENDERING: Only include secondary components that were selected in Step 3.6 */}
+      {/* Remove any JSX block for components NOT in Shell Relationships */}
+
+      {/* Notifications Drawer - INCLUDE ONLY IF HeaderAction.notifications in relationships */}
       <Sheet open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
         <SheetContent side="right" className="w-[400px]">
           <NotificationsDrawer
-            notifications={data.notifications || []}
+            notifications={data.notifications ?? []}
             onClose={() => setIsNotificationsOpen(false)}
             onMarkRead={(id) => console.log("Mark read:", id)}
             onMarkAllRead={() => console.log("Mark all read")}
@@ -1823,7 +1835,7 @@ export default function ShellPreview() {
         </SheetContent>
       </Sheet>
 
-      {/* Search Modal (Command Palette) */}
+      {/* Search Modal - INCLUDE ONLY IF HeaderAction.search in relationships */}
       <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
         <DialogContent className="p-0 max-w-lg">
           <SearchModal
@@ -1832,18 +1844,18 @@ export default function ShellPreview() {
               console.log("Search select:", item);
               setIsSearchOpen(false);
             }}
-            recentItems={data.searchRecent}
-            shortcuts={data.searchShortcuts}
+            recentItems={data.searchRecent ?? []}
+            shortcuts={data.searchShortcuts ?? []}
           />
         </DialogContent>
       </Dialog>
 
-      {/* Settings Modal */}
+      {/* Settings Modal - INCLUDE ONLY IF UserMenu.settings in relationships */}
       <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
         <DialogContent>
           <SettingsModal
             settings={
-              data.settings || {
+              data.settings ?? {
                 theme: "system",
                 notifications: { email: true, push: true, digest: "daily" },
                 language: "en",
@@ -1859,12 +1871,12 @@ export default function ShellPreview() {
         </DialogContent>
       </Dialog>
 
-      {/* Profile Modal */}
+      {/* Profile Modal - INCLUDE ONLY IF UserMenu.profile in relationships */}
       <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
         <DialogContent>
           <ProfileModal
             user={
-              data.user || { id: "u1", name: "User", email: "user@example.com" }
+              data.user ?? { id: "u1", name: "User", email: "user@example.com" }
             }
             onClose={() => setIsProfileOpen(false)}
             onSave={(user) => {
@@ -1875,23 +1887,23 @@ export default function ShellPreview() {
         </DialogContent>
       </Dialog>
 
-      {/* Help Panel */}
+      {/* Help Panel - INCLUDE ONLY IF HeaderAction.help in relationships */}
       <Sheet open={isHelpOpen} onOpenChange={setIsHelpOpen}>
         <SheetContent side="right" className="w-[400px]">
           <HelpPanel
-            topics={data.helpTopics || []}
+            topics={data.helpTopics ?? []}
             onClose={() => setIsHelpOpen(false)}
             onTopicSelect={(id) => console.log("Topic selected:", id)}
           />
         </SheetContent>
       </Sheet>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Menu Drawer - INCLUDE ONLY IF MobileNav.toggle in relationships */}
       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
         <SheetContent side="left" className="w-[280px]">
           <MobileMenuDrawer
             navigationItems={navigationItems}
-            user={data.user}
+            user={data.user ?? { id: "u1", name: "User" }}
             onClose={() => setIsMobileMenuOpen(false)}
             onNavigate={(href) => {
               console.log("Navigate:", href);

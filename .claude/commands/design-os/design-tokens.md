@@ -358,6 +358,48 @@ Then create two files:
 
 > **CRITICAL:** All three fields (`heading`, `body`, `mono`) are REQUIRED. If the user didn't specify a mono font, use `IBM Plex Mono` as the default. Never omit the `mono` field — downstream commands expect all three fields to exist.
 
+### Validate JSON Files
+
+After creating both files, validate they are valid JSON:
+
+```bash
+# Validate colors.json
+if ! python3 -c "import json; json.load(open('product/design-system/colors.json'))" 2>/dev/null; then
+  echo "Error: colors.json - Invalid JSON syntax. Check the file for missing commas or brackets."
+  exit 1
+fi
+
+# Validate typography.json
+if ! python3 -c "import json; json.load(open('product/design-system/typography.json'))" 2>/dev/null; then
+  echo "Error: typography.json - Invalid JSON syntax. Check the file for missing commas or brackets."
+  exit 1
+fi
+
+# Validate required fields in colors.json
+python3 << 'EOF'
+import json, sys
+data = json.load(open('product/design-system/colors.json'))
+required = ['primary', 'secondary', 'neutral']
+missing = [f for f in required if f not in data]
+if missing:
+    print(f"Error: colors.json missing required fields: {', '.join(missing)}")
+    sys.exit(1)
+print("colors.json validated successfully")
+EOF
+
+# Validate required fields in typography.json
+python3 << 'EOF'
+import json, sys
+data = json.load(open('product/design-system/typography.json'))
+required = ['heading', 'body', 'mono']
+missing = [f for f in required if f not in data]
+if missing:
+    print(f"Error: typography.json missing required fields: {', '.join(missing)}")
+    sys.exit(1)
+print("typography.json validated successfully")
+EOF
+```
+
 ## Step 8: Confirm Completion
 
 Let the user know:

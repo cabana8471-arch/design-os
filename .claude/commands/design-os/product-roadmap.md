@@ -175,6 +175,13 @@ When sections are renamed or removed from the roadmap, previously created files 
 **1. After any roadmap change, automatically identify orphaned files:**
 
 ```bash
+# First, check if section directories exist (fresh project may not have them yet)
+if [ ! -d "product/sections" ] && [ ! -d "src/sections" ]; then
+  echo "No section directories exist yet. Skipping orphan detection."
+  # This is expected for fresh projects - no orphans possible
+  exit 0
+fi
+
 # Extract section titles from roadmap and convert to section-id format
 # Pipeline explanation:
 #   1. grep: Find lines like "### 1. Section Title"
@@ -185,6 +192,7 @@ When sections are renamed or removed from the roadmap, previously created files 
 ROADMAP_SECTIONS=$(grep -E "^### [0-9]+\." product/product-roadmap.md | sed 's/### [0-9]*\. //' | tr '[:upper:]' '[:lower:]' | sed 's/ /-/g' | sed 's/&/-and-/g')
 
 # List actual section directories (just the folder names, not full paths)
+# Using 2>/dev/null to handle case where directory exists but is empty
 PRODUCT_SECTIONS=$(ls -d product/sections/*/ 2>/dev/null | xargs -n1 basename)
 SRC_SECTIONS=$(ls -d src/sections/*/ 2>/dev/null | xargs -n1 basename)
 

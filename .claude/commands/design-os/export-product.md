@@ -528,13 +528,16 @@ Create placeholder routes for each section:
 
 ### 4. Application Shell
 
-[If shell exists:]
+> **Note:** This section is conditional based on `INCLUDE_SHELL` flag set in Step 1.
+
+**[IF INCLUDE_SHELL=true] — Shell components included in export:**
 
 Copy the shell components from `product-plan/shell/components/` to your project:
 
 - `AppShell.tsx` — Main layout wrapper
 - `MainNav.tsx` — Navigation component
 - `UserMenu.tsx` — User menu with avatar
+- Plus any secondary components (NotificationsDrawer, SearchModal, etc. if included)
 
 **Wire Up Navigation:**
 
@@ -550,7 +553,7 @@ The user menu expects:
 - Avatar URL (optional)
 - Logout callback
 
-[If shell doesn't exist:]
+**[IF INCLUDE_SHELL=false] — Shell components NOT included in export:**
 
 Design and implement your own application shell with:
 
@@ -558,22 +561,25 @@ Design and implement your own application shell with:
 - User menu
 - Responsive layout
 
+The export does not include shell components. Refer to `product-overview.md` for section structure and design your own navigation.
+
 ## Files to Reference
 
 - `product-plan/design-system/` — Design tokens
 - `product-plan/data-model/` — Type definitions
-- `product-plan/shell/README.md` — Shell design intent
-- `product-plan/shell/components/` — Shell React components
-- `product-plan/shell/screenshot.png` — Shell visual reference
+- [IF INCLUDE_SHELL=true] `product-plan/shell/README.md` — Shell design intent
+- [IF INCLUDE_SHELL=true] `product-plan/shell/components/` — Shell React components
+- [IF INCLUDE_SHELL=true] `product-plan/shell/screenshot.png` — Shell visual reference
 
 ## Done When
 
 - [ ] Design tokens are configured
 - [ ] Data model types are defined
 - [ ] Routes exist for all sections (can be placeholder pages)
-- [ ] Shell renders with navigation
-- [ ] Navigation links to correct routes
-- [ ] User menu shows user info
+- [IF INCLUDE_SHELL=true] Shell renders with navigation
+- [IF INCLUDE_SHELL=true] Navigation links to correct routes
+- [IF INCLUDE_SHELL=true] User menu shows user info
+- [IF INCLUDE_SHELL=false] Custom navigation implemented
 - [ ] Responsive on mobile
 ```
 
@@ -926,6 +932,12 @@ for section_dir in src/sections/*/; do
     if grep -qE "from ['\"].*product/" "$component"; then
       echo "Error: $section_id/$component_name imports from product/ directory. Use relative imports or props instead."
       VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+    fi
+
+    # Check component has a Props interface
+    if ! grep -qE "(interface|type).*Props" "$component"; then
+      echo "Warning: $section_id/$component_name missing Props interface. Components should define props for portability."
+      # This is a warning, not an error - component may still work without explicit Props
     fi
   done
 done

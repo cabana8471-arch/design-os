@@ -220,14 +220,18 @@ Then create `product/sections/[section-id]/data.json` with:
 
 Every data.json MUST include a `_meta` object at the top level with:
 
-1. **`models`** - An object where each key is a model name and value is a plain-language description
-2. **`relationships`** - An array of strings explaining how models connect to each other
+1. **`description`** - A brief description of what this sample data represents
+2. **`generatedBy`** - The command that generated this file (always `/sample-data`)
+3. **`models`** - An object where each key is a model name and value is a plain-language description
+4. **`relationships`** - An array of strings explaining how models connect to each other
 
 Example structure:
 
 ```json
 {
   "_meta": {
+    "description": "Sample data for Invoice Management section",
+    "generatedBy": "/sample-data",
     "models": {
       "invoices": "Each invoice represents a bill you send to a client for work completed.",
       "lineItems": "Line items are the individual services or products listed on each invoice."
@@ -304,6 +308,18 @@ if '_meta' not in data:
     errors.append("Missing '_meta' object at top level")
 else:
     meta = data['_meta']
+
+    # Check _meta.description
+    if 'description' not in meta:
+        errors.append("Missing '_meta.description' field")
+    elif not isinstance(meta['description'], str) or len(meta['description'].strip()) == 0:
+        errors.append("'_meta.description' must be a non-empty string")
+
+    # Check _meta.generatedBy
+    if 'generatedBy' not in meta:
+        errors.append("Missing '_meta.generatedBy' field")
+    elif meta['generatedBy'] != '/sample-data':
+        errors.append("'_meta.generatedBy' should be '/sample-data'")
 
     # Check _meta.models
     if 'models' not in meta:
