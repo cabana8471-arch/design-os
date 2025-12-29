@@ -327,6 +327,8 @@ Options:
 - **Different patterns** — Use the optimal pattern for each screen size (e.g., table on desktop, cards on mobile). Better UX, more work.
 - **Mobile-first progressive** — Start with mobile layout, progressively enhance for larger screens. Best for mobile-dominant user base.
 
+> **Viewport Reference:** Design OS uses standardized viewport dimensions for testing: Desktop (1280×800), Tablet (768×1024), Mobile (375×667). See agents.md → "Viewport Dimensions (Standardized)" for breakpoint details.
+
 ### Record Layout Choices
 
 Store the user's answers for use in Step 6 (Draft) and Step 7 (Spec):

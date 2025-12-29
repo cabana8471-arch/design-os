@@ -541,6 +541,24 @@ When retrying, always include the attempt number in your response:
 - After 3 failed attempts, stop and ask user to review the data model manually
 - The maximum of 3 attempts prevents infinite loops when there's a fundamental data model issue
 
+**After 3 failed attempts, display this error and STOP:**
+
+```
+Error: Validation failed after 3 attempts.
+
+Issues found:
+- [List each validation error encountered]
+
+The data structure cannot be auto-corrected. Please:
+1. Review the errors above
+2. Manually fix the data.json file at product/sections/[section-id]/data.json
+3. Re-run /sample-data to validate the fixed file
+
+If the issue persists, check that your section spec matches the global data model.
+```
+
+The command will END. User must fix issues manually before retrying.
+
 ### Validate Entity Name Consistency
 
 If a global data model exists, verify that entity names in your sample data match the global data model:

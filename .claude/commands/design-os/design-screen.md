@@ -176,6 +176,24 @@ Error: types.ts - File not found at product/sections/[section-id]/types.ts. Run 
 
 Stop here if any required file is missing.
 
+### Validate UI Components (Optional Check)
+
+If the section uses view relationships with drawers or modals, verify the required UI components exist:
+
+```bash
+# Check for Sheet component (used for drawers)
+if [ ! -f "src/components/ui/sheet.tsx" ]; then
+  echo "Warning: Sheet component not found. Drawer-based view relationships may not work in preview."
+fi
+
+# Check for Dialog component (used for modals)
+if [ ! -f "src/components/ui/dialog.tsx" ]; then
+  echo "Warning: Dialog component not found. Modal-based view relationships may not work in preview."
+fi
+```
+
+This is a warning only — the command continues, but wired preview functionality may be limited.
+
 ### Multi-View Sections
 
 If this section has multiple views defined in `spec.md` (under `## Views`):
@@ -186,6 +204,32 @@ If this section has multiple views defined in `spec.md` (under `## Views`):
 4. See `/shape-section` → "Multiple Views Workflow" for complete guidance
 
 > **Tip:** When creating multi-view sections, start with the primary view (usually a list), then create secondary views (drawers, modals) in subsequent runs.
+
+### Parsing View Relationships from Spec
+
+If the spec includes a `## View Relationships` section (created by `/shape-section` Step 4.6), parse it to enable wired preview functionality:
+
+```bash
+# Extract view relationships from spec
+SECTION_ID="[section-id]"
+VIEW_RELS=$(grep -A 20 "## View Relationships" "product/sections/${SECTION_ID}/spec.md" | grep "^-" || echo "")
+
+if [ -n "$VIEW_RELS" ]; then
+  echo "Found view relationships:"
+  echo "$VIEW_RELS"
+fi
+```
+
+**Relationship Format:** `- [PrimaryView].[callback] -> [SecondaryView] ([type], [dataRef])`
+
+For each relationship found:
+
+1. Create state in the preview wrapper (e.g., `isDrawerOpen`)
+2. Wire the callback to update state (e.g., `setIsDrawerOpen(true)`)
+3. Render the secondary view in appropriate wrapper (`Sheet` for drawer, `Dialog` for modal)
+4. Pass entity data based on `dataRef` (`entityId` = lookup, `entity` = pass directly, `none` = no data)
+
+> **See also:** agents.md → "View Relationships" section for complete specification.
 
 ## Step 2: Check for Design System, Shell, and Design Direction
 
@@ -1851,6 +1895,7 @@ This helps users track their progress and ensures all views are completed before
 - Sub-components should also be props-based for maximum portability
 - Apply design tokens when available for consistent branding
 - Screen designs render inside the shell when viewed in Design OS (if shell exists)
+- For Lucide icons, follow stroke width conventions (see agents.md → "Icon Stroke Width Convention")
 
 ### Path Alias Validation (`@/` and `@/../`)
 

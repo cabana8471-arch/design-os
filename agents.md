@@ -112,7 +112,10 @@ Generate the complete export package with all components, types, and handoff doc
 
 - `spec.md`, `data.json`, `types.ts` → `product/shell/`
 - `design-direction.md` → `product/design-system/`
-- Components and `index.ts` → `src/shell/components/`
+- Primary components (`AppShell.tsx`, `MainNav.tsx`, `UserMenu.tsx`) → `src/shell/components/`
+- Secondary components (if selected in Step 3.6) → `src/shell/components/`
+- `index.ts` → `src/shell/components/`
+- `ShellPreview.tsx` → `src/shell/` (Design OS only, not exported)
 
 ### Command Prerequisites
 
@@ -140,18 +143,21 @@ Generate the complete export package with all components, types, and handoff doc
 
 Design OS commands use decimal step notation for granularity:
 
-| Notation   | Meaning                             | Example                           |
-| ---------- | ----------------------------------- | --------------------------------- |
-| `Step N`   | Major workflow phase                | Step 1: Check Prerequisites       |
-| `Step N.M` | Sub-step within phase               | Step 3.6: Ask about relationships |
-| `Step 0.N` | Audit/pre-check steps (conditional) | Step 0.5: Audit existing shell    |
-| `Step NA`  | Conditional branch                  | Step 8A: Shell validation         |
+| Notation     | Meaning                             | Example                           |
+| ------------ | ----------------------------------- | --------------------------------- |
+| `Step N`     | Major workflow phase                | Step 1: Check Prerequisites       |
+| `Step N.M`   | Sub-step within phase               | Step 3.6: Ask about relationships |
+| `Step 0.N`   | Audit/pre-check steps (conditional) | Step 0.5: Audit existing shell    |
+| `Step NA`    | Conditional branch                  | Step 8A: Shell validation         |
+| `Step N-N.M` | Range of steps (inclusive)          | Step 0-0.7: All audit steps       |
+
+**Range Notation:** `Step 0-0.7` means "Steps 0.0 through 0.7 inclusive"
 
 **Examples from /design-shell:**
 
 - Step 0-0.7: Audit steps (only run if shell already exists)
-- Step 1-2: Prerequisite checks
-- Step 3.1-3.6: Shell configuration questions
+- Step 1-2: Prerequisite checks (Steps 1 and 2)
+- Step 3.1-3.6: Shell configuration questions (all sub-steps)
 - Step 6.5: Create design-direction.md
 - Step 7: Create components
 
@@ -570,13 +576,14 @@ When creating screen designs, follow this hierarchy:
    - Props-based components (portable, no direct data imports)
    - Tailwind CSS v4 (not v3)
 
-2. **Aesthetic Guidance** (frontend-design skill) — MANDATORY
+2. **Aesthetic Guidance** (frontend-design skill) — STRONGLY RECOMMENDED
    - Distinctive visual identity
    - Bold design directions
    - Thoughtful typography and color choices
    - Effective use of motion
+   - If unavailable, commands use Enhanced Fallback Design Guidance (see below)
 
-Both must be followed for production-ready screen designs. Technical requirements ensure portability and consistency; aesthetic guidance ensures distinctive, memorable design.
+Both should be followed for production-ready screen designs. Technical requirements ensure portability and consistency; aesthetic guidance ensures distinctive, memorable design.
 
 ### Skill File Validation Pattern
 
@@ -1067,6 +1074,15 @@ These rules MUST remain consistent across all sections:
 
 The `/design-shell` command creates this document in Step 6.5, after defining the shell spec and before creating components.
 
+### Design Direction Lifecycle
+
+| Phase  | Command           | Step     | Action                                              |
+| ------ | ----------------- | -------- | --------------------------------------------------- |
+| Create | `/design-shell`   | Step 6.5 | Creates `product/design-system/design-direction.md` |
+| Read   | `/design-screen`  | Step 2   | Reads for aesthetics consistency                    |
+| Apply  | `/design-screen`  | Step 5   | Applies guidance to screen components               |
+| Export | `/export-product` | Step 4   | Copies to `product-plan/design-system/`             |
+
 ### Command References
 
 | Command           | How It Uses design-direction.md                            |
@@ -1262,6 +1278,25 @@ Design OS uses a modular template system for generating implementation prompts a
 - `section/` — Section-by-section prompt templates
 - `README.md` — Complete template system documentation
 
+### Template Versions
+
+| Template                           | Version        | Notes                          |
+| ---------------------------------- | -------------- | ------------------------------ |
+| `common/top-rules.md`              | v1.0.0         | Core rules for implementation  |
+| `common/reporting-protocol.md`     | v1.0.0         | Progress reporting format      |
+| `common/model-guidance.md`         | v1.1.0         | Model behavior guidance        |
+| `common/verification-checklist.md` | v1.0.0         | Final verification steps       |
+| `common/clarifying-questions.md`   | v1.0.0         | Questions for foundation setup |
+| `common/tdd-workflow.md`           | v1.1.0         | Test-driven development flow   |
+| `one-shot/preamble.md`             | v1.1.0         | One-shot prompt intro          |
+| `one-shot/prompt-template.md`      | v1.0.0         | One-shot file references       |
+| `section/preamble.md`              | v1.0.0         | Section prompt intro           |
+| `section/prompt-template.md`       | v1.0.0         | Section file references        |
+| `section/clarifying-questions.md`  | v1.1.0-section | Section-specific questions     |
+| `section/tdd-workflow.md`          | v1.2.0-section | Section-specific TDD           |
+
+> **Version Format:** `v{major}.{minor}.{patch}[-suffix]`. The `-section` suffix indicates section-specific variants.
+
 ### Usage
 
 The `/export-product` command assembles these templates (see Step 14: Generate Prompt Files) into ready-to-use prompts:
@@ -1355,6 +1390,22 @@ All commands must follow this consistent pattern for checking prerequisites:
 
 > **See also:** For the complete list of Required and Optional prerequisites per command, refer to the **Command Prerequisites** table in the "Command Quick Reference" section above.
 
+### Product Scope Persistence
+
+Product scope (MVP/Standard/Enterprise) is determined by `/product-vision` and persisted in `product/product-overview.md`:
+
+- Look for explicit keywords in the document: "MVP", "Standard", "Enterprise", or "Comprehensive"
+- Pattern: `**Scope:** MVP` or `**Scope Level:** Enterprise` in the overview
+- If not found, default to "Standard"
+
+| Scope          | Section Complexity | Feature Suggestions                              |
+| -------------- | ------------------ | ------------------------------------------------ |
+| **MVP**        | Core features only | Minimal views (1-2), essential actions           |
+| **Standard**   | Full feature set   | Multiple views (2-4), common patterns            |
+| **Enterprise** | Comprehensive      | All views, advanced features, admin capabilities |
+
+**Commands that read scope:** `/shape-section`, `/sample-data`
+
 ### Standard Error Messages
 
 **Required file missing:**
@@ -1431,6 +1482,8 @@ mkdir -p src/shell/components
 | `/design-screen`   | `mkdir -p src/sections/[section-id]/components/`               |
 | `/export-product`  | `mkdir -p product-plan/` and subdirectories                    |
 
+> **Note on .gitkeep files:** Empty directories in the boilerplate contain `.gitkeep` placeholder files to ensure Git tracks them. When commands create files in these directories, the `.gitkeep` can remain (harmless) or be removed. Never reference `.gitkeep` in code — treat directories as empty until populated by commands.
+
 ### File Validation Pattern
 
 After creating critical files, verify structure:
@@ -1466,6 +1519,16 @@ Commands should provide recovery guidance when critical steps fail:
 | JSON parse error    | Validate syntax: paste content into a JSON validator |
 | Import error        | Check file exists and path is correct                |
 
+**Command Recovery Quick Reference:**
+
+| Command           | Common Failure         | Recovery Action                                     |
+| ----------------- | ---------------------- | --------------------------------------------------- |
+| `/product-vision` | File write fails       | Check permissions: `ls -la product/`                |
+| `/design-shell`   | Component import error | Verify UI components exist: `ls src/components/ui/` |
+| `/design-screen`  | Skill file missing     | Proceed with fallback or add SKILL.md               |
+| `/sample-data`    | JSON validation fails  | Fix syntax errors in data.json and retry            |
+| `/export-product` | Template missing       | Re-clone boilerplate from source repository         |
+
 **Full Recovery Section (for complex commands):**
 
 For commands with multiple steps that can fail (like `/export-product`), include a dedicated "Rollback / Recovery" section at the end covering:
@@ -1491,9 +1554,10 @@ When creating section IDs from section titles, follow these standardized rules:
 2. **Replace spaces with hyphens** — "invoice management" → "invoice-management"
 3. **Replace "&" with "-and-"** — "Reports & Analytics" → "reports-and-analytics"
 4. **Remove special characters except hyphens** — Strip punctuation, quotes, etc.
-5. **Collapse consecutive hyphens** — "reports--and" → "reports-and" (multiple spaces or special chars become single hyphen)
-6. **Cannot start or end with hyphen** — Trim leading/trailing hyphens
-7. **Maximum 50 characters** — Truncate if necessary
+5. **Remove diacritics** — "Café Management" → "cafe-management", "Señor" → "senor"
+6. **Collapse consecutive hyphens** — "reports--and" → "reports-and" (multiple spaces or special chars become single hyphen)
+7. **Cannot start or end with hyphen** — Trim leading/trailing hyphens
+8. **Maximum 50 characters** — Truncate if necessary
 
 **Examples:**
 
@@ -1538,6 +1602,21 @@ SPEC_PATH="product/sections/${SECTION_ID}/spec.md"
 | `[section-id]`   | `SECTION_ID`   | Section folder name (e.g., `invoices`)   |
 | `[view-name]`    | `VIEW_NAME`    | Screen design name (e.g., `InvoiceList`) |
 | `[product-name]` | `PRODUCT_NAME` | Product name from overview               |
+
+**Bash Variable Syntax (`$VAR` vs `${VAR}`):**
+
+Both notations are valid bash syntax. Use `${VAR}` (braces) when:
+
+- Variable is followed by characters that could be part of the name: `${SECTION_ID}_backup`
+- Inside strings for clarity: `"path/${SECTION_ID}/file.md"`
+- Recommended for consistency in new code
+
+Use `$VAR` (no braces) when:
+
+- Variable stands alone: `echo $SECTION_ID`
+- In simple assignments: `NEW_VAR=$OLD_VAR`
+
+> **Note:** Existing code may use either notation. Both work correctly — this is a style preference, not a requirement.
 
 ### Question Asking Patterns
 

@@ -159,14 +159,14 @@ Run the comprehensive audit checklist. For each category, check all items and re
 
 ### L. Theme & Dark Mode
 
-| Check | Verification                                | Fix Action              |
-| ----- | ------------------------------------------- | ----------------------- |
-| L1    | Anti-flicker script in index.html `<head>`? | Add sync script         |
-| L2    | Script is FIRST in `<head>` (before CSS)?   | Move script             |
-| L3    | `dark` class on `<html>` not `<body>`?      | Correct selector        |
-| L4    | ThemeToggle reads localStorage at init?     | Add lazy init           |
-| L5    | System preference listener exists?          | Add mediaQuery listener |
-| L6    | All components have `dark:` variants?       | Add variants            |
+| Check | Verification                                      | Fix Action              |
+| ----- | ------------------------------------------------- | ----------------------- |
+| L1    | Anti-flicker script in index.html `<head>`?       | Add sync script         |
+| L2    | Script is after `<meta>` but before `<link>`/CSS? | Move script             |
+| L3    | `dark` class on `<html>` not `<body>`?            | Correct selector        |
+| L4    | ThemeToggle reads localStorage at init?           | Add lazy init           |
+| L5    | System preference listener exists?                | Add mediaQuery listener |
+| L6    | All components have `dark:` variants?             | Add variants            |
 
 ### M. Shell Utility Components (Optional)
 
@@ -1125,10 +1125,13 @@ mkdir -p product/shell
       "content": "Need help? Email us at support@example.com"
     }
   ],
+
+  // OPTIONAL: Only include if SearchModal was selected in Step 3.6
   "searchRecent": [
     { "id": "r1", "label": "Dashboard", "href": "/sections/dashboard" },
     { "id": "r2", "label": "Create Invoice", "href": "/sections/invoices/new" }
   ],
+  // OPTIONAL: Only include if SearchModal was selected in Step 3.6
   "searchShortcuts": [
     {
       "id": "s1",
@@ -1289,11 +1292,20 @@ export interface ShellData {
 
 Create the shell components at `src/shell/components/`:
 
+> **Terminology Note:** This step creates **PRIMARY** and **SECONDARY** components:
+>
+> | Category      | Created By                 | Examples                                  | Exported? |
+> | ------------- | -------------------------- | ----------------------------------------- | --------- |
+> | **Primary**   | This step (always)         | AppShell, MainNav, UserMenu               | Yes       |
+> | **Secondary** | This step (if selected)    | NotificationsDrawer, SearchModal, etc.    | Yes       |
+> | **Utility**   | Pre-existing (boilerplate) | SkipLink, ShellErrorBoundary, ThemeToggle | No        |
+>
+> Utility components are NOT created by this command — they're already in the boilerplate.
+> See agents.md → "Shell Utility Components" for details.
+
 ### Primary Components (Always Created by /design-shell)
 
 These three components form the core shell structure and are always created by this command.
-
-> **Note:** These are distinct from the **utility components** (SkipLink, ShellErrorBoundary, LogoArea, ThemeToggle, ShellSkeleton, ShellFooter) which are pre-existing in the boilerplate. See agents.md → "Shell Utility Components" section for details.
 
 #### AppShell.tsx
 
@@ -1733,6 +1745,10 @@ Create `src/shell/ShellPreview.tsx` with state management ONLY for the component
 3. Only render components that were imported
 4. Add null checks for data properties that may not exist if component wasn't selected
 
+> **Template Instructions:** Lines with `// IF [condition]` are instructions, NOT code comments.
+> When generating actual code, REMOVE these instruction comments entirely and ONLY include
+> the lines where the condition is met based on Step 3.6 selections.
+
 ```tsx
 import { useState, useEffect } from "react";
 import { AppShell } from "./components/AppShell";
@@ -2144,3 +2160,4 @@ Next: Run `/shape-section` to start designing your first section."
 - Section screen designs will render inside the shell's content area
 - Secondary components use Sheet (for drawers) and Dialog (for modals) from shadcn/ui
 - Shell Relationships map triggers to secondary components for wired preview
+- For Lucide icons, follow stroke width conventions: 1.5 default, 2 for small icons, 2.5+ for emphasis (see agents.md → "Icon Stroke Width Convention")
