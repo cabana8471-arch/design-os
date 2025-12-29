@@ -95,18 +95,24 @@ Generate the complete export package with all components, types, and handoff doc
 
 ### Files Generated Per Command
 
-| Command              | Creates                                                                                                                                                                                                                                                       | Location                                                            |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `/product-vision`    | `product-overview.md`                                                                                                                                                                                                                                         | `product/`                                                          |
-| `/product-roadmap`   | `product-roadmap.md`                                                                                                                                                                                                                                          | `product/`                                                          |
-| `/data-model`        | `data-model.md`                                                                                                                                                                                                                                               | `product/data-model/`                                               |
-| `/design-tokens`     | `colors.json`, `typography.json`                                                                                                                                                                                                                              | `product/design-system/`                                            |
-| `/design-shell`      | `spec.md`, `data.json`, `types.ts`, `design-direction.md`, Primary components (`AppShell.tsx`, `MainNav.tsx`, `UserMenu.tsx`), Secondary components (based on selection: `NotificationsDrawer.tsx`, `SearchModal.tsx`, `SettingsModal.tsx`, etc.), `index.ts` | `product/shell/`, `product/design-system/`, `src/shell/components/` |
-| `/shape-section`     | `spec.md`                                                                                                                                                                                                                                                     | `product/sections/[section-id]/`                                    |
-| `/sample-data`       | `data.json`, `types.ts`                                                                                                                                                                                                                                       | `product/sections/[section-id]/`                                    |
-| `/design-screen`     | `[ViewName].tsx`, `components/*.tsx`, `components/index.ts`                                                                                                                                                                                                   | `src/sections/[section-id]/`                                        |
-| `/screenshot-design` | `[view-name].png`                                                                                                                                                                                                                                             | `product/sections/[section-id]/`                                    |
-| `/export-product`    | Complete export package                                                                                                                                                                                                                                       | `product-plan/`                                                     |
+| Command              | Creates                                                                                                                                                                                                                                                       | Location                         |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| `/product-vision`    | `product-overview.md`                                                                                                                                                                                                                                         | `product/`                       |
+| `/product-roadmap`   | `product-roadmap.md`                                                                                                                                                                                                                                          | `product/`                       |
+| `/data-model`        | `data-model.md`                                                                                                                                                                                                                                               | `product/data-model/`            |
+| `/design-tokens`     | `colors.json`, `typography.json`                                                                                                                                                                                                                              | `product/design-system/`         |
+| `/design-shell`      | `spec.md`, `data.json`, `types.ts`, `design-direction.md`, Primary components (`AppShell.tsx`, `MainNav.tsx`, `UserMenu.tsx`), Secondary components (based on selection: `NotificationsDrawer.tsx`, `SearchModal.tsx`, `SettingsModal.tsx`, etc.), `index.ts` | See note below [1]               |
+| `/shape-section`     | `spec.md`                                                                                                                                                                                                                                                     | `product/sections/[section-id]/` |
+| `/sample-data`       | `data.json`, `types.ts`                                                                                                                                                                                                                                       | `product/sections/[section-id]/` |
+| `/design-screen`     | `[ViewName].tsx`, `components/*.tsx`, `components/index.ts`                                                                                                                                                                                                   | `src/sections/[section-id]/`     |
+| `/screenshot-design` | `[view-name].png`                                                                                                                                                                                                                                             | `product/sections/[section-id]/` |
+| `/export-product`    | Complete export package                                                                                                                                                                                                                                       | `product-plan/`                  |
+
+**[1] /design-shell file locations:**
+
+- `spec.md`, `data.json`, `types.ts` → `product/shell/`
+- `design-direction.md` → `product/design-system/`
+- Components and `index.ts` → `src/shell/components/`
 
 ### Command Prerequisites
 
@@ -505,7 +511,8 @@ Commands that create user-facing components reference the frontend-design skill 
 
 1. **`/design-shell`** — Creates application shell components
    - Step 1: Validates `.claude/skills/frontend-design/SKILL.md` exists and has meaningful content (>100 chars)
-   - Step 5: Applies the design guidance when creating AppShell, MainNav, UserMenu components
+   - Step 5: Applies the design guidance (preparation for component creation)
+   - Step 7: Creates AppShell, MainNav, UserMenu components using the applied guidance
    - Ensures shell has distinctive, branded aesthetics matching the product vision
 
 2. **`/design-screen`** — Creates section screen designs
@@ -1612,7 +1619,7 @@ The Design OS boilerplate includes several intentionally empty directories. This
 | `product/shell/`         | Shell specification                | `/design-shell`                                                        |
 | `product/design-system/` | Design tokens (colors, typography) | `/design-tokens`                                                       |
 | `product/data-model/`    | Global data model                  | `/data-model`                                                          |
-| `src/shell/components/`  | Shell React components             | `/design-shell`                                                        |
+| `src/shell/components/`  | Shell primary/secondary components | `/design-shell` (adds to pre-existing utility components)              |
 | `src/sections/`          | Section screen design components   | `/design-screen`                                                       |
 | `product-plan/`          | Export package (generated)         | `/export-product`                                                      |
 
