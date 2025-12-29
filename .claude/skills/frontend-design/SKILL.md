@@ -1,7 +1,6 @@
 ---
 name: frontend-design
 description: Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, or applications. Generates creative, polished code that avoids generic AI aesthetics.
-license: Complete terms in LICENSE.txt
 ---
 
 <!--
@@ -10,6 +9,9 @@ Referenced by:
 - /design-screen (Step 1: Validate, Step 5: Apply)
 
 Changes to this file affect both shell and screen design quality.
+
+Fallback: When this skill file is unavailable or has insufficient content,
+commands use agents.md → "Enhanced Fallback Design Guidance" section.
 -->
 
 This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
@@ -21,7 +23,11 @@ The user provides frontend requirements: a component, page, application, or inte
 Before coding, understand the context and commit to a BOLD aesthetic direction:
 
 - **Purpose**: What problem does this interface solve? Who uses it?
-- **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian, etc. There are so many flavors to choose from. Use these for inspiration but design one that is true to the aesthetic direction.
+- **Tone**: Pick an extreme. Choose a distinct aesthetic direction from categories like:
+  - _Clean/Professional_: brutally minimal, luxury/refined, corporate polish
+  - _Bold/Expressive_: maximalist chaos, brutalist/raw, industrial/utilitarian
+  - _Playful/Warm_: organic/natural, soft/pastel, playful/toy-like
+  - _Heritage/Artistic_: art deco/geometric, editorial/magazine, retro-futuristic
 - **Constraints**: Technical requirements (framework, performance, accessibility).
 - **Differentiation**: What makes this UNFORGETTABLE? What's the one thing someone will remember?
 
@@ -51,3 +57,43 @@ Interpret creatively and make unexpected choices that feel genuinely designed fo
 **IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
 
 Remember: Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+
+## Tailwind CSS Patterns
+
+When working with Tailwind CSS (especially v4), apply these techniques to achieve distinctive aesthetics within a utility-first framework:
+
+**Typography Distinctiveness:**
+
+- Use `font-[family-name]` with Google Fonts imports for distinctive typography
+- Apply `tracking-tight` or `tracking-wide` for dramatic heading effects
+- Combine `text-balance` with responsive font sizes for editorial layouts
+
+**Color Expression:**
+
+- Use Tailwind's color palette creatively — `lime-400` over `green-500` for unexpectedness
+- Apply color through borders, shadows, and accents rather than large fills
+- Use `bg-gradient-to-*` with unexpected angle combinations (not just `to-r`)
+
+**Spatial Creativity:**
+
+- Break out of containers with `relative` + `absolute` positioned decorative elements
+- Use negative margins (`-mt-8`, `-ml-4`) for controlled overlap
+- Apply `gap-*` asymmetrically with custom spacing values
+
+**Motion with Tailwind:**
+
+- Define custom `transition-*` durations: `duration-150` for snappy, `duration-500` for dramatic
+- Use `group-hover:` and `peer-*` for sophisticated interaction patterns
+- Apply `animate-*` with custom keyframes defined in CSS `@theme` blocks
+
+**Dark Mode Distinctiveness:**
+
+- Don't just invert — create different moods with `dark:bg-stone-900` vs `dark:bg-slate-950`
+- Use different accent colors for dark mode (e.g., `lime-400` light, `lime-300` dark)
+- Apply `dark:ring-*` and `dark:shadow-*` for subtle depth differences
+
+**Avoiding Generic Patterns:**
+
+- Skip `rounded-md` everywhere — vary with `rounded-none`, `rounded-xl`, `rounded-3xl`
+- Don't default to `shadow-md` — try `shadow-2xl shadow-lime-500/20` for colored shadows
+- Avoid `p-4` uniformly — create rhythm with varied padding (`p-3`, `p-6`, `p-8`)

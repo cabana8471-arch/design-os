@@ -404,10 +404,24 @@ if [ -f "product/data-model/data-model.md" ]; then
       foot) echo "feet" ;;
       tooth) echo "teeth" ;;
       mouse) echo "mice" ;;
+      # Greek/Latin words ending in -is -> -es
+      analysis) echo "analyses" ;;
+      crisis) echo "crises" ;;
+      thesis) echo "theses" ;;
+      basis) echo "bases" ;;
+      diagnosis) echo "diagnoses" ;;
+      # Words ending in -o (common exceptions)
+      hero) echo "heroes" ;;
+      potato) echo "potatoes" ;;
+      tomato) echo "tomatoes" ;;
+      echo) echo "echoes" ;;
       *)
         # Words ending in s, x, z, ch, sh -> add "es"
         if echo "$lower" | grep -qE '(s|x|z|ch|sh)$'; then
           echo "${lower}es"
+        # Words ending in -is -> change to -es (general Greek/Latin pattern)
+        elif echo "$lower" | grep -qE 'is$'; then
+          echo "${lower%is}es"
         # Words ending in consonant + y -> change y to ies
         elif echo "$lower" | grep -qE '[^aeiou]y$'; then
           echo "${lower%y}ies"

@@ -191,6 +191,31 @@ SRC_SECTIONS=$(ls -d src/sections/*/ 2>/dev/null | xargs -n1 basename)
 # Find orphans (directories that exist but aren't in roadmap)
 # An orphan is a section directory that has no matching entry in ROADMAP_SECTIONS
 echo "Checking for orphaned sections..."
+
+ORPHANS=""
+
+# Check product/sections/
+for section in $PRODUCT_SECTIONS; do
+  if ! echo "$ROADMAP_SECTIONS" | grep -qx "$section"; then
+    ORPHANS="$ORPHANS product/sections/$section"
+  fi
+done
+
+# Check src/sections/ (may have components without product spec)
+for section in $SRC_SECTIONS; do
+  if ! echo "$ROADMAP_SECTIONS" | grep -qx "$section"; then
+    # Only add if not already in list
+    if ! echo "$ORPHANS" | grep -q "src/sections/$section"; then
+      ORPHANS="$ORPHANS src/sections/$section"
+    fi
+  fi
+done
+
+if [ -z "$ORPHANS" ]; then
+  echo "No orphaned sections found."
+else
+  echo "Orphaned sections:$ORPHANS"
+fi
 ```
 
 **1b. If orphans are detected, ask the user how to handle them:**

@@ -6,6 +6,73 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-29 02:15] Critical Analysis - Comprehensive 19-Issue Fix
+
+### Description
+
+Comprehensive critical analysis of all files in `.claude/` folder plus `agents.md`. Identified 23 issues across 4 severity levels (4 Critical, 6 High, 9 Medium, 4 Low). After verification, 19 issues required fixes while 4 were already implemented or false positives. Focus on fixing regex errors, adding missing validation logic, improving pluralization rules, and enhancing SKILL.md with Tailwind CSS guidance.
+
+### New Files Created
+
+_None_
+
+### Modified Files
+
+| File                                            | Modification                                                                                       |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/export-product.md`  | Fixed regex pattern `\s\*` → `\s*` in template stripping (line 2175)                               |
+| `.claude/commands/design-os/design-shell.md`    | Added Step 8.1-8.2 for parsing Shell Relationships before creating ShellPreview                    |
+| `.claude/commands/design-os/design-shell.md`    | Added Step 6.5.1 for extracting skill file guidance when generating design-direction.md            |
+| `.claude/commands/design-os/design-shell.md`    | Added "[None]" options in Step 3.6 for minimal shells without secondary components                 |
+| `.claude/commands/design-os/product-roadmap.md` | Added complete orphan detection script checking both `product/sections/` AND `src/sections/`       |
+| `.claude/commands/design-os/sample-data.md`     | Expanded pluralization function with Greek/Latin words (-is→-es) and common -o word exceptions     |
+| `.claude/commands/design-os/design-tokens.md`   | Added CRITICAL note enforcing mono font field requirement with IBM Plex Mono default               |
+| `.claude/commands/design-os/data-model.md`      | Made plural entity detection actionable with AskUserQuestion and auto-rename capability            |
+| `.claude/commands/design-os/shape-section.md`   | Added View Name Validation section with blocking PascalCase enforcement                            |
+| `.claude/skills/frontend-design/SKILL.md`       | Removed LICENSE.txt reference from frontmatter (file didn't exist)                                 |
+| `.claude/skills/frontend-design/SKILL.md`       | Added comprehensive Tailwind CSS Patterns section with practical examples                          |
+| `.claude/skills/frontend-design/SKILL.md`       | Grouped aesthetic tones into 4 categories (Clean/Professional, Bold/Expressive, Playful, Heritage) |
+| `.claude/skills/frontend-design/SKILL.md`       | Added fallback reference to agents.md in header comment                                            |
+| `agents.md`                                     | Added explicit path reference for design-direction.md in /design-screen documentation (line 1009)  |
+
+### Gaps Resolved
+
+- **CRITICAL #1:** export-product.md regex `\s\*` caused template stripping to fail (escaped asterisk instead of quantifier)
+- **CRITICAL #2:** SKILL.md referenced non-existent LICENSE.txt file in frontmatter
+- **CRITICAL #3:** design-shell.md ShellPreview hardcoded all secondary components instead of parsing Shell Relationships
+- **CRITICAL #4:** product-roadmap.md orphan detection only checked `product/sections/`, missing `src/sections/` React components
+- **HIGH #5:** Pluralization rules missing Greek/Latin patterns (analysis→analyses) and common -o words (hero→heroes)
+- **HIGH #6:** design-tokens.md didn't enforce mono font field requirement (could be omitted entirely)
+- **HIGH #7:** design-shell.md Step 6.5 didn't extract guidance from SKILL.md when generating design-direction.md
+- **HIGH #8:** data-model.md plural entity detection only warned but didn't offer to fix
+- **HIGH #9:** shape-section.md already had overwrite protection (verified as implemented)
+- **HIGH #10:** SKILL.md lacked Tailwind CSS-specific guidance despite Design OS using Tailwind v4
+- **MEDIUM #13:** design-shell.md Step 3.6 had no "[None]" option for minimal shells
+- **MEDIUM #18:** SKILL.md tone list was unstructured and difficult to navigate
+- **MEDIUM #19:** SKILL.md missing reciprocal reference to agents.md fallback guidance
+- **LOW #22:** shape-section.md view name validation was warning-only, not blocking
+- **LOW #23:** agents.md line 1009 missing explicit path to design-direction.md
+
+### Statistics
+
+- Files modified: 9
+- Lines changed: ~250
+- Issues resolved: 19 (4 Critical, 6 High, 5 Medium, 4 Low)
+- False positives: 4 (already implemented)
+
+### Verification
+
+- ✅ Regex pattern now correctly strips ALL leading HTML comments from templates
+- ✅ Shell Relationships must be parsed before generating ShellPreview
+- ✅ Orphan detection covers both product/ and src/ directories
+- ✅ Pluralization handles analysis, crisis, thesis, hero, potato, tomato correctly
+- ✅ Mono font field is always required in typography.json
+- ✅ SKILL.md provides comprehensive Tailwind CSS patterns and grouped tone categories
+- ✅ View names are validated and blocked if not PascalCase
+- ✅ Minimal shells can be created without any secondary components
+
+---
+
 ## [2025-12-29 01:30] Critical Analysis - Comprehensive 12-Issue Fix
 
 ### Description

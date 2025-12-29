@@ -607,6 +607,36 @@ If the section requires multiple views (e.g., list + detail, or dashboard + sett
 
 This ensures `/design-screen` and `/sample-data` commands know to create components and data for each view.
 
+### View Name Validation
+
+**REQUIRED:** All view names MUST follow PascalCase naming convention. View names become React component filenames, so they must be valid identifiers.
+
+**Valid view names:**
+
+- `InvoiceListView` ✓
+- `AgentDetailDrawer` ✓
+- `CreateUserModal` ✓
+- `DashboardOverview` ✓
+
+**Invalid view names (BLOCK and require correction):**
+
+- `invoice-list-view` ✗ (kebab-case not allowed)
+- `invoiceListView` ✗ (camelCase not allowed — must start uppercase)
+- `InvoiceList View` ✗ (spaces not allowed)
+- `Invoice_List` ✗ (underscores not allowed)
+
+**Validation Pattern:**
+
+```bash
+# View name must match: starts with uppercase, alphanumeric only
+if [[ ! "$view_name" =~ ^[A-Z][a-zA-Z0-9]*$ ]]; then
+  echo "Error: View name '$view_name' is invalid. Use PascalCase (e.g., InvoiceListView)."
+  # STOP and ask user to provide corrected name
+fi
+```
+
+If a view name is invalid, ask the user to provide a corrected PascalCase name before continuing.
+
 ### Multiple Views Workflow (Full Picture)
 
 When a section has multiple views, here's how they flow through the Design OS commands:

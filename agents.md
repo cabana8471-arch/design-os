@@ -1006,8 +1006,8 @@ The `/design-shell` command creates this document in Step 6.5, after defining th
 
 The `/design-screen` command:
 
-1. Checks for `design-direction.md` in Step 2
-2. Applies documented guidelines in Step 5
+1. Checks for `product/design-system/design-direction.md` in Step 2
+2. Applies documented guidelines from `design-direction.md` in Step 5
 3. Cross-references existing section components for pattern consistency
 
 ### Exported To

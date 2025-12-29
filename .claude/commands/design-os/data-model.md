@@ -177,12 +177,56 @@ echo "$CONTENT" | grep -E "^### " | while read -r line; do
   # Only warn about clear plurals: -ies (Companies→Company), -ves (Shelves→Shelf)
   # Skip: singular nouns ending in s (Canvas, Atlas, Nexus, Alias, Status, Address, etc.)
   if [[ "$entity_name" =~ ies$ ]]; then
-    echo "Warning: Entity '$entity_name' appears plural (ends in 'ies'). Consider: '${entity_name%ies}y'"
+    PLURAL_ENTITIES="$PLURAL_ENTITIES $entity_name:${entity_name%ies}y"
   elif [[ "$entity_name" =~ ves$ ]]; then
-    echo "Warning: Entity '$entity_name' appears plural (ends in 'ves'). Consider singular form."
+    # Common ves→f mappings
+    singular="${entity_name%ves}f"
+    PLURAL_ENTITIES="$PLURAL_ENTITIES $entity_name:$singular"
   fi
 done
 
+# Handle plural entities with user confirmation
+if [ -n "$PLURAL_ENTITIES" ]; then
+  echo "Found plural entity names that should be singular:"
+  for pair in $PLURAL_ENTITIES; do
+    plural=$(echo "$pair" | cut -d: -f1)
+    singular=$(echo "$pair" | cut -d: -f2)
+    echo "  - '$plural' → '$singular'"
+  done
+fi
+```
+
+**If plural entities are detected, use AskUserQuestion:**
+
+```
+I found entity name(s) that appear to be plural:
+- [Entity] → suggested singular: [Singular]
+
+Entity names should be singular for consistency with TypeScript interfaces and automatic pluralization in data.json.
+
+Would you like me to rename them to singular form?
+```
+
+Options:
+
+- "Yes, rename to singular" — Update entity headings to singular form
+- "No, keep as-is" — The names are intentional (e.g., "Supplies" is correct)
+
+**If user chooses "Yes, rename to singular":**
+
+Update the entity headings in data-model.md:
+
+```bash
+for pair in $PLURAL_ENTITIES; do
+  plural=$(echo "$pair" | cut -d: -f1)
+  singular=$(echo "$pair" | cut -d: -f2)
+  sed -i '' "s/^### $plural$/### $singular/" product/data-model/data-model.md
+done
+```
+
+### Validate Relationships Section
+
+```bash
 # Check for ## Relationships
 if ! echo "$CONTENT" | grep -q "^## Relationships"; then
   echo "Warning: Missing '## Relationships' section"

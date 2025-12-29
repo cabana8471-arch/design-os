@@ -356,6 +356,8 @@ Then create two files:
 }
 ```
 
+> **CRITICAL:** All three fields (`heading`, `body`, `mono`) are REQUIRED. If the user didn't specify a mono font, use `IBM Plex Mono` as the default. Never omit the `mono` field — downstream commands expect all three fields to exist.
+
 ## Step 8: Confirm Completion
 
 Let the user know:

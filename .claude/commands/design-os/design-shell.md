@@ -544,17 +544,20 @@ What interactive elements would you like in the shell?
 □ Search modal (Command Palette) — Cmd+K, fuzzy search, shortcuts
 □ Help panel — Documentation, keyboard shortcuts, support
 □ Theme toggle — Light/dark/system mode switcher
+□ [None] — No header actions beyond navigation
 
 **User Menu:**
 □ Profile modal — View and edit user profile
 □ Settings modal — App preferences and configuration
 □ Feedback modal — Send feedback or report issues
+□ [None] — Basic user menu (logout only)
 
 **Navigation:**
 □ Mobile menu drawer — Hamburger menu for mobile screens
 □ Nested navigation — Expandable sub-menus in sidebar
+□ [None] — Simple single-level navigation
 
-Select all that apply:
+Select all that apply (selecting [None] in a category skips all options in that category):
 ```
 
 Use AskUserQuestion with multiSelect: true for each category.
@@ -794,6 +797,33 @@ The shell receives these callbacks and performs actual navigation (which may var
 ## Step 6.5: Document Design Direction
 
 After creating the shell specification, document the user's design direction choices from Step 3.5. This ensures future `/design-screen` commands maintain visual consistency.
+
+### Step 6.5.1: Extract Skill File Guidance
+
+Before generating the design direction, read the skill file to inform AI-generated sections:
+
+```bash
+SKILL_FILE=".claude/skills/frontend-design/SKILL.md"
+
+if [ -f "$SKILL_FILE" ]; then
+  echo "Reading skill file for design guidance..."
+  # The skill file was validated in Step 1
+  # Extract and apply guidance from:
+  #   - "## Design Thinking" section
+  #   - "## Frontend Aesthetics Guidelines" section
+fi
+```
+
+**When generating AI guidance sections (Visual Signatures, Color Application, Motion & Interaction):**
+
+1. **If skill file was validated in Step 1:** Read the "Design Thinking" and "Frontend Aesthetics Guidelines" sections and use them to generate distinctive, product-specific guidance
+2. **If skill file was not available:** Use the "Enhanced Fallback Design Guidance" from agents.md to generate guidance
+
+**The AI-generated sections should reflect:**
+
+- Distinctive choices from the skill file's guidance on avoiding "AI slop"
+- Product-specific context from the product overview
+- User preferences from Step 3.5
 
 ### Ensure Directory Exists
 
@@ -1667,7 +1697,34 @@ Generate navigation items from section directories and proceed with full ShellPr
 
 ## Step 8: Create Wired Shell Preview
 
-**UPDATED:** Create `src/shell/ShellPreview.tsx` as a **wired preview** with state management for all secondary components.
+**CRITICAL:** Before creating ShellPreview, you MUST parse the Shell Relationships from `product/shell/spec.md` to determine which secondary components to include.
+
+### Step 8.1: Parse Shell Relationships
+
+Read `product/shell/spec.md` and extract the `## Shell Relationships` section. Parse each relationship line:
+
+```
+Format: [Trigger].[action] -> [Component] ([type], [dataRef])
+Example: HeaderAction.notifications -> NotificationsDrawer (drawer, notifications)
+```
+
+**Create a list of components to include based on parsed relationships:**
+
+| Trigger.action               | Component             | State Variable        | Wrapper  |
+| ---------------------------- | --------------------- | --------------------- | -------- |
+| `HeaderAction.notifications` | `NotificationsDrawer` | `isNotificationsOpen` | `Sheet`  |
+| `HeaderAction.search`        | `SearchModal`         | `isSearchOpen`        | `Dialog` |
+| `HeaderAction.help`          | `HelpPanel`           | `isHelpOpen`          | `Sheet`  |
+| `UserMenu.profile`           | `ProfileModal`        | `isProfileOpen`       | `Dialog` |
+| `UserMenu.settings`          | `SettingsModal`       | `isSettingsOpen`      | `Dialog` |
+| `UserMenu.feedback`          | `FeedbackModal`       | `isFeedbackOpen`      | `Dialog` |
+| `MobileNav.toggle`           | `MobileMenuDrawer`    | `isMobileMenuOpen`    | `Sheet`  |
+
+**Only include components that appear in the parsed relationships.** If a component was not selected in Step 3.6, it will not appear in Shell Relationships and must NOT be included in ShellPreview.
+
+### Step 8.2: Generate ShellPreview
+
+Create `src/shell/ShellPreview.tsx` with state management ONLY for the components identified in Step 8.1.
 
 ```tsx
 import { useState } from "react";
@@ -1851,9 +1908,10 @@ export default function ShellPreview() {
 
 **Important:**
 
-- **Only include imports and JSX for components that were actually created** based on Step 3.6 selections
+- **Only include imports and JSX for components parsed from Shell Relationships** (Step 8.1)
+- The template above is a COMPLETE example — trim it down to match your parsed relationships
 - Handlers are wired to state, not console.log (except for actual actions like navigation)
-- Keyboard shortcut (Cmd+K) opens search modal
+- Keyboard shortcut (Cmd+K) only needed if SearchModal was selected
 - Escape key closes any open modal/drawer
 
 ### Handling Missing Sections
