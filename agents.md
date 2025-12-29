@@ -284,6 +284,8 @@ src/
 
 > **Key Distinction:** Primary and Secondary components are GENERATED for the product design and get exported. Utility components are BOILERPLATE infrastructure for Design OS previews — they're not part of the export package.
 
+> **Note on ThemeToggle:** ThemeToggle appears in both categories. The **Utility** version (pre-existing in boilerplate) provides basic theme switching for Design OS previews. If selected in `/design-shell` Step 3.6, a **Secondary** ThemeToggle is generated with product-specific styling and exported. The generated version replaces the utility version in the export package.
+
 └── sections/
     └── [section-id]/
         ├── components/            # Exportable components (see note below)

@@ -6,7 +6,64 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-29 12:30] Critical Analysis - Minor Fixes Finalization
+## [2025-12-29 14:30] Critical Analysis - Step Index & Documentation Clarifications
+
+### Description
+
+Critical analysis follow-up focusing on export-product.md Step Index alignment and documentation clarity improvements. The Step Index table was completely misaligned with actual step headings (18 steps had wrong descriptions). Also added clarifying notes for pseudo-code notation and assembled output examples.
+
+### New Files Created
+
+_None_
+
+### Modified Files
+
+| File                                           | Modification                                                                                                    |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/export-product.md` | Fixed Step Index table (lines 15-37) - aligned all 18 step descriptions with actual step headings               |
+| `.claude/commands/design-os/export-product.md` | Added pseudo-code notation clarification before Foundation milestone template (line 510)                        |
+| `.claude/commands/design-os/export-product.md` | Added assembled output clarification notes for one-shot-prompt.md (line 2436) and section-prompt.md (line 2657) |
+| `agents.md`                                    | Added ThemeToggle clarification note explaining Utility vs Secondary component distinction (line 287)           |
+
+### Gaps Resolved
+
+**Critical (1):**
+
+- **C1:** export-product.md Step Index table was completely misaligned - Steps 8-18 had incorrect descriptions that didn't match actual step headings (e.g., Step 9 said "Generate shell README" but actual Step 9 is "Copy and Transform Components")
+
+**Medium (1):**
+
+- **M1:** Foundation milestone template used `[IF INCLUDE_SHELL=true]` pseudo-code without explaining it's for AI interpretation, not literal template syntax
+
+**Low (2):**
+
+- **L1:** One-shot-prompt.md and section-prompt.md example content could be confused as templates to copy instead of assembled output examples
+- **L2:** ThemeToggle appeared in both Utility (pre-existing) and Secondary (generated) categories without clarification
+
+**Verified as Already Implemented (4):**
+
+- `_meta` validation in sample-data.md - comprehensive validation exists in Step 6 (lines 271-536)
+- Directory existence check in sample-data.md - already in Step 5 (lines 189-204)
+- Hookify rule count in categories.md - count is correct (22 rules: 6+3+4+4+2+3)
+- Template version table in agents.md - complete and accurate
+
+### Statistics
+
+- Files modified: 2
+- Lines changed: ~30
+- Issues resolved: 4 (1 Critical, 1 Medium, 2 Low)
+- False positives: 4 (already implemented)
+
+### Verification
+
+- ✅ Step Index now matches actual step headings (all 18 steps aligned)
+- ✅ Pseudo-code notation explained before Foundation milestone template
+- ✅ Assembled output examples clearly marked as reference, not for copying
+- ✅ ThemeToggle distinction clarified (utility for previews, secondary for export)
+
+---
+
+## [2025-12-29 11:35] Critical Analysis - Minor Fixes Finalization
 
 ### Description
 

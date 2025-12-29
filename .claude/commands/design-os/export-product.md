@@ -16,25 +16,25 @@ You are helping the user export their complete product design as a handoff packa
 | Step | Purpose                                                    |
 | ---- | ---------------------------------------------------------- |
 | 1    | Check prerequisites (product files, templates, skill file) |
-| 2    | Create product-plan directory structure                    |
-| 3    | Copy product overview                                      |
-| 4    | Copy design system files                                   |
-| 5    | Copy data model                                            |
-| 6    | Generate data model README                                 |
+| 2    | Gather export information                                  |
+| 3    | Create export directory structure                          |
+| 4    | Generate product-overview.md                               |
+| 5    | Generate milestone instructions (incremental)              |
+| 6    | Generate one-shot-instructions.md                          |
 | 7    | Copy design guidance (SKILL.md → frontend-design.md)       |
-| 8    | Copy shell components (if exist)                           |
-| 8A   | Validate shell components (conditional)                    |
-| 9    | Generate shell README                                      |
-| 10   | Identify sections to export                                |
-| 10.5 | Validate section components (conditional)                  |
-| 11   | Copy section assets (data.json → sample-data.json rename)  |
-| 12   | Generate section READMEs                                   |
-| 13   | Generate section tests.md files                            |
+| 8    | Validate all components                                    |
+| 8A   | Validate design coherence (conditional)                    |
+| 9    | Copy and transform components                              |
+| 10   | Generate section READMEs                                   |
+| 10.5 | Generate shell README                                      |
+| 11   | Consolidate data model types                               |
+| 12   | Generate section test instructions                         |
+| 13   | Generate design system files                               |
 | 14   | Generate prompt files (assemble templates)                 |
-| 15   | Generate instruction files (one-shot + incremental)        |
-| 16   | Generate top-level README                                  |
-| 17   | Final validation                                           |
-| 18   | Completion summary                                         |
+| 15   | Generate README.md                                         |
+| 16   | Copy screenshots                                           |
+| 17   | Create zip file                                            |
+| 18   | Confirm completion                                         |
 
 ## Step 1: Check Prerequisites
 
@@ -506,6 +506,8 @@ Each milestone instruction file should begin with the following preamble (adapt 
 ### 01-foundation.md
 
 Place in `product-plan/instructions/incremental/01-foundation.md`:
+
+> **Pseudo-code Notation:** This template uses `[IF condition]` and `[If ... :]` syntax as instructions for the AI to conditionally include/exclude content based on the export state. When generating the actual file, evaluate these conditions and include only the appropriate content — do not output the brackets or conditions themselves.
 
 ```markdown
 # Milestone 1: Foundation
@@ -2431,6 +2433,8 @@ These commands provide concrete verification that the assembly process worked co
 
 Assemble from the templates listed above (see "Template Concatenation Order" section). Follow the template assembly process to create `product-plan/prompts/one-shot-prompt.md`:
 
+> **Note:** The content below shows an example of the fully assembled output for reference. Do NOT copy this verbatim — instead, assemble the prompt by concatenating the template files in the order specified in "Template Concatenation Order". The templates contain the authoritative content; this example may not reflect the latest template versions.
+
 ```markdown
 # One-Shot Implementation Prompt
 
@@ -2649,6 +2653,8 @@ Before considering this implementation complete, verify:
 **Note:** This is a **prompt template** that requires variable substitution before use. Unlike `one-shot-prompt.md`, users must fill in `SECTION_NAME`, `SECTION_ID`, and `NN` values for each section they implement. The variables at the top serve as placeholders that the user replaces with actual values.
 
 Assemble from the templates listed above (see "Template Concatenation Order" section). Follow the template assembly process to create `product-plan/prompts/section-prompt.md`:
+
+> **Note:** The content below shows an example of the fully assembled output for reference. Do NOT copy this verbatim — instead, assemble the prompt by concatenating the template files in the order specified in "Template Concatenation Order". The templates contain the authoritative content; this example may not reflect the latest template versions.
 
 ```markdown
 # Section Implementation Prompt
