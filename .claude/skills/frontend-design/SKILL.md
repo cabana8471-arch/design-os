@@ -63,6 +63,8 @@ Remember: Claude is capable of extraordinary creative work. Don't hold back, sho
 
 ## Tailwind CSS Patterns
 
+> **Note:** These patterns are for Tailwind CSS v4 (Design OS standard). See `agents.md` → "Tailwind CSS Directives" for v4-specific behaviors and migration notes from v3.
+
 When working with Tailwind CSS (especially v4), apply these techniques to achieve distinctive aesthetics within a utility-first framework:
 
 **Typography Distinctiveness:**

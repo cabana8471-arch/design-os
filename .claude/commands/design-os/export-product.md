@@ -11,6 +11,8 @@ You are helping the user export their complete product design as a handoff packa
 >
 > Do not attempt to consolidate steps — the verbosity ensures reliability.
 
+> **Size Note:** This file is intentionally comprehensive (~1,500 lines). For modifications, focus on specific steps rather than reading the entire file. Use the Step Index below to navigate directly to relevant sections.
+
 **Step Index:**
 
 | Step | Purpose                                                    |

@@ -431,6 +431,13 @@ if [ -f "product/data-model/data-model.md" ]; then
       potato) echo "potatoes" ;;
       tomato) echo "tomatoes" ;;
       echo) echo "echoes" ;;
+      # Technical/computing terms (Latin plurals)
+      index) echo "indices" ;;
+      matrix) echo "matrices" ;;
+      vertex) echo "vertices" ;;
+      appendix) echo "appendices" ;;
+      axis) echo "axes" ;;
+      radius) echo "radii" ;;
       *)
         # Words ending in s, x, z, ch, sh -> add "es"
         if echo "$lower" | grep -qE '(s|x|z|ch|sh)$'; then
