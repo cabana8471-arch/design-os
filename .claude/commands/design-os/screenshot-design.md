@@ -92,6 +92,8 @@ Present the available screen designs as options, grouped by section:
 
 Start the dev server yourself using Bash. Do NOT ask the user if the server is running or tell them to start it.
 
+> **⚠️ CLEANUP REQUIREMENT:** If ANY step after this fails, you MUST run Step 6 (Clean Up) before ending. Failure to clean up will leave an orphaned dev server on port 3000. See "Error Recovery" section at the end for details.
+
 ### Dev Server Detection and Startup
 
 **First, check if a dev server is already running:**
@@ -348,9 +350,11 @@ This command involves several steps that may take time:
 
 If the screenshot appears incomplete or shows loading states, try waiting a few seconds longer before capturing.
 
-### Error Recovery
+### Error Recovery (MANDATORY)
 
-If any step fails after starting the dev server, you must clean up manually to avoid leaving orphaned processes.
+> **⚠️ CRITICAL:** If ANY step fails after Step 2 (Start Dev Server), you MUST execute the cleanup below. Do NOT end the command without cleaning up first.
+
+If any step fails after starting the dev server, you must clean up to avoid leaving orphaned processes.
 
 **Check if dev server is still running:**
 

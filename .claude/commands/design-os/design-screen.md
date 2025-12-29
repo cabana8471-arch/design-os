@@ -503,7 +503,7 @@ If design direction doesn't exist but shell exists, show a warning:
 
 "Note: A shell has been designed but no Design Direction document exists. For consistent aesthetics across sections, consider running `/design-shell` again to generate `design-direction.md`. I'll infer the direction from the shell components."
 
-If neither shell nor design direction exists, proceed with the design guidance from Step 1 (skill file or fallback).
+If neither shell nor design direction exists, proceed with the design guidance from Step 1 (`.claude/skills/frontend-design/SKILL.md` or fallback design principles from `agents.md`).
 
 ### Fallback When Design Direction Missing
 

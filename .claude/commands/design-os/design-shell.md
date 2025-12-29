@@ -1809,6 +1809,8 @@ Example: HeaderAction.notifications -> NotificationsDrawer (drawer, notification
 
 Create `src/shell/ShellPreview.tsx` with state management ONLY for the components identified in Step 8.1.
 
+**Navigation Items:** Generate `navigationItems` array from `product/product-roadmap.md` sections. If `SECTIONS_EXIST=false` (from Step 7.5), use a single placeholder item `[{ label: "Home", href: "/", isActive: true }]`.
+
 **IMPORTANT:** The template below shows ALL possible components. You MUST:
 
 1. Only import components that appear in the Shell Relationships parsed in Step 8.1
@@ -1853,6 +1855,9 @@ export default function ShellPreview() {
   const data = shellData as ShellData;
 
   // Navigation items from product roadmap
+  // ⚠️ IMPORTANT: Replace these example items with ACTUAL sections from product/product-roadmap.md
+  // If no sections exist yet (SECTIONS_EXIST=false from Step 7.5), use placeholder:
+  // const navigationItems = [{ label: "Home", href: "/", isActive: true }];
   const navigationItems = [
     { label: "Dashboard", href: "/sections/dashboard", isActive: true },
     { label: "Invoices", href: "/sections/invoice-management" },

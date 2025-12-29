@@ -342,13 +342,20 @@ else:
     elif not isinstance(meta['relationships'], list):
         errors.append("'_meta.relationships' must be an array")
 
-    # Verify model keys match data keys
+    # Verify model keys match data keys (bidirectional)
     if 'models' in meta and isinstance(meta['models'], dict):
         model_keys = set(meta['models'].keys())
         data_keys = set(k for k in data.keys() if k != '_meta')
-        missing = data_keys - model_keys
-        if missing:
-            errors.append(f"'_meta.models' missing descriptions for: {', '.join(missing)}")
+
+        # Check for data keys missing from _meta.models
+        missing_in_meta = data_keys - model_keys
+        if missing_in_meta:
+            errors.append(f"'_meta.models' missing descriptions for: {', '.join(missing_in_meta)}")
+
+        # Check for _meta.models keys without corresponding data
+        extra_in_meta = model_keys - data_keys
+        if extra_in_meta:
+            errors.append(f"'_meta.models' has descriptions for non-existent data: {', '.join(extra_in_meta)}")
 
 for error in errors:
     print(f"Validation Error: {error}")

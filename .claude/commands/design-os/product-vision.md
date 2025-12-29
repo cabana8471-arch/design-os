@@ -253,6 +253,8 @@ Then create the file at `/product/product-overview.md` with this exact format:
 ```markdown
 # [Product Name]
 
+**Scope:** [MVP / Standard / Enterprise]
+
 ## Description
 
 [The finalized 1-3 sentence description]
@@ -276,6 +278,8 @@ Then create the file at `/product/product-overview.md` with this exact format:
 - [Feature 3]
   [Add more as needed]
 ```
+
+> **Note:** The `**Scope:**` line must use the exact value selected in Step 2.5 (MVP, Standard, or Enterprise). Other commands like `/shape-section` read this value to adjust section complexity.
 
 **Important:** The `# [Product Name]` heading at the top is required - this is what displays as the card title in the app.
 
@@ -313,8 +317,9 @@ fi
 
 After creating the file, verify all required markdown sections exist:
 
-**Required sections:**
+**Required elements:**
 
+- `**Scope:**` — Product scope (MVP, Standard, or Enterprise)
 - `## Description` — Product description
 - `## Problems & Solutions` — At least one `### Problem N:` subsection
 - `## Key Features` — Feature list
@@ -324,6 +329,11 @@ After creating the file, verify all required markdown sections exist:
 ```bash
 # Check for required sections
 CONTENT=$(cat product/product-overview.md)
+
+# Check for **Scope:** line
+if ! echo "$CONTENT" | grep -q "^\*\*Scope:\*\*"; then
+  echo "Warning: Missing '**Scope:**' line (should be MVP, Standard, or Enterprise)"
+fi
 
 # Check for ## Description
 if ! echo "$CONTENT" | grep -q "^## Description"; then

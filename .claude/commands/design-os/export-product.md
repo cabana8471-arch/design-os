@@ -818,7 +818,7 @@ Create `product-plan/instructions/one-shot-instructions.md` by combining all mil
 
 Build this product in milestones:
 
-1. **Foundation** — Design tokens, data model types, routing structure, and application shell (all together)
+1. **Foundation** — Design tokens, data model types, routing structure[IF INCLUDE_SHELL=true], and application shell[/IF] (all together)
 2. **[Section 1]** — [Brief description]
 3. **[Section 2]** — [Brief description]
    [List all sections]
@@ -854,9 +854,9 @@ The test instructions include:
 # Milestone 1: Foundation
 
 > **Purpose:** Set up all foundational elements in one milestone
-> **Includes:** Design tokens, data model types, routing structure, AND application shell
+> **Includes:** Design tokens, data model types, routing structure[IF INCLUDE_SHELL=true], AND application shell[/IF]
 
-[Include 01-foundation.md content WITHOUT the preamble — it's already at the top. Foundation includes design tokens, data model, routing, AND application shell all together.]
+[Include 01-foundation.md content WITHOUT the preamble — it's already at the top. Foundation includes design tokens, data model, routing[IF INCLUDE_SHELL=true], AND application shell[/IF].]
 
 ---
 
@@ -877,8 +877,16 @@ The test instructions include:
 
 Copy the frontend-design skill to the export package to provide guidance for implementation:
 
-1. **Read** `.claude/skills/frontend-design/SKILL.md`
-2. **Copy** its contents to `product-plan/design-guidance/frontend-design.md`
+1. **Verify directory exists** (should have been created in Step 3):
+
+```bash
+if [ ! -d "product-plan/design-guidance" ]; then
+  mkdir -p product-plan/design-guidance
+fi
+```
+
+2. **Read** `.claude/skills/frontend-design/SKILL.md`
+3. **Copy** its contents to `product-plan/design-guidance/frontend-design.md`
 
 This ensures implementation agents (Claude, Cursor, etc.) have access to design guidance for creating distinctive, production-grade components with the same quality as the Design OS screen designs.
 
