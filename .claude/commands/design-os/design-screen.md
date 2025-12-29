@@ -296,7 +296,48 @@ If shell exists, the screen design will render inside the shell in Design OS. If
 
 - Check if `/product/design-system/design-direction.md` exists
 
-If design direction exists, read it and display a confirmation:
+### Validate Design Direction (If Present)
+
+If the file exists, validate its structure before reading:
+
+```bash
+DESIGN_DIRECTION_FILE="product/design-system/design-direction.md"
+
+if [ -f "$DESIGN_DIRECTION_FILE" ]; then
+  # Check for required sections
+  MISSING_SECTIONS=""
+
+  if ! grep -q "## User Preferences" "$DESIGN_DIRECTION_FILE"; then
+    MISSING_SECTIONS="$MISSING_SECTIONS User Preferences"
+  fi
+
+  if ! grep -q "## Visual Signatures" "$DESIGN_DIRECTION_FILE"; then
+    MISSING_SECTIONS="$MISSING_SECTIONS Visual Signatures"
+  fi
+
+  if ! grep -q "## Consistency Guidelines" "$DESIGN_DIRECTION_FILE"; then
+    MISSING_SECTIONS="$MISSING_SECTIONS Consistency Guidelines"
+  fi
+
+  if [ -n "$MISSING_SECTIONS" ]; then
+    echo "Warning: design-direction.md exists but is missing sections:$MISSING_SECTIONS"
+    echo "Consider re-running /design-shell to regenerate it."
+  else
+    echo "Design direction validated"
+  fi
+fi
+```
+
+**If design direction is malformed:**
+
+```
+Warning: design-direction.md - Missing required sections: [list].
+The file may be incomplete. Consider re-running /design-shell to regenerate it.
+
+Proceeding with available guidance...
+```
+
+If design direction exists and validates, read it and display a confirmation:
 
 "I found your Design Direction document. I'll ensure this screen design follows the established aesthetic: [aesthetic tone from document]"
 
@@ -919,6 +960,55 @@ If the skill file passed validation in Step 1, apply the `frontend-design` skill
 3. Apply the guidance to inform your design decisions for this screen
 
 > **Note:** The `frontend-design` skill is a guidance file, not a slash command. Read it directly rather than invoking it.
+
+### How to Apply the Skill File
+
+When the skill file is available, apply its guidance systematically:
+
+**Step A: Extract Aesthetic Direction**
+
+From the "Design Thinking" or "Aesthetic Direction" section:
+
+- Identify the overall visual tone (e.g., refined utility, bold, minimalist)
+- Note any distinctive visual signatures recommended
+- Extract color usage guidance beyond basic tokens
+
+**Step B: Apply Tailwind CSS Patterns**
+
+From the "Frontend Aesthetics Guidelines" or "Tailwind Patterns" section:
+
+- Use recommended spacing scale (not arbitrary values)
+- Apply suggested border radius patterns (rounded-lg vs rounded-xl)
+- Follow shadow hierarchy recommendations
+- Use the motion/transition patterns specified
+
+**Step C: Implement Typography Hierarchy**
+
+From typography guidance:
+
+- Apply heading styles (weights, sizes, tracking)
+- Use body text recommendations (line-height, color contrast)
+- Apply any distinctive font choices mentioned
+
+**Step D: Verify Accessibility**
+
+From "Accessibility Integration" or "A11y" section:
+
+- Ensure color contrast meets guidelines
+- Add appropriate ARIA labels
+- Verify focus states are visible
+- Check touch target sizes
+
+**Step E: Apply Distinctiveness Requirements**
+
+Make at least ONE distinctive choice per component:
+
+- Unexpected hover interaction
+- Creative use of negative space
+- Non-standard card or button treatment
+- Asymmetric layout element
+
+Document which distinctive elements you applied for consistency tracking.
 
 **Scenario B: User chose to continue without skill file in Step 1**
 

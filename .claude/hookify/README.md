@@ -180,6 +180,71 @@ Validate YAML syntax:
 head -20 .claude/hookify.dos-*.local.md | grep -E "^(name|enabled|event|action|pattern):"
 ```
 
+## Error Handling
+
+### What Happens When a Rule Has Errors
+
+If a hookify rule has YAML syntax errors or invalid configuration:
+
+| Error Type             | Behavior                 | How to Diagnose                    |
+| ---------------------- | ------------------------ | ---------------------------------- |
+| Invalid YAML syntax    | Rule is silently ignored | Check YAML parsing                 |
+| Missing required field | Rule is silently ignored | Verify all required fields present |
+| Invalid operator       | Rule won't match         | Check operator spelling            |
+| Invalid regex pattern  | Rule may error or skip   | Test pattern separately            |
+
+### Diagnosing Non-Working Rules
+
+1. **Check YAML syntax:**
+
+   ```bash
+   # Validate YAML structure (requires yq or similar)
+   cat .claude/hookify.dos-[rule-name].local.md | sed -n '/^---$/,/^---$/p' | yq .
+   ```
+
+2. **Common YAML issues:**
+   - Missing quotes around patterns with special characters
+   - Incorrect indentation (YAML requires consistent spaces, not tabs)
+   - Missing colons after field names
+   - Unescaped special characters in patterns
+
+3. **Test patterns manually:**
+   ```bash
+   # Test if a pattern matches expected files
+   echo "src/sections/invoices/components/List.tsx" | grep -E "src/sections/[^/]+/components/.*\.tsx$"
+   ```
+
+### Example Fixes for Common Errors
+
+**Problem:** Pattern with unquoted special characters
+
+```yaml
+# Wrong - special chars not quoted
+pattern: import.*from\s+.*data\.json
+
+# Correct - pattern in quotes
+pattern: "import.*from\\s+.*data\\.json"
+```
+
+**Problem:** Missing required fields
+
+```yaml
+# Wrong - missing event and action
+---
+name: my-rule
+enabled: true
+pattern: "test"
+---
+# Correct - all required fields present
+---
+name: my-rule
+enabled: true
+event: file
+action: warn
+pattern: "test"
+---
+```
+
 ## Related Documentation
 
 - [agents.md](../../agents.md) — Design OS agent directives

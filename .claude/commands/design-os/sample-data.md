@@ -1123,3 +1123,100 @@ When you're ready, run `/design-screen` to create the screen design for this sec
 - Always generate types.ts alongside data.json
 - Callback props should cover all actions mentioned in the spec
 - **Use entity names from the global data model for consistency across sections**
+
+---
+
+## Recovery Pattern
+
+If this command fails partway through, use these recovery steps to restore a consistent state.
+
+### Partial Failure Scenarios
+
+| Scenario                           | Files Created                  | State        | Recovery Action                      |
+| ---------------------------------- | ------------------------------ | ------------ | ------------------------------------ |
+| data.json created, types.ts failed | data.json only                 | Inconsistent | Delete data.json, re-run command     |
+| data.json validation failed        | data.json (invalid)            | Broken       | Delete data.json, re-run command     |
+| types.ts validation failed         | data.json + types.ts (invalid) | Broken       | Fix types.ts manually or delete both |
+| Mismatch between files             | Both exist, inconsistent       | Broken       | Delete both, re-run command          |
+
+### Recovery Steps
+
+**If types.ts generation failed after data.json was created:**
+
+```bash
+# 1. Check current state
+ls -la product/sections/[section-id]/
+
+# 2. Option A: Start fresh (recommended)
+rm product/sections/[section-id]/data.json
+rm product/sections/[section-id]/types.ts 2>/dev/null
+# Then re-run /sample-data
+
+# 3. Option B: Keep data.json, regenerate types.ts
+# Manually run Step 7 (Generate TypeScript Types) only
+```
+
+**If data.json exists but types.ts is missing:**
+
+```
+Warning: Inconsistent state detected.
+- data.json exists at product/sections/[section-id]/data.json
+- types.ts is missing at product/sections/[section-id]/types.ts
+
+This can cause /design-screen to fail.
+
+Options:
+1. Re-run /sample-data to regenerate both files (recommended)
+2. Manually create types.ts based on existing data.json
+```
+
+**If both files exist but are out of sync:**
+
+Check for consistency issues:
+
+```bash
+# Compare entity names in data.json vs types.ts
+# data.json should have plural camelCase keys (invoices, users)
+# types.ts should have singular PascalCase interfaces (Invoice, User)
+
+# Check data.json keys
+grep -o '"[a-z]\+":' product/sections/[section-id]/data.json | grep -v '_meta' | sort | uniq
+
+# Check types.ts interfaces
+grep 'export interface' product/sections/[section-id]/types.ts
+```
+
+### Preventing Inconsistent State
+
+The command generates files in this order:
+
+1. **data.json** (Step 5) → validated in Step 6
+2. **types.ts** (Step 7) → derived from validated data.json
+
+**Critical:** If Step 5 succeeds but Step 6 validation fails, data.json is already written. The retry mechanism (3 attempts) handles this by regenerating data.json each time.
+
+**If you need to manually fix data.json:**
+
+1. Ensure `_meta` object exists with all required fields
+2. Ensure all entity arrays are consistent (same fields in all records)
+3. Run the validation script from Step 6 to verify
+4. Then re-run /sample-data to regenerate types.ts
+
+### Cleanup Command
+
+To completely reset and start fresh:
+
+```bash
+# Remove both generated files
+rm -f product/sections/[section-id]/data.json
+rm -f product/sections/[section-id]/types.ts
+
+# Verify cleanup
+ls product/sections/[section-id]/
+# Should only show: spec.md (and any screenshots)
+
+# Re-run the command
+# /sample-data
+```
+
+This ensures a clean state before regeneration.

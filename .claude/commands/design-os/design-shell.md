@@ -310,6 +310,36 @@ Error: product/product-roadmap.md - File not found. Run /product-roadmap to crea
 
 Stop here if any required file is missing.
 
+### Check Section Definitions
+
+Check if any sections have been defined (spec.md exists):
+
+```bash
+# Count sections with spec files
+SECTION_COUNT=$(find product/sections -name "spec.md" 2>/dev/null | wc -l | tr -d ' ')
+echo "Sections with spec.md: $SECTION_COUNT"
+```
+
+**If no sections are defined yet:**
+
+```
+Note: No sections have been defined yet (no spec.md files found in product/sections/).
+
+The shell navigation will be minimal without sections:
+- Navigation will use section placeholders from product-roadmap.md
+- Screen designs won't be linked until sections are created
+- You may want to re-run /design-shell after defining sections for complete navigation
+
+To define sections, run /shape-section for each section listed in product-roadmap.md.
+```
+
+Use AskUserQuestion with options:
+
+- "Continue with minimal navigation" — Proceed, shell will use roadmap titles
+- "Stop — I'll define sections first" — END COMMAND
+
+This warning helps users understand that `/design-shell` can be run at any point, but navigation is most complete when sections exist.
+
 ### Validate UI Components (for Secondary Components)
 
 Check if Sheet and Dialog components exist for secondary shell components:

@@ -809,6 +809,8 @@ Output: {
 > | Shell Relationships | Global shell UI  | `/design-shell`  |
 >
 > View Relationships wire views within a section (e.g., list → detail drawer). Shell Relationships wire global shell elements (e.g., header action → notifications drawer).
+>
+> **See also:** `agents.md` → "View Relationships" section for the canonical relationship format specification, relationship types (drawer/modal/inline), data references, and how `/sample-data` and `/design-screen` use these relationships.
 
 **Important:**
 

@@ -177,7 +177,7 @@ echo "$CONTENT" | grep -E "^### " | while read -r line; do
   fi
   # Check for obvious plural forms only (conservative to avoid false positives)
   # Only warn about clear plurals: -ies (Companies→Company), -ves (Shelves→Shelf)
-  # Skip: singular nouns ending in s (Canvas, Atlas, Nexus, Alias, Status, Address, etc.)
+  # Skip: singular nouns ending in s — see "Plural Detection Exceptions" below
   if [[ "$entity_name" =~ ies$ ]]; then
     PLURAL_ENTITIES="$PLURAL_ENTITIES $entity_name:${entity_name%ies}y"
   elif [[ "$entity_name" =~ ves$ ]]; then
@@ -213,6 +213,28 @@ Options:
 
 - "Yes, rename to singular" — Update entity headings to singular form
 - "No, keep as-is" — The names are intentional (e.g., "Supplies" is correct)
+
+### Plural Detection Exceptions
+
+The following words end in 's' but are NOT plural forms. The validation script does NOT warn about these:
+
+| Category                | Words                                                                  | Reason                                                     |
+| ----------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **-us endings** (Latin) | `Status`, `Nexus`, `Census`, `Corpus`, `Genus`, `Opus`                 | Latin singular nouns                                       |
+| **-as endings**         | `Atlas`, `Canvas`, `Alias`                                             | Greek/Latin singular nouns                                 |
+| **-is endings** (Greek) | `Analysis`, `Basis`, `Crisis`, `Thesis`, `Diagnosis`, `Synopsis`       | Greek singular nouns (plural is -es)                       |
+| **-ss endings**         | `Address`, `Access`, `Process`, `Progress`, `Success`, `Class`, `Pass` | Double-s endings are singular                              |
+| **Invariable nouns**    | `News`, `Species`, `Series`, `Analytics`, `Statistics`, `Logistics`    | Same form for singular/plural                              |
+| **Mass nouns**          | `Data`, `Media`, `Criteria`                                            | Often used as singular in tech (though technically plural) |
+| **-ics endings**        | `Physics`, `Mathematics`, `Economics`, `Graphics`                      | Field/discipline names                                     |
+
+**Why this matters:**
+
+- `Status` should NOT become `Statu`
+- `Address` should NOT become `Addres`
+- `Analytics` is correct as-is (not `Analytic`)
+
+**Manual override:** If you have a legitimate entity name that the script incorrectly flags as plural, choose "No, keep as-is" when prompted.
 
 **If user chooses "Yes, rename to singular":**
 

@@ -721,9 +721,11 @@ This ensures future `/design-screen` runs can maintain consistency.
 
 ### Enhanced Fallback Design Guidance
 
-When the skill file is unavailable, use these enhanced fallback principles that include aesthetic direction (not just mechanical rules):
+When the skill file is unavailable, use these enhanced fallback principles that include aesthetic direction (not just mechanical rules).
 
-**Aesthetic Tone Options** (ask user to choose one):
+> **REQUIRED:** When SKILL.md is unavailable, asking the user to select an aesthetic tone is MANDATORY before proceeding with design. Do not skip this step or use a default tone without user input. This ensures the design has intentional aesthetic direction rather than being generic.
+
+**Aesthetic Tone Options** (REQUIRED — ask user to choose one):
 
 - **Refined Utility**: Clean, purposeful, subtle shadows, muted accents, professional feel
 - **Bold & Bright**: High contrast, vibrant colors, strong typography, energetic
@@ -1777,6 +1779,22 @@ Both strategies coexist because they serve different purposes:
 | -------- | ------------------------------------------------------------- |
 | Shell    | Navigation visibility, sidebar collapse/expand, header layout |
 | Sections | Content layout, card grids, data table columns, form layouts  |
+
+**Breakpoint Ownership by Size:**
+
+| Breakpoint  | Width Range | Shell Owns                            | Section Owns                           |
+| ----------- | ----------- | ------------------------------------- | -------------------------------------- |
+| **Mobile**  | < 640px     | Hamburger menu, hidden sidebar        | Single column, stacked cards           |
+| **Tablet**  | 640-1024px  | Collapsible sidebar, condensed header | 2-column grids, responsive tables      |
+| **Desktop** | > 1024px    | Full sidebar, expanded header actions | Multi-column layouts, full data tables |
+
+**Conflict Resolution:**
+
+At intermediate breakpoints (e.g., 768px):
+
+- Shell's sidebar state takes precedence for layout width calculations
+- Sections should use `flex-1` or `w-full` to fill available space
+- Never hardcode section widths that assume sidebar visibility
 
 This separation means changes to mobile navigation don't affect section layouts, and vice versa.
 

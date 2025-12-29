@@ -192,6 +192,8 @@ If the Hide button cannot be found or clicked, follow this fallback procedure:
 | **Mobile**            | 375px  | 667px  | Mobile-responsive variants         |
 | **Tablet**            | 768px  | 1024px | Tablet variants (optional)         |
 
+> **See also:** `agents.md` → "Viewport Dimensions (Standardized)" for the canonical viewport dimensions and responsive breakpoint details used across all Design OS commands.
+
 ### Viewport Selection Guidance
 
 **When to use each viewport:**
@@ -345,3 +347,56 @@ This command involves several steps that may take time:
 - **Screenshot capture** — Full page screenshots of complex pages may take a moment
 
 If the screenshot appears incomplete or shows loading states, try waiting a few seconds longer before capturing.
+
+### Error Recovery
+
+If any step fails after starting the dev server, you must clean up manually to avoid leaving orphaned processes.
+
+**Check if dev server is still running:**
+
+```bash
+lsof -i :3000
+```
+
+**If the command fails between Step 2 and Step 6:**
+
+1. **Check `DEV_SERVER_PREEXISTING` value** — Did you start the server or was it already running?
+2. **If you started it** (`DEV_SERVER_PREEXISTING=false`):
+
+   ```bash
+   # Kill the orphaned dev server
+   lsof -ti :3000 | xargs kill -9 2>/dev/null || true
+
+   # Verify it's stopped
+   lsof -i :3000 || echo "Server stopped"
+   ```
+
+3. **If it was pre-existing** (`DEV_SERVER_PREEXISTING=true`):
+   - Leave the server running
+   - The user intentionally had it running
+
+**Common failure scenarios:**
+
+| Step   | Failure Type           | Recovery Action                               |
+| ------ | ---------------------- | --------------------------------------------- |
+| Step 2 | Server won't start     | Check port 3000 availability: `lsof -i :3000` |
+| Step 3 | Page won't load        | Verify route exists in router.tsx             |
+| Step 3 | Hide button not found  | Proceed with screenshot (header visible)      |
+| Step 4 | Screenshot save fails  | Check .playwright-mcp/ directory permissions  |
+| Step 4 | Copy to product/ fails | Check product/sections/[id]/ directory exists |
+
+**If command terminates unexpectedly:**
+
+Always run this cleanup check before re-running the command:
+
+```bash
+# Check for orphaned dev server
+if lsof -i :3000 > /dev/null 2>&1; then
+  echo "Dev server still running on port 3000"
+  echo "Kill it with: lsof -ti :3000 | xargs kill -9"
+else
+  echo "Port 3000 is free"
+fi
+```
+
+This prevents port conflicts when re-running `/screenshot-design`.
