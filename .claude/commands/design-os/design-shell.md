@@ -52,7 +52,7 @@ if [ -f "src/shell/components/AppShell.tsx" ]; then
 fi
 ```
 
-**If SHELL_EXISTS is false:** Skip to Step 1 (fresh creation workflow).
+**If SHELL_EXISTS is false:** Skip Steps 0.5-0.7 entirely and proceed directly to Step 1 (fresh creation workflow).
 
 **If SHELL_EXISTS is true:** Present mode selection:
 
@@ -74,9 +74,9 @@ What would you like to do?
 
 Use AskUserQuestion with these options. Based on the choice:
 
-- **Audit & Report**: Go to Step 0.5, then STOP after displaying report
+- **Audit & Report**: Go to Step 0.5, then STOP after displaying report (command ends; user can re-run `/design-shell` to take action)
 - **Audit & Fix**: Go to Step 0.5, fix issues, continue to Step 1+
-- **Enhance**: Go to Step 3.6 (interactive elements question)
+- **Enhance**: Skip design questions (assume existing shell is valid). Go directly to Step 3.6 to add new secondary components based on updated interactive elements selections.
 - **Full Rebuild**: Delete existing shell files, then continue to Step 1
 
 ## Step 0.5: Run Audit Checklist
@@ -495,7 +495,7 @@ Best for: Single-purpose tools, wizard-style flows
 
 **Based on your [N] sections, I'd recommend [Pattern A/B/C]** because [reason based on section count and product type].
 
-Which pattern fits **[Product Name]** best?"
+Which pattern fits **[Product Name]** best? (I can also suggest alternatives if none of these feel right.)"
 
 Wait for their response.
 

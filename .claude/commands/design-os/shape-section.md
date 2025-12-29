@@ -110,7 +110,7 @@ Once a section is selected, immediately generate and validate its section-id:
 - "Reports..." → `reports` (trailing punctuation removed)
 - "100% Complete" → `100-complete` (special chars removed, numbers preserved)
 
-> **See also:** `agents.md` → "Standardized Prerequisite Checks" → "Section ID Generation Rules" for the standardized specification used across all commands.
+> **See also:** `agents.md` → "Section ID Generation Rules" for the standardized specification used across all commands.
 
 **Validate against roadmap:**
 

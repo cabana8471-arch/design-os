@@ -1,8 +1,8 @@
-<!-- v1.0.0 -->
+<!-- v1.1.0 -->
 <!-- Usage: Include as the opening section of section-specific prompts -->
-<!-- Note: SECTION_NAME, SECTION_ID, and NN are placeholders for user substitution during use -->
+<!-- Note: [Product Name] is auto-substituted; SECTION_NAME, SECTION_ID, and NN require user substitution -->
 
-# Section Implementation Prompt
+# Section Implementation Prompt: [Product Name]
 
 ## Define Section Variables
 
@@ -14,4 +14,4 @@ Before using this prompt, replace these placeholders:
 
 ---
 
-I need you to implement the **SECTION_NAME** section of my application.
+I need you to implement the **SECTION_NAME** section of **[Product Name]**.

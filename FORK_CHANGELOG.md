@@ -6,6 +6,70 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-29 17:30] Critical Analysis - Template Consistency & Control Flow Clarity
+
+### Description
+
+Comprehensive critical analysis of all files in `.claude/` folder plus `agents.md`. Initial analysis identified 11 potential issues across 2 severity levels (3 Medium, 8 Low). After verification during implementation, 6 issues required fixes while 5 were false positives (already correctly implemented). Focus on template variable consistency, control flow clarifications, and cross-reference accuracy.
+
+### New Files Created
+
+_None_
+
+### Modified Files
+
+| File                                              | Modification                                                                                |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `.claude/templates/design-os/section/preamble.md` | Added `[Product Name]` variable for consistency with one-shot/preamble.md (v1.0.0 → v1.1.0) |
+| `agents.md`                                       | Updated template version table: section/preamble.md v1.0.0 → v1.1.0                         |
+| `.claude/commands/design-os/design-shell.md`      | Clarified Step 0 skip logic: explicitly state "Skip Steps 0.5-0.7 entirely"                 |
+| `.claude/commands/design-os/design-shell.md`      | Clarified Enhance mode: "Skip design questions" to avoid ambiguity                          |
+| `.claude/commands/design-os/design-shell.md`      | Clarified Audit & Report: command ends, user can re-run to take action                      |
+| `.claude/commands/design-os/design-shell.md`      | Added Step 2 custom pattern option: "I can also suggest alternatives"                       |
+| `.claude/commands/design-os/shape-section.md`     | Simplified cross-reference: removed redundant nested path                                   |
+| `.claude/commands/design-os/design-screen.md`     | Fixed cross-reference: "Multiple Views Workflow" → "Step 4.6: Define View Relationships"    |
+| `.claude/templates/design-os/README.md`           | Fixed stripping wording: "Strip version comments" → "Strip all leading comments"            |
+
+### Gaps Resolved
+
+**Medium (3):**
+
+- **M1:** section/preamble.md missing `[Product Name]` variable that README.md documented as present
+- **M2:** design-shell.md Step 0 didn't explicitly state to skip Steps 0.5-0.7 for fresh creation
+- **M3:** design-shell.md "Enhance" mode jump to Step 3.6 was ambiguous about skipping design questions
+
+**Low (3):**
+
+- **L1:** shape-section.md cross-reference used nested path when Section ID Rules is top-level
+- **L2:** design-screen.md referenced non-existent "Multiple Views Workflow" section name
+- **L6:** README.md stripping procedure said "version comments" but regex strips all HTML comments
+
+**False Positives (5):**
+
+- **L3:** sample-data.md directory check already implemented at line 28
+- **L4:** sample-data.md warning placement is correct (end of Step 5, before Step 6)
+- **L5:** design-tokens.md mono font clarification already exists at line 366
+- **L8:** design-shell.md audit mode completion already clear from "STOP after displaying report"
+- **L9:** design-shell.md Step 2 question implicitly allows custom suggestions via conversation
+
+### Statistics
+
+- Files modified: 6
+- Lines changed: ~20
+- Issues resolved: 6 (3 Medium, 3 Low)
+- False positives: 5 (already correctly implemented)
+
+### Verification
+
+- ✅ section/preamble.md now has `[Product Name]` in title and intro text
+- ✅ Template version table in agents.md updated to v1.1.0
+- ✅ design-shell.md Step 0 clearly states skip logic
+- ✅ design-shell.md Enhance mode explicitly skips design questions
+- ✅ Cross-references use correct section names
+- ✅ README.md stripping wording matches actual regex behavior
+
+---
+
 ## [2025-12-29 17:05] Critical Analysis - Documentation Clarity & Validation Robustness
 
 ### Description

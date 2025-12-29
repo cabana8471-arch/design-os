@@ -1312,7 +1312,7 @@ Design OS uses a modular template system for generating implementation prompts a
 | `common/tdd-workflow.md`           | v1.1.0         | Test-driven development flow   |
 | `one-shot/preamble.md`             | v1.1.0         | One-shot prompt intro          |
 | `one-shot/prompt-template.md`      | v1.0.0         | One-shot file references       |
-| `section/preamble.md`              | v1.0.0         | Section prompt intro           |
+| `section/preamble.md`              | v1.1.0         | Section prompt intro           |
 | `section/prompt-template.md`       | v1.0.0         | Section file references        |
 | `section/clarifying-questions.md`  | v1.1.0-section | Section-specific questions     |
 | `section/tdd-workflow.md`          | v1.2.0-section | Section-specific TDD           |

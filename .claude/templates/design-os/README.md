@@ -190,7 +190,7 @@ Each template includes a version comment at the top (e.g., `<!-- v1.0.0 -->`):
 
 When assembling prompts during `/export-product`:
 
-1. **Strip version comments:** Remove all `<!-- v1.0.0 -->` lines from the top of each template before concatenation
+1. **Strip all leading comments:** Remove all leading HTML comments (`<!-- ... -->`) from the top of each template before concatenation
 2. **Final prompt cleanup:** The assembled prompts should not contain any version comments
 3. **Preserve template versions:** Keep version comments in the source template files for maintenance tracking
 
