@@ -100,7 +100,7 @@ Generate the complete export package with all components, types, and handoff doc
 | `/product-vision`    | `product-overview.md`                                                                                                                                                                                                                                         | `product/`                       |
 | `/product-roadmap`   | `product-roadmap.md`                                                                                                                                                                                                                                          | `product/`                       |
 | `/data-model`        | `data-model.md`                                                                                                                                                                                                                                               | `product/data-model/`            |
-| `/design-tokens`     | `colors.json`, `typography.json`                                                                                                                                                                                                                              | `product/design-system/`         |
+| `/design-tokens`     | `colors.json`, `typography.json` [2]                                                                                                                                                                                                                          | `product/design-system/`         |
 | `/design-shell`      | `spec.md`, `data.json`, `types.ts`, `design-direction.md`, Primary components (`AppShell.tsx`, `MainNav.tsx`, `UserMenu.tsx`), Secondary components (based on selection: `NotificationsDrawer.tsx`, `SearchModal.tsx`, `SettingsModal.tsx`, etc.), `index.ts` | See note below [1]               |
 | `/shape-section`     | `spec.md`                                                                                                                                                                                                                                                     | `product/sections/[section-id]/` |
 | `/sample-data`       | `data.json`, `types.ts`                                                                                                                                                                                                                                       | `product/sections/[section-id]/` |
@@ -116,6 +116,8 @@ Generate the complete export package with all components, types, and handoff doc
 - Secondary components (if selected in Step 3.6) → `src/shell/components/`
 - `index.ts` → `src/shell/components/`
 - `ShellPreview.tsx` → `src/shell/` (Design OS only, not exported)
+
+**[2] /design-tokens typography requirement:** `typography.json` MUST include a `mono` font field for code/data display. If not specified by user, defaults to IBM Plex Mono.
 
 ### Command Prerequisites
 

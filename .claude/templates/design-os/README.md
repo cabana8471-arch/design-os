@@ -117,6 +117,29 @@ Templates use the `@` prefix to indicate file references in prompts:
 
 **Verification:** To verify assembly orders are in sync, compare this README with `.claude/commands/design-os/export-product.md` Step 14. Any discrepancy means export-product.md takes precedence.
 
+### Sync Verification Checklist
+
+Run this checklist after modifying templates or export-product.md:
+
+- [ ] **Assembly Order Match:** Compare one-shot and section assembly orders in this README with export-product.md Step 14
+- [ ] **Template Versions:** Verify version comments in template files match agents.md "Template Versions" table
+- [ ] **Variable Substitution:** Confirm all variables listed in this README are handled in export-product.md
+- [ ] **File References:** Check that file paths in prompt-template.md match actual export structure
+- [ ] **Test Export:** Run `/export-product` and verify generated prompts are valid
+
+**Quick verification command:**
+
+```bash
+# Check template version comments match agents.md
+for f in .claude/templates/design-os/common/*.md \
+         .claude/templates/design-os/one-shot/*.md \
+         .claude/templates/design-os/section/*.md; do
+  if [ -f "$f" ] && [ "$(basename "$f")" != "README.md" ]; then
+    echo "$(head -1 "$f") - $f"
+  fi
+done
+```
+
 ### One-Shot Prompt Assembly Order
 
 1. `one-shot/preamble.md` — Title and introduction

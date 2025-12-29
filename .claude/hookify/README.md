@@ -122,6 +122,40 @@ Your helpful error message here...
 | `starts_with`  | Field must start with the string    |
 | `ends_with`    | Field must end with the string      |
 
+**Operator Examples:**
+
+```yaml
+# regex_match - Match files in src/sections/*/components/
+- field: file_path
+  operator: regex_match
+  pattern: src/sections/[^/]+/components/.*\.tsx$
+
+# contains - Detect data.json imports
+- field: new_text
+  operator: contains
+  pattern: from 'data.json'
+
+# not_contains - Ensure dark mode variants exist
+- field: new_text
+  operator: not_contains
+  pattern: "dark:"
+
+# equals - Match exact file name
+- field: file_path
+  operator: equals
+  pattern: tailwind.config.js
+
+# starts_with - Match product directory
+- field: file_path
+  operator: starts_with
+  pattern: product/
+
+# ends_with - Match TypeScript files
+- field: file_path
+  operator: ends_with
+  pattern: .tsx
+```
+
 ### Available Fields by Event Type
 
 | Event    | Fields                                         |

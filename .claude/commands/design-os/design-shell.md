@@ -1816,7 +1816,7 @@ Create `src/shell/ShellPreview.tsx` with state management ONLY for the component
 3. Only render components that were imported
 4. Add null checks for data properties that may not exist if component wasn't selected
 
-> **Template Instructions:** Lines with `// IF [condition]` are instructions, NOT code comments.
+> **Template Instructions:** Lines with `// ⚠️ CONDITIONAL:` are template instructions, NOT code comments.
 > When generating actual code, REMOVE these instruction comments entirely and ONLY include
 > the lines where the condition is met based on Step 3.6 selections.
 
@@ -1828,12 +1828,12 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 // CONDITIONAL IMPORTS: Only include components that appear in Shell Relationships
 // Remove any import for components NOT selected in Step 3.6
-import { NotificationsDrawer } from "./components/NotificationsDrawer"; // IF HeaderAction.notifications in relationships
-import { SearchModal } from "./components/SearchModal"; // IF HeaderAction.search in relationships
-import { SettingsModal } from "./components/SettingsModal"; // IF UserMenu.settings in relationships
-import { ProfileModal } from "./components/ProfileModal"; // IF UserMenu.profile in relationships
-import { HelpPanel } from "./components/HelpPanel"; // IF HeaderAction.help in relationships
-import { MobileMenuDrawer } from "./components/MobileMenuDrawer"; // IF MobileNav.toggle in relationships
+import { NotificationsDrawer } from "./components/NotificationsDrawer"; // ⚠️ CONDITIONAL: Only include if HeaderAction.notifications in relationships
+import { SearchModal } from "./components/SearchModal"; // ⚠️ CONDITIONAL: Only include if HeaderAction.search in relationships
+import { SettingsModal } from "./components/SettingsModal"; // ⚠️ CONDITIONAL: Only include if UserMenu.settings in relationships
+import { ProfileModal } from "./components/ProfileModal"; // ⚠️ CONDITIONAL: Only include if UserMenu.profile in relationships
+import { HelpPanel } from "./components/HelpPanel"; // ⚠️ CONDITIONAL: Only include if HeaderAction.help in relationships
+import { MobileMenuDrawer } from "./components/MobileMenuDrawer"; // ⚠️ CONDITIONAL: Only include if MobileNav.toggle in relationships
 
 // Import shell data and types
 import shellData from "../../../product/shell/data.json";
@@ -1842,12 +1842,12 @@ import type { ShellData } from "../../../product/shell/types";
 export default function ShellPreview() {
   // CONDITIONAL STATE: Only create state for components that were imported
   // Remove state for components NOT selected in Step 3.6
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false); // IF NotificationsDrawer imported
-  const [isSearchOpen, setIsSearchOpen] = useState(false); // IF SearchModal imported
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // IF SettingsModal imported
-  const [isProfileOpen, setIsProfileOpen] = useState(false); // IF ProfileModal imported
-  const [isHelpOpen, setIsHelpOpen] = useState(false); // IF HelpPanel imported
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // IF MobileMenuDrawer imported
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false); // ⚠️ CONDITIONAL: Only include if NotificationsDrawer imported
+  const [isSearchOpen, setIsSearchOpen] = useState(false); // ⚠️ CONDITIONAL: Only include if SearchModal imported
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // ⚠️ CONDITIONAL: Only include if SettingsModal imported
+  const [isProfileOpen, setIsProfileOpen] = useState(false); // ⚠️ CONDITIONAL: Only include if ProfileModal imported
+  const [isHelpOpen, setIsHelpOpen] = useState(false); // ⚠️ CONDITIONAL: Only include if HelpPanel imported
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // ⚠️ CONDITIONAL: Only include if MobileMenuDrawer imported
 
   // Type the shell data
   const data = shellData as ShellData;
@@ -1872,12 +1872,12 @@ export default function ShellPreview() {
       // Escape closes all - adjust setters based on imported components
       if (e.key === "Escape") {
         // Close whichever is open (remove setters for non-imported components)
-        setIsNotificationsOpen(false); // IF NotificationsDrawer imported
-        setIsSearchOpen(false); // IF SearchModal imported
-        setIsSettingsOpen(false); // IF SettingsModal imported
-        setIsProfileOpen(false); // IF ProfileModal imported
-        setIsHelpOpen(false); // IF HelpPanel imported
-        setIsMobileMenuOpen(false); // IF MobileMenuDrawer imported
+        setIsNotificationsOpen(false); // ⚠️ CONDITIONAL: Only include if NotificationsDrawer imported
+        setIsSearchOpen(false); // ⚠️ CONDITIONAL: Only include if SearchModal imported
+        setIsSettingsOpen(false); // ⚠️ CONDITIONAL: Only include if SettingsModal imported
+        setIsProfileOpen(false); // ⚠️ CONDITIONAL: Only include if ProfileModal imported
+        setIsHelpOpen(false); // ⚠️ CONDITIONAL: Only include if HelpPanel imported
+        setIsMobileMenuOpen(false); // ⚠️ CONDITIONAL: Only include if MobileMenuDrawer imported
       }
     };
     window.addEventListener("keydown", handleKeyDown);
