@@ -540,6 +540,22 @@ The **frontend-design** skill provides comprehensive guidance for creating disti
 
 **Location:** `.claude/skills/frontend-design/SKILL.md`
 
+**File Format:** The SKILL.md file uses a custom format:
+
+```
+<!-- v1.0.0 -->
+<!-- Usage: description... -->
+
+name: skill-name
+description: skill description
+
+---
+
+[Actual guidance content]
+```
+
+Note: The `name:` and `description:` fields are NOT inside YAML frontmatter — they appear before the `---` separator. This is intentional for readability.
+
 **When to Use:**
 
 - Referenced by `/design-shell` command — before creating shell components
@@ -1314,10 +1330,12 @@ The "Foundation" milestone (milestone 01) includes core infrastructure that all 
 
 1. **Project Setup**: Package.json, build config, linting, TypeScript configuration
 2. **Authentication**: Auth provider integration, protected routes, session management
-3. **Core Layout**: Shell components (AppShell, MainNav, UserMenu)
+3. **Core Layout**: Shell components (AppShell, MainNav, UserMenu) — _conditional, see note below_
 4. **Design System**: Theme provider, color tokens, typography classes
 5. **Routing**: Router setup, navigation structure, route guards
 6. **Data Layer**: API client setup, state management, data fetching patterns
+
+> **Note on Shell Components:** Shell components are included in Foundation when `INCLUDE_SHELL=true` (set during `/export-product` Step 1). If the user proceeds without shell, Foundation skips shell setup and the implementation builds custom navigation instead.
 
 **In exports:** Foundation is always `instructions/incremental/01-foundation.md`. Section milestones start at `02-[section-id].md`.
 
@@ -1914,7 +1932,14 @@ ls .claude/hookify.dos-*.local.md
 
 ### Full Documentation
 
-See individual `.claude/hookify.*.local.md` files for rule definitions. Each file contains:
+See `.claude/hookify/README.md` for the complete hookify system documentation, including:
+
+- Complete list of all rules organized by category
+- Rule file format and condition operators
+- Creating custom rules
+- Troubleshooting guide
+
+Individual rule files (`.claude/hookify.*.local.md`) contain:
 
 - Rule purpose and trigger conditions
 - Match patterns and file filters

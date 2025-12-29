@@ -6,6 +6,70 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-29 14:50] Critical Analysis - Cross-References & Documentation Clarifications
+
+### Description
+
+Comprehensive critical analysis of all files in `.claude/` folder plus `agents.md`. Initial analysis identified 17 potential issues across 4 severity levels (3 Critical, 5 High, 6 Medium, 3 Low). After thorough verification during implementation, only 6 required actual fixes while 11 were false positives (already properly implemented or working as intended). Focus on improving cross-references, clarifying documentation, and fixing terminology consistency.
+
+### New Files Created
+
+_None_
+
+### Modified Files
+
+| File                                                          | Modification                                                                                    |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/export-product.md`                | Added Rule 4 abbreviation note in 2 locations (one-shot and section prompt examples)            |
+| `agents.md`                                                   | Added INCLUDE_SHELL conditional note to Foundation Milestone Definition                         |
+| `agents.md`                                                   | Added hookify/README.md reference in Full Documentation section                                 |
+| `agents.md`                                                   | Documented SKILL.md custom format (name/description fields before YAML frontmatter)             |
+| `.claude/templates/design-os/section/clarifying-questions.md` | Renamed "Backend Business Logic" → "Section-Specific Backend Logic" to distinguish from common/ |
+| `.claude/commands/design-os/data-model.md`                    | Added cross-reference to agents.md Four Pillars section                                         |
+
+### Gaps Resolved
+
+**Actual Fixes (6):**
+
+- **#3:** export-product.md example assembled prompts only showed 3 rules but common/top-rules.md has 4 rules - added abbreviation note for Rule 4
+- **#8:** Foundation Milestone Definition didn't mention INCLUDE_SHELL conditional flag - added clarifying note
+- **#9:** section/clarifying-questions.md had same "Backend Business Logic" label as common/ version - renamed to "Section-Specific" for clarity
+- **#11:** data-model.md missing cross-reference to broader context in agents.md - added Four Pillars reference
+- **#13:** agents.md Hookify section mentioned rules but didn't reference the full README - added hookify/README.md reference
+- **#16:** SKILL.md uses non-standard frontmatter format (name/description before ---) - documented custom format in agents.md
+
+**False Positives Identified (11):**
+
+- **#1:** Hookify counts ARE correct (3 block + 19 warn = 22 total rules)
+- **#2:** Template versions in agents.md already match actual file versions
+- **#4:** Step Index in export-product.md already matches all step headings correctly
+- **#5:** design-tokens.md already implements retry pattern for font validation
+- **#6:** design-screen.md Step 5 already clarifies skill file usage
+- **#7:** design-tokens.md already has directory creation documented
+- **#10:** ThemeToggle distinction already documented at agents.md line 287
+- **#12:** \_meta validation in sample-data.md is comprehensive (Step 6)
+- **#14:** Step NA pattern already documented at agents.md line 151
+- **#15:** Template README already has source of truth note at line 116-118
+- **#17:** screenshot-design.md Step 6 already has dev server cleanup
+
+### Statistics
+
+- Files modified: 4
+- Lines changed: ~50
+- Issues resolved: 6 (2 Critical, 1 High, 2 Medium, 1 Low)
+- False positives: 11 (already implemented)
+
+### Verification
+
+- ✅ Rule 4 now noted in example assembled prompts
+- ✅ Foundation Milestone documents INCLUDE_SHELL conditional
+- ✅ Section clarifying questions clearly distinct from common/
+- ✅ Data model command has cross-reference to Four Pillars context
+- ✅ Hookify full documentation referenced in agents.md
+- ✅ SKILL.md format documented as intentional custom pattern
+
+---
+
 ## [2025-12-29 14:30] Critical Analysis - JSON Templates & Multi-View Workflow
 
 ### Description

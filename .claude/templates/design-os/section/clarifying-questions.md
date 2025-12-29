@@ -20,7 +20,7 @@ Please ask me clarifying questions about this section:
    - Any actions that require elevated permissions?
    - Should certain data be hidden based on user role?
 
-4. **Backend Business Logic**
+4. **Section-Specific Backend Logic**
    - Any server-side logic, validations or processes needed beyond what's shown in the UI?
    - Background processes, notifications, or webhooks to trigger?
    - Real-time updates or polling requirements?

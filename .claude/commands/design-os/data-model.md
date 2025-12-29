@@ -4,6 +4,8 @@ You are helping the user define the core data model for their product. This esta
 
 > **Scope:** The data model defines global entities shared across sections. Individual sections may have additional local entities. When running `/sample-data` for a section, entity names should match those defined here for consistency.
 
+> **See also:** `agents.md` → "The Four Pillars" → "Data Model" for the broader context of data modeling in Design OS.
+
 ## Step 1: Check Prerequisites
 
 First, verify that the product overview and roadmap exist:

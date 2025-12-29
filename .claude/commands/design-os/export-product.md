@@ -2533,6 +2533,10 @@ These rules prevent common implementation mistakes. Follow them strictly.
 - (CORRECT) Read provided components to understand props and behavior
 - (CORRECT) Create implementation plan AFTER reading, not before
 
+### Rule 4: ENGLISH OUTPUT ONLY
+
+[Abbreviated — see `common/top-rules.md` for full content. Requires all generated files be in English.]
+
 ---
 
 ## Implementation Reporting Protocol
@@ -2762,6 +2766,10 @@ These rules prevent common implementation mistakes. Follow them strictly.
 - (CORRECT) Read tests.md for EACH section before implementing
 - (CORRECT) Read provided components to understand props and behavior
 - (CORRECT) Create implementation plan AFTER reading, not before
+
+### Rule 4: ENGLISH OUTPUT ONLY
+
+[Abbreviated — see `common/top-rules.md` for full content. Requires all generated files be in English.]
 
 ---
 
