@@ -11,6 +11,40 @@ You are helping the user create a screen design for a section of their product. 
 >
 > The preview wrapper created for the first view will be updated to include subsequent views.
 
+### Multi-View Workflow Details
+
+**Q: Does each view share the same data.json?**
+Yes. All views in a section share `product/sections/[section-id]/data.json`. The sample data is generated once by `/sample-data` and used by all views.
+
+**Q: How does a subsequent run detect existing views?**
+The command checks `src/sections/[section-id]/components/` for existing `.tsx` files. It skips views that already exist unless you explicitly request to recreate them.
+
+**Q: How does the preview wrapper know which view to render?**
+The preview wrapper (`[ViewName]View.tsx` at section root) imports all created components and uses React state to manage which secondary views are open. When you create a new view, the command updates the preview wrapper to:
+
+1. Import the new component
+2. Add state for controlling its visibility (e.g., `isDetailOpen`)
+3. Wire the callbacks (e.g., `onView` opens the detail drawer)
+
+**Q: What files are created per view?**
+
+| View Type                | Component Location          | Preview Wrapper Update                       |
+| ------------------------ | --------------------------- | -------------------------------------------- |
+| Primary (first)          | `components/[ViewName].tsx` | Creates new `[ViewName]View.tsx`             |
+| Secondary (drawer/modal) | `components/[ViewName].tsx` | Updates existing wrapper with state + wiring |
+
+**Example for Invoice section with 3 views:**
+
+```
+src/sections/invoices/
+├── InvoiceListView.tsx      ← Preview wrapper (created on first run, updated on subsequent)
+└── components/
+    ├── InvoiceList.tsx      ← Run 1: Primary view
+    ├── InvoiceDetail.tsx    ← Run 2: Detail drawer component
+    ├── CreateInvoice.tsx    ← Run 3: Create modal component
+    └── index.ts             ← Re-exports all components
+```
+
 ## Step 1: Check Prerequisites
 
 First, identify the target section and verify that all required files exist.
@@ -211,7 +245,7 @@ If the spec includes a `## View Relationships` section (created by `/shape-secti
 
 ```bash
 # Extract view relationships from spec
-SECTION_ID="[section-id]"
+# Note: SECTION_ID was set in Step 1 (e.g., SECTION_ID="invoices")
 VIEW_RELS=$(grep -A 20 "## View Relationships" "product/sections/${SECTION_ID}/spec.md" | grep "^-" || echo "")
 
 if [ -n "$VIEW_RELS" ]; then

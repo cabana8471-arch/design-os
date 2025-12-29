@@ -23,22 +23,22 @@ fi
 
 **Handle the following cases:**
 
-| Condition                         | Action                                                                                                      |
-| --------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Directory doesn't exist           | Show error: "Error: product/sections/[section-id]/ - Directory not found. Run /shape-section to create it." |
-| Directory exists, spec.md missing | Show error: "Error: spec.md - File not found. Run /shape-section to create it."                             |
-| Directory exists, spec.md exists  | Continue to Step 2                                                                                          |
+| Condition                         | Action                                                                                                        |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Directory doesn't exist           | Show error: "Error: product/sections/[section-id]/ - Directory not found. Run /shape-section to create it."   |
+| Directory exists, spec.md missing | Show error: "Error: product/sections/[section-id]/spec.md - File not found. Run /shape-section to create it." |
+| Directory exists, spec.md exists  | Continue to Step 2                                                                                            |
 
 **If the spec doesn't exist:**
 
 ```
-Error: spec.md - File not found. Run /shape-section to create it.
+Error: product/sections/[section-id]/spec.md - File not found. Run /shape-section to create it.
 ```
 
 **If directory exists but spec.md was deleted (edge case):**
 
 ```
-Error: spec.md - File not found (directory exists but spec.md is missing). Run /shape-section to recreate it.
+Error: product/sections/[section-id]/spec.md - File not found (directory exists). Run /shape-section to recreate it.
 ```
 
 Stop here if the spec doesn't exist.

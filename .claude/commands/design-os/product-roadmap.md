@@ -250,6 +250,8 @@ Ask for the mapping: "Which roadmap section should `[orphan-name]` be renamed to
 
 > **Note:** The shell commands below are provided for **user reference**. If the user confirms they want to proceed with file operations (delete, rename, archive), execute the commands with their explicit approval. Never execute destructive commands (`rm -rf`, `mv`) without user confirmation.
 
+> **Version Control:** Before deleting or renaming sections, ensure your changes are committed to git. Run `git status` to verify your current state. This allows you to recover deleted files using `git checkout -- <path>` if needed.
+
 **2. For renamed sections:**
 
 - **Rename directories** to match the new section ID:

@@ -6,7 +6,74 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-29 14:30] Critical Analysis - Step Index & Documentation Clarifications
+## [2025-12-29 14:30] Critical Analysis - JSON Templates & Multi-View Workflow
+
+### Description
+
+Comprehensive critical analysis of all files in `.claude/` folder plus `agents.md`. Initial analysis identified 14 potential issues, but upon thorough verification, only 6 required actual fixes while 8 were already properly documented or working as intended. Focus on fixing JSON comment syntax, clarifying multi-view workflow, standardizing error messages, and adding version control guidance.
+
+### New Files Created
+
+_None_
+
+### Modified Files
+
+| File                                            | Modification                                                                                                    |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/design-shell.md`    | Moved JSON comments outside code blocks (lines 1108-1162) - prevents JSON parsing errors                        |
+| `.claude/commands/design-os/design-shell.md`    | Added note clarifying audit checklist is a manual reference (line 57)                                           |
+| `.claude/commands/design-os/design-screen.md`   | Added Multi-View Workflow Details Q&A section explaining file sharing, detection, preview wrapper (lines 14-44) |
+| `.claude/commands/design-os/design-screen.md`   | Fixed SECTION_ID placeholder - changed to comment referencing Step 1 (line 246)                                 |
+| `.claude/commands/design-os/sample-data.md`     | Standardized error messages to use full paths (lines 28-42)                                                     |
+| `.claude/commands/design-os/product-roadmap.md` | Added version control guidance for orphan deletion (line 253)                                                   |
+
+### Gaps Resolved
+
+**High (3):**
+
+- **H1:** design-shell.md JSON template had inline comments (`// OPTIONAL: Only include if...`) that would break JSON parsing if copied literally
+- **H2:** design-screen.md multi-view workflow was ambiguous - no clear answer for: Does each view share data.json? How does subsequent run detect existing views? How does preview wrapper update?
+- **H3:** design-shell.md audit checklist (60+ items) had no indication it was a manual reference process
+
+**Medium (2):**
+
+- **M1:** sample-data.md error messages used short paths (`spec.md`) while other commands used full paths (`product/sections/[section-id]/spec.md`)
+- **M2:** design-screen.md had `SECTION_ID="[section-id]"` placeholder that was confusing (mixed bash variable with placeholder notation)
+
+**Low (1):**
+
+- **L1:** product-roadmap.md orphan deletion had no version control guidance for recovery
+
+**Verified as Already Implemented (8):**
+
+- types.ts creation step - already exists at sample-data.md Step 7 (line 698)
+- Step numbering in design-screen.md - already has Steps 1-11
+- Completion message output list - already includes dynamic file list
+- Retry tracking in sample-data.md - comprehensive documentation at lines 486-542
+- UI component installation - correctly instructs manual installation
+- Step reference clarifications in agents.md - already at lines 760 and 853
+- INCLUDE_SHELL variable scope - well-documented inline in export-product.md
+- .5 step convention - documented at agents.md line 149 as `Step N.M`
+
+### Statistics
+
+- Files modified: 4
+- Lines changed: ~80
+- Issues resolved: 6 (3 High, 2 Medium, 1 Low)
+- False positives: 8 (already implemented)
+
+### Verification
+
+- ✅ JSON template now has valid syntax (conditional instructions in markdown, not JSON comments)
+- ✅ Multi-view workflow documented with Q&A format covering all common questions
+- ✅ Audit checklist clearly marked as manual reference
+- ✅ Error messages use consistent full path format
+- ✅ SECTION_ID placeholder replaced with comment referencing Step 1
+- ✅ Version control guidance added before destructive operations
+
+---
+
+## [2025-12-29 11:50] Critical Analysis - Step Index & Documentation Clarifications
 
 ### Description
 

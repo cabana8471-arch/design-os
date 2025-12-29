@@ -54,6 +54,8 @@ Use AskUserQuestion with these options. Based on the choice:
 
 ## Step 0.5: Run Audit Checklist
 
+> **Note:** This is a manual reference checklist. Work through each category systematically, verifying items and noting issues. The audit report (Step 0.6) summarizes your findings. Not all checks can be automated — use judgment for visual/UX checks.
+
 Run the comprehensive audit checklist. For each category, check all items and record results.
 
 ### A. Spec Compliance
@@ -1124,14 +1126,18 @@ mkdir -p product/shell
       "icon": "headphones",
       "content": "Need help? Email us at support@example.com"
     }
-  ],
+  ]
+}
+```
 
-  // OPTIONAL: Only include if SearchModal was selected in Step 3.6
+**If SearchModal was selected in Step 3.6, also include:**
+
+```json
+{
   "searchRecent": [
     { "id": "r1", "label": "Dashboard", "href": "/sections/dashboard" },
     { "id": "r2", "label": "Create Invoice", "href": "/sections/invoices/new" }
   ],
-  // OPTIONAL: Only include if SearchModal was selected in Step 3.6
   "searchShortcuts": [
     {
       "id": "s1",
