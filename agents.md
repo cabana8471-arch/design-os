@@ -64,6 +64,7 @@ Gather comprehensive context about your product through a structured interview. 
 - `--minimal` — Quick start (5 critical categories)
 - `--stage=X` — Focus on specific area (vision, section, shell, data, scale, quality)
 - `--audit` — Check completeness of existing context
+- `--skip-validation` — Bypass existing context check (for advanced users updating context)
 
 ### 1. Product Overview (`/product-vision`)
 
@@ -1460,10 +1461,12 @@ Commands require minimum 50% completeness to proceed:
 Completeness Calculation:
 
 - 12 total categories
-- Each category: 0% (empty) to 100% (all questions answered)
-- Overall = average of completed categories
-- Minimum threshold: 50% (6+ categories with answers)
+- Each category status: ✅ Complete (all questions) / ⚠️ Partial (some) / ❌ Empty
+- Overall = (count of ✅ Complete categories ÷ 12) × 100
+- Minimum threshold: 50% (6+ categories fully complete)
 ```
+
+> **Note:** Only ✅ Complete categories count toward the percentage. ⚠️ Partial categories do not increase completeness—they need to be finished.
 
 **Behavior by completeness:**
 
@@ -1483,6 +1486,18 @@ For users who want to start quickly:
 ```
 
 This covers only the 5 most critical categories (1, 3, 5, 6, 11) and takes ~24 questions instead of ~50.
+
+**Why these categories?**
+
+| Category            | Why Critical                                                                |
+| ------------------- | --------------------------------------------------------------------------- |
+| 1 (Foundation)      | Product name, audience, problem — needed for `/product-vision`              |
+| 3 (Design)          | Aesthetic tone, density — needed for `/design-tokens` and all visual design |
+| 5 (Section Depth)   | User flows, states — needed for `/shape-section` and `/design-screen`       |
+| 6 (UI Patterns)     | Component preferences — needed for all screen designs                       |
+| 11 (Error Handling) | Error states — needed for complete, production-ready designs                |
+
+These 5 categories provide minimum viable context for the design workflow. You can always run `--stage=X` later to fill in gaps.
 
 ### Updating Context
 

@@ -4,7 +4,7 @@
 
 You are conducting a comprehensive product interview to gather detailed context for Design OS. This command creates `product/product-context.md` which is **required** by all other Design OS commands.
 
-**Language:** Conduct the conversation in Romanian, but write all output files in English.
+**Language:** Conduct the conversation in the user's preferred language (this template uses Romanian prompts as examples). **All output files MUST be in English** for portability.
 
 ---
 
@@ -51,7 +51,7 @@ First, check if `product/product-context.md` already exists:
 if [ -f "product/product-context.md" ]; then
   echo "Existing context found"
   # Parse completeness from file
-  COMPLETENESS=$(grep "Completeness:" product/product-context.md | grep -oE '[0-9]+' | head -1)
+  COMPLETENESS=$(grep "^Completeness:" product/product-context.md | grep -oE '[0-9]+' | head -1)
   echo "Current completeness: ${COMPLETENESS}%"
 fi
 ```
@@ -737,7 +737,7 @@ Options:
 
 ---
 
-## Step 12: Error Handling Strategy
+## Step 12: Error Handling
 
 **Ro:** "Cum gestionăm erorile?"
 
@@ -907,7 +907,7 @@ Mode: [Full / Minimal / Stage-specific]
 | 8. Performance & Scale      | [✅/⚠️/❌] | [Summary]     |
 | 9. Integration Points       | [✅/⚠️/❌] | [Summary]     |
 | 10. Security & Compliance   | [✅/⚠️/❌] | [Summary]     |
-| 11. Error Handling Strategy | [✅/⚠️/❌] | [Summary]     |
+| 11. Error Handling          | [✅/⚠️/❌] | [Summary]     |
 | 12. Testing & Quality       | [✅/⚠️/❌] | [Summary]     |
 
 ---
@@ -1139,7 +1139,7 @@ Mode: [Full / Minimal / Stage-specific]
 
 ---
 
-## 11. Error Handling Strategy
+## 11. Error Handling
 
 ### Message Style
 
@@ -1226,12 +1226,6 @@ Mode: [Full / Minimal / Stage-specific]
 - Use section 5 for all states (empty, loading, error)
 - Use section 11 for error display
 
-### For /screenshot-design
-
-- Context is not directly consumed (captures existing designs)
-- Design decisions in screenshots reflect context from `/design-screen`
-- No specific context sections required
-
 ### For /export-product
 
 - All sections inform implementation prompts
@@ -1276,7 +1270,25 @@ if ! grep -q "^## Cross-Reference" "$CONTEXT_FILE"; then
   VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
 fi
 
-# 6. Report validation results
+# 6. Verify sections have actual content (not just headings)
+for i in $(seq 1 12); do
+  # Get line number of section start
+  SECTION_LINE=$(grep -n "^## $i\." "$CONTEXT_FILE" | head -1 | cut -d: -f1)
+  if [ -n "$SECTION_LINE" ]; then
+    # Get line number of next section (or end of file)
+    NEXT_LINE=$(grep -n "^## " "$CONTEXT_FILE" | awk -F: -v start="$SECTION_LINE" '$1 > start {print $1; exit}')
+    if [ -z "$NEXT_LINE" ]; then
+      NEXT_LINE=$(wc -l < "$CONTEXT_FILE")
+    fi
+    # Count non-empty, non-heading lines between sections
+    CONTENT_LINES=$(sed -n "${SECTION_LINE},${NEXT_LINE}p" "$CONTEXT_FILE" | grep -v "^$" | grep -v "^##" | grep -v "^---" | wc -l | tr -d ' ')
+    if [ "$CONTENT_LINES" -lt 3 ]; then
+      echo "Warning: Section $i appears to have minimal content ($CONTENT_LINES lines)"
+    fi
+  fi
+done
+
+# 7. Report validation results
 if [ $VALIDATION_ERRORS -gt 0 ]; then
   echo "Warning: $VALIDATION_ERRORS validation issues found. File may be incomplete."
 else

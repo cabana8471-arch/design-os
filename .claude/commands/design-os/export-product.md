@@ -51,7 +51,7 @@ if [ ! -f "$CONTEXT_FILE" ]; then
   exit 1
 fi
 
-COMPLETENESS=$(grep "Completeness:" "$CONTEXT_FILE" | grep -oE '[0-9]+' | head -1)
+COMPLETENESS=$(grep "^Completeness:" "$CONTEXT_FILE" | grep -oE '[0-9]+' | head -1)
 echo "Product context completeness: ${COMPLETENESS}%"
 ```
 
