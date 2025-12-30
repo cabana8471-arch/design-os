@@ -251,6 +251,12 @@ fi
 ```
 
 > **Backup Policy:** Create backup when existing completeness ≥25%. For very incomplete contexts (<25%), backup is unnecessary since little would be lost.
+>
+> **Cleanup:** Backup files accumulate over time. To keep only the 3 most recent:
+>
+> ```bash
+> ls -t product/product-context.backup.*.md 2>/dev/null | tail -n +4 | xargs rm -f
+> ```
 
 Inform the user:
 
@@ -1277,20 +1283,62 @@ If the user selected "Completăm ce lipsește" in Step 1, existing answers must 
 
 **Subsection-to-Question Mapping (for detection):**
 
-| Category | Subsection Heading      | Question ID |
-| -------- | ----------------------- | ----------- |
-| 1        | ### Product Name        | 2.0         |
-| 1        | ### Target Audience     | 2.1         |
-| 1        | ### Problem Space       | 2.2         |
-| 1        | ### Competitors         | 2.3         |
-| 1        | ### Success Metrics     | 2.4         |
-| 1        | ### Business Model      | 2.5         |
-| 3        | ### Aesthetic Tone      | 4.1         |
-| 3        | ### Animation Style     | 4.2         |
-| 3        | ### Information Density | 4.3         |
-| 3        | ### Brand Constraints   | 4.4         |
-| 3        | ### Visual Inspiration  | 4.5         |
-| ...      | (see output template)   | ...         |
+| Category | Subsection Heading          | Question ID |
+| -------- | --------------------------- | ----------- |
+| 1        | ### Product Name            | 2.0         |
+| 1        | ### Target Audience         | 2.1         |
+| 1        | ### Problem Space           | 2.2         |
+| 1        | ### Competitors             | 2.3         |
+| 1        | ### Success Metrics         | 2.4         |
+| 1        | ### Business Model          | 2.5         |
+| 2        | ### Primary Persona         | 3.1         |
+| 2        | ### Secondary Personas      | 3.2         |
+| 2        | ### Accessibility           | 3.3         |
+| 2        | ### Geographic & Language   | 3.4         |
+| 3        | ### Aesthetic Tone          | 4.1         |
+| 3        | ### Animation Style         | 4.2         |
+| 3        | ### Information Density     | 4.3         |
+| 3        | ### Brand Constraints       | 4.4         |
+| 3        | ### Visual Inspiration      | 4.5         |
+| 4        | ### Data Sensitivity        | 5.1         |
+| 4        | ### Compliance Requirements | 5.2         |
+| 4        | ### Data Relationships      | 5.3         |
+| 4        | ### Audit & History         | 5.4         |
+| 4        | ### Deletion Strategy       | 5.5         |
+| 5        | ### Critical User Flows     | 6.1         |
+| 5        | ### Edge Cases              | 6.2         |
+| 5        | ### Empty States            | 6.3         |
+| 5        | ### Loading States          | 6.4         |
+| 5        | ### Error Recovery          | 6.5         |
+| 6        | ### Data Display            | 7.1         |
+| 6        | ### Form Validation         | 7.2         |
+| 6        | ### Notifications           | 7.3         |
+| 6        | ### Confirmations           | 7.4         |
+| 6        | ### Modal vs Drawer         | 7.5         |
+| 7        | ### Responsive Priority     | 8.1         |
+| 7        | ### Touch Interactions      | 8.2         |
+| 7        | ### Mobile Navigation       | 8.3         |
+| 7        | ### Offline Support         | 8.4         |
+| 8        | ### Expected Users          | 9.1         |
+| 8        | ### Data Volume             | 9.2         |
+| 8        | ### Real-time               | 9.3         |
+| 8        | ### Search & Filter         | 9.4         |
+| 9        | ### Authentication          | 10.1        |
+| 9        | ### External Services       | 10.2        |
+| 9        | ### API Exposure            | 10.3        |
+| 10       | ### Auth Security           | 11.1        |
+| 10       | ### Authorization           | 11.2        |
+| 10       | ### Audit Logging           | 11.3        |
+| 11       | ### Message Style           | 12.1        |
+| 11       | ### Retry Behavior          | 12.2        |
+| 11       | ### Undo/Redo               | 12.3        |
+| 11       | ### Data Loss Prevention    | 12.4        |
+| 12       | ### Test Coverage           | 13.1        |
+| 12       | ### E2E Scope               | 13.2        |
+| 12       | ### Accessibility Testing   | 13.3        |
+| 12       | ### Browser Support         | 13.4        |
+
+> **Pattern:** Category N maps to Step (N+1). Question ID format is `Step.SubQuestion` where SubQuestion starts at 1 (except Category 1 which has a 2.0 for Product Name).
 
 > **Tip:** To detect if a subsection has content, check for non-empty lines between `### Heading` and the next `###` or `##`. If only whitespace exists, the subsection is empty.
 
@@ -1326,7 +1374,7 @@ Create directory and file:
 
 ```bash
 mkdir -p product || {
-  echo "Error: Failed to create product directory. Check write permissions."
+  echo "Error: product directory - Failed to create. Check write permissions: ls -la ."
   exit 1
 }
 ```
@@ -1356,6 +1404,44 @@ When using `--stage` or `--minimal` mode, some categories won't be asked. Handle
 | Stage   | `Mode: Stage-specific (vision: categories 1, 2)`              |
 | Mixed   | `Mode: Incremental (previous: minimal + current: stage=data)` |
 
+**Mode Detection Logic:**
+
+When generating the output file, determine the mode string using this logic:
+
+```bash
+# 1. Check if existing file has a previous mode
+PREV_MODE=""
+if [ -f "product/product-context.md" ]; then
+  PREV_MODE=$(grep "^Mode:" product/product-context.md 2>/dev/null | head -1 | sed 's/^Mode: //')
+fi
+
+# 2. Determine current session mode from arguments
+if [ "$MINIMAL_MODE" = true ]; then
+  CURRENT_MODE="Minimal (categories 1, 3, 5, 6, 7, 11)"
+elif [ -n "$STAGE" ]; then
+  CURRENT_MODE="Stage-specific ($STAGE: categories $(get_stage_categories $STAGE))"
+else
+  CURRENT_MODE="Full (all 12 categories)"
+fi
+
+# 3. Generate final mode header
+if [ -n "$PREV_MODE" ] && [ "$INTERVIEW_MODE" = "complete_missing" ]; then
+  # Incremental mode: merging with previous
+  MODE_HEADER="Incremental (previous: $PREV_MODE + current: $CURRENT_MODE)"
+else
+  # Fresh run
+  MODE_HEADER="$CURRENT_MODE"
+fi
+```
+
+**When to use Incremental mode:**
+
+- Previous context exists AND
+- User selected "Completăm ce lipsește" (complete_missing mode) AND
+- Current session is partial (--minimal or --stage)
+
+This ensures the mode header accurately reflects the accumulated interview history.
+
 **Output Structure Consistency:**
 
 Even for partial interviews, the file MUST have:
@@ -1372,6 +1458,8 @@ This ensures:
 - Incremental completion works correctly
 
 Write the file with this structure:
+
+> **Critical Format Requirement:** The `Completeness:` line MUST start at the beginning of the line (no markdown formatting like `**Completeness:**`). Downstream commands use `grep "^Completeness:"` to parse this value. The display to users (Step 1 summary) can use styling, but the FILE must use plain format.
 
 ```markdown
 # Product Context: [Product Name]
@@ -1889,6 +1977,14 @@ Am creat contextul produsului tău!
 
 > **Language Note:** Example prompts in this template are shown in Romanian. Adapt to the user's conversation language. The **questions** can be in any language, but **all generated files** (product-context.md) MUST be in English for portability.
 
+> **AskUserQuestion Option Limits:** The AskUserQuestion tool supports 2-4 options per question. Questions in this template with more than 4 options should be adapted:
+>
+> - **Split into multiple questions** — e.g., "Which category fits best?" then "Within that, which specific option?"
+> - **Use free-text prompts** — Present options as guidance, accept user's written answer
+> - **Group related options** — Combine similar options (e.g., "OAuth (Google/GitHub/etc.)" instead of separate entries)
+>
+> The agent should use judgment to present information clearly while staying within tool constraints.
+
 - Folosește AskUserQuestion cu opțiuni predefinite când e posibil
 - Păstrează întrebările concise - nu repeta ce-ai aflat deja
 - Dacă utilizatorul dă răspunsuri vagi, cere clarificări
@@ -1899,20 +1995,20 @@ Am creat contextul produsului tău!
 
 After completing the interview, check for inconsistencies:
 
-| Check                      | Inconsistency                                      | Action                                                                        |
-| -------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Business Model vs Features | Free/OSS chosen but SSO/SAML or compliance-grade   | Warn: "Ai ales Free/OSS dar cu features enterprise. Vrei să ajustăm modelul?" |
-| Mobile priority vs Touch   | Mobile-first but no touch interactions             | Warn: "Ai ales mobile-first dar fără interacțiuni touch. E intenționat?"      |
-| Real-time vs Scale         | Live updates but 10k+ concurrent users             | Warn: "Real-time cu mulți utilizatori e complex. Sigur ai nevoie?"            |
-| Offline vs Data            | Full offline but large file uploads                | Warn: "Offline cu fișiere mari e dificil. Ce prioritizezi?"                   |
-| Desktop-only vs Mobile UX  | Desktop-only priority but mobile navigation chosen | Warn: "Ai ales desktop-only dar cu mobile navigation. Vrei să ajustăm?"       |
-| No auth vs Audit logging   | No auth selected but compliance-grade audit        | Warn: "Fără autentificare dar cu audit complet. E consistent?"                |
-| MVP scope vs Advanced      | MVP scope but enterprise/advanced features         | Warn: "Scope MVP dar cu features avansate. Vrei să extinzi scope-ul?"         |
-| High security vs No MFA    | Strict auth level but MFA not mentioned            | Warn: "Securitate strictă dar fără MFA. Vrei să adaugi?"                      |
-| GDPR vs No data audit      | GDPR compliance but no audit/history               | Warn: "GDPR fără audit log. Consider adding full audit for compliance."       |
-| GDPR vs No PII data        | GDPR selected but no personal data sensitivity     | Warn: "Ai selectat GDPR dar fără date personale. E corect?"                   |
-| Offline + Real-time collab | Full offline but collaborative real-time selected  | Warn: "Full offline și collaborative real-time sunt dificil de combinat."     |
-| PWA vs Desktop-only        | PWA offline support but desktop-only responsive    | Warn: "PWA dar fără mobile support? Vrei să ajustăm?"                         |
+| Check                             | Inconsistency                                       | Action                                                                        |
+| --------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Business Model vs Features        | Free/OSS chosen but SSO/SAML or compliance-grade    | Warn: "Ai ales Free/OSS dar cu features enterprise. Vrei să ajustăm modelul?" |
+| Mobile priority vs Touch          | Mobile-first but no touch interactions              | Warn: "Ai ales mobile-first dar fără interacțiuni touch. E intenționat?"      |
+| Real-time vs Scale                | Live updates but 10k+ concurrent users              | Warn: "Real-time cu mulți utilizatori e complex. Sigur ai nevoie?"            |
+| Offline vs Data                   | Full offline but large file uploads                 | Warn: "Offline cu fișiere mari e dificil. Ce prioritizezi?"                   |
+| Desktop-only vs Mobile UX         | Desktop-only priority but mobile navigation chosen  | Warn: "Ai ales desktop-only dar cu mobile navigation. Vrei să ajustăm?"       |
+| No auth vs Audit logging          | No auth selected but compliance-grade audit         | Warn: "Fără autentificare dar cu audit complet. E consistent?"                |
+| Free model vs Enterprise features | Free/OSS but SSO/SAML, compliance-grade audit, RBAC | Warn: "Model gratuit dar cu features enterprise. Verifică business model."    |
+| High security vs No MFA           | Strict auth level but MFA not mentioned             | Warn: "Securitate strictă dar fără MFA. Vrei să adaugi?"                      |
+| GDPR vs No data audit             | GDPR compliance but no audit/history                | Warn: "GDPR fără audit log. Consider adding full audit for compliance."       |
+| GDPR vs No PII data               | GDPR selected but no personal data sensitivity      | Warn: "Ai selectat GDPR dar fără date personale. E corect?"                   |
+| Offline + Real-time collab        | Full offline but collaborative real-time selected   | Warn: "Full offline și collaborative real-time sunt dificil de combinat."     |
+| PWA vs Desktop-only               | PWA offline support but desktop-only responsive     | Warn: "PWA dar fără mobile support? Vrei să ajustăm?"                         |
 
 ### Recovery if Interrupted
 
@@ -1936,10 +2032,11 @@ If you need to pause mid-interview:
 **If you must resume:**
 
 1. Re-run `/product-interview`
-2. If existing (partial) context is found, you'll see three options:
+2. If existing (partial) context is found, you'll see four options:
    - **"Completăm ce lipsește"** — Only ask questions for incomplete categories
-   - **"Vedem ce avem"** — View current context summary, then decide what to do
    - **"Revizuim totul"** — Start fresh with all questions
+   - **"Detalii complete"** — View detailed summary, then decide
+   - **"E suficient"** — Exit if context is adequate
 3. If no context exists, you'll start the full interview from scratch
 
 > **Note:** Step 1 detects existing `product-context.md` and offers to complete missing categories rather than starting over.

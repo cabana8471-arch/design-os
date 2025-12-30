@@ -1347,7 +1347,7 @@ Commands in `.claude/commands/design-os/` include version headers (`<!-- vX.X.X 
 
 | Command              | Version | Notes                                        |
 | -------------------- | ------- | -------------------------------------------- |
-| `/product-interview` | v1.1.0  | Stage mode logic, merge behavior, validation |
+| `/product-interview` | v1.2.0  | Stage mode logic, merge behavior, validation |
 | `/product-vision`    | —       | Check file for version                       |
 | `/product-roadmap`   | —       | Check file for version                       |
 | `/data-model`        | —       | Check file for version                       |

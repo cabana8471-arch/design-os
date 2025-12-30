@@ -6,7 +6,69 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-30 22:15] Critical Analysis: /product-interview v1.2.0 (8 Issues)
+## [2025-12-30 22:15] Critical Analysis: /product-interview v1.2.0 (9 Issues)
+
+### Description
+
+Post-release critical analysis of `/product-interview` v1.2.0 identified 9 additional issues across documentation consistency, tool constraints, and logic gaps. This modification resolves ALL issues including version mismatch, AskUserQuestion option limits, outdated recovery options, incomplete mappings, and mixed mode handling.
+
+### New Files Created
+
+None.
+
+### Modified Files
+
+| File                                              | Modification                                                                                                                                                                                                                |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/product-interview.md` | Added AskUserQuestion option limits note, updated Recovery section options, completed Subsection-to-Question mapping (all 52 entries), added Mixed mode detection logic, fixed consistency check, standardized error format |
+| `agents.md`                                       | Updated Command Versions table: `/product-interview` v1.1.0 → v1.2.0                                                                                                                                                        |
+
+### Gaps Resolved
+
+**Critical (5):**
+
+- **C1:** Version mismatch — agents.md showed v1.1.0 but command was v1.2.0. Updated agents.md to v1.2.0.
+- **C2:** AskUserQuestion option count violations — 16 questions had 5-7 options (tool limit is 2-4). Added guidance note in Important Notes section for handling questions with >4 options.
+- **C3:** Recovery section outdated — Referenced old options ("Vedem ce avem", "three options"). Updated to current options ("Detalii complete", "E suficient", four options).
+- **C4:** Subsection-to-Question mapping incomplete — Only showed Categories 1 and 3. Completed full mapping for all 12 categories (52 entries).
+- **C5:** Mixed mode handling undefined — No logic for detecting/generating Incremental mode. Added complete bash script with mode detection and header generation.
+
+**Medium (2):**
+
+- **M1:** Unreachable consistency check — "MVP scope vs Advanced" check couldn't work (scope determined by /product-vision, not /product-interview). Changed to "Free model vs Enterprise features".
+- **M2:** Error message format inconsistency — Didn't follow agents.md standard format. Fixed to `Error: [Component] - [Issue]. [Action].`
+
+**Low (2):**
+
+- **L1:** Backup file accumulation — No cleanup guidance for multiple backups. Added cleanup command to keep only 3 most recent.
+- **L2:** Completeness line format undocumented — Downstream commands require plain `Completeness:` (not markdown). Added Critical Format Requirement note.
+
+### Statistics
+
+- Files modified: 2
+- Lines changed: ~120
+- Issues resolved: 9 (5 Critical, 2 Medium, 2 Low)
+- Version: v1.2.0 (no version bump - documentation fixes only)
+
+### Verification
+
+- ✅ agents.md version updated to v1.2.0
+- ✅ AskUserQuestion option limits guidance added (split/free-text/group strategies)
+- ✅ Recovery section shows 4 current options
+- ✅ Subsection-to-Question mapping complete (52 entries across 12 categories)
+- ✅ Mixed mode detection logic with PREV_MODE, CURRENT_MODE, MODE_HEADER
+- ✅ Consistency check now uses business model vs features (reachable)
+- ✅ Error message follows standard format
+- ✅ Backup cleanup command added
+- ✅ Completeness format requirement documented
+
+### Remaining Items
+
+None — all issues resolved. Command is production-ready.
+
+---
+
+## [2025-12-30 21:25] Critical Analysis: /product-interview v1.2.0 (8 Issues)
 
 ### Description
 
