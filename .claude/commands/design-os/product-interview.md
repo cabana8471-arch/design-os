@@ -14,7 +14,7 @@ Parse any arguments to determine interview mode:
 
 ```bash
 # Available modes:
-# --minimal     Quick interview (5 categories only)
+# --minimal     Quick interview (6 critical categories)
 # --stage=X     Focus on specific stage (vision, section, shell, data, scale, quality)
 # --audit       Check completeness of existing context
 # --skip-validation  Bypass validation for existing users
@@ -37,6 +37,25 @@ Parse any arguments to determine interview mode:
 | `--audit`           | N/A               | Report on completeness                   |
 | `--skip-validation` | All 12            | Skip Step 1 (existing context check)     |
 
+**Stage Validation:**
+
+If `--stage=X` is provided, validate the stage value before proceeding:
+
+```bash
+# If --stage parameter is provided
+if [ -n "$STAGE" ]; then
+  case "$STAGE" in
+    vision|section|shell|data|scale|quality)
+      echo "Stage mode: $STAGE"
+      ;;
+    *)
+      echo "Error: Invalid stage '$STAGE'. Valid stages: vision, section, shell, data, scale, quality"
+      exit 1
+      ;;
+  esac
+fi
+```
+
 ---
 
 ## Step 1: Check Existing Context
@@ -50,10 +69,15 @@ Parse any arguments to determine interview mode:
 First, check if `product/product-context.md` already exists:
 
 ```bash
-if [ -f "product/product-context.md" ]; then
+CONTEXT_FILE="product/product-context.md"
+
+if [ -f "$CONTEXT_FILE" ]; then
   echo "Existing context found"
   # Parse completeness from file
-  COMPLETENESS=$(grep "^Completeness:" product/product-context.md | grep -oE '[0-9]+' | head -1)
+  COMPLETENESS=$(grep "^Completeness:" "$CONTEXT_FILE" | grep -oE '[0-9]+' | head -1)
+  if [ -z "$COMPLETENESS" ]; then
+    COMPLETENESS=0
+  fi
   echo "Current completeness: ${COMPLETENESS}%"
 fi
 ```
@@ -118,10 +142,17 @@ Skip interview, just analyze and report:
 
 **Overall Completeness: X%**
 
-Recommendation: Run `/product-interview --stage=X` to complete missing sections.
+**Recommendation (based on completeness):**
+
+- 0-25%: "Run `/product-interview` for full interview"
+- 26-49%: "Run `/product-interview --stage=X` for targeted completion"
+- 50-74%: "Context meets minimum threshold. Consider `/product-interview --stage=X` to strengthen weak areas"
+- 75%+: "Context is comprehensive. Proceed with `/product-vision`"
 ```
 
-### Category Skip Logic (for "Completăm ce lipsește" mode)
+### Category Skip Logic (for "complete_missing" mode)
+
+> **Note:** This mode corresponds to user selection "Completăm ce lipsește" in Romanian UI.
 
 If user selected "Completăm ce lipsește" above, track this mode and apply skip logic to Steps 2-13:
 
@@ -161,7 +192,7 @@ else
 fi
 ```
 
-> **Note:** The status parser handles both emoji characters (✅⚠️❌) and text alternatives (Complete/Partial/Empty) for cross-platform compatibility.
+> **Note:** The status parser handles both emoji characters (✅⚠️❌) and text alternatives (Complete/Partial/Empty) for cross-platform compatibility. The generated output (Step 14.2) uses emoji-only format in the Quick Reference table, but the parser accepts text fallback for manually edited files.
 
 **Skip logic rules:**
 
@@ -199,6 +230,8 @@ This ensures users only answer questions for categories that need completion.
 > **Category Skip:** If `INTERVIEW_MODE="complete_missing"` and this category is ✅ Complete, skip to Step 3. See "Category Skip Logic" section above.
 
 **Ro:** "Să începem cu fundația produsului tău."
+
+> **Question Numbering Convention:** Questions are numbered as `[Step].[Question]`. The `.0` suffix indicates the primary/required question for the category (e.g., "Product Name" is required). Subsequent questions use `.1`, `.2`, etc.
 
 ### Question 2.0: Product Name
 
@@ -964,6 +997,10 @@ Create directory and file:
 
 ```bash
 mkdir -p product
+if [ ! -d "product" ]; then
+  echo "Error: Failed to create product directory. Check write permissions."
+  exit 1
+fi
 ```
 
 Write the file with this structure:
@@ -1271,6 +1308,12 @@ Mode: [Full / Minimal / Stage-specific]
 
 > **Note:** Only include references for categories that were completed (✅ or ⚠️). Omit references to categories marked ❌ (empty). This keeps the cross-reference relevant to what was actually gathered.
 
+**Implementation:** Before generating each `### For /[command]` section below:
+
+1. Check the status of ALL referenced categories for that command
+2. If ALL referenced categories are ❌ (empty), omit that command's cross-reference section entirely
+3. If at least one referenced category is ✅ or ⚠️, include the section but only list the completed categories
+
 ### For /product-vision
 
 - **Category 1** (Product Foundation): Product name, target audience, problem space
@@ -1455,6 +1498,9 @@ After completing the interview, check for inconsistencies:
 | MVP scope vs Advanced      | MVP scope but enterprise/advanced features         | Warn: "Scope MVP dar cu features avansate. Vrei să extinzi scope-ul?"         |
 | High security vs No MFA    | Strict auth level but MFA not mentioned            | Warn: "Securitate strictă dar fără MFA. Vrei să adaugi?"                      |
 | GDPR vs No data audit      | GDPR compliance but no audit/history               | Warn: "GDPR fără audit log. Consider adding full audit for compliance."       |
+| GDPR vs No PII data        | GDPR selected but no personal data sensitivity     | Warn: "Ai selectat GDPR dar fără date personale. E corect?"                   |
+| Offline + Real-time collab | Full offline but collaborative real-time selected  | Warn: "Full offline și collaborative real-time sunt dificil de combinat."     |
+| PWA vs Desktop-only        | PWA offline support but desktop-only responsive    | Warn: "PWA dar fără mobile support? Vrei să ajustăm?"                         |
 
 ### Recovery if Interrupted
 
@@ -1465,6 +1511,15 @@ After completing the interview, check for inconsistencies:
 1. **Use shorter modes** — `--minimal` (6 categories, ~20 min) or `--stage=X` (2-4 categories)
 2. **Complete in one session** — Plan 30-45 minutes for full interview
 3. **Take notes** — Copy important answers externally as you go
+
+**Workaround for Long Interviews:**
+
+If you need to pause mid-interview:
+
+1. Copy your conversation answers to a separate file as you go
+2. When resuming, paste key answers at the start to provide context
+3. Use `--stage=X` to focus on remaining categories
+4. The agent will recognize previously discussed points and avoid redundant questions
 
 **If you must resume:**
 

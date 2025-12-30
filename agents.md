@@ -1341,6 +1341,26 @@ Design OS uses a modular template system for generating implementation prompts a
 
 > **Version Format:** `v{major}.{minor}.{patch}[-suffix]`. The `-section` suffix indicates section-specific variants.
 
+### Command Versions
+
+Commands in `.claude/commands/design-os/` include version headers (`<!-- vX.X.X -->`) at the top of each file:
+
+| Command              | Version | Notes                  |
+| -------------------- | ------- | ---------------------- |
+| `/product-interview` | v1.0.0  | Initial release        |
+| `/product-vision`    | —       | Check file for version |
+| `/product-roadmap`   | —       | Check file for version |
+| `/data-model`        | —       | Check file for version |
+| `/design-tokens`     | —       | Check file for version |
+| `/design-shell`      | —       | Check file for version |
+| `/shape-section`     | —       | Check file for version |
+| `/sample-data`       | —       | Check file for version |
+| `/design-screen`     | —       | Check file for version |
+| `/screenshot-design` | —       | Check file for version |
+| `/export-product`    | —       | Check file for version |
+
+> **Note:** Commands marked "—" should be checked in their source files for version headers. Add versions to this table as commands are updated.
+
 ### Usage
 
 The `/export-product` command assembles these templates (see Step 14: Generate Prompt Files) into ready-to-use prompts:
