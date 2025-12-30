@@ -6,6 +6,12 @@ You are conducting a comprehensive product interview to gather detailed context 
 
 **Language:** Conduct the conversation in the user's preferred language (this template uses Romanian prompts as examples). **All output files MUST be in English** for portability.
 
+> **⚠️ No Auto-Save:** Progress is saved only at the end of the interview (Step 14). If you need to stop mid-interview:
+>
+> - Consider using `--minimal` (~20 min) or `--stage=X` (~10-15 min) for shorter sessions
+> - Ask the agent to "pause and summarize" — it will provide a summary of answers so far that you can save externally
+> - Re-run `/product-interview` later to continue where you left off (if partial context exists)
+
 ---
 
 ## Step 0: Mode Detection
@@ -36,6 +42,8 @@ Parse any arguments to determine interview mode:
 | `--stage=quality`   | 12                | Testing & Quality context                |
 | `--audit`           | N/A               | Report on completeness                   |
 | `--skip-validation` | All 12            | Skip Step 1 (existing context check)     |
+
+> **Stage vs Cross-Reference Categories:** The `--stage` categories define what to ASK during the interview. The Cross-Reference section (Step 14.2) shows what each command READS from the context file. These differ intentionally — stages gather focused context, while commands may read from multiple categories. For example, `--stage=shell` asks Categories 3, 6, 7, but `/design-shell` reads Categories 2, 3, 7, 9 (some optional).
 
 **Stage Validation:**
 
@@ -132,7 +140,10 @@ check_stage_completion() {
 
 Before asking questions for any category, check both stage mode AND complete_missing mode:
 
-> **Note:** This function definition references `$INTERVIEW_MODE` which is set later in Step 1 based on user selection. The function is defined here for reference but only called during Steps 2-13, after the variable has been initialized. If no existing context is found, `INTERVIEW_MODE` defaults to "full".
+> **⚠️ Variable Order:** This function references `$INTERVIEW_MODE` which is set in Step 1 (not here). The function is defined here for reference but only called during Steps 2-13. Variable initialization order:
+>
+> 1. `$STAGE` — Set here in Step 0 from `--stage=X` argument
+> 2. `$INTERVIEW_MODE` — Set in Step 1: "full", "complete_missing", or "audit" (defaults to "full")
 
 ```bash
 # Function to check if category should be asked
@@ -433,6 +444,12 @@ Before each category, show progress to help users understand where they are in t
 
 **Ro:** "Să începem cu fundația produsului tău."
 
+> **Handling Skipped Questions:** If user says "skip", "none", "not applicable", or provides no answer:
+>
+> - Record as "N/A — Not specified" in the output
+> - Mark category as ⚠️ Partial unless ALL required questions have valid answers
+> - Optional questions (marked with "(optional)") can be skipped without affecting category status
+
 > **Question Numbering Convention:** Questions are numbered as `[Step].[N]` where N starts at 1 for each category. Example: Question 2.1 is the first question in Step 2 (Category 1).
 >
 > **Note:** Question 2.0 below is an exception — it's the foundational "Product Name" question that must be answered first. All other categories start at `.1`.
@@ -478,8 +495,22 @@ Use AskUserQuestion:
 Options:
 
 - **Nu există competitori direcți** — Piață nouă sau nișă
-- **Sunt câțiva competitori** — Voi enumera 2-3
+- **Sunt câțiva competitori** — Voi enumera 2-3 (follow-up questions below)
 - **Piață aglomerată** — Mulți competitori, diferențiez prin X
+
+### Follow-up 2.3b: Competitor Details (if "Sunt câțiva competitori" selected)
+
+For each competitor mentioned (up to 3), prompt for:
+
+```markdown
+**Competitor [N]: [Name]**
+
+- What they do well:
+- Where they fall short:
+- How your product is different:
+```
+
+Record these details in the output under "### Competitors" section.
 
 ### Question 2.4: Success Metrics
 
@@ -495,16 +526,25 @@ Prompt for 2-3 KPIs:
 
 "Care e modelul de business?"
 
-Use AskUserQuestion:
+> **⚠️ Option Limit:** This question has 6 options but AskUserQuestion supports 2-4. Present as two-part question:
+>
+> - **Part A:** "E un produs gratuit sau plătit?" → Free/Open Source | Paid (one-time or recurring) | Enterprise (sales-led)
+> - **Part B (if Paid):** "Ce model de plată?" → Freemium | Subscription SaaS | One-time purchase | Usage-based
 
-Options:
+Use AskUserQuestion (Part A first, then Part B if needed):
+
+**Part A options:**
 
 - **Free / Open Source** — No monetization planned
+- **Paid (one-time or recurring)** — Users pay for the product
+- **B2B Enterprise** — Sales-led, custom pricing
+
+**Part B options (if "Paid" selected):**
+
 - **Freemium** — Basic free, premium paid
 - **Subscription SaaS** — Monthly/annual recurring
 - **One-time purchase** — Pay once, use forever
 - **Usage-based** — Pay per use/transaction
-- **B2B Enterprise** — Sales-led, custom pricing
 
 ---
 
@@ -544,14 +584,26 @@ Use AskUserQuestion:
 
 "Utilizatorii tăi au nevoi speciale de accesibilitate?"
 
-Options (multiselect):
+> **⚠️ Option Limit:** This question has 6 multiselect options but AskUserQuestion supports 2-4. Present as two-part question:
+>
+> - **Part A:** "Ai utilizatori cu nevoi de accesibilitate?" → Yes (specific needs) | Standard accessibility | Unsure
+> - **Part B (if Yes):** Present specific needs as free-text prompt with options as guidance
 
-- **Screen reader users** — Will need ARIA labels, semantic HTML
-- **Keyboard-only navigation** — No mouse required
-- **Color blindness** — Don't rely on color alone
-- **Motor impairments** — Large click targets, reduced precision
-- **Cognitive considerations** — Simple language, clear navigation
-- **None known** — Standard accessibility is fine
+**Part A options:**
+
+- **Yes, specific needs** — I know my users have specific accessibility requirements
+- **Standard accessibility** — Follow WCAG guidelines, no special requirements
+- **Unsure** — Need to research user accessibility needs
+
+**Part B guidance (if "Yes" selected):**
+
+Present this list and ask user to specify which apply:
+
+- Screen reader users — Will need ARIA labels, semantic HTML
+- Keyboard-only navigation — No mouse required
+- Color blindness — Don't rely on color alone
+- Motor impairments — Large click targets, reduced precision
+- Cognitive considerations — Simple language, clear navigation
 
 ### Question 3.4: Geographic & Language
 
@@ -641,14 +693,26 @@ Use AskUserQuestion:
 
 "Ce fel de date va gestiona produsul?"
 
-Options (multiselect):
+> **⚠️ Option Limit:** This question has 6 multiselect options but AskUserQuestion supports 2-4. Present as two-part question:
+>
+> - **Part A:** "Care e nivelul maxim de sensibilitate a datelor?" → Public only | Business/Internal | Personal (PII) | Highly sensitive
+> - **Part B (if Personal or Highly sensitive):** Specify which types apply
 
-- **Public data** — No sensitivity, freely shareable
-- **Internal data** — Business data, not for public
-- **Personal data (PII)** — Names, emails, addresses
-- **Sensitive personal data** — Health, financial, biometric
-- **Financial transactions** — Payments, account balances
-- **Authentication credentials** — Passwords, tokens
+**Part A options:**
+
+- **Public only** — No sensitivity, freely shareable
+- **Business/Internal** — Business data, not for public
+- **Personal (PII)** — Names, emails, addresses
+- **Highly sensitive** — Financial, health, biometric, or credentials
+
+**Part B guidance (if "Personal" or "Highly sensitive" selected):**
+
+Ask user to specify which apply:
+
+- Personal data (PII) — Names, emails, addresses
+- Sensitive personal data — Health, financial, biometric
+- Financial transactions — Payments, account balances
+- Authentication credentials — Passwords, tokens
 
 ### Question 5.2: Compliance Requirements
 
@@ -656,14 +720,27 @@ Use AskUserQuestion:
 
 "Ce cerințe de compliance trebuie să respecti?"
 
-Options (multiselect):
+> **⚠️ Option Limit:** This question has 6 multiselect options but AskUserQuestion supports 2-4. Present as two-part question:
+>
+> - **Part A:** "Ai cerințe specifice de compliance?" → None | Data protection (GDPR) | Industry-specific | Multiple/Enterprise
+> - **Part B (if Industry-specific or Multiple):** Specify which frameworks
+
+**Part A options:**
 
 - **None specific** — Basic security practices
-- **GDPR** — European data protection
-- **HIPAA** — US healthcare data
-- **SOC 2** — Security/availability certification
-- **PCI-DSS** — Payment card data
-- **Other** — Describe
+- **Data protection (GDPR)** — European data protection only
+- **Industry-specific** — Healthcare (HIPAA), payments (PCI-DSS), etc.
+- **Multiple/Enterprise** — Multiple frameworks required
+
+**Part B guidance (if "Industry-specific" or "Multiple" selected):**
+
+Ask user to specify which apply:
+
+- GDPR — European data protection
+- HIPAA — US healthcare data
+- SOC 2 — Security/availability certification
+- PCI-DSS — Payment card data
+- Other — Describe specific requirements
 
 ### Question 5.3: Data Relationships
 
@@ -999,15 +1076,27 @@ Use AskUserQuestion:
 
 "Ce servicii externe vei integra?"
 
-Options (multiselect):
+> **⚠️ Option Limit:** This question has 7 multiselect options but AskUserQuestion supports 2-4. Present as two-part question:
+>
+> - **Part A:** "Ai nevoie de integrări externe?" → None for now | Just a few | Multiple integrations
+> - **Part B (if not None):** List specific categories needed
 
-- **Payments** — Stripe, PayPal, etc.
-- **Maps** — Google Maps, Mapbox
-- **File storage** — S3, Cloudinary, etc.
-- **Email** — SendGrid, Mailgun, etc.
-- **Analytics** — Google Analytics, Mixpanel
-- **Chat/Support** — Intercom, Zendesk
-- **None for now** — Will add later
+**Part A options:**
+
+- **None for now** — Will add integrations later
+- **Just a few** — 1-2 specific integrations needed
+- **Multiple integrations** — Several external services required
+
+**Part B guidance (if "Just a few" or "Multiple" selected):**
+
+Ask user to specify which categories apply:
+
+- Payments — Stripe, PayPal, etc.
+- Maps — Google Maps, Mapbox
+- File storage — S3, Cloudinary, etc.
+- Email — SendGrid, Mailgun, etc.
+- Analytics — Google Analytics, Mixpanel
+- Chat/Support — Intercom, Zendesk
 
 ### Question 10.3: API Requirements
 
@@ -1995,20 +2084,26 @@ Am creat contextul produsului tău!
 
 After completing the interview, check for inconsistencies:
 
-| Check                             | Inconsistency                                       | Action                                                                        |
-| --------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Business Model vs Features        | Free/OSS chosen but SSO/SAML or compliance-grade    | Warn: "Ai ales Free/OSS dar cu features enterprise. Vrei să ajustăm modelul?" |
-| Mobile priority vs Touch          | Mobile-first but no touch interactions              | Warn: "Ai ales mobile-first dar fără interacțiuni touch. E intenționat?"      |
-| Real-time vs Scale                | Live updates but 10k+ concurrent users              | Warn: "Real-time cu mulți utilizatori e complex. Sigur ai nevoie?"            |
-| Offline vs Data                   | Full offline but large file uploads                 | Warn: "Offline cu fișiere mari e dificil. Ce prioritizezi?"                   |
-| Desktop-only vs Mobile UX         | Desktop-only priority but mobile navigation chosen  | Warn: "Ai ales desktop-only dar cu mobile navigation. Vrei să ajustăm?"       |
-| No auth vs Audit logging          | No auth selected but compliance-grade audit         | Warn: "Fără autentificare dar cu audit complet. E consistent?"                |
-| Free model vs Enterprise features | Free/OSS but SSO/SAML, compliance-grade audit, RBAC | Warn: "Model gratuit dar cu features enterprise. Verifică business model."    |
-| High security vs No MFA           | Strict auth level but MFA not mentioned             | Warn: "Securitate strictă dar fără MFA. Vrei să adaugi?"                      |
-| GDPR vs No data audit             | GDPR compliance but no audit/history                | Warn: "GDPR fără audit log. Consider adding full audit for compliance."       |
-| GDPR vs No PII data               | GDPR selected but no personal data sensitivity      | Warn: "Ai selectat GDPR dar fără date personale. E corect?"                   |
-| Offline + Real-time collab        | Full offline but collaborative real-time selected   | Warn: "Full offline și collaborative real-time sunt dificil de combinat."     |
-| PWA vs Desktop-only               | PWA offline support but desktop-only responsive     | Warn: "PWA dar fără mobile support? Vrei să ajustăm?"                         |
+| Check                             | Inconsistency                                       | Severity | Action                                                                        |
+| --------------------------------- | --------------------------------------------------- | -------- | ----------------------------------------------------------------------------- |
+| GDPR vs No data audit             | GDPR compliance but no audit/history                | 🔴 HIGH  | Warn: "GDPR fără audit log. Consider adding full audit for compliance."       |
+| No auth vs Audit logging          | No auth selected but compliance-grade audit         | 🔴 HIGH  | Warn: "Fără autentificare dar cu audit complet. E consistent?"                |
+| Business Model vs Features        | Free/OSS chosen but SSO/SAML or compliance-grade    | 🟠 MED   | Warn: "Ai ales Free/OSS dar cu features enterprise. Vrei să ajustăm modelul?" |
+| Free model vs Enterprise features | Free/OSS but SSO/SAML, compliance-grade audit, RBAC | 🟠 MED   | Warn: "Model gratuit dar cu features enterprise. Verifică business model."    |
+| Real-time vs Scale                | Live updates but 10k+ concurrent users              | 🟠 MED   | Warn: "Real-time cu mulți utilizatori e complex. Sigur ai nevoie?"            |
+| High security vs No MFA           | Strict auth level but MFA not mentioned             | 🟠 MED   | Warn: "Securitate strictă dar fără MFA. Vrei să adaugi?"                      |
+| Offline + Real-time collab        | Full offline but collaborative real-time selected   | 🟠 MED   | Warn: "Full offline și collaborative real-time sunt dificil de combinat."     |
+| PWA vs Desktop-only               | PWA offline support but desktop-only responsive     | 🟠 MED   | Warn: "PWA dar fără mobile support? Vrei să ajustăm?"                         |
+| Mobile priority vs Touch          | Mobile-first but no touch interactions              | 🟡 LOW   | Warn: "Ai ales mobile-first dar fără interacțiuni touch. E intenționat?"      |
+| Offline vs Data                   | Full offline but large file uploads                 | 🟡 LOW   | Warn: "Offline cu fișiere mari e dificil. Ce prioritizezi?"                   |
+| Desktop-only vs Mobile UX         | Desktop-only priority but mobile navigation chosen  | 🟡 LOW   | Warn: "Ai ales desktop-only dar cu mobile navigation. Vrei să ajustăm?"       |
+| GDPR vs No PII data               | GDPR selected but no personal data sensitivity      | 🟡 LOW   | Warn: "Ai selectat GDPR dar fără date personale. E corect?"                   |
+
+**Severity Legend:**
+
+- 🔴 **HIGH** — Likely a fundamental conflict that needs resolution before proceeding
+- 🟠 **MED** — Worth addressing but may be intentional for specific use cases
+- 🟡 **LOW** — Consider reviewing but acceptable to proceed as-is
 
 ### Recovery if Interrupted
 

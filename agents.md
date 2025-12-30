@@ -1458,20 +1458,22 @@ Product context solves this by gathering comprehensive information upfront.
 
 ### Context Categories
 
-| #   | Category                 | Questions                                                                    | Used By Commands                                    |
-| --- | ------------------------ | ---------------------------------------------------------------------------- | --------------------------------------------------- |
-| 1   | Product Foundation       | Target audience, problem space, competitors, success metrics, business model | `/product-vision`, `/product-roadmap`               |
-| 2   | User Research & Personas | Personas, accessibility needs, geographic distribution                       | `/product-vision`, `/design-shell`                  |
-| 3   | Design Direction         | Aesthetic tone, animation, density, brand constraints                        | `/design-tokens`, `/design-shell`, `/design-screen` |
-| 4   | Data Architecture        | Sensitivity, compliance, relationships, audit needs                          | `/data-model`, `/sample-data`                       |
-| 5   | Section-Specific Depth   | User flows, edge cases, empty/loading/error states                           | `/shape-section`, `/design-screen`                  |
-| 6   | UI Patterns & Components | Data display, validation, notifications, confirmations                       | `/shape-section`, `/design-screen`                  |
-| 7   | Mobile & Responsive      | Priority, touch interactions, navigation, offline                            | `/design-shell`, `/design-screen`                   |
-| 8   | Performance & Scale      | User volume, data scale, real-time needs, search                             | `/product-roadmap`, `/shape-section`                |
-| 9   | Integration Points       | Auth provider, external services, API exposure                               | `/design-shell`, `/export-product`                  |
-| 10  | Security & Compliance    | Auth level, authorization model, audit logging                               | `/data-model`, `/export-product`                    |
-| 11  | Error Handling           | Message style, retry behavior, undo/redo, data loss prevention               | `/shape-section`, `/design-screen`                  |
-| 12  | Testing & Quality        | Coverage targets, E2E scope, accessibility testing, browser support          | `/export-product`                                   |
+| #   | Category                 | Qty | Topics                                                                       | Used By Commands                                    |
+| --- | ------------------------ | --- | ---------------------------------------------------------------------------- | --------------------------------------------------- |
+| 1   | Product Foundation       | 6   | Target audience, problem space, competitors, success metrics, business model | `/product-vision`, `/product-roadmap`               |
+| 2   | User Research & Personas | 4   | Personas, accessibility needs, geographic distribution                       | `/product-vision`, `/design-shell`                  |
+| 3   | Design Direction         | 5   | Aesthetic tone, animation, density, brand constraints                        | `/design-tokens`, `/design-shell`, `/design-screen` |
+| 4   | Data Architecture        | 5   | Sensitivity, compliance, relationships, audit needs                          | `/data-model`, `/sample-data`                       |
+| 5   | Section-Specific Depth   | 5   | User flows, edge cases, empty/loading/error states                           | `/shape-section`, `/design-screen`                  |
+| 6   | UI Patterns & Components | 5   | Data display, validation, notifications, confirmations                       | `/shape-section`, `/design-screen`                  |
+| 7   | Mobile & Responsive      | 4   | Priority, touch interactions, navigation, offline                            | `/design-shell`, `/design-screen`                   |
+| 8   | Performance & Scale      | 4   | User volume, data scale, real-time needs, search                             | `/product-roadmap`, `/shape-section`                |
+| 9   | Integration Points       | 3   | Auth provider, external services, API exposure                               | `/design-shell`, `/export-product`                  |
+| 10  | Security & Compliance    | 3   | Auth level, authorization model, audit logging                               | `/data-model`, `/export-product`                    |
+| 11  | Error Handling           | 4   | Message style, retry behavior, undo/redo, data loss prevention               | `/shape-section`, `/design-screen`                  |
+| 12  | Testing & Quality        | 4   | Coverage targets, E2E scope, accessibility testing, browser support          | `/export-product`                                   |
+
+**Total:** 52 questions (~45-60 min for full interview, ~20-30 min for `--minimal`)
 
 ### Completeness Requirements
 
