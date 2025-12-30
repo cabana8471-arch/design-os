@@ -6,6 +6,46 @@ You are helping the user define the core data model for their product. This esta
 
 > **See also:** `agents.md` → "The Four Pillars" → "Data Model" for the broader context of data modeling in Design OS.
 
+## Step 0: Validate Product Context
+
+**MANDATORY:** Check for `product/product-context.md` before proceeding.
+
+```bash
+CONTEXT_FILE="product/product-context.md"
+
+if [ ! -f "$CONTEXT_FILE" ]; then
+  echo "Error: product-context.md - File not found. Run /product-interview first."
+  exit 1
+fi
+
+# Parse completeness
+COMPLETENESS=$(grep "^Completeness:" "$CONTEXT_FILE" | grep -oE '[0-9]+' | head -1)
+if [ -z "$COMPLETENESS" ]; then
+  COMPLETENESS=0
+fi
+
+echo "Product context found: ${COMPLETENESS}% complete"
+```
+
+**Behavior based on completeness:**
+
+| Completeness | Action                                                                                       |
+| ------------ | -------------------------------------------------------------------------------------------- |
+| 0% (missing) | ERROR: Stop and ask user to run `/product-interview`                                         |
+| 1-49%        | WARNING: "Context is ${COMPLETENESS}% complete. Continue or run `/product-interview` first?" |
+| 50%+         | PROCEED: Load context and continue to Step 1                                                 |
+
+**If proceeding, load relevant context:**
+
+From `product-context.md`, extract and use:
+
+- Section 4 (Data Architecture): Sensitivity levels, compliance, relationships, audit needs, deletion strategy
+- Section 10 (Security): Authorization model, audit logging
+
+These inform the data model structure and relationship complexity.
+
+---
+
 ## Step 1: Check Prerequisites
 
 First, verify that the product overview and roadmap exist:

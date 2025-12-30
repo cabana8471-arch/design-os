@@ -2,6 +2,46 @@
 
 You are helping the user create realistic sample data for a section of their product. This data will be used to populate screen designs. You will also generate TypeScript types based on the data structure.
 
+## Step 0: Validate Product Context
+
+**MANDATORY:** Check for `product/product-context.md` before proceeding.
+
+```bash
+CONTEXT_FILE="product/product-context.md"
+
+if [ ! -f "$CONTEXT_FILE" ]; then
+  echo "Error: product-context.md - File not found. Run /product-interview first."
+  exit 1
+fi
+
+# Parse completeness
+COMPLETENESS=$(grep "^Completeness:" "$CONTEXT_FILE" | grep -oE '[0-9]+' | head -1)
+if [ -z "$COMPLETENESS" ]; then
+  COMPLETENESS=0
+fi
+
+echo "Product context found: ${COMPLETENESS}% complete"
+```
+
+**Behavior based on completeness:**
+
+| Completeness | Action                                                                                       |
+| ------------ | -------------------------------------------------------------------------------------------- |
+| 0% (missing) | ERROR: Stop and ask user to run `/product-interview`                                         |
+| 1-49%        | WARNING: "Context is ${COMPLETENESS}% complete. Continue or run `/product-interview` first?" |
+| 50%+         | PROCEED: Load context and continue to Step 1                                                 |
+
+**If proceeding, load relevant context:**
+
+From `product-context.md`, extract and use:
+
+- Section 4 (Data Architecture): Data sensitivity levels, compliance requirements
+- Section 5 (Section Depth): Edge cases for sample data variations
+
+These inform data generation (avoid PII if not needed, include edge case examples).
+
+---
+
 ## Step 1: Check Prerequisites
 
 First, identify the target section and verify that `spec.md` exists for it.

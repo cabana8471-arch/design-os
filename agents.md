@@ -52,6 +52,19 @@ The product you're planning and designing. When creating screen designs and expo
 
 Design OS follows a structured planning sequence:
 
+### 0. Product Interview (`/product-interview`) — REQUIRED
+
+Gather comprehensive context about your product through a structured interview. This creates `product/product-context.md` which is **required** by all subsequent commands.
+
+**Output:** `product/product-context.md`
+
+**Modes:**
+
+- Default — Full interview (12 categories, ~40 questions)
+- `--minimal` — Quick start (5 critical categories)
+- `--stage=X` — Focus on specific area (vision, section, shell, data)
+- `--audit` — Check completeness of existing context
+
 ### 1. Product Overview (`/product-vision`)
 
 Define your product's core description, the problems it solves, and key features.
@@ -97,6 +110,7 @@ Generate the complete export package with all components, types, and handoff doc
 
 | Command              | Creates                                                                                                                                                                                                                                                       | Location                         |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| `/product-interview` | `product-context.md`                                                                                                                                                                                                                                          | `product/`                       |
 | `/product-vision`    | `product-overview.md`                                                                                                                                                                                                                                         | `product/`                       |
 | `/product-roadmap`   | `product-roadmap.md`                                                                                                                                                                                                                                          | `product/`                       |
 | `/data-model`        | `data-model.md`                                                                                                                                                                                                                                               | `product/data-model/`            |
@@ -121,18 +135,19 @@ Generate the complete export package with all components, types, and handoff doc
 
 ### Command Prerequisites
 
-| Command              | Required                                    | Optional                                    |
-| -------------------- | ------------------------------------------- | ------------------------------------------- |
-| `/product-vision`    | —                                           | —                                           |
-| `/product-roadmap`   | `product-overview.md`                       | —                                           |
-| `/data-model`        | `product-overview.md`, `product-roadmap.md` | —                                           |
-| `/design-tokens`     | `product-overview.md`                       | —                                           |
-| `/design-shell`      | `product-overview.md`, `product-roadmap.md` | Design tokens, Sections, `SKILL.md`         |
-| `/shape-section`     | `product-overview.md`, `product-roadmap.md` | Data model, Shell spec                      |
-| `/sample-data`       | Section `spec.md`                           | Data model                                  |
-| `/design-screen`     | Section `spec.md`, `data.json`, `types.ts`  | Design tokens, Shell components, `SKILL.md` |
-| `/screenshot-design` | Screen design components                    | Playwright MCP                              |
-| `/export-product`    | `product-overview.md`, at least one section | Shell components, All sections              |
+| Command              | Required                                                          | Optional                                    |
+| -------------------- | ----------------------------------------------------------------- | ------------------------------------------- |
+| `/product-interview` | —                                                                 | —                                           |
+| `/product-vision`    | `product-context.md` (≥50%)                                       | —                                           |
+| `/product-roadmap`   | `product-context.md`, `product-overview.md`                       | —                                           |
+| `/data-model`        | `product-context.md`, `product-overview.md`, `product-roadmap.md` | —                                           |
+| `/design-tokens`     | `product-context.md`, `product-overview.md`                       | —                                           |
+| `/design-shell`      | `product-context.md`, `product-overview.md`, `product-roadmap.md` | Design tokens, Sections, `SKILL.md`         |
+| `/shape-section`     | `product-context.md`, `product-overview.md`, `product-roadmap.md` | Data model, Shell spec                      |
+| `/sample-data`       | `product-context.md`, Section `spec.md`                           | Data model                                  |
+| `/design-screen`     | `product-context.md`, Section `spec.md`, `data.json`, `types.ts`  | Design tokens, Shell components, `SKILL.md` |
+| `/screenshot-design` | Screen design components                                          | Playwright MCP                              |
+| `/export-product`    | `product-context.md`, `product-overview.md`, at least one section | Shell components, All sections              |
 
 **Legend:**
 
@@ -1403,6 +1418,86 @@ This pattern is intentional and should NOT be normalized to a single value.
 
 ---
 
+## Product Context System
+
+The `/product-interview` command creates `product/product-context.md`, which serves as the central source of truth for all Design OS commands.
+
+### Why Product Context is Required
+
+Before `/product-interview`, users often encountered these problems:
+
+- **Incomplete designs** — Missing error states, loading states, edge cases
+- **Inconsistent decisions** — Different assumptions across sections
+- **Repeated questions** — Same clarifications asked in multiple commands
+- **Design gaps** — Accessibility, mobile patterns, or performance considerations overlooked
+
+Product context solves this by gathering comprehensive information upfront.
+
+### Context Categories
+
+| #   | Category            | Questions                                                                    | Used By Commands                                    |
+| --- | ------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------- |
+| 1   | Product Foundation  | Target audience, problem space, competitors, success metrics, business model | `/product-vision`, `/product-roadmap`               |
+| 2   | User Research       | Personas, accessibility needs, geographic distribution                       | `/product-vision`, `/design-shell`                  |
+| 3   | Design Direction    | Aesthetic tone, animation, density, brand constraints                        | `/design-tokens`, `/design-shell`, `/design-screen` |
+| 4   | Data Architecture   | Sensitivity, compliance, relationships, audit needs                          | `/data-model`, `/sample-data`                       |
+| 5   | Section Depth       | User flows, edge cases, empty/loading/error states                           | `/shape-section`, `/design-screen`                  |
+| 6   | UI Patterns         | Data display, validation, notifications, confirmations                       | `/shape-section`, `/design-screen`                  |
+| 7   | Mobile & Responsive | Priority, touch interactions, navigation, offline                            | `/design-shell`, `/design-screen`                   |
+| 8   | Performance         | User volume, data scale, real-time needs, search                             | `/product-roadmap`, `/shape-section`                |
+| 9   | Integrations        | Auth provider, external services, API exposure                               | `/design-shell`, `/export-product`                  |
+| 10  | Security            | Auth level, authorization model, audit logging                               | `/data-model`, `/export-product`                    |
+| 11  | Error Handling      | Message style, retry behavior, undo/redo, data loss prevention               | `/shape-section`, `/design-screen`                  |
+| 12  | Testing             | Coverage targets, E2E scope, accessibility testing, browser support          | `/export-product`                                   |
+
+### Completeness Requirements
+
+Commands require minimum 50% completeness to proceed:
+
+```markdown
+Completeness Calculation:
+
+- 12 total categories
+- Each category: 0% (empty) to 100% (all questions answered)
+- Overall = average of completed categories
+- Minimum threshold: 50% (6+ categories with answers)
+```
+
+**Behavior by completeness:**
+
+| Completeness | Behavior                                                         |
+| ------------ | ---------------------------------------------------------------- |
+| 0% (missing) | ERROR: "Run /product-interview first"                            |
+| 1-49%        | WARNING: "Context incomplete (X%). Continue or interview first?" |
+| 50-74%       | PROCEED: Load context, note missing categories                   |
+| 75-100%      | PROCEED: Full context available                                  |
+
+### Quick Start with --minimal
+
+For users who want to start quickly:
+
+```bash
+/product-interview --minimal
+```
+
+This covers only the 5 most critical categories (1, 3, 5, 6, 11) and takes ~15-20 questions instead of ~40.
+
+### Updating Context
+
+To add missing sections or update existing answers:
+
+```bash
+/product-interview              # Will detect existing and offer to complete
+/product-interview --stage=X    # Focus on specific area
+/product-interview --audit      # Check what's missing
+```
+
+### Context File Location
+
+`product/product-context.md` — Committed to repository, shared with team, referenced by all commands.
+
+---
+
 ## Standardized Prerequisite Checks
 
 All commands must follow this consistent pattern for checking prerequisites:
@@ -1411,6 +1506,7 @@ All commands must follow this consistent pattern for checking prerequisites:
 
 **Required Prerequisites** → STOP with clear error message if missing
 
+- **Product context** (all commands except `/product-interview`)
 - Product overview (almost all commands)
 - Product roadmap (planning commands)
 - Section spec (for data/design commands)

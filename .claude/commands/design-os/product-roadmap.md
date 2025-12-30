@@ -5,6 +5,44 @@ You are helping the user create or update their product roadmap for Design OS. T
 1. **Create** an initial roadmap if one doesn't exist
 2. **Sync** changes if the user has manually edited the markdown files
 
+## Step 0: Validate Product Context
+
+**MANDATORY:** Check for `product/product-context.md` before proceeding.
+
+```bash
+CONTEXT_FILE="product/product-context.md"
+
+if [ ! -f "$CONTEXT_FILE" ]; then
+  echo "Error: product-context.md - File not found. Run /product-interview first."
+  exit 1
+fi
+
+# Parse completeness
+COMPLETENESS=$(grep "^Completeness:" "$CONTEXT_FILE" | grep -oE '[0-9]+' | head -1)
+if [ -z "$COMPLETENESS" ]; then
+  COMPLETENESS=0
+fi
+
+echo "Product context found: ${COMPLETENESS}% complete"
+```
+
+**Behavior based on completeness:**
+
+| Completeness | Action                                                                                       |
+| ------------ | -------------------------------------------------------------------------------------------- |
+| 0% (missing) | ERROR: Stop and ask user to run `/product-interview`                                         |
+| 1-49%        | WARNING: "Context is ${COMPLETENESS}% complete. Continue or run `/product-interview` first?" |
+| 50%+         | PROCEED: Load context and continue to Step 1                                                 |
+
+**If proceeding, load relevant context:**
+
+From `product-context.md`, extract and use:
+
+- Section 1 (Foundation): Business model, success metrics
+- Section 8 (Performance): Data scale expectations
+
+---
+
 ## Step 1: Check Current State
 
 First, check if `/product/product-roadmap.md` exists and read `/product/product-overview.md` if it exists.

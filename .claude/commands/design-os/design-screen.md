@@ -2,6 +2,46 @@
 
 You are helping the user create a screen design for a section of their product. The screen design will be a props-based React component that can be exported and integrated into any React codebase.
 
+## Step -1: Validate Product Context
+
+**MANDATORY:** Check for `product/product-context.md` before any other steps.
+
+```bash
+CONTEXT_FILE="product/product-context.md"
+
+if [ ! -f "$CONTEXT_FILE" ]; then
+  echo "Error: product-context.md - File not found. Run /product-interview first."
+  exit 1
+fi
+
+# Parse completeness
+COMPLETENESS=$(grep "^Completeness:" "$CONTEXT_FILE" | grep -oE '[0-9]+' | head -1)
+if [ -z "$COMPLETENESS" ]; then
+  COMPLETENESS=0
+fi
+
+echo "Product context found: ${COMPLETENESS}% complete"
+```
+
+**Behavior based on completeness:**
+
+| Completeness | Action                                                                                       |
+| ------------ | -------------------------------------------------------------------------------------------- |
+| 0% (missing) | ERROR: Stop and ask user to run `/product-interview`                                         |
+| 1-49%        | WARNING: "Context is ${COMPLETENESS}% complete. Continue or run `/product-interview` first?" |
+| 50%+         | PROCEED: Load context and continue to Step 1                                                 |
+
+**If proceeding, load relevant context:**
+
+From `product-context.md`, extract and use:
+
+- Section 5 (Section Depth): All states (empty, loading, error) — CRITICAL for complete designs
+- Section 6 (UI Patterns): Component preferences, form validation style
+- Section 7 (Mobile & Responsive): Touch interactions, responsive priority
+- Section 11 (Error Handling): Error message style, recovery patterns
+
+These ensure designs include all necessary states and patterns.
+
 ---
 
 ## Preamble: Multi-View Workflow Context

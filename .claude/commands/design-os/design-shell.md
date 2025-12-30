@@ -2,6 +2,47 @@
 
 You are helping the user design the application shell — the persistent navigation and layout that wraps all sections. This is a screen design, not implementation code.
 
+## Step -1: Validate Product Context
+
+**MANDATORY:** Check for `product/product-context.md` before any other steps.
+
+```bash
+CONTEXT_FILE="product/product-context.md"
+
+if [ ! -f "$CONTEXT_FILE" ]; then
+  echo "Error: product-context.md - File not found. Run /product-interview first."
+  exit 1
+fi
+
+# Parse completeness
+COMPLETENESS=$(grep "^Completeness:" "$CONTEXT_FILE" | grep -oE '[0-9]+' | head -1)
+if [ -z "$COMPLETENESS" ]; then
+  COMPLETENESS=0
+fi
+
+echo "Product context found: ${COMPLETENESS}% complete"
+```
+
+**Behavior based on completeness:**
+
+| Completeness | Action                                                                                       |
+| ------------ | -------------------------------------------------------------------------------------------- |
+| 0% (missing) | ERROR: Stop and ask user to run `/product-interview`                                         |
+| 1-49%        | WARNING: "Context is ${COMPLETENESS}% complete. Continue or run `/product-interview` first?" |
+| 50%+         | PROCEED: Load context and continue to Step 0                                                 |
+
+**If proceeding, load relevant context:**
+
+From `product-context.md`, extract and use:
+
+- Section 3 (Design Direction): Aesthetic tone, animation style, information density
+- Section 6 (UI Patterns): Notification style, modal vs drawer preferences
+- Section 7 (Mobile & Responsive): Mobile navigation pattern, responsive priority
+
+These pre-inform design decisions in Steps 3, 3.5, and 3.6.
+
+---
+
 > **Workflow Structure:** Steps 0-0.7 are **pre-flight checks** (audit/detection) that only run when a shell already exists. For fresh creation, these are skipped and the workflow starts at Step 1.
 
 **Step Index:**
