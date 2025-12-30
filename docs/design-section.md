@@ -43,11 +43,13 @@ You'll also get TypeScript types generated automatically:
 - **Props interface** — What the component expects, including callbacks for actions (onView, onEdit, onDelete, etc.)
 
 The sample data includes:
+
 - Realistic names, dates, and descriptions (not "Lorem ipsum")
 - Varied content lengths and statuses
 - Edge cases (empty arrays, long text)
 
 **Creates:**
+
 - `product/sections/[section-id]/data.json` — Sample data with `_meta` descriptions
 - `product/sections/[section-id]/types.ts` — TypeScript interfaces
 
@@ -72,7 +74,7 @@ export function InvoiceList({
   onView,
   onEdit,
   onDelete,
-  onCreate
+  onCreate,
 }: InvoiceListProps) {
   // ...
 }
@@ -87,6 +89,7 @@ A wrapper that imports the sample data and feeds it to the component, so you can
 All screen designs include:
 
 - **Mobile responsive** — Tailwind responsive prefixes (`sm:`, `md:`, `lg:`)
+  > **Note:** Section components use mobile-first design (base styles for mobile, enhanced for larger screens). This differs from shell components which use desktop-first. See agents.md → "Responsive Strategy Clarification" for details.
 - **Light & dark mode** — Using `dark:` variants
 - **Design tokens applied** — Your color palette and typography choices
 - **All spec requirements** — Every user flow and UI requirement implemented
@@ -96,6 +99,7 @@ All screen designs include:
 If the spec implies multiple views (list view, detail view, form, etc.), you'll be asked which to build first. Run `/design-screen` again for additional views.
 
 **Creates:**
+
 - `src/sections/[section-id]/components/[ViewName].tsx` — Main component
 - `src/sections/[section-id]/components/[SubComponent].tsx` — Sub-components as needed
 - `src/sections/[section-id]/components/index.ts` — Component exports
@@ -112,12 +116,14 @@ If the spec implies multiple views (list view, detail view, form, etc.), you'll 
 Take screenshots of your screen designs for documentation. Screenshots are saved alongside the spec and data files.
 
 This command:
+
 1. Starts the dev server automatically
 2. Navigates to your screen design
 3. Hides the Design OS navigation bar
 4. Captures a full-page screenshot
 
 Screenshots are useful for:
+
 - Visual reference during implementation
 - Documentation and handoff materials
 - Comparing designs across sections

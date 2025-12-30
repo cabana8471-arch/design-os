@@ -62,6 +62,9 @@ product-plan/
 
 ```
 product-plan/design-system/
+├── colors.json          # Tailwind color palette
+├── typography.json      # Google Fonts configuration
+├── design-direction.md  # Aesthetic direction guide
 ├── tokens.css           # CSS custom properties
 ├── tailwind-colors.md   # Tailwind configuration guide
 └── fonts.md             # Google Fonts setup
@@ -88,6 +91,8 @@ product-plan/shell/
 │   └── index.ts         # Exports
 └── screenshot.png       # Visual reference (if captured)
 ```
+
+> **Note:** Shell components are only included if you created them with `/design-shell`. If shell wasn't designed, the `shell/` directory won't exist and you'll need to build custom navigation from scratch.
 
 ### Section Components
 

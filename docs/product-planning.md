@@ -102,11 +102,16 @@ You'll also define:
 The shell is implemented as React components that will wrap your section screen designs.
 
 **Creates:**
+
 - `product/shell/spec.md` — Shell specification
+- `product/shell/data.json` — Sample data for shell components
+- `product/shell/types.ts` — TypeScript interfaces
+- `product/design-system/design-direction.md` — Aesthetic direction guide
 - `src/shell/components/AppShell.tsx` — Main shell wrapper
 - `src/shell/components/MainNav.tsx` — Navigation component
 - `src/shell/components/UserMenu.tsx` — User menu component
-- `src/shell/ShellPreview.tsx` — Preview wrapper for Design OS
+- `src/shell/components/index.ts` — Component exports
+- `src/shell/ShellPreview.tsx` — Preview wrapper (Design OS only)
 
 ## What's Next
 
