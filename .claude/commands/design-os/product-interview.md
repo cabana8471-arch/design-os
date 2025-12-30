@@ -1,4 +1,4 @@
-<!-- v1.1.0 -->
+<!-- v1.2.0 -->
 
 # Product Interview
 
@@ -69,12 +69,76 @@ When `--stage` is active, only ask questions for the categories in that stage. S
 | `scale`   | 8, 9              | 1-7, 10-12         |
 | `quality` | 12                | 1-11               |
 
+**Early Exit: Stage Mode with All Categories Complete:**
+
+If using `--stage=X` and ALL categories in that stage are already ✅ Complete in the existing context file:
+
+```bash
+# Check if all stage categories are already complete
+check_stage_completion() {
+  local STAGE=$1
+  local ALL_COMPLETE=true
+  local STAGE_CATS=""
+
+  case "$STAGE" in
+    vision)  STAGE_CATS="1 2" ;;
+    section) STAGE_CATS="5 6 7 11" ;;
+    shell)   STAGE_CATS="3 6 7" ;;
+    data)    STAGE_CATS="4 10" ;;
+    scale)   STAGE_CATS="8 9" ;;
+    quality) STAGE_CATS="12" ;;
+  esac
+
+  for cat_num in $STAGE_CATS; do
+    CAT_LINE=$(grep "| $cat_num\." product/product-context.md 2>/dev/null | head -1)
+    if ! echo "$CAT_LINE" | grep -qE "(✅|Complete)"; then
+      ALL_COMPLETE=false
+      break
+    fi
+  done
+
+  echo "$ALL_COMPLETE"
+}
+```
+
+**If all categories in stage are complete:**
+
+1. Report to user:
+
+   ```
+   Toate categoriile din stage-ul "$STAGE" sunt deja complete:
+   - Categoria X: ✅ Complete
+   - Categoria Y: ✅ Complete
+
+   Nu există întrebări noi de pus.
+   ```
+
+2. Offer options via AskUserQuestion:
+   - **Revizuim oricum** — Re-ask all questions for this stage (use `--skip-validation`)
+   - **Vedem altă zonă** — Suggest incomplete stages
+   - **Ieșim** — Exit without changes
+
+3. If user selects "Vedem altă zonă", analyze context and suggest:
+
+   ```
+   Ai categorii incomplete în:
+   - --stage=section (Categories 5, 6 incomplete)
+   - --stage=quality (Category 12 incomplete)
+
+   Vrei să continuăm cu una dintre acestea?
+   ```
+
 **Category Skip Logic (used in Steps 2-13):**
 
 Before asking questions for any category, check both stage mode AND complete_missing mode:
 
+> **Note:** This function definition references `$INTERVIEW_MODE` which is set later in Step 1 based on user selection. The function is defined here for reference but only called during Steps 2-13, after the variable has been initialized. If no existing context is found, `INTERVIEW_MODE` defaults to "full".
+
 ```bash
 # Function to check if category should be asked
+# Variables used:
+#   $STAGE - Set in Step 0 from --stage=X argument (optional)
+#   $INTERVIEW_MODE - Set in Step 1: "full", "complete_missing", or "audit"
 should_ask_category() {
   local CATEGORY_NUM=$1
 
@@ -137,15 +201,41 @@ fi
 
 **If existing context found:**
 
-Use AskUserQuestion to ask:
+First, show a quick summary before asking (so user can decide with context):
 
-"Am găsit context existent pentru produsul tău (${COMPLETENESS}% complet). Ce vrei să facem?"
+```
+Am găsit context existent pentru produsul tău!
+
+📊 **Completeness:** ${COMPLETENESS}% ([N]/12 categorii)
+✅ Complete: [list complete category names, e.g., "Foundation, Design Direction"]
+⚠️ Partial: [list partial category names]
+❌ Empty: [list empty category names]
+```
+
+Then use AskUserQuestion to ask:
+
+"Ce vrei să facem?"
 
 Options:
 
+- **Completăm ce lipsește** — Doar categoriile incomplete (Recomandat)
 - **Revizuim totul** — Pornim de la zero cu întrebări noi
-- **Completăm ce lipsește** — Doar categoriile incomplete
-- **Vedem ce avem** — Afișează contextul curent, apoi decide
+- **Detalii complete** — Vezi rezumatul detaliat pe categorii
+- **E suficient** — Contextul e ok, continuăm cu /product-vision
+
+> **UX Note:** By showing a brief summary before the question, most users can decide immediately. The "Detalii complete" option replaces the old "Vedem ce avem" flow but is now optional rather than a decision point.
+
+**If user selected "E suficient":**
+
+Exit the command with:
+
+```
+Contextul produsului pare complet. Poți continua cu /product-vision sau altă comandă.
+```
+
+**If user selected "Detalii complete":**
+
+Display the full summary table (same as old "Vedem ce avem" behavior), then return to the same question above. This is informational only.
 
 **If user selected "Revizuim totul":**
 
@@ -170,9 +260,9 @@ Am salvat contextul existent în $BACKUP_FILE. Acum pornim de la zero.
 
 Then proceed with full interview (all Steps 2-13).
 
-**If user selected "Vedem ce avem":**
+**Full Summary Table (for "Detalii complete" option):**
 
-Display a summary of the current context:
+When user selects "Detalii complete", display this detailed summary:
 
 ```markdown
 ## Current Context Summary
@@ -184,24 +274,19 @@ Display a summary of the current context:
 | --------------------------- | -------- | ----------------------- |
 | 1. Product Foundation       | ✅/⚠️/❌ | [First line of content] |
 | 2. User Research & Personas | ✅/⚠️/❌ | [First line of content] |
-| ... (all 12 categories)     | ...      | ...                     |
+| 3. Design Direction         | ✅/⚠️/❌ | [First line of content] |
+| 4. Data Architecture        | ✅/⚠️/❌ | [First line of content] |
+| 5. Section-Specific Depth   | ✅/⚠️/❌ | [First line of content] |
+| 6. UI Patterns & Components | ✅/⚠️/❌ | [First line of content] |
+| 7. Mobile & Responsive      | ✅/⚠️/❌ | [First line of content] |
+| 8. Performance & Scale      | ✅/⚠️/❌ | [First line of content] |
+| 9. Integration Points       | ✅/⚠️/❌ | [First line of content] |
+| 10. Security & Compliance   | ✅/⚠️/❌ | [First line of content] |
+| 11. Error Handling          | ✅/⚠️/❌ | [First line of content] |
+| 12. Testing & Quality       | ✅/⚠️/❌ | [First line of content] |
 ```
 
-Then use AskUserQuestion again:
-
-"Acum că ai văzut ce avem, ce vrei să facem?"
-
-Options:
-
-- **Revizuim totul** — Pornim de la zero cu întrebări noi
-- **Completăm ce lipsește** — Doar categoriile incomplete
-- **E suficient** — Contextul e ok, nu facem nimic
-
-If user selects "E suficient", exit the command with:
-
-```
-Contextul produsului pare complet. Poți continua cu /product-vision sau altă comandă.
-```
+After displaying, return to the main question (user can now make an informed choice).
 
 **If `--audit` mode:**
 
@@ -302,6 +387,36 @@ This ensures users only answer questions for categories that need completion.
 | 11   | 10       | Security & Compliance    |
 | 12   | 11       | Error Handling           |
 | 13   | 12       | Testing & Quality        |
+
+**Progress Indicator:**
+
+Before each category, show progress to help users understand where they are in the interview:
+
+```
+📊 Categoria [N] din 12: [Category Name]
+   Întrebările [X]-[Y] din ~52
+
+   [Brief description of what this category covers]
+```
+
+**Question counts per category (for progress calculation):**
+
+| Category | Questions | Cumulative |
+| -------- | --------- | ---------- |
+| 1        | 6         | 1-6        |
+| 2        | 4         | 7-10       |
+| 3        | 5         | 11-15      |
+| 4        | 5         | 16-20      |
+| 5        | 5         | 21-25      |
+| 6        | 5         | 26-30      |
+| 7        | 4         | 31-34      |
+| 8        | 4         | 35-38      |
+| 9        | 3         | 39-41      |
+| 10       | 3         | 42-44      |
+| 11       | 4         | 45-48      |
+| 12       | 4         | 49-52      |
+
+> **For --minimal mode:** Adjust progress to show only 6 categories and ~29 questions total.
 
 > **Category Skip:** Before asking questions, check `should_ask_category(1)`. Skip to Step 3 if:
 >
@@ -1120,27 +1235,64 @@ If the user selected "Completăm ce lipsește" in Step 1, existing answers must 
 
 **Merge Strategy:**
 
-```bash
-# For each category in complete_missing mode:
-merge_category_content() {
-  local CATEGORY_NUM=$1
-  local NEW_ANSWERS=$2
+> **Note:** This is guidance for the agent performing the merge, not a bash script to execute.
 
-  # Get existing content boundaries
-  local SECTION_START=$(grep -n "^## $CATEGORY_NUM\." product/product-context.md | head -1 | cut -d: -f1)
-  local SECTION_END=$(grep -n "^## " product/product-context.md | awk -F: -v start="$SECTION_START" '$1 > start {print $1; exit}')
+**Step-by-step merge process for each partial category:**
 
-  if [ -n "$SECTION_START" ]; then
-    # Extract existing content
-    EXISTING_CONTENT=$(sed -n "${SECTION_START},${SECTION_END}p" product/product-context.md)
+1. **Read existing category content:**
 
-    # For each subsection (### heading):
-    # - If subsection has content in existing, keep it
-    # - If subsection is empty in existing but has new content, add new
-    # - If both have content, prefer new (with confirmation)
-  fi
-}
-```
+   ```bash
+   # Extract category N content from existing file
+   SECTION_START=$(grep -n "^## $CATEGORY_NUM\." product/product-context.md | head -1 | cut -d: -f1)
+   SECTION_END=$(grep -n "^## " product/product-context.md | awk -F: -v start="$SECTION_START" '$1 > start {print $1; exit}')
+   EXISTING_CONTENT=$(sed -n "${SECTION_START},${SECTION_END}p" product/product-context.md)
+   ```
+
+2. **Identify subsections with content:**
+   - Parse `### Subsection Name` headings within the category
+   - For each subsection, check if content exists below the heading (non-empty lines before next ### or ##)
+   - Build a list: `ANSWERED_SUBSECTIONS` and `MISSING_SUBSECTIONS`
+
+3. **Present status to user before asking questions:**
+
+   ```
+   Categoria [N] are unele răspunsuri:
+   ✅ [Subsection A]: [first line of existing answer]
+   ✅ [Subsection B]: [first line of existing answer]
+   ❌ [Subsection C]: (lipsește)
+   ❌ [Subsection D]: (lipsește)
+
+   Voi întreba doar despre subsecțiunile lipsă.
+   ```
+
+4. **Ask only missing questions:**
+   - Skip questions for subsections that have content
+   - Ask questions only for `MISSING_SUBSECTIONS`
+
+5. **Generate merged output:**
+   - For each subsection in the category:
+     - If in `ANSWERED_SUBSECTIONS`: copy existing content verbatim
+     - If in `MISSING_SUBSECTIONS` and user provided new answer: use new answer
+     - If in `MISSING_SUBSECTIONS` and no new answer: leave empty with note
+
+**Subsection-to-Question Mapping (for detection):**
+
+| Category | Subsection Heading      | Question ID |
+| -------- | ----------------------- | ----------- |
+| 1        | ### Product Name        | 2.0         |
+| 1        | ### Target Audience     | 2.1         |
+| 1        | ### Problem Space       | 2.2         |
+| 1        | ### Competitors         | 2.3         |
+| 1        | ### Success Metrics     | 2.4         |
+| 1        | ### Business Model      | 2.5         |
+| 3        | ### Aesthetic Tone      | 4.1         |
+| 3        | ### Animation Style     | 4.2         |
+| 3        | ### Information Density | 4.3         |
+| 3        | ### Brand Constraints   | 4.4         |
+| 3        | ### Visual Inspiration  | 4.5         |
+| ...      | (see output template)   | ...         |
+
+> **Tip:** To detect if a subsection has content, check for non-empty lines between `### Heading` and the next `###` or `##`. If only whitespace exists, the subsection is empty.
 
 **Content Preservation Rules:**
 
@@ -1659,23 +1811,33 @@ done
 
 # 8. Verify cross-reference consistency
 # Check that commands referenced have at least one completed category
-declare -A CMD_CATEGORIES=(
-  ["product-vision"]="1 2"
-  ["product-roadmap"]="1 8"
-  ["data-model"]="4 10"
-  ["design-tokens"]="3"
-  ["design-shell"]="2 3 7 9"
-  ["shape-section"]="5 6 8 11"
-  ["sample-data"]="4 5"
-  ["design-screen"]="3 5 6 7 11"
-  ["export-product"]="9 10 12"
-)
+# Note: Using POSIX-compatible approach (case statements) instead of bash 4+ associative arrays
 
-for cmd in "${!CMD_CATEGORIES[@]}"; do
+# Helper function to get categories for a command
+get_cmd_categories() {
+  case "$1" in
+    product-vision)  echo "1 2" ;;
+    product-roadmap) echo "1 8" ;;
+    data-model)      echo "4 10" ;;
+    design-tokens)   echo "3" ;;
+    design-shell)    echo "2 3 7 9" ;;
+    shape-section)   echo "5 6 8 11" ;;
+    sample-data)     echo "4 5" ;;
+    design-screen)   echo "3 5 6 7 11" ;;
+    export-product)  echo "9 10 12" ;;
+    *)               echo "" ;;
+  esac
+}
+
+# List of commands to check
+COMMANDS="product-vision product-roadmap data-model design-tokens design-shell shape-section sample-data design-screen export-product"
+
+for cmd in $COMMANDS; do
   if grep -q "### For /$cmd" "$CONTEXT_FILE"; then
     # Verify at least one referenced category is not ❌
     HAS_CONTENT=false
-    for cat_num in ${CMD_CATEGORIES[$cmd]}; do
+    CMD_CATS=$(get_cmd_categories "$cmd")
+    for cat_num in $CMD_CATS; do
       CAT_LINE=$(grep "| $cat_num\." "$CONTEXT_FILE" | head -1)
       if echo "$CAT_LINE" | grep -qE "(✅|⚠️|Complete|Partial)"; then
         HAS_CONTENT=true

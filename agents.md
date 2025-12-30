@@ -60,7 +60,7 @@ Gather comprehensive context about your product through a structured interview. 
 
 **Modes:**
 
-- Default — Full interview (12 categories, ~50 questions)
+- Default — Full interview (12 categories, ~52 questions)
 - `--minimal` — Quick start (6 critical categories, meets 50% threshold)
 - `--stage=X` — Focus on specific area (vision, section, shell, data, scale, quality)
 - `--audit` — Check completeness of existing context
@@ -1505,7 +1505,7 @@ For users who want to start quickly:
 /product-interview --minimal
 ```
 
-This covers 6 critical categories (1, 3, 5, 6, 7, 11) and takes ~28 questions instead of ~50. This meets the 50% completeness threshold required by other commands.
+This covers 6 critical categories (1, 3, 5, 6, 7, 11) and takes ~29 questions instead of ~52. This meets the 50% completeness threshold required by other commands.
 
 **Why these categories?**
 

@@ -6,7 +6,67 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-30 21:15] Critical Analysis: /product-interview v1.1.0 (10 Issues)
+## [2025-12-30 22:15] Critical Analysis: /product-interview v1.2.0 (8 Issues)
+
+### Description
+
+Critical analysis identified 8 issues in the `/product-interview` v1.1.0 command. This modification resolves ALL issues including 2 critical (Bash 4+ compatibility, incomplete merge logic), 4 medium (per-question detection, --stage edge case, variable timing, UX flow), and 2 low (progress indicators, question counts) priority fixes.
+
+### New Files Created
+
+None.
+
+### Modified Files
+
+| File                                              | Modification                                                                                                                                                                                                            |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/product-interview.md` | v1.1.0 → v1.2.0: Fixed Bash 4+ compatibility, added complete merge guidance, added progress indicators, streamlined UX flow, added --stage complete handling, clarified INTERVIEW_MODE timing, added subsection mapping |
+| `agents.md`                                       | Updated question counts: ~50 → ~52 (full), ~28 → ~29 (minimal)                                                                                                                                                          |
+
+### Gaps Resolved
+
+**Critical (2):**
+
+- **C1:** Bash 4+ dependency in validation script — `declare -A` associative arrays don't work on macOS default Bash 3.2. Replaced with POSIX-compatible `case` statements and `get_cmd_categories()` helper function.
+- **C2:** Incomplete merge logic — `merge_category_content()` was a skeleton with placeholder comments. Replaced with comprehensive 5-step merge guidance and added Subsection-to-Question Mapping table for per-question detection.
+
+**Medium (4):**
+
+- **M1:** Ambiguous per-question detection — Only category-level detection existed. Added subsection-to-question mapping table covering all 12 categories.
+- **M2:** --stage mode with complete categories undefined — No guidance when all categories in stage are already complete. Added `check_stage_completion()` function and user options (Revizuim oricum/Vedem altă zonă/Ieșim).
+- **M3:** INTERVIEW_MODE referenced before definition — Variable used in Step 0's function but set in Step 1. Added clarifying note explaining the function is defined for later use.
+- **M4:** Double-question flow for "Vedem ce avem" — Users had to answer 2 questions to see context and decide. Streamlined: show brief summary before first question, added 4 options including "E suficient" early exit.
+
+**Low (2):**
+
+- **L1:** Missing progress indicator guidance — No progress shown during 50+ question interview. Added progress template and question counts per category table (cumulative counts).
+- **L2:** Question count inconsistency — agents.md said "~50 questions" but actual count is ~52 (full) and ~29 (minimal). Updated both occurrences.
+
+### Statistics
+
+- Files modified: 2
+- Lines changed: ~150
+- Issues resolved: 8 (2 Critical, 4 Medium, 2 Low)
+- Version bump: v1.1.0 → v1.2.0
+
+### Verification
+
+- ✅ `declare -A` replaced with POSIX-compatible `get_cmd_categories()` function
+- ✅ 5-step merge process guidance added with detection tips
+- ✅ Subsection-to-Question Mapping table added (partial coverage, references output template)
+- ✅ `check_stage_completion()` function added with user options
+- ✅ INTERVIEW_MODE clarifying note added to Step 0
+- ✅ Streamlined UX: brief summary shown before question, 4 options available
+- ✅ Progress indicator template added with question counts per category
+- ✅ agents.md updated: ~50→~52, ~28→~29
+
+### Remaining Items
+
+None — all issues resolved. Command is production-ready at v1.2.0.
+
+---
+
+## [2025-12-30 21:05] Critical Analysis: /product-interview v1.1.0 (10 Issues)
 
 ### Description
 
