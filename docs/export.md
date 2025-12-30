@@ -47,9 +47,8 @@ product-plan/
 └── instructions/
     ├── one-shot-instructions.md     # All milestones combined
     └── incremental/                 # Milestone-by-milestone implementation
-        ├── 01-foundation.md         # Design tokens, data model, routing
-        ├── 02-shell.md              # Application shell implementation
-        ├── 03-[section-id].md        # One per section (e.g., 03-invoices.md)
+        ├── 01-foundation.md         # Design tokens, data model, routing, shell (if included)
+        ├── 02-[section-id].md       # First section (e.g., 02-invoices.md)
         └── ...
 ```
 
@@ -132,11 +131,12 @@ Exported components are:
   onView={(id) => navigate(`/invoices/${id}`)}
   onEdit={(id) => navigate(`/invoices/${id}/edit`)}
   onDelete={(id) => confirmDelete(id)}
-  onCreate={() => navigate('/invoices/new')}
+  onCreate={() => navigate("/invoices/new")}
 />
 ```
 
 Your implementation agent's job is to:
+
 - Wire up callbacks to routing and API calls
 - Replace sample data with real data from your backend
 - Implement proper error handling and loading states

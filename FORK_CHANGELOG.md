@@ -6,6 +6,61 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-30 10:30] Critical Analysis - Documentation Consistency Fixes
+
+### Description
+
+Comprehensive critical analysis of all files excluding src/ and \_documentatie/. Analysis covered ~100 files including 10 commands, 13 templates, 22 hookify rules, documentation, and configuration files. Identified 2 documentation inconsistencies requiring fixes. System was found to be well-structured and mature overall.
+
+### New Files Created
+
+_None_
+
+### Modified Files
+
+| File                      | Modification                                                                                      |
+| ------------------------- | ------------------------------------------------------------------------------------------------- |
+| `docs/export.md`          | Fixed milestone structure: removed incorrect `02-shell.md`, clarified shell is part of Foundation |
+| `docs/getting-started.md` | Fixed dev server port: `5173` → `3000` to match vite.config.ts                                    |
+
+### Gaps Resolved
+
+**Medium (1):**
+
+- **M1:** docs/export.md incorrectly showed `02-shell.md` as separate milestone, but shell is included in `01-foundation.md` when `INCLUDE_SHELL=true`. Section milestones start at `02-[section-id].md`.
+
+**Low (1):**
+
+- **L1:** docs/getting-started.md referenced port 5173 (Vite default) but vite.config.ts explicitly configures port 3000.
+
+**Verified as Already Correct (10+):**
+
+- Hookify rules count (22 = 3 BLOCK + 19 WARN)
+- Template system (12 content templates)
+- Command prerequisites table in agents.md
+- Section ID generation rules
+- SKILL.md format and content
+- Package.json scripts and dependencies
+- Export product flow (18 steps)
+- Error message format standard
+- Shell relationships format
+- Design direction lifecycle
+
+### Statistics
+
+- Files modified: 2
+- Lines changed: ~5
+- Issues resolved: 2 (1 Medium, 1 Low)
+- Verified as correct: 10+
+
+### Verification
+
+- ✅ docs/export.md milestone structure matches export-product.md and agents.md
+- ✅ docs/getting-started.md port matches vite.config.ts (3000)
+- ✅ All other documentation verified as consistent
+
+---
+
 ## [2025-12-30 09:15] Critical Analysis - Artifact Cleanup & Documentation Clarity
 
 ### Description
