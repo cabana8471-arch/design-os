@@ -2,6 +2,8 @@
 
 Design OS includes **hookify guardrails** that provide real-time feedback during development. These rules catch common mistakes before they cause problems.
 
+> **File Location:** Rule files are located at `.claude/hookify.dos-*.local.md` (in the `.claude/` directory, not in this `hookify/` subdirectory). This subdirectory contains documentation only.
+
 ## How It Works
 
 Hookify rules are markdown files with YAML frontmatter that trigger on specific events:
@@ -25,6 +27,8 @@ Each rule can either:
 | Design System  | `dos-design-`    | 4     | Enforce design consistency             |
 | Accessibility  | `dos-a11y-`      | 2     | Catch accessibility issues             |
 | File Structure | `dos-structure-` | 3     | Ensure correct file organization       |
+
+**Total: 22 rules (3 BLOCK + 19 WARN)**
 
 See [categories.md](./categories.md) for detailed category explanations.
 
@@ -52,7 +56,7 @@ These rules **warn** about potential issues:
 | `dos-data-warn-missing-meta`      | data.json without \_meta structure   |
 | `dos-design-warn-generic-fonts`   | Inter, Roboto, Arial usage           |
 
-> **Note:** This table shows common examples. See [categories.md](./categories.md) for the complete list of all 19 warning rules.
+> **Note:** This table shows common examples. See [categories.md](./categories.md) for the complete list of all warning rules.
 
 ## Managing Rules
 

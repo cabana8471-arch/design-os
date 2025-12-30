@@ -40,6 +40,8 @@ If exportable components import data directly, they become tied to Design OS and
 
 Design OS commands have dependencies:
 
+> **Note:** This diagram shows the **recommended workflow order**, not strict dependencies. For actual prerequisites per command, see `agents.md` → "Command Prerequisites" table. For example, `/design-tokens` only requires `product-overview.md`, not `/data-model`.
+
 ```
 /product-vision
     ↓
