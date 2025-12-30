@@ -17,6 +17,8 @@ You are helping the user create a screen design for a section of their product. 
 >
 > The preview wrapper created for the first view will be updated to include subsequent views.
 
+> **Responsive Strategy:** Section components use **mobile-first** design — single-column layouts for mobile are designed first, then enhanced for larger screens (grids, multi-column layouts). See `agents.md` → "Responsive Strategy Clarification" for details.
+
 ### Multi-View Workflow Details
 
 **Q: Does each view share the same data.json?**

@@ -18,9 +18,10 @@ For larger products or when you want to review progress incrementally.
 
 Work through the instructions in order:
 
-1. **Foundation** (`instructions/incremental/01-foundation.md`) — Design tokens, data model types, routing
-2. **Shell** (`instructions/incremental/02-shell.md`) — Application shell and navigation
-3. **Sections** (`instructions/incremental/03-*.md`, `04-*.md`, etc.) — Each feature section, one at a time
+1. **Foundation** (`instructions/incremental/01-foundation.md`) — Design tokens, data model types, routing, and shell setup (if shell exists)
+2. **Sections** (`instructions/incremental/02-*.md`, `03-*.md`, etc.) — Each feature section, one at a time
+
+> **Note:** Shell components are included in the Foundation milestone when `INCLUDE_SHELL=true`. Section milestones always start at `02-[section-id].md`.
 
 For each milestone:
 
@@ -94,21 +95,25 @@ This approach prevents wasted work from misunderstandings and ensures the backen
 Before finalizing any implementation plan, encourage your agent to ask questions like:
 
 **Architecture:**
+
 - What backend framework are we using?
 - How should authentication work?
 - Are there existing patterns in this codebase to follow?
 
 **Data:**
+
 - How should the data model extend what's defined?
 - Are there validation rules beyond what the UI shows?
 - How should relationships be handled (eager loading, lazy loading)?
 
 **Integration:**
+
 - How should the callbacks be implemented (API calls, local state)?
 - What error handling patterns should we use?
 - Are there existing UI components to reuse alongside the new ones?
 
 **Scope:**
+
 - Should we implement all features in this milestone or prioritize?
 - Are there any features to skip for now?
 - What's the testing strategy?
@@ -118,17 +123,20 @@ Before finalizing any implementation plan, encourage your agent to ask questions
 The Design OS export provides finished UI designs. Your implementation agent still needs to create:
 
 **Backend:**
+
 - Database schema and migrations
 - API endpoints (REST or GraphQL)
 - Business logic and validation
 - Authentication and authorization
 
 **Data Layer:**
+
 - State management setup
 - Data fetching and caching
 - Real-time updates (if needed)
 
 **Integration:**
+
 - Routing configuration
 - Callback implementations
 - Error handling and loading states
@@ -136,6 +144,7 @@ The Design OS export provides finished UI designs. Your implementation agent sti
 - Form validation and submission
 
 **Tests:**
+
 - Unit and integration tests based on `tests.md` instructions
 - User flow tests (success and failure paths)
 - Empty state verification

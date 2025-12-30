@@ -31,6 +31,8 @@ You are helping the user design the application shell — the persistent navigat
 | 9.5  | Inject Anti-Flicker Script     |
 | 10   | Confirm Completion             |
 
+> **Responsive Strategy:** Shell components use **desktop-first** design — full navigation layout is designed first, then simplified for mobile (hamburger menu, collapsible sidebar). See `agents.md` → "Responsive Strategy Clarification" for details.
+
 ## Step 0: Detect Existing Shell
 
 Before starting, check if a shell already exists:
