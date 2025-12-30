@@ -1,3 +1,5 @@
+<!-- v1.0.0 -->
+
 # Product Interview
 
 You are conducting a comprehensive product interview to gather detailed context for Design OS. This command creates `product/product-context.md` which is **required** by all other Design OS commands.
@@ -20,15 +22,16 @@ Parse any arguments to determine interview mode:
 
 **Mode behaviors:**
 
-| Mode              | Categories     | Output                     |
-| ----------------- | -------------- | -------------------------- |
-| Default           | All 12         | Full product-context.md    |
-| `--minimal`       | 1, 3, 5, 6, 11 | Quick start context        |
-| `--stage=vision`  | 1, 2           | Foundation + User Research |
-| `--stage=section` | 5, 6, 7, 11    | Section design context     |
-| `--stage=shell`   | 3, 6, 7        | Shell design context       |
-| `--stage=data`    | 4, 10          | Data architecture context  |
-| `--audit`         | N/A            | Report on completeness     |
+| Mode                | Categories     | Output                               |
+| ------------------- | -------------- | ------------------------------------ |
+| Default             | All 12         | Full product-context.md              |
+| `--minimal`         | 1, 3, 5, 6, 11 | Quick start context                  |
+| `--stage=vision`    | 1, 2           | Foundation + User Research           |
+| `--stage=section`   | 5, 6, 7, 11    | Section design context               |
+| `--stage=shell`     | 3, 6, 7        | Shell design context                 |
+| `--stage=data`      | 4, 10          | Data architecture context            |
+| `--audit`           | N/A            | Report on completeness               |
+| `--skip-validation` | All 12         | Skip Step 1 (existing context check) |
 
 ---
 
@@ -78,6 +81,8 @@ Recommendation: Run `/product-interview --stage=X` to complete missing sections.
 ---
 
 ## Step 2: Product Foundation
+
+> **Note:** Steps 2-13 correspond to Categories 1-12 in the output file. Step 2 creates Category 1, Step 3 creates Category 2, etc.
 
 **Ro:** "Să începem cu fundația produsului tău."
 
@@ -810,19 +815,21 @@ After completing all questions (or selected categories for partial modes):
 
 ### 14.1: Calculate Completeness
 
-```bash
-# Count completed categories (at least 50% questions answered)
-COMPLETE=0
-PARTIAL=0
-EMPTY=0
+For each of the 12 categories, determine its status:
 
-for category in {1..12}; do
-  # Check answers for this category
-  # Complete if 5+ answers, Partial if 1-4, Empty if 0
-done
+| Status   | Criteria                       | Symbol |
+| -------- | ------------------------------ | ------ |
+| Complete | All questions answered         | ✅     |
+| Partial  | 1+ questions answered, not all | ⚠️     |
+| Empty    | No questions answered          | ❌     |
 
-COMPLETENESS=$((COMPLETE * 100 / 12))
+**Completeness calculation:**
+
 ```
+COMPLETENESS = (Complete categories × 100) / 12
+```
+
+Example: 9 complete categories = 75% completeness
 
 ### 14.2: Generate product-context.md
 
@@ -844,20 +851,20 @@ Mode: [Full / Minimal / Stage-specific]
 
 ## Quick Reference
 
-| Category               | Status     | Key Decisions |
-| ---------------------- | ---------- | ------------- |
-| 1. Foundation          | [✅/⚠️/❌] | [Summary]     |
-| 2. User Research       | [✅/⚠️/❌] | [Summary]     |
-| 3. Design Direction    | [✅/⚠️/❌] | [Summary]     |
-| 4. Data Architecture   | [✅/⚠️/❌] | [Summary]     |
-| 5. Section Depth       | [✅/⚠️/❌] | [Summary]     |
-| 6. UI Patterns         | [✅/⚠️/❌] | [Summary]     |
-| 7. Mobile & Responsive | [✅/⚠️/❌] | [Summary]     |
-| 8. Performance         | [✅/⚠️/❌] | [Summary]     |
-| 9. Integrations        | [✅/⚠️/❌] | [Summary]     |
-| 10. Security           | [✅/⚠️/❌] | [Summary]     |
-| 11. Error Handling     | [✅/⚠️/❌] | [Summary]     |
-| 12. Testing            | [✅/⚠️/❌] | [Summary]     |
+| Category                    | Status     | Key Decisions |
+| --------------------------- | ---------- | ------------- |
+| 1. Product Foundation       | [✅/⚠️/❌] | [Summary]     |
+| 2. User Research & Personas | [✅/⚠️/❌] | [Summary]     |
+| 3. Design Direction         | [✅/⚠️/❌] | [Summary]     |
+| 4. Data Architecture        | [✅/⚠️/❌] | [Summary]     |
+| 5. Section-Specific Depth   | [✅/⚠️/❌] | [Summary]     |
+| 6. UI Patterns & Components | [✅/⚠️/❌] | [Summary]     |
+| 7. Mobile & Responsive      | [✅/⚠️/❌] | [Summary]     |
+| 8. Performance & Scale      | [✅/⚠️/❌] | [Summary]     |
+| 9. Integration Points       | [✅/⚠️/❌] | [Summary]     |
+| 10. Security & Compliance   | [✅/⚠️/❌] | [Summary]     |
+| 11. Error Handling Strategy | [✅/⚠️/❌] | [Summary]     |
+| 12. Testing & Quality       | [✅/⚠️/❌] | [Summary]     |
 
 ---
 
@@ -1088,7 +1095,7 @@ Mode: [Full / Minimal / Stage-specific]
 
 ---
 
-## 11. Error Handling
+## 11. Error Handling Strategy
 
 ### Message Style
 
@@ -1226,18 +1233,18 @@ Am creat contextul produsului tău!
 - Folosește AskUserQuestion cu opțiuni predefinite când e posibil
 - Păstrează întrebările concise - nu repeta ce-ai aflat deja
 - Dacă utilizatorul dă răspunsuri vagi, cere clarificări
-- Validează consistența între răspunsuri (ex: MVP scope + Enterprise features = warning)
+- Validează consistența între răspunsuri (ex: Free/OSS + SSO/SAML = warning)
 
 ### Consistency Validation
 
 After completing the interview, check for inconsistencies:
 
-| Check                    | Inconsistency                               | Action                                                                   |
-| ------------------------ | ------------------------------------------- | ------------------------------------------------------------------------ |
-| Scope vs Features        | MVP chosen but Enterprise features selected | Warn: "Ai selectat scope MVP dar features avansate. Vrei să ajustăm?"    |
-| Mobile priority vs Touch | Mobile-first but no touch interactions      | Warn: "Ai ales mobile-first dar fără interacțiuni touch. E intenționat?" |
-| Real-time vs Scale       | Live updates but 10k+ concurrent users      | Warn: "Real-time cu mulți utilizatori e complex. Sigur ai nevoie?"       |
-| Offline vs Data          | Full offline but large file uploads         | Warn: "Offline cu fișiere mari e dificil. Ce prioritizezi?"              |
+| Check                      | Inconsistency                                    | Action                                                                        |
+| -------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------- |
+| Business Model vs Features | Free/OSS chosen but SSO/SAML or compliance-grade | Warn: "Ai ales Free/OSS dar cu features enterprise. Vrei să ajustăm modelul?" |
+| Mobile priority vs Touch   | Mobile-first but no touch interactions           | Warn: "Ai ales mobile-first dar fără interacțiuni touch. E intenționat?"      |
+| Real-time vs Scale         | Live updates but 10k+ concurrent users           | Warn: "Real-time cu mulți utilizatori e complex. Sigur ai nevoie?"            |
+| Offline vs Data            | Full offline but large file uploads              | Warn: "Offline cu fișiere mari e dificil. Ce prioritizezi?"                   |
 
 ### Recovery if Interrupted
 

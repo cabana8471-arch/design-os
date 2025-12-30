@@ -60,7 +60,7 @@ Gather comprehensive context about your product through a structured interview. 
 
 **Modes:**
 
-- Default — Full interview (12 categories, ~40 questions)
+- Default — Full interview (12 categories, ~50 questions)
 - `--minimal` — Quick start (5 critical categories)
 - `--stage=X` — Focus on specific area (vision, section, shell, data)
 - `--audit` — Check completeness of existing context
@@ -197,6 +197,7 @@ Example: "See `/design-shell` Step 6.5 for design direction creation"
 │       ├── design-screen.md
 │       ├── design-shell.md
 │       ├── export-product.md
+│       ├── product-interview.md
 │       ├── product-vision.md
 │       ├── product-roadmap.md
 │       ├── data-model.md
@@ -229,6 +230,7 @@ Example: "See `/design-shell` Step 6.5 for design direction creation"
             └── tdd-workflow.md
 
 product/                           # Product definition (portable)
+├── product-context.md             # Comprehensive product context from interview
 ├── product-overview.md            # Product description, problems/solutions, features
 ├── product-roadmap.md             # List of sections with titles and descriptions
 │
@@ -1480,7 +1482,7 @@ For users who want to start quickly:
 /product-interview --minimal
 ```
 
-This covers only the 5 most critical categories (1, 3, 5, 6, 11) and takes ~15-20 questions instead of ~40.
+This covers only the 5 most critical categories (1, 3, 5, 6, 11) and takes ~24 questions instead of ~50.
 
 ### Updating Context
 
@@ -1601,17 +1603,18 @@ mkdir -p src/shell/components
 
 **Commands and Required Directories:**
 
-| Command            | Directory to Create                                            |
-| ------------------ | -------------------------------------------------------------- |
-| `/product-vision`  | `mkdir -p product/`                                            |
-| `/product-roadmap` | `mkdir -p product/`                                            |
-| `/data-model`      | `mkdir -p product/data-model/`                                 |
-| `/design-tokens`   | `mkdir -p product/design-system/`                              |
-| `/shape-section`   | `mkdir -p product/sections/[section-id]/`                      |
-| `/sample-data`     | (Directory already exists from /shape-section)                 |
-| `/design-shell`    | `mkdir -p product/shell/` and `mkdir -p src/shell/components/` |
-| `/design-screen`   | `mkdir -p src/sections/[section-id]/components/`               |
-| `/export-product`  | `mkdir -p product-plan/` and subdirectories                    |
+| Command              | Directory to Create                                            |
+| -------------------- | -------------------------------------------------------------- |
+| `/product-interview` | `mkdir -p product/`                                            |
+| `/product-vision`    | `mkdir -p product/`                                            |
+| `/product-roadmap`   | `mkdir -p product/`                                            |
+| `/data-model`        | `mkdir -p product/data-model/`                                 |
+| `/design-tokens`     | `mkdir -p product/design-system/`                              |
+| `/shape-section`     | `mkdir -p product/sections/[section-id]/`                      |
+| `/sample-data`       | (Directory already exists from /shape-section)                 |
+| `/design-shell`      | `mkdir -p product/shell/` and `mkdir -p src/shell/components/` |
+| `/design-screen`     | `mkdir -p src/sections/[section-id]/components/`               |
+| `/export-product`    | `mkdir -p product-plan/` and subdirectories                    |
 
 > **Note on .gitkeep files:** Empty directories in the boilerplate contain `.gitkeep` placeholder files to ensure Git tracks them. When commands create files in these directories, the `.gitkeep` can remain (harmless) or be removed. Never reference `.gitkeep` in code — treat directories as empty until populated by commands.
 
