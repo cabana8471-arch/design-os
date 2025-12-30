@@ -39,6 +39,12 @@ Parse any arguments to determine interview mode:
 
 ## Step 1: Check Existing Context
 
+**Skip this step entirely if `--skip-validation` flag was passed in Step 0.** Proceed directly to Step 2.
+
+---
+
+**If NOT `--skip-validation`:**
+
 First, check if `product/product-context.md` already exists:
 
 ```bash
@@ -80,11 +86,47 @@ Skip interview, just analyze and report:
 Recommendation: Run `/product-interview --stage=X` to complete missing sections.
 ```
 
+### Category Skip Logic (for "Completăm ce lipsește" mode)
+
+If user selected "Completăm ce lipsește" above, track this mode and apply skip logic to Steps 2-13:
+
+```bash
+# Set after user selection
+INTERVIEW_MODE="complete_missing"  # or "full" for other options
+```
+
+**Before each category step (Steps 2-13), check if it should be skipped:**
+
+```bash
+# Example for Step 2 (Category 1)
+CATEGORY_NUM=1
+CATEGORY_STATUS=$(grep "| $CATEGORY_NUM\." product/product-context.md | grep -oE "✅|⚠️|❌" | head -1)
+
+if [ "$INTERVIEW_MODE" = "complete_missing" ] && [ "$CATEGORY_STATUS" = "✅" ]; then
+  echo "Category $CATEGORY_NUM already complete, skipping..."
+  # Skip to next category
+else
+  # Proceed with category questions
+fi
+```
+
+**Skip logic rules:**
+
+| Category Status | "complete_missing" Mode | Other Modes |
+| --------------- | ----------------------- | ----------- |
+| ✅ Complete     | SKIP                    | Ask anyway  |
+| ⚠️ Partial      | ASK (to complete)       | Ask anyway  |
+| ❌ Empty        | ASK (new)               | Ask anyway  |
+
+This ensures users only answer questions for categories that need completion.
+
 ---
 
 ## Step 2: Product Foundation
 
 > **Note:** Steps 2-13 correspond to Categories 1-12 in the output file. Step 2 creates Category 1, Step 3 creates Category 2, etc.
+
+> **Category Skip:** If `INTERVIEW_MODE="complete_missing"` and this category is ✅ Complete, skip to Step 3. See "Category Skip Logic" section above.
 
 **Ro:** "Să începem cu fundația produsului tău."
 
@@ -1280,12 +1322,17 @@ Am creat contextul produsului tău!
 
 After completing the interview, check for inconsistencies:
 
-| Check                      | Inconsistency                                    | Action                                                                        |
-| -------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------- |
-| Business Model vs Features | Free/OSS chosen but SSO/SAML or compliance-grade | Warn: "Ai ales Free/OSS dar cu features enterprise. Vrei să ajustăm modelul?" |
-| Mobile priority vs Touch   | Mobile-first but no touch interactions           | Warn: "Ai ales mobile-first dar fără interacțiuni touch. E intenționat?"      |
-| Real-time vs Scale         | Live updates but 10k+ concurrent users           | Warn: "Real-time cu mulți utilizatori e complex. Sigur ai nevoie?"            |
-| Offline vs Data            | Full offline but large file uploads              | Warn: "Offline cu fișiere mari e dificil. Ce prioritizezi?"                   |
+| Check                      | Inconsistency                                      | Action                                                                        |
+| -------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Business Model vs Features | Free/OSS chosen but SSO/SAML or compliance-grade   | Warn: "Ai ales Free/OSS dar cu features enterprise. Vrei să ajustăm modelul?" |
+| Mobile priority vs Touch   | Mobile-first but no touch interactions             | Warn: "Ai ales mobile-first dar fără interacțiuni touch. E intenționat?"      |
+| Real-time vs Scale         | Live updates but 10k+ concurrent users             | Warn: "Real-time cu mulți utilizatori e complex. Sigur ai nevoie?"            |
+| Offline vs Data            | Full offline but large file uploads                | Warn: "Offline cu fișiere mari e dificil. Ce prioritizezi?"                   |
+| Desktop-only vs Mobile UX  | Desktop-only priority but mobile navigation chosen | Warn: "Ai ales desktop-only dar cu mobile navigation. Vrei să ajustăm?"       |
+| No auth vs Audit logging   | No auth selected but compliance-grade audit        | Warn: "Fără autentificare dar cu audit complet. E consistent?"                |
+| MVP scope vs Advanced      | MVP scope but enterprise/advanced features         | Warn: "Scope MVP dar cu features avansate. Vrei să extinzi scope-ul?"         |
+| High security vs No MFA    | Strict auth level but MFA not mentioned            | Warn: "Securitate strictă dar fără MFA. Vrei să adaugi?"                      |
+| GDPR vs No data audit      | GDPR compliance but no audit/history               | Warn: "GDPR fără audit log. Consider adding full audit for compliance."       |
 
 ### Recovery if Interrupted
 
