@@ -40,29 +40,35 @@ If exportable components import data directly, they become tied to Design OS and
 
 Design OS commands have dependencies:
 
-> **Note:** This diagram shows the **recommended workflow order**, not strict dependencies. For actual prerequisites per command, see `agents.md` → "Command Prerequisites" table. For example, `/design-tokens` only requires `product-overview.md`, not `/data-model`.
+> **Note:** This diagram shows the **recommended workflow order**, not strict dependencies. For actual prerequisites per command, see `agents.md` → "Command Prerequisites" table.
 
 ```
-/product-vision
+RECOMMENDED WORKFLOW ORDER
+==========================
+(Arrows show typical sequence, NOT strict dependencies)
+
+/product-vision .............. [No prerequisites]
     ↓
-/product-roadmap
+/product-roadmap ............. [Requires: product-overview.md]
     ↓
-/data-model ←──────────────────┐
-    ↓                          │
-/design-tokens                 │
-    ↓                          │
-/design-shell                  │
-    ↓                          │
-/shape-section ────────────────┤
-    ↓                          │
-/sample-data ──────────────────┘
+/data-model .................. [Requires: product-overview.md, product-roadmap.md]
     ↓
-/design-screen
+/design-tokens ............... [Requires: product-overview.md only]
     ↓
-/screenshot-design
+/design-shell ................ [Requires: product-overview.md, product-roadmap.md]
     ↓
-/export-product
+/shape-section ←─┐ ........... [Requires: product-overview.md, product-roadmap.md]
+    ↓            │
+/sample-data ───→┘ ........... [Requires: section spec.md]
+    ↓
+/design-screen ............... [Requires: spec.md, data.json, types.ts]
+    ↓
+/screenshot-design ........... [Requires: screen design components]
+    ↓
+/export-product .............. [Requires: product-overview.md, at least one section]
 ```
+
+**Key:** Dotted lines show what each command requires. The vertical arrows are the typical workflow order, but you can run commands whenever their prerequisites are met.
 
 Running commands out of order causes:
 
