@@ -1024,6 +1024,37 @@ Regardless of which scenario applies, ensure the screen design follows these pri
 - Implement meaningful interactions and animations
 - Ensure accessibility and responsive design throughout
 
+### Design Application Verification Checklist (MANDATORY)
+
+**Before finalizing EACH component, verify ALL items below are implemented.** This is NOT optional guidance — it's a verification checklist to ensure design quality.
+
+**If design-direction.md exists:**
+
+- [ ] **Visual Signatures** — ALL 3 signatures from `## Visual Signatures` section are implemented in this component where applicable
+- [ ] **Color Application** — Primary, Accent, and Neutral colors follow the rules in `## Color Application`
+- [ ] **Typography Treatment** — Heading style, Body approach, and distinctive choices from `## Typography Treatment` are applied
+- [ ] **Motion & Interaction** — Animation timings from `## Motion & Interaction` are used for all hover/transition states
+- [ ] **Consistency Guidelines** — ALL 3 rules from `## Consistency Guidelines` are verified for this component
+
+**If using fallback design principles (no design-direction.md):**
+
+- [ ] **Aesthetic Tone** — User's chosen tone (Refined Utility / Bold & Bright / Soft & Approachable / Professional Dense) is consistently applied
+- [ ] **Visual Hierarchy** — Size, weight, AND color create clear distinction between elements
+- [ ] **Color Application** — Primary reserved for key actions, Neutral uses 3-4 distinct shades only
+- [ ] **Typography** — Heading/body weights differ by at least 200 (e.g., 400 body, 600 heading)
+- [ ] **Motion** — Hover states use 150-200ms, entry/exit use 250-300ms
+
+**Distinctiveness Requirement (ALWAYS required):**
+
+- [ ] At least ONE distinctive visual element exists in this component:
+  - Unexpected hover interaction (e.g., color shift, scale, underline animation)
+  - Creative negative space usage
+  - Non-standard card/button treatment (e.g., gradient border, unique shadow)
+  - Asymmetric layout element
+  - Custom border radius pattern
+
+**If ANY checklist item is not implemented, go back and fix it before proceeding to Step 6.**
+
 ### Cross-Section Consistency Check
 
 Before creating the component, check if other sections already have screen designs:

@@ -127,6 +127,8 @@ After the check/startup, verify `http://localhost:3000` returns a response befor
 
 ## Step 3: Capture the Screenshot
 
+> **Recovery:** If this step fails, run Step 6 (Clean Up) before ending command.
+
 Use the Playwright MCP tool to navigate to the screen design and capture a screenshot.
 
 The screen design URL pattern is: `http://localhost:3000/sections/[section-id]/screen-designs/[screen-design-name]`
@@ -186,7 +188,7 @@ If the Hide button cannot be found or clicked, follow this fallback procedure:
    - Note in the output: "Screenshot captured with Design OS header visible (Hide button not found)"
    - The screenshot is still usable; user can crop or retake later
 
-**Screenshot specifications:**
+**Screenshot specifications (quick reference):**
 
 | Viewport              | Width  | Height | Use Case                           |
 | --------------------- | ------ | ------ | ---------------------------------- |
@@ -194,7 +196,7 @@ If the Hide button cannot be found or clicked, follow this fallback procedure:
 | **Mobile**            | 375px  | 667px  | Mobile-responsive variants         |
 | **Tablet**            | 768px  | 1024px | Tablet variants (optional)         |
 
-> **See also:** `agents.md` → "Viewport Dimensions (Standardized)" for the canonical viewport dimensions and responsive breakpoint details used across all Design OS commands.
+> **Canonical Source:** These dimensions are defined in `agents.md` → "Viewport Dimensions (Standardized)". If values differ, agents.md takes precedence. See that section for responsive breakpoint details and additional context.
 
 ### Viewport Selection Guidance
 
@@ -246,6 +248,8 @@ When using `browser_take_screenshot`:
 
 ## Step 4: Save the Screenshot
 
+> **Recovery:** If this step fails, run Step 6 (Clean Up) before ending command.
+
 The Playwright MCP tool can only save screenshots to its default output directory (`.playwright-mcp/`). You must save the screenshot there first, then copy it to the product folder.
 
 1. **First**, use `browser_take_screenshot` with just a filename (no path):
@@ -280,6 +284,8 @@ Examples:
 If the user wants both light and dark mode screenshots, capture both.
 
 ## Step 5: Confirm Completion
+
+> **Recovery:** Ensure Step 6 (Clean Up) runs after user interaction, even if user declines additional screenshots.
 
 Let the user know:
 

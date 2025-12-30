@@ -1780,7 +1780,38 @@ Generate navigation items from section directories and proceed with full ShellPr
 
 ## Step 8: Create Wired Shell Preview
 
-**CRITICAL:** Before creating ShellPreview, you MUST parse the Shell Relationships from `product/shell/spec.md` to determine which secondary components to include.
+**CRITICAL:** Before creating ShellPreview, validate prerequisites and parse Shell Relationships.
+
+### Step 8.0: Validate Shell Data Prerequisites
+
+Before creating ShellPreview, verify that required files from previous steps exist:
+
+```bash
+# Check data.json exists (created in Step 6.7)
+if [ ! -f "product/shell/data.json" ]; then
+  echo "Error: product/shell/data.json - File not found. Step 6.7 may have failed."
+  echo "Recovery: Re-run /design-shell or manually create data.json"
+  exit 1
+fi
+
+# Check types.ts exists (created in Step 6.8)
+if [ ! -f "product/shell/types.ts" ]; then
+  echo "Error: product/shell/types.ts - File not found. Step 6.8 may have failed."
+  echo "Recovery: Re-run /design-shell or manually create types.ts"
+  exit 1
+fi
+
+# Validate data.json is valid JSON
+if ! python3 -c "import json; json.load(open('product/shell/data.json'))" 2>/dev/null; then
+  echo "Error: product/shell/data.json - Invalid JSON syntax."
+  echo "Recovery: Check the file for missing commas or brackets."
+  exit 1
+fi
+
+echo "Shell data prerequisites validated"
+```
+
+**If validation fails:** Do NOT proceed with ShellPreview creation. The import statement will fail at runtime if data.json is missing or invalid.
 
 ### Step 8.1: Parse Shell Relationships
 

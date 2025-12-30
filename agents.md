@@ -1338,12 +1338,17 @@ The "Foundation" milestone (milestone 01) includes core infrastructure that all 
 
 1. **Project Setup**: Package.json, build config, linting, TypeScript configuration
 2. **Authentication**: Auth provider integration, protected routes, session management
-3. **Core Layout**: Shell components (AppShell, MainNav, UserMenu) — _conditional, see note below_
+3. **Core Layout**: Shell components (AppShell, MainNav, UserMenu) — **CONDITIONAL** (see Shell Conditional Logic below)
 4. **Design System**: Theme provider, color tokens, typography classes
 5. **Routing**: Router setup, navigation structure, route guards
 6. **Data Layer**: API client setup, state management, data fetching patterns
 
-> **Note on Shell Components:** Shell components are included in Foundation when `INCLUDE_SHELL=true` (set during `/export-product` Step 1). If the user proceeds without shell, Foundation skips shell setup and the implementation builds custom navigation instead.
+> **Shell Conditional Logic:** During `/export-product` Step 1, if shell components don't exist or user chooses to proceed without shell, `INCLUDE_SHELL=false` is set. This flag affects:
+>
+> | INCLUDE_SHELL | 01-foundation.md         | product-plan/shell/ | Implementation Notes                 |
+> | ------------- | ------------------------ | ------------------- | ------------------------------------ |
+> | `true`        | Includes shell setup     | Created with files  | Use provided AppShell, MainNav, etc. |
+> | `false`       | Skips shell instructions | Not created         | Build custom navigation from scratch |
 
 **In exports:** Foundation is always `instructions/incremental/01-foundation.md`. Section milestones start at `02-[section-id].md`.
 
