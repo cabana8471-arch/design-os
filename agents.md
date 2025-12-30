@@ -62,7 +62,7 @@ Gather comprehensive context about your product through a structured interview. 
 
 - Default — Full interview (12 categories, ~50 questions)
 - `--minimal` — Quick start (5 critical categories)
-- `--stage=X` — Focus on specific area (vision, section, shell, data)
+- `--stage=X` — Focus on specific area (vision, section, shell, data, scale, quality)
 - `--audit` — Check completeness of existing context
 
 ### 1. Product Overview (`/product-vision`)

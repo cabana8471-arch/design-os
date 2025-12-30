@@ -15,7 +15,7 @@ Parse any arguments to determine interview mode:
 ```bash
 # Available modes:
 # --minimal     Quick interview (5 categories only)
-# --stage=X     Focus on specific stage (vision, section, shell, data)
+# --stage=X     Focus on specific stage (vision, section, shell, data, scale, quality)
 # --audit       Check completeness of existing context
 # --skip-validation  Bypass validation for existing users
 ```
@@ -30,6 +30,8 @@ Parse any arguments to determine interview mode:
 | `--stage=section`   | 5, 6, 7, 11    | Section design context               |
 | `--stage=shell`     | 3, 6, 7        | Shell design context                 |
 | `--stage=data`      | 4, 10          | Data architecture context            |
+| `--stage=scale`     | 8, 9           | Performance + Integration context    |
+| `--stage=quality`   | 12             | Testing & Quality context            |
 | `--audit`           | N/A            | Report on completeness               |
 | `--skip-validation` | All 12         | Skip Step 1 (existing context check) |
 
@@ -1136,6 +1138,8 @@ Mode: [Full / Minimal / Stage-specific]
 ---
 
 ## Cross-Reference: Design OS Commands
+
+> **Note:** Only include references for categories that were completed (✅ or ⚠️). Omit references to categories marked ❌ (empty). This keeps the cross-reference relevant to what was actually gathered.
 
 ### For /product-vision
 

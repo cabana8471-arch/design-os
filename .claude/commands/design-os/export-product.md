@@ -2,7 +2,7 @@
 
 You are helping the user export their complete product design as a handoff package for implementation. This generates all files needed to build the product in a real codebase.
 
-> **Design Note on Step Count:** This command has 18 primary steps (1-18), plus 2 conditional/sub-steps (Step 8A branches from Step 8, Step 10.5 is within Step 10). This may seem verbose, but it is intentional:
+> **Design Note on Step Count:** This command has 19 primary steps (0-18), plus 2 conditional/sub-steps (Step 8A branches from Step 8, Step 10.5 is within Step 10). This may seem verbose, but it is intentional:
 >
 > - Each step performs a discrete, verifiable operation
 > - Steps can be referenced individually in error messages
@@ -17,6 +17,7 @@ You are helping the user export their complete product design as a handoff packa
 
 | Step | Purpose                                                    |
 | ---- | ---------------------------------------------------------- |
+| 0    | Validate product context                                   |
 | 1    | Check prerequisites (product files, templates, skill file) |
 | 2    | Gather export information                                  |
 | 3    | Create export directory structure                          |
@@ -38,12 +39,44 @@ You are helping the user export their complete product design as a handoff packa
 | 17   | Create zip file                                            |
 | 18   | Confirm completion                                         |
 
+## Step 0: Validate Product Context
+
+**MANDATORY:** Check for `product/product-context.md` before proceeding.
+
+```bash
+CONTEXT_FILE="product/product-context.md"
+
+if [ ! -f "$CONTEXT_FILE" ]; then
+  echo "Error: product-context.md - File not found. Run /product-interview first."
+  exit 1
+fi
+
+COMPLETENESS=$(grep "Completeness:" "$CONTEXT_FILE" | grep -oE '[0-9]+' | head -1)
+echo "Product context completeness: ${COMPLETENESS}%"
+```
+
+| Completeness | Action                                                                            |
+| ------------ | --------------------------------------------------------------------------------- |
+| 0% (missing) | ERROR: "Run /product-interview first" — **END COMMAND**                           |
+| 1-49%        | WARNING: "Context incomplete (X%). Exports may miss important details. Continue?" |
+| 50%+         | PROCEED: Load context and continue to Step 1                                      |
+
+From `product-context.md`, extract and use:
+
+- Section 3 (Design Direction): Informs design system documentation
+- Section 9 (Integration Points): Informs authentication setup in prompts
+- Section 10 (Security & Compliance): Informs deployment documentation
+- Section 12 (Testing & Quality): Informs test instructions
+
+---
+
 ## Step 1: Check Prerequisites
 
 Verify the minimum requirements exist:
 
 **Required:**
 
+- `/product/product-context.md` — Product context (validated in Step 0)
 - `/product/product-overview.md` — Product overview
 - `/product/product-roadmap.md` — Sections defined
 - At least one section with screen designs in `src/sections/[section-id]/`
