@@ -1184,6 +1184,12 @@ Mode: [Full / Minimal / Stage-specific]
 - Use section 5 for all states (empty, loading, error)
 - Use section 11 for error display
 
+### For /screenshot-design
+
+- Context is not directly consumed (captures existing designs)
+- Design decisions in screenshots reflect context from `/design-screen`
+- No specific context sections required
+
 ### For /export-product
 
 - All sections inform implementation prompts
@@ -1193,15 +1199,46 @@ Mode: [Full / Minimal / Stage-specific]
 ### 14.3: Validate Output
 
 ```bash
-# Verify file was created
-if [ ! -f "product/product-context.md" ]; then
-  echo "Error: product/product-context.md - Failed to create file"
+CONTEXT_FILE="product/product-context.md"
+VALIDATION_ERRORS=0
+
+# 1. Verify file was created
+if [ ! -f "$CONTEXT_FILE" ]; then
+  echo "Error: $CONTEXT_FILE - Failed to create file"
   exit 1
 fi
 
-# Verify completeness line exists
-if ! grep -q "^Completeness:" product/product-context.md; then
-  echo "Warning: product/product-context.md may be malformed"
+# 2. Verify completeness line exists
+if ! grep -q "^Completeness:" "$CONTEXT_FILE"; then
+  echo "Warning: Completeness line missing"
+  VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+fi
+
+# 3. Verify Quick Reference section exists
+if ! grep -q "^## Quick Reference" "$CONTEXT_FILE"; then
+  echo "Warning: Quick Reference section missing"
+  VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+fi
+
+# 4. Verify all 12 category sections exist
+for i in $(seq 1 12); do
+  if ! grep -q "^## $i\." "$CONTEXT_FILE"; then
+    echo "Warning: Section $i missing from product-context.md"
+    VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+  fi
+done
+
+# 5. Verify Cross-Reference section exists
+if ! grep -q "^## Cross-Reference" "$CONTEXT_FILE"; then
+  echo "Warning: Cross-Reference section missing"
+  VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+fi
+
+# 6. Report validation results
+if [ $VALIDATION_ERRORS -gt 0 ]; then
+  echo "Warning: $VALIDATION_ERRORS validation issues found. File may be incomplete."
+else
+  echo "Validation passed: product-context.md is well-formed"
 fi
 ```
 
@@ -1252,8 +1289,18 @@ After completing the interview, check for inconsistencies:
 
 ### Recovery if Interrupted
 
-If the interview is interrupted:
+> **Important:** The context file is only written at the end of the interview (Step 14). If interrupted before completion, progress is NOT automatically saved.
 
-1. Context is saved after each category completes
-2. User can resume with `/product-interview` - will detect existing context
-3. Offer to continue from last category or start over
+**To minimize data loss:**
+
+1. **Use shorter modes** — `--minimal` (5 categories, ~15 min) or `--stage=X` (2-4 categories)
+2. **Complete in one session** — Plan 30-45 minutes for full interview
+3. **Take notes** — Copy important answers externally as you go
+
+**If you must resume:**
+
+1. Re-run `/product-interview`
+2. If existing (partial) context is found, choose "Completăm ce lipsește"
+3. If no context exists, choose "Revizuim totul" and re-enter previous answers
+
+> **Note:** Step 1 detects existing `product-context.md` and offers to complete missing categories rather than starting over.
