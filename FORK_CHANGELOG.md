@@ -6,7 +6,73 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-30 21:15] Critical Analysis: /product-interview Refinement Fixes (13 Issues)
+## [2025-12-30 21:15] Critical Analysis: /product-interview v1.1.0 (10 Issues)
+
+### Description
+
+Comprehensive critical analysis identified 10 issues across 3 severity levels in the `/product-interview` command. This modification resolves ALL issues including critical implementation gaps for `--stage` mode, partial category merge logic, and output structure consistency.
+
+### New Files Created
+
+None.
+
+### Modified Files
+
+| File                                              | Modification                                                                                                                                                                                    |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/product-interview.md` | v1.0.0 → v1.1.0: Added stage mode skip logic, partial merge logic (Step 14.1b), output structure handling, backup mechanism, cross-reference validation, validation renumbering, language notes |
+| `agents.md`                                       | Updated Command Versions table: `/product-interview` v1.0.0 → v1.1.0                                                                                                                            |
+
+### Gaps Resolved
+
+**Critical (3):**
+
+- **C1:** `--stage` mode implementation logic missing — Steps 2-13 only handled `complete_missing` mode, not stage-based filtering. Added `should_ask_category()` function with stage-to-category mapping and skip notes to all 12 category steps.
+- **C2:** Partial category merge logic undefined — When `INTERVIEW_MODE="complete_missing"`, no instructions for preserving/merging existing answers. Added Step 14.1b with merge strategy, content preservation rules, and example dialog.
+- **C3:** Output structure for stage/partial modes undefined — Unclear whether empty categories are omitted or included. Added "Handling Unanswered Categories" section requiring all 12 sections with placeholder notes for unanswered categories.
+
+**Medium (4):**
+
+- **M1:** Question numbering convention inconsistency — Only Category 1 had `.0` question, implying others have no required questions. Clarified convention: `.0` is an exception for Product Name, all others start at `.1`.
+- **M2:** Validation step 6.5 naming anomaly — Decimal numbering inconsistent with integer steps. Renumbered: 6.5 → 7, 7 → 8, added new step 9 for cross-reference validation.
+- **M3:** Cross-reference conditional logic not validated — Complex generation rules without verification. Added step 8 with associative array mapping commands to categories and validation loop.
+- **M4:** No backup before overwrite — "Revizuim totul" would overwrite without saving. Added backup creation when completeness ≥25% with timestamped filename.
+
+**Low (3):**
+
+- **L1:** Recovery guidance content duplication — Similar content in Important Notes and Recovery section. Added reference to dedicated Recovery section.
+- **L2:** Language example inconsistency — Unclear that Romanian prompts are examples. Added Language Note clarifying questions adapt to conversation language, outputs remain English.
+- **L3:** mkdir logic clarity — `mkdir -p` followed by `if [ ! -d` was redundant. Simplified to `mkdir -p product || { error; exit 1; }`.
+
+### Statistics
+
+- Files modified: 2
+- Lines changed: ~180
+- Issues resolved: 10 (3 Critical, 4 Medium, 3 Low)
+- Version bump: v1.0.0 → v1.1.0
+
+### Verification
+
+- ✅ `should_ask_category()` function added to Step 0 with all 6 stage mappings
+- ✅ Category skip notes added to all 12 category steps (Steps 2-13)
+- ✅ Step 14.1b added with complete merge strategy and preservation rules
+- ✅ "Handling Unanswered Categories" section added to Step 14.2
+- ✅ Mode header examples table added (Full/Minimal/Stage/Mixed)
+- ✅ Backup mechanism added before "Revizuim totul" with ≥25% threshold
+- ✅ Validation steps renumbered (6→6, 6.5→7, 7→8, new 8→cross-ref, 9→report)
+- ✅ Cross-reference validation with CMD_CATEGORIES associative array
+- ✅ Question numbering convention clarified with `.0` exception note
+- ✅ Language Note added to Important Notes section
+- ✅ mkdir logic simplified to single line with error handling
+- ✅ agents.md version table updated
+
+### Remaining Items
+
+None — all issues resolved. Command is production-ready at v1.1.0.
+
+---
+
+## [2025-12-30 20:40] Critical Analysis: /product-interview Refinement Fixes (13 Issues)
 
 ### Description
 

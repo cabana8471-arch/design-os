@@ -1,4 +1,4 @@
-<!-- v1.0.0 -->
+<!-- v1.1.0 -->
 
 # Product Interview
 
@@ -56,6 +56,59 @@ if [ -n "$STAGE" ]; then
 fi
 ```
 
+**Stage Category Mapping (for skip logic):**
+
+When `--stage` is active, only ask questions for the categories in that stage. Skip all other categories.
+
+| Stage     | Categories to Ask | Categories to Skip |
+| --------- | ----------------- | ------------------ |
+| `vision`  | 1, 2              | 3-12               |
+| `section` | 5, 6, 7, 11       | 1-4, 8-10, 12      |
+| `shell`   | 3, 6, 7           | 1-2, 4-5, 8-12     |
+| `data`    | 4, 10             | 1-3, 5-9, 11-12    |
+| `scale`   | 8, 9              | 1-7, 10-12         |
+| `quality` | 12                | 1-11               |
+
+**Category Skip Logic (used in Steps 2-13):**
+
+Before asking questions for any category, check both stage mode AND complete_missing mode:
+
+```bash
+# Function to check if category should be asked
+should_ask_category() {
+  local CATEGORY_NUM=$1
+
+  # Check stage mode first
+  if [ -n "$STAGE" ]; then
+    case "$STAGE" in
+      vision)   [[ "$CATEGORY_NUM" =~ ^(1|2)$ ]] || return 1 ;;
+      section)  [[ "$CATEGORY_NUM" =~ ^(5|6|7|11)$ ]] || return 1 ;;
+      shell)    [[ "$CATEGORY_NUM" =~ ^(3|6|7)$ ]] || return 1 ;;
+      data)     [[ "$CATEGORY_NUM" =~ ^(4|10)$ ]] || return 1 ;;
+      scale)    [[ "$CATEGORY_NUM" =~ ^(8|9)$ ]] || return 1 ;;
+      quality)  [[ "$CATEGORY_NUM" == "12" ]] || return 1 ;;
+    esac
+  fi
+
+  # Check complete_missing mode
+  if [ "$INTERVIEW_MODE" = "complete_missing" ]; then
+    CATEGORY_LINE=$(grep "| $CATEGORY_NUM\." product/product-context.md 2>/dev/null | head -1)
+    if echo "$CATEGORY_LINE" | grep -qE "(✅|Complete)"; then
+      return 1  # Skip complete categories
+    fi
+  fi
+
+  return 0  # Ask this category
+}
+
+# Usage in each category step:
+# if should_ask_category 1; then
+#   # Ask Category 1 questions
+# else
+#   echo "Skipping Category 1"
+# fi
+```
+
 ---
 
 ## Step 1: Check Existing Context
@@ -93,6 +146,29 @@ Options:
 - **Revizuim totul** — Pornim de la zero cu întrebări noi
 - **Completăm ce lipsește** — Doar categoriile incomplete
 - **Vedem ce avem** — Afișează contextul curent, apoi decide
+
+**If user selected "Revizuim totul":**
+
+Before proceeding with a full review, create a backup of the existing context:
+
+```bash
+# Backup existing context before overwrite
+if [ "$COMPLETENESS" -ge 25 ]; then
+  BACKUP_FILE="product/product-context.backup.$(date +%Y%m%d_%H%M%S).md"
+  cp product/product-context.md "$BACKUP_FILE"
+  echo "Backup creat: $BACKUP_FILE"
+fi
+```
+
+> **Backup Policy:** Create backup when existing completeness ≥25%. For very incomplete contexts (<25%), backup is unnecessary since little would be lost.
+
+Inform the user:
+
+```
+Am salvat contextul existent în $BACKUP_FILE. Acum pornim de la zero.
+```
+
+Then proceed with full interview (all Steps 2-13).
 
 **If user selected "Vedem ce avem":**
 
@@ -227,13 +303,20 @@ This ensures users only answer questions for categories that need completion.
 | 12   | 11       | Error Handling           |
 | 13   | 12       | Testing & Quality        |
 
-> **Category Skip:** If `INTERVIEW_MODE="complete_missing"` and this category is ✅ Complete, skip to Step 3. See "Category Skip Logic" section above.
+> **Category Skip:** Before asking questions, check `should_ask_category(1)`. Skip to Step 3 if:
+>
+> - `--stage` mode is active and Category 1 is NOT in the stage's category list, OR
+> - `INTERVIEW_MODE="complete_missing"` and this category is ✅ Complete
+>
+> See "Category Skip Logic" function in Step 0 for implementation.
 
 **Ro:** "Să începem cu fundația produsului tău."
 
-> **Question Numbering Convention:** Questions are numbered as `[Step].[Question]`. The `.0` suffix indicates the primary/required question for the category (e.g., "Product Name" is required). Subsequent questions use `.1`, `.2`, etc.
+> **Question Numbering Convention:** Questions are numbered as `[Step].[N]` where N starts at 1 for each category. Example: Question 2.1 is the first question in Step 2 (Category 1).
+>
+> **Note:** Question 2.0 below is an exception — it's the foundational "Product Name" question that must be answered first. All other categories start at `.1`.
 
-### Question 2.0: Product Name
+### Question 2.0: Product Name (Required)
 
 "Cum se numește produsul tău?"
 
@@ -306,6 +389,8 @@ Options:
 
 ## Step 3: User Research & Personas
 
+> **Category Skip:** Before asking questions, check `should_ask_category(2)`. Skip to Step 4 if this category should be skipped. See "Category Skip Logic" in Step 0.
+
 **Ro:** "Acum să definim utilizatorii mai în detaliu."
 
 ### Question 3.1: Primary Persona
@@ -360,6 +445,8 @@ Prompt for:
 ---
 
 ## Step 4: Design Direction
+
+> **Category Skip:** Before asking questions, check `should_ask_category(3)`. Skip to Step 5 if this category should be skipped. See "Category Skip Logic" in Step 0.
 
 **Ro:** "Acum definim direcția vizuală."
 
@@ -422,6 +509,8 @@ Prompt for 2-3 references with what specifically they like about each.
 ---
 
 ## Step 5: Data Architecture
+
+> **Category Skip:** Before asking questions, check `should_ask_category(4)`. Skip to Step 6 if this category should be skipped. See "Category Skip Logic" in Step 0.
 
 **Ro:** "Să discutăm despre structura datelor."
 
@@ -497,6 +586,8 @@ Options:
 
 ## Step 6: Section-Specific Depth
 
+> **Category Skip:** Before asking questions, check `should_ask_category(5)`. Skip to Step 7 if this category should be skipped. See "Category Skip Logic" in Step 0.
+
 **Ro:** "Acum intrăm în detalii despre secțiunile principale."
 
 ### Question 6.1: User Flows
@@ -568,6 +659,8 @@ Prompt for:
 ---
 
 ## Step 7: UI Patterns & Components
+
+> **Category Skip:** Before asking questions, check `should_ask_category(6)`. Skip to Step 8 if this category should be skipped. See "Category Skip Logic" in Step 0.
 
 **Ro:** "Să stabilim pattern-urile de UI."
 
@@ -643,6 +736,8 @@ Options:
 
 ## Step 8: Mobile & Responsive
 
+> **Category Skip:** Before asking questions, check `should_ask_category(7)`. Skip to Step 9 if this category should be skipped. See "Category Skip Logic" in Step 0.
+
 **Ro:** "Să vorbim despre experiența mobilă."
 
 ### Question 8.1: Responsive Priority
@@ -704,6 +799,8 @@ Options:
 
 ## Step 9: Performance & Scale
 
+> **Category Skip:** Before asking questions, check `should_ask_category(8)`. Skip to Step 10 if this category should be skipped. See "Category Skip Logic" in Step 0.
+
 **Ro:** "Să discutăm despre performanță."
 
 ### Question 9.1: Expected Users
@@ -756,6 +853,8 @@ Options:
 
 ## Step 10: Integration Points
 
+> **Category Skip:** Before asking questions, check `should_ask_category(9)`. Skip to Step 11 if this category should be skipped. See "Category Skip Logic" in Step 0.
+
 **Ro:** "Ce integrări externe ai nevoie?"
 
 ### Question 10.1: Authentication Provider
@@ -807,6 +906,8 @@ Options:
 
 ## Step 11: Security & Compliance
 
+> **Category Skip:** Before asking questions, check `should_ask_category(10)`. Skip to Step 12 if this category should be skipped. See "Category Skip Logic" in Step 0.
+
 **Ro:** "Să asigurăm securitatea."
 
 ### Question 11.1: Authentication Security
@@ -852,6 +953,8 @@ Options:
 ---
 
 ## Step 12: Error Handling
+
+> **Category Skip:** Before asking questions, check `should_ask_category(11)`. Skip to Step 13 if this category should be skipped. See "Category Skip Logic" in Step 0.
 
 **Ro:** "Cum gestionăm erorile?"
 
@@ -910,6 +1013,8 @@ Options:
 ---
 
 ## Step 13: Testing & Quality
+
+> **Category Skip:** Before asking questions, check `should_ask_category(12)`. Skip to Step 14 if this category should be skipped. See "Category Skip Logic" in Step 0.
 
 **Ro:** "Ultimele întrebări despre calitate."
 
@@ -991,17 +1096,128 @@ COMPLETENESS = (Complete categories × 100) / 12
 
 Example: 9 complete categories = 75% completeness
 
+### 14.1b: Preserve Existing Answers (complete_missing mode only)
+
+> **When to apply:** This step only applies when `INTERVIEW_MODE="complete_missing"`. Skip to 14.2 for other modes.
+
+If the user selected "Completăm ce lipsește" in Step 1, existing answers must be preserved and merged with new answers.
+
+**Before asking questions for each category:**
+
+1. **For ✅ Complete categories:**
+   - Do NOT ask any questions (already skipped in Steps 2-13)
+   - Copy existing content VERBATIM to output
+
+2. **For ⚠️ Partial categories:**
+   - Read existing content from that category section
+   - Present to user: "I see you already answered: [existing content]. Let's complete the missing parts."
+   - Only ask questions whose answers are missing/empty
+   - When generating output: MERGE existing + new answers
+
+3. **For ❌ Empty categories:**
+   - Ask all questions normally (if not skipped by --stage)
+   - Use new answers only
+
+**Merge Strategy:**
+
+```bash
+# For each category in complete_missing mode:
+merge_category_content() {
+  local CATEGORY_NUM=$1
+  local NEW_ANSWERS=$2
+
+  # Get existing content boundaries
+  local SECTION_START=$(grep -n "^## $CATEGORY_NUM\." product/product-context.md | head -1 | cut -d: -f1)
+  local SECTION_END=$(grep -n "^## " product/product-context.md | awk -F: -v start="$SECTION_START" '$1 > start {print $1; exit}')
+
+  if [ -n "$SECTION_START" ]; then
+    # Extract existing content
+    EXISTING_CONTENT=$(sed -n "${SECTION_START},${SECTION_END}p" product/product-context.md)
+
+    # For each subsection (### heading):
+    # - If subsection has content in existing, keep it
+    # - If subsection is empty in existing but has new content, add new
+    # - If both have content, prefer new (with confirmation)
+  fi
+}
+```
+
+**Content Preservation Rules:**
+
+| Existing Status | New Session Has Answers | Action                            |
+| --------------- | ----------------------- | --------------------------------- |
+| Has content     | No new answers          | Keep existing verbatim            |
+| Has content     | Has new answers         | Ask: "Replace existing with new?" |
+| Empty/missing   | Has new answers         | Use new answers                   |
+| Empty/missing   | No new answers          | Mark as incomplete                |
+
+**Example Merge Dialog:**
+
+When a partial category already has some answers:
+
+```
+Văd că ai răspuns deja la câteva întrebări din "Design Direction":
+- Aesthetic Tone: Modern / Minimal
+- Animation Style: Subtle
+
+Întrebările incomplete:
+- Information Density (4.3)
+- Brand Constraints (4.4)
+- Visual Inspiration (4.5)
+
+Vrei să completăm doar ce lipsește, sau să revizuim tot?
+```
+
 ### 14.2: Generate product-context.md
 
 Create directory and file:
 
 ```bash
-mkdir -p product
-if [ ! -d "product" ]; then
+mkdir -p product || {
   echo "Error: Failed to create product directory. Check write permissions."
   exit 1
-fi
+}
 ```
+
+**Handling Unanswered Categories (--stage/--minimal modes):**
+
+When using `--stage` or `--minimal` mode, some categories won't be asked. Handle them consistently:
+
+1. **Always create all 12 section headers** — for consistent structure and parsing
+2. **Mark unanswered sections explicitly** with a placeholder note:
+
+```markdown
+## 4. Data Architecture
+
+> ❌ Not yet gathered. Run `/product-interview --stage=data` to complete this category.
+```
+
+3. **Set status to ❌ Empty** in Quick Reference table for unanswered categories
+4. **Include mode information** in header to explain partial state
+
+**Mode Header Examples:**
+
+| Mode    | Header Line                                                   |
+| ------- | ------------------------------------------------------------- |
+| Full    | `Mode: Full (all 12 categories)`                              |
+| Minimal | `Mode: Minimal (categories 1, 3, 5, 6, 7, 11)`                |
+| Stage   | `Mode: Stage-specific (vision: categories 1, 2)`              |
+| Mixed   | `Mode: Incremental (previous: minimal + current: stage=data)` |
+
+**Output Structure Consistency:**
+
+Even for partial interviews, the file MUST have:
+
+- All 12 numbered sections (## 1. through ## 12.)
+- Quick Reference table with all 12 rows
+- Cross-Reference section (only for completed categories)
+- Completeness percentage reflecting actual completion
+
+This ensures:
+
+- Downstream commands can always parse the file
+- Users can see what's missing at a glance
+- Incremental completion works correctly
 
 Write the file with this structure:
 
@@ -1433,7 +1649,7 @@ for i in $(seq 1 12); do
   fi
 done
 
-# 6.5. Warn if multiple matches for a category (potential parsing issue)
+# 7. Warn if multiple matches for a category (potential parsing issue)
 for i in $(seq 1 12); do
   MATCH_COUNT=$(grep -c "| $i\." "$CONTEXT_FILE" 2>/dev/null || echo 0)
   if [ "$MATCH_COUNT" -gt 1 ]; then
@@ -1441,7 +1657,39 @@ for i in $(seq 1 12); do
   fi
 done
 
-# 7. Report validation results
+# 8. Verify cross-reference consistency
+# Check that commands referenced have at least one completed category
+declare -A CMD_CATEGORIES=(
+  ["product-vision"]="1 2"
+  ["product-roadmap"]="1 8"
+  ["data-model"]="4 10"
+  ["design-tokens"]="3"
+  ["design-shell"]="2 3 7 9"
+  ["shape-section"]="5 6 8 11"
+  ["sample-data"]="4 5"
+  ["design-screen"]="3 5 6 7 11"
+  ["export-product"]="9 10 12"
+)
+
+for cmd in "${!CMD_CATEGORIES[@]}"; do
+  if grep -q "### For /$cmd" "$CONTEXT_FILE"; then
+    # Verify at least one referenced category is not ❌
+    HAS_CONTENT=false
+    for cat_num in ${CMD_CATEGORIES[$cmd]}; do
+      CAT_LINE=$(grep "| $cat_num\." "$CONTEXT_FILE" | head -1)
+      if echo "$CAT_LINE" | grep -qE "(✅|⚠️|Complete|Partial)"; then
+        HAS_CONTENT=true
+        break
+      fi
+    done
+    if [ "$HAS_CONTENT" = false ]; then
+      echo "Warning: Cross-reference for /$cmd exists but all its categories are empty"
+      VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+    fi
+  fi
+done
+
+# 9. Report validation results
 if [ $VALIDATION_ERRORS -gt 0 ]; then
   echo "Warning: $VALIDATION_ERRORS validation issues found. File may be incomplete."
 else
@@ -1477,11 +1725,13 @@ Am creat contextul produsului tău!
 
 ## Important Notes
 
-- Conversația e în română, dar toate fișierele generate sunt în engleză
+> **Language Note:** Example prompts in this template are shown in Romanian. Adapt to the user's conversation language. The **questions** can be in any language, but **all generated files** (product-context.md) MUST be in English for portability.
+
 - Folosește AskUserQuestion cu opțiuni predefinite când e posibil
 - Păstrează întrebările concise - nu repeta ce-ai aflat deja
 - Dacă utilizatorul dă răspunsuri vagi, cere clarificări
 - Validează consistența între răspunsuri (ex: Free/OSS + SSO/SAML = warning)
+- See "Recovery if Interrupted" section below for handling interrupted interview sessions
 
 ### Consistency Validation
 
