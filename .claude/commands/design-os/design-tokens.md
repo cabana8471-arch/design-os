@@ -38,6 +38,8 @@ echo "Product context found: ${COMPLETENESS}% complete"
 | 1-49%        | WARNING: "Context is ${COMPLETENESS}% complete. Continue or run `/product-interview` first?" |
 | 50%+         | PROCEED: Load context and continue to Step 1                                                 |
 
+> **Tip:** Use `/product-interview --minimal` for quick start (6 categories, ~20 min), `/product-interview --audit` to check progress, or `/product-interview --stage=shell` to complete design-related categories.
+
 **If proceeding, load relevant context:**
 
 From `product-context.md`, extract and use:

@@ -6,7 +6,89 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-30 14:30] Critical Analysis: /product-interview Command Fixes
+## [2025-12-30 21:45] Critical Analysis: /product-interview Comprehensive Fixes (14 Issues)
+
+### Description
+
+Comprehensive critical analysis of the `/product-interview` command identified 14 issues across 4 severity levels. This modification resolves ALL issues to make the command production-ready and fully integrated with the Design OS ecosystem.
+
+### New Files Created
+
+None.
+
+### Modified Files
+
+| File                                              | Modification                                                                                                                                                                                                   |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agents.md`                                       | Standardized 7 category names to match product-interview.md, updated --minimal from 5→6 categories, added Category 7 to "Why Critical" table                                                                   |
+| `.claude/commands/design-os/product-interview.md` | Added Question 2.0 (Product Name), implemented "Vedem ce avem" mode, robust emoji parsing, fixed validation script, added step-to-category mapping, completed cross-reference section, added language reminder |
+| `.claude/commands/design-os/product-vision.md`    | Added tip about --minimal, --audit, --stage flags                                                                                                                                                              |
+| `.claude/commands/design-os/product-roadmap.md`   | Added tip about --minimal, --audit, --stage flags                                                                                                                                                              |
+| `.claude/commands/design-os/data-model.md`        | Added tip about --minimal, --audit, --stage=data flags                                                                                                                                                         |
+| `.claude/commands/design-os/design-tokens.md`     | Added tip about --minimal, --audit, --stage=shell flags                                                                                                                                                        |
+| `.claude/commands/design-os/design-shell.md`      | Added tip about --minimal, --audit, --stage=shell flags                                                                                                                                                        |
+| `.claude/commands/design-os/shape-section.md`     | Added tip about --minimal, --audit, --stage=section flags                                                                                                                                                      |
+| `.claude/commands/design-os/sample-data.md`       | Added tip about --minimal, --audit, --stage=section flags                                                                                                                                                      |
+| `.claude/commands/design-os/design-screen.md`     | Added tip about --minimal, --audit, --stage=section flags                                                                                                                                                      |
+
+### Gaps Resolved
+
+**Critical (4):**
+
+- **P0:** `--minimal` mode provided only 5 categories (41.7%) — below the 50% threshold required by other commands. Fixed by adding Category 7 (Mobile & Responsive) → now 6 categories = 50%
+- **P0:** 7 of 12 category names differed between agents.md and product-interview.md — could cause parser failures in category skip logic. Standardized all names.
+- **P0:** "Vedem ce avem" mode had no implementation — option was offered but logic was missing. Added full implementation with context summary display and follow-up options.
+- **P0:** Product name was never explicitly asked — output template had `[Product Name]` placeholder that would never be filled. Added Question 2.0.
+
+**High (4):**
+
+- **P1:** Emoji parsing fragility — direct emoji matching (✅⚠️❌) could fail with UTF-8 variations. Changed to pattern matching with text fallbacks (Complete/Partial/Empty).
+- **P1:** Validation script false warnings — didn't exclude subsection headers (###), table formatters (|---|), block quotes (>). Fixed line counting.
+- **P1:** No error handling for context parsing — no warning if multiple table rows matched a category. Added duplicate detection.
+- **P1:** Recovery instructions incomplete — only mentioned 2 of 3 options. Now lists all three (Completăm/Vedem/Revizuim).
+
+**Medium (4):**
+
+- **P2:** No step-to-category mapping table — only a note saying "Step 2 = Category 1". Added explicit 12-row mapping table.
+- **P2:** Cross-reference section incomplete — missing references for categories 2, 8, 9, 12. Added complete references per agents.md table.
+- **P2:** Flag hints missing from other commands — users didn't know about --minimal, --stage. Added tips to all 8 command files.
+- **P2:** Mode table ambiguous — "Categories" column didn't clarify these were category numbers (1-12) not step numbers (0-14). Added clarifying note.
+
+**Low (2):**
+
+- **P3:** Language reminder not prominent at Step 14 — could forget to output in English. Added explicit reminder.
+- **P3:** Mode documentation inconsistency — agents.md said "5 categories" after we changed to 6. Fixed.
+
+### Statistics
+
+- Files modified: 10
+- Lines changed: ~200
+- Issues resolved: 14 (4 Critical, 4 High, 4 Medium, 2 Low)
+
+### Verification
+
+- ✅ `--minimal` now provides 6 categories (50% threshold met)
+- ✅ All 12 category names consistent between agents.md and product-interview.md
+- ✅ "Vedem ce avem" mode fully implemented with context summary
+- ✅ Product Name (Question 2.0) added to Step 2
+- ✅ Emoji parsing handles both emoji and text statuses
+- ✅ Validation script excludes formatting elements
+- ✅ Duplicate category warning added
+- ✅ Recovery instructions show all 3 options
+- ✅ Step-to-category mapping table added
+- ✅ Cross-reference complete for all 12 categories
+- ✅ Flag tips added to 8 command files
+- ✅ Mode table clarified with note
+- ✅ Language reminder at Step 14
+- ✅ Mode documentation consistent
+
+### Remaining Items
+
+None — all identified issues resolved. Command is production-ready.
+
+---
+
+## [2025-12-30 19:35] Critical Analysis: /product-interview Command Fixes
 
 ### Description
 

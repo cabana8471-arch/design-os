@@ -22,18 +22,20 @@ Parse any arguments to determine interview mode:
 
 **Mode behaviors:**
 
-| Mode                | Categories     | Output                               |
-| ------------------- | -------------- | ------------------------------------ |
-| Default             | All 12         | Full product-context.md              |
-| `--minimal`         | 1, 3, 5, 6, 11 | Quick start context                  |
-| `--stage=vision`    | 1, 2           | Foundation + User Research           |
-| `--stage=section`   | 5, 6, 7, 11    | Section design context               |
-| `--stage=shell`     | 3, 6, 7        | Shell design context                 |
-| `--stage=data`      | 4, 10          | Data architecture context            |
-| `--stage=scale`     | 8, 9           | Performance + Integration context    |
-| `--stage=quality`   | 12             | Testing & Quality context            |
-| `--audit`           | N/A            | Report on completeness               |
-| `--skip-validation` | All 12         | Skip Step 1 (existing context check) |
+> **Note:** Numbers in the "Categories" column refer to Category numbers (1-12), not Step numbers (0-14). See the Step-to-Category Mapping table in Step 2 for the correspondence.
+
+| Mode                | Categories (1-12) | Output                                   |
+| ------------------- | ----------------- | ---------------------------------------- |
+| Default             | All 12            | Full product-context.md                  |
+| `--minimal`         | 1, 3, 5, 6, 7, 11 | Quick start context (6 categories = 50%) |
+| `--stage=vision`    | 1, 2              | Foundation + User Research               |
+| `--stage=section`   | 5, 6, 7, 11       | Section design context                   |
+| `--stage=shell`     | 3, 6, 7           | Shell design context                     |
+| `--stage=data`      | 4, 10             | Data architecture context                |
+| `--stage=scale`     | 8, 9              | Performance + Integration context        |
+| `--stage=quality`   | 12                | Testing & Quality context                |
+| `--audit`           | N/A               | Report on completeness                   |
+| `--skip-validation` | All 12            | Skip Step 1 (existing context check)     |
 
 ---
 
@@ -68,6 +70,39 @@ Options:
 - **Completăm ce lipsește** — Doar categoriile incomplete
 - **Vedem ce avem** — Afișează contextul curent, apoi decide
 
+**If user selected "Vedem ce avem":**
+
+Display a summary of the current context:
+
+```markdown
+## Current Context Summary
+
+**Product:** [Name from header]
+**Completeness:** ${COMPLETENESS}% ([N]/12 categories)
+
+| Category                    | Status   | Key Points              |
+| --------------------------- | -------- | ----------------------- |
+| 1. Product Foundation       | ✅/⚠️/❌ | [First line of content] |
+| 2. User Research & Personas | ✅/⚠️/❌ | [First line of content] |
+| ... (all 12 categories)     | ...      | ...                     |
+```
+
+Then use AskUserQuestion again:
+
+"Acum că ai văzut ce avem, ce vrei să facem?"
+
+Options:
+
+- **Revizuim totul** — Pornim de la zero cu întrebări noi
+- **Completăm ce lipsește** — Doar categoriile incomplete
+- **E suficient** — Contextul e ok, nu facem nimic
+
+If user selects "E suficient", exit the command with:
+
+```
+Contextul produsului pare complet. Poți continua cu /product-vision sau altă comandă.
+```
+
 **If `--audit` mode:**
 
 Skip interview, just analyze and report:
@@ -100,15 +135,33 @@ INTERVIEW_MODE="complete_missing"  # or "full" for other options
 ```bash
 # Example for Step 2 (Category 1)
 CATEGORY_NUM=1
-CATEGORY_STATUS=$(grep "| $CATEGORY_NUM\." product/product-context.md | grep -oE "✅|⚠️|❌" | head -1)
 
-if [ "$INTERVIEW_MODE" = "complete_missing" ] && [ "$CATEGORY_STATUS" = "✅" ]; then
+# Robust emoji parsing - handles UTF-8 variations
+# Match emoji OR text status (Complete/Partial/Empty)
+CATEGORY_LINE=$(grep "| $CATEGORY_NUM\." product/product-context.md | head -1)
+
+# Check for Complete status (✅ or "Complete")
+if echo "$CATEGORY_LINE" | grep -qE "(✅|Complete)"; then
+  CATEGORY_STATUS="complete"
+# Check for Partial status (⚠️ or "Partial")
+elif echo "$CATEGORY_LINE" | grep -qE "(⚠️|Partial)"; then
+  CATEGORY_STATUS="partial"
+# Check for Empty status (❌ or "Empty")
+elif echo "$CATEGORY_LINE" | grep -qE "(❌|Empty)"; then
+  CATEGORY_STATUS="empty"
+else
+  CATEGORY_STATUS="unknown"
+fi
+
+if [ "$INTERVIEW_MODE" = "complete_missing" ] && [ "$CATEGORY_STATUS" = "complete" ]; then
   echo "Category $CATEGORY_NUM already complete, skipping..."
   # Skip to next category
 else
   # Proceed with category questions
 fi
 ```
+
+> **Note:** The status parser handles both emoji characters (✅⚠️❌) and text alternatives (Complete/Partial/Empty) for cross-platform compatibility.
 
 **Skip logic rules:**
 
@@ -126,9 +179,37 @@ This ensures users only answer questions for categories that need completion.
 
 > **Note:** Steps 2-13 correspond to Categories 1-12 in the output file. Step 2 creates Category 1, Step 3 creates Category 2, etc.
 
+**Step-to-Category Mapping:**
+
+| Step | Category | Name                     |
+| ---- | -------- | ------------------------ |
+| 2    | 1        | Product Foundation       |
+| 3    | 2        | User Research & Personas |
+| 4    | 3        | Design Direction         |
+| 5    | 4        | Data Architecture        |
+| 6    | 5        | Section-Specific Depth   |
+| 7    | 6        | UI Patterns & Components |
+| 8    | 7        | Mobile & Responsive      |
+| 9    | 8        | Performance & Scale      |
+| 10   | 9        | Integration Points       |
+| 11   | 10       | Security & Compliance    |
+| 12   | 11       | Error Handling           |
+| 13   | 12       | Testing & Quality        |
+
 > **Category Skip:** If `INTERVIEW_MODE="complete_missing"` and this category is ✅ Complete, skip to Step 3. See "Category Skip Logic" section above.
 
 **Ro:** "Să începem cu fundația produsului tău."
+
+### Question 2.0: Product Name
+
+"Cum se numește produsul tău?"
+
+Prompt for:
+
+- **Product name** — Official name or working title (required)
+- **Tagline** — One-liner description, 5-10 words (optional)
+
+Store as `PRODUCT_NAME` for use in the output file header.
 
 ### Question 2.1: Target Audience
 
@@ -855,6 +936,8 @@ Options (multiselect):
 
 ## Step 14: Synthesis & Output
 
+> **Language Reminder:** Generate all output in English, regardless of conversation language. The conversation may be in Romanian (or any language), but `product-context.md` MUST be in English for portability.
+
 After completing all questions (or selected categories for partial modes):
 
 ### 14.1: Calculate Completeness
@@ -913,6 +996,11 @@ Mode: [Full / Minimal / Stage-specific]
 ---
 
 ## 1. Product Foundation
+
+### Product Name
+
+**Name:** [Product Name]
+**Tagline:** [Optional tagline]
 
 ### Target Audience
 
@@ -1185,51 +1273,56 @@ Mode: [Full / Minimal / Stage-specific]
 
 ### For /product-vision
 
-- Use sections 1, 2 for product description
-- Target audience from 2.1 informs user personas
+- **Category 1** (Product Foundation): Product name, target audience, problem space
+- **Category 2** (User Research & Personas): Personas for user descriptions
 
 ### For /product-roadmap
 
-- Use section 1 business model for scope
-- Use section 8 for complexity estimation
+- **Category 1** (Product Foundation): Business model determines scope
+- **Category 8** (Performance & Scale): User volume for complexity estimation
 
 ### For /data-model
 
-- Use section 4 for data sensitivity and relationships
-- Use section 10 for security requirements
+- **Category 4** (Data Architecture): Sensitivity, relationships, compliance
+- **Category 10** (Security & Compliance): Auth model, audit requirements
 
 ### For /design-tokens
 
-- Use section 3 for aesthetic tone
-- Use brand constraints for colors/fonts
+- **Category 3** (Design Direction): Aesthetic tone, brand constraints for palette
 
 ### For /design-shell
 
-- Use section 3 for aesthetic tone
-- Use section 6 for component preferences
-- Use section 7 for mobile navigation
+- **Category 2** (User Research & Personas): Accessibility requirements for shell
+- **Category 3** (Design Direction): Aesthetic tone, animation style
+- **Category 7** (Mobile & Responsive): Mobile navigation pattern
+- **Category 9** (Integration Points): Auth provider for user menu
 
 ### For /shape-section
 
-- Use section 5 for detailed flows
-- Use sections 6, 7 for UI patterns
-- Use section 11 for error handling
+- **Category 5** (Section-Specific Depth): User flows, edge cases
+- **Category 6** (UI Patterns & Components): Data display, validation preferences
+- **Category 8** (Performance & Scale): Data volume, real-time needs
+- **Category 11** (Error Handling): Error recovery patterns
 
 ### For /sample-data
 
-- Use section 4 for data sensitivity
-- Use section 5 for edge case data
+- **Category 4** (Data Architecture): Data sensitivity for realistic samples
+- **Category 5** (Section-Specific Depth): Edge case data requirements
 
 ### For /design-screen
 
-- Use sections 6, 7 for component patterns
-- Use section 5 for all states (empty, loading, error)
-- Use section 11 for error display
+- **Category 3** (Design Direction): Animation style, information density
+- **Category 5** (Section-Specific Depth): Empty/loading/error states
+- **Category 6** (UI Patterns & Components): Component preferences
+- **Category 7** (Mobile & Responsive): Touch interactions, responsive priority
+- **Category 11** (Error Handling): Error message display
 
 ### For /export-product
 
-- All sections inform implementation prompts
-- Security from section 10 affects deployment docs
+- **Category 9** (Integration Points): Auth provider for implementation docs
+- **Category 10** (Security & Compliance): Security requirements for deployment
+- **Category 12** (Testing & Quality): Test coverage, browser support matrix
+- All other sections inform implementation prompts
 ```
 
 ### 14.3: Validate Output
@@ -1280,11 +1373,28 @@ for i in $(seq 1 12); do
     if [ -z "$NEXT_LINE" ]; then
       NEXT_LINE=$(wc -l < "$CONTEXT_FILE")
     fi
-    # Count non-empty, non-heading lines between sections
-    CONTENT_LINES=$(sed -n "${SECTION_LINE},${NEXT_LINE}p" "$CONTEXT_FILE" | grep -v "^$" | grep -v "^##" | grep -v "^---" | wc -l | tr -d ' ')
+    # Count actual content lines (excluding formatting elements)
+    # Excludes: empty lines, headings (##/###), separators (---),
+    #           table formatters (|---|), block quotes (>)
+    CONTENT_LINES=$(sed -n "${SECTION_LINE},${NEXT_LINE}p" "$CONTEXT_FILE" | \
+      grep -v "^$" | \
+      grep -v "^##" | \
+      grep -v "^###" | \
+      grep -v "^---" | \
+      grep -v "^|---" | \
+      grep -v "^>" | \
+      wc -l | tr -d ' ')
     if [ "$CONTENT_LINES" -lt 3 ]; then
       echo "Warning: Section $i appears to have minimal content ($CONTENT_LINES lines)"
     fi
+  fi
+done
+
+# 6.5. Warn if multiple matches for a category (potential parsing issue)
+for i in $(seq 1 12); do
+  MATCH_COUNT=$(grep -c "| $i\." "$CONTEXT_FILE" 2>/dev/null || echo 0)
+  if [ "$MATCH_COUNT" -gt 1 ]; then
+    echo "Warning: Multiple table rows match category $i. Parser will use first match."
   fi
 done
 
@@ -1352,14 +1462,17 @@ After completing the interview, check for inconsistencies:
 
 **To minimize data loss:**
 
-1. **Use shorter modes** — `--minimal` (5 categories, ~15 min) or `--stage=X` (2-4 categories)
+1. **Use shorter modes** — `--minimal` (6 categories, ~20 min) or `--stage=X` (2-4 categories)
 2. **Complete in one session** — Plan 30-45 minutes for full interview
 3. **Take notes** — Copy important answers externally as you go
 
 **If you must resume:**
 
 1. Re-run `/product-interview`
-2. If existing (partial) context is found, choose "Completăm ce lipsește"
-3. If no context exists, choose "Revizuim totul" and re-enter previous answers
+2. If existing (partial) context is found, you'll see three options:
+   - **"Completăm ce lipsește"** — Only ask questions for incomplete categories
+   - **"Vedem ce avem"** — View current context summary, then decide what to do
+   - **"Revizuim totul"** — Start fresh with all questions
+3. If no context exists, you'll start the full interview from scratch
 
 > **Note:** Step 1 detects existing `product-context.md` and offers to complete missing categories rather than starting over.

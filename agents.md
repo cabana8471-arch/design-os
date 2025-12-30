@@ -61,7 +61,7 @@ Gather comprehensive context about your product through a structured interview. 
 **Modes:**
 
 - Default — Full interview (12 categories, ~50 questions)
-- `--minimal` — Quick start (5 critical categories)
+- `--minimal` — Quick start (6 critical categories, meets 50% threshold)
 - `--stage=X` — Focus on specific area (vision, section, shell, data, scale, quality)
 - `--audit` — Check completeness of existing context
 - `--skip-validation` — Bypass existing context check (for advanced users updating context)
@@ -1438,20 +1438,20 @@ Product context solves this by gathering comprehensive information upfront.
 
 ### Context Categories
 
-| #   | Category            | Questions                                                                    | Used By Commands                                    |
-| --- | ------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------- |
-| 1   | Product Foundation  | Target audience, problem space, competitors, success metrics, business model | `/product-vision`, `/product-roadmap`               |
-| 2   | User Research       | Personas, accessibility needs, geographic distribution                       | `/product-vision`, `/design-shell`                  |
-| 3   | Design Direction    | Aesthetic tone, animation, density, brand constraints                        | `/design-tokens`, `/design-shell`, `/design-screen` |
-| 4   | Data Architecture   | Sensitivity, compliance, relationships, audit needs                          | `/data-model`, `/sample-data`                       |
-| 5   | Section Depth       | User flows, edge cases, empty/loading/error states                           | `/shape-section`, `/design-screen`                  |
-| 6   | UI Patterns         | Data display, validation, notifications, confirmations                       | `/shape-section`, `/design-screen`                  |
-| 7   | Mobile & Responsive | Priority, touch interactions, navigation, offline                            | `/design-shell`, `/design-screen`                   |
-| 8   | Performance         | User volume, data scale, real-time needs, search                             | `/product-roadmap`, `/shape-section`                |
-| 9   | Integrations        | Auth provider, external services, API exposure                               | `/design-shell`, `/export-product`                  |
-| 10  | Security            | Auth level, authorization model, audit logging                               | `/data-model`, `/export-product`                    |
-| 11  | Error Handling      | Message style, retry behavior, undo/redo, data loss prevention               | `/shape-section`, `/design-screen`                  |
-| 12  | Testing             | Coverage targets, E2E scope, accessibility testing, browser support          | `/export-product`                                   |
+| #   | Category                 | Questions                                                                    | Used By Commands                                    |
+| --- | ------------------------ | ---------------------------------------------------------------------------- | --------------------------------------------------- |
+| 1   | Product Foundation       | Target audience, problem space, competitors, success metrics, business model | `/product-vision`, `/product-roadmap`               |
+| 2   | User Research & Personas | Personas, accessibility needs, geographic distribution                       | `/product-vision`, `/design-shell`                  |
+| 3   | Design Direction         | Aesthetic tone, animation, density, brand constraints                        | `/design-tokens`, `/design-shell`, `/design-screen` |
+| 4   | Data Architecture        | Sensitivity, compliance, relationships, audit needs                          | `/data-model`, `/sample-data`                       |
+| 5   | Section-Specific Depth   | User flows, edge cases, empty/loading/error states                           | `/shape-section`, `/design-screen`                  |
+| 6   | UI Patterns & Components | Data display, validation, notifications, confirmations                       | `/shape-section`, `/design-screen`                  |
+| 7   | Mobile & Responsive      | Priority, touch interactions, navigation, offline                            | `/design-shell`, `/design-screen`                   |
+| 8   | Performance & Scale      | User volume, data scale, real-time needs, search                             | `/product-roadmap`, `/shape-section`                |
+| 9   | Integration Points       | Auth provider, external services, API exposure                               | `/design-shell`, `/export-product`                  |
+| 10  | Security & Compliance    | Auth level, authorization model, audit logging                               | `/data-model`, `/export-product`                    |
+| 11  | Error Handling           | Message style, retry behavior, undo/redo, data loss prevention               | `/shape-section`, `/design-screen`                  |
+| 12  | Testing & Quality        | Coverage targets, E2E scope, accessibility testing, browser support          | `/export-product`                                   |
 
 ### Completeness Requirements
 
@@ -1485,19 +1485,20 @@ For users who want to start quickly:
 /product-interview --minimal
 ```
 
-This covers only the 5 most critical categories (1, 3, 5, 6, 11) and takes ~24 questions instead of ~50.
+This covers 6 critical categories (1, 3, 5, 6, 7, 11) and takes ~28 questions instead of ~50. This meets the 50% completeness threshold required by other commands.
 
 **Why these categories?**
 
-| Category            | Why Critical                                                                |
-| ------------------- | --------------------------------------------------------------------------- |
-| 1 (Foundation)      | Product name, audience, problem — needed for `/product-vision`              |
-| 3 (Design)          | Aesthetic tone, density — needed for `/design-tokens` and all visual design |
-| 5 (Section Depth)   | User flows, states — needed for `/shape-section` and `/design-screen`       |
-| 6 (UI Patterns)     | Component preferences — needed for all screen designs                       |
-| 11 (Error Handling) | Error states — needed for complete, production-ready designs                |
+| Category                     | Why Critical                                                                |
+| ---------------------------- | --------------------------------------------------------------------------- |
+| 1 (Product Foundation)       | Product name, audience, problem — needed for `/product-vision`              |
+| 3 (Design Direction)         | Aesthetic tone, density — needed for `/design-tokens` and all visual design |
+| 5 (Section-Specific Depth)   | User flows, states — needed for `/shape-section` and `/design-screen`       |
+| 6 (UI Patterns & Components) | Component preferences — needed for all screen designs                       |
+| 7 (Mobile & Responsive)      | Responsive strategy — needed for `/design-shell` and all screen designs     |
+| 11 (Error Handling)          | Error states — needed for complete, production-ready designs                |
 
-These 5 categories provide minimum viable context for the design workflow. You can always run `--stage=X` later to fill in gaps.
+These 6 categories provide minimum viable context (50%) for the design workflow. You can always run `--stage=X` later to fill in gaps.
 
 ### Updating Context
 
