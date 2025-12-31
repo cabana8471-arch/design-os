@@ -3,6 +3,15 @@
 Get notified of major releases by subscribing here:
 https://buildermethods.com/design-os
 
+## [0.1.5] - 2025-12-31
+
+### Fixed (MEDIUM priority from Critical Analysis)
+
+- **product-vision.md**: Added `Check for Existing Product Name` section to avoid asking for product name twice (now checks `product-context.md` first before asking).
+- **product-vision.md**: Added `Borderline names (ACCEPT with clarification)` table to guide handling of names like "Dashboard", "Manager", "Portal" that are valid but could be more specific.
+- **data-model.md**: Added `Circular and Self-Referential Relationships` section with guidance for parent-child hierarchies, self-referential entities, and bidirectional relationships.
+- **design-shell.md**: Added `Step 8.0b: Validate Field-to-Component Matching` to verify that selected shell components have corresponding fields in `data.json`.
+
 ## [0.1.4] - 2025-12-31
 
 ### Fixed (HIGH priority from Critical Analysis)

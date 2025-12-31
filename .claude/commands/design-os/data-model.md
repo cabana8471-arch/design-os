@@ -478,3 +478,60 @@ If a relationship is optional (entity B can exist without entity A), note it:
 ```
 - Task optionally belongs to Project (can be standalone)
 ```
+
+### Circular and Self-Referential Relationships
+
+Some data models require entities that reference themselves or create circular dependencies. Handle these carefully:
+
+**Self-Referential Relationships:**
+
+When an entity references itself (e.g., parent-child hierarchies):
+
+```markdown
+## Relationships
+
+- Category has many Categories (parent-child hierarchy)
+- Employee has one Employee (manager relationship)
+- Comment has many Comments (threaded replies)
+```
+
+**Implementation Guidance:**
+
+| Pattern             | Description                    | Field Naming                            |
+| ------------------- | ------------------------------ | --------------------------------------- |
+| **Parent-child**    | Entity has parent of same type | Use `parentId` field, not nested object |
+| **Manager/reports** | One-to-many self-reference     | Use `managerId` or `reportsToId`        |
+| **Threaded**        | Replies to same entity type    | Use `parentCommentId` or `replyToId`    |
+
+**Example self-referential entity:**
+
+```markdown
+### Category
+
+A hierarchical category that can contain subcategories. Each category may have a parent category, creating a tree structure.
+
+Relationships:
+
+- Category optionally belongs to Category (parent-child)
+```
+
+**Bidirectional (Circular) Relationships:**
+
+When two entities reference each other (Entity A → Entity B → Entity A):
+
+```markdown
+- User has many Posts
+- Post belongs to User
+- Post has many Comments
+- Comment belongs to Post
+- Comment belongs to User (author)
+```
+
+**Guidelines for circular relationships:**
+
+1. **Define both directions explicitly** — Document each relationship from both perspectives
+2. **Identify the owner** — One side "owns" the foreign key in implementation
+3. **Avoid deep nesting** — Flatten references using IDs rather than nested objects
+4. **Note cascade behavior** — What happens when parent is deleted?
+
+> **Implementation Note:** Circular references are common and valid in data models. The implementation agent will determine the technical approach (foreign keys, junction tables, etc.) based on the relationship descriptions provided here.

@@ -64,7 +64,30 @@ After receiving their input, use the AskUserQuestion tool to ask 3-5 targeted qu
 - **How the product solves each problem** (concrete solutions)
 - **The main features** that make this possible
 
-**Important:** If the user hasn't already provided a product name, ask them:
+### Check for Existing Product Name
+
+Before asking about the product name, check if it was already gathered during `/product-interview`:
+
+```bash
+CONTEXT_FILE="product/product-context.md"
+EXISTING_NAME=""
+
+if [ -f "$CONTEXT_FILE" ]; then
+  # Look for product name in context (under Category 1, ### Product Name)
+  EXISTING_NAME=$(grep -A2 "### Product Name" "$CONTEXT_FILE" | grep "^\*\*Name:\*\*" | sed 's/\*\*Name:\*\* //' | head -1)
+fi
+```
+
+**If a name exists in product-context.md:**
+
+```
+"I see from your product context that this is called **[existing name]**. Is this still the name you want to use?"
+```
+
+- If yes: Use the existing name, skip name clarification
+- If no: Ask for the new name
+
+**If no name exists (or product-context.md is missing):**
 
 - "What would you like to call this product? (A short, memorable name)"
 
@@ -206,7 +229,7 @@ Iterate until the user is satisfied.
 | Meaningful       | Describes the product                  | "InvoiceFlow", "TaskMaster", "HealthSync"                 |
 | No special chars | Letters, numbers, spaces, hyphens only | "Project 42" (OK), "App@v2" (reject)                      |
 
-**Generic names to reject:**
+**Generic names to REJECT:**
 
 - "My App", "My Project", "My Product"
 - "Untitled", "Untitled App", "New App"
@@ -214,7 +237,28 @@ Iterate until the user is satisfied.
 - "Test", "Demo", "Sample"
 - "[Placeholder]", "TBD", "TODO"
 
-If the user provides a generic name:
+**Borderline names (ACCEPT with clarification):**
+
+Some names are technically valid but could be more specific:
+
+| Name           | Issue                       | Suggestion                                                 |
+| -------------- | --------------------------- | ---------------------------------------------------------- |
+| "Dashboard"    | Too generic alone           | Accept if domain-specific (e.g., "Sales Dashboard" better) |
+| "Manager"      | Common but vague            | Suggest domain prefix (e.g., "Invoice Manager")            |
+| "Portal"       | Acceptable but generic      | Consider more descriptive alternative                      |
+| "[Domain] App" | Acceptable if domain clear  | "Task App" is OK, "App App" is not                         |
+| "Hub"          | Acceptable if context clear | "Project Hub" is fine                                      |
+
+**For borderline names:**
+
+```
+"'[name]' works, but it's a bit generic. Would you like to keep it, or would something more specific like '[domain] [name]' work better for your product?"
+```
+
+- If user wants to keep it: Accept and proceed
+- If user wants to refine: Help them brainstorm a more specific name
+
+**For clearly generic names (reject list):**
 
 ```
 "'[name]' seems like a placeholder. Your product name will appear throughout the design and export — what would you like to call it?"

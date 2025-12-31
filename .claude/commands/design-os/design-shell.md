@@ -1859,6 +1859,69 @@ fi
 echo "Shell data prerequisites validated"
 ```
 
+### Step 8.0b: Validate Field-to-Component Matching
+
+After JSON syntax validation, verify that selected components have corresponding data fields:
+
+```bash
+DATA_FILE="product/shell/data.json"
+SPEC_FILE="product/shell/spec.md"
+VALIDATION_WARNINGS=""
+
+# Parse selected components from Shell Relationships in spec.md
+# Extract components from lines like: HeaderAction.notifications -> NotificationsDrawer (drawer, notifications)
+
+# Check notifications data if NotificationsDrawer selected
+if grep -q "NotificationsDrawer" "$SPEC_FILE"; then
+  if ! python3 -c "import json; d=json.load(open('$DATA_FILE')); assert 'notifications' in d" 2>/dev/null; then
+    VALIDATION_WARNINGS="${VALIDATION_WARNINGS}\n  - NotificationsDrawer selected but data.json missing 'notifications' field"
+  fi
+fi
+
+# Check user data if ProfileModal selected
+if grep -q "ProfileModal" "$SPEC_FILE"; then
+  if ! python3 -c "import json; d=json.load(open('$DATA_FILE')); assert 'user' in d" 2>/dev/null; then
+    VALIDATION_WARNINGS="${VALIDATION_WARNINGS}\n  - ProfileModal selected but data.json missing 'user' field"
+  fi
+fi
+
+# Check settings data if SettingsModal selected
+if grep -q "SettingsModal" "$SPEC_FILE"; then
+  if ! python3 -c "import json; d=json.load(open('$DATA_FILE')); assert 'settings' in d" 2>/dev/null; then
+    VALIDATION_WARNINGS="${VALIDATION_WARNINGS}\n  - SettingsModal selected but data.json missing 'settings' field"
+  fi
+fi
+
+# Check helpTopics data if HelpPanel selected
+if grep -q "HelpPanel" "$SPEC_FILE"; then
+  if ! python3 -c "import json; d=json.load(open('$DATA_FILE')); assert 'helpTopics' in d" 2>/dev/null; then
+    VALIDATION_WARNINGS="${VALIDATION_WARNINGS}\n  - HelpPanel selected but data.json missing 'helpTopics' field"
+  fi
+fi
+
+# Report warnings
+if [ -n "$VALIDATION_WARNINGS" ]; then
+  echo "⚠️ Field-to-component validation warnings:$VALIDATION_WARNINGS"
+  echo ""
+  echo "Recovery: Update data.json to include missing fields, or re-run Step 6.7."
+  # Continue with warning — components may have fallback handling
+fi
+```
+
+**Field-to-Component Mapping:**
+
+| Component             | Required Data Field | Purpose                    |
+| --------------------- | ------------------- | -------------------------- |
+| `NotificationsDrawer` | `notifications`     | List of notification items |
+| `ProfileModal`        | `user`              | Current user profile data  |
+| `SettingsModal`       | `settings`          | User preferences           |
+| `HelpPanel`           | `helpTopics`        | Help documentation         |
+| `SearchModal`         | (none required)     | Uses search state only     |
+| `FeedbackModal`       | (none required)     | Form only, no data         |
+| `MobileMenuDrawer`    | (none required)     | Uses nav items from props  |
+
+> **Note:** This validation produces warnings, not errors. Components may have fallback handling for missing data. However, missing fields should be addressed for complete preview functionality.
+
 **If validation fails:** Do NOT proceed with ShellPreview creation. The import statement will fail at runtime if data.json is missing or invalid.
 
 ### Step 8.1: Parse Shell Relationships
