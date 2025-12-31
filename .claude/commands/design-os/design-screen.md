@@ -1414,6 +1414,32 @@ Use specific shades for each UI element type to ensure consistency:
 
 For complex views, break down into sub-components. Each sub-component should also be props-based.
 
+### Component Size Guidelines
+
+**When to split into sub-components:**
+
+| Component Lines | Action                                                    |
+| --------------- | --------------------------------------------------------- |
+| < 150 lines     | Keep as single component                                  |
+| 150-300 lines   | Consider splitting if there are distinct logical sections |
+| > 300 lines     | **MUST split** into sub-components for maintainability    |
+
+**Signs a component needs splitting:**
+
+- Multiple distinct UI sections (header, filters, table, pagination)
+- Repeated patterns that could be extracted (row components, card components)
+- Complex conditional rendering with multiple branches
+- More than 5-6 handler functions in one component
+
+**Example split for a 400-line InvoiceList:**
+
+```
+InvoiceList.tsx (main - 150 lines)
+├── InvoiceFilters.tsx (80 lines)
+├── InvoiceTable.tsx (100 lines)
+└── InvoicePagination.tsx (70 lines)
+```
+
 Create sub-components at `src/sections/[section-id]/components/[SubComponent].tsx`.
 
 Example:

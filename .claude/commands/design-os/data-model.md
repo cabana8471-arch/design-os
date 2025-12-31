@@ -531,7 +531,7 @@ When two entities reference each other (Entity A → Entity B → Entity A):
 
 1. **Define both directions explicitly** — Document each relationship from both perspectives
 2. **Identify the owner** — One side "owns" the foreign key in implementation
-3. **Avoid deep nesting** — Flatten references using IDs rather than nested objects
+3. **Avoid deep nesting** — Flatten references using IDs rather than nested objects. **Maximum nesting depth: 3 levels** (e.g., `Order → LineItem → Product` is acceptable; adding a 4th level should be flattened)
 4. **Note cascade behavior** — What happens when parent is deleted?
 
 > **Implementation Note:** Circular references are common and valid in data models. The implementation agent will determine the technical approach (foreign keys, junction tables, etc.) based on the relationship descriptions provided here.

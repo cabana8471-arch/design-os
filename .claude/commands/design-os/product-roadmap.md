@@ -233,6 +233,16 @@ When users manually edit `/product/product-roadmap.md`:
 - The "Start fresh" option will overwrite all manual edits — always confirm before proceeding
 - If a user has associated section specs, sample data, or screen designs that depend on current section names, changing the roadmap may orphan those files
 
+**How manual edits are detected:**
+
+| Method         | When to Use                                   | Command                                                                 |
+| -------------- | --------------------------------------------- | ----------------------------------------------------------------------- |
+| Git diff       | File is tracked in git                        | `git diff product/product-roadmap.md`                                   |
+| File timestamp | Compare against last command run              | `stat -f %m product/product-roadmap.md` (macOS) or `stat -c %Y` (Linux) |
+| Content hash   | Store hash after command, compare on next run | `md5 -q product/product-roadmap.md` (macOS) or `md5sum` (Linux)         |
+
+> **Note:** Design OS commands use git diff when available (most common case). If the file shows uncommitted changes that weren't made by the current command, those are manual edits.
+
 ### Handling Orphaned Files
 
 When sections are renamed or removed from the roadmap, previously created files may become "orphaned" — they exist on disk but are no longer referenced by the roadmap.

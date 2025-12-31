@@ -3,6 +3,16 @@
 Get notified of major releases by subscribing here:
 https://buildermethods.com/design-os
 
+## [0.1.6] - 2025-12-31
+
+### Fixed (LOW priority from Critical Analysis)
+
+- **design-screen.md**: Added `Component Size Guidelines` section with line count thresholds (< 150, 150-300, > 300) and split indicators for maintainability.
+- **data-model.md**: Added explicit maximum nesting depth (3 levels) to circular relationship guidelines.
+- **product-roadmap.md**: Added `How manual edits are detected` table explaining git diff, file timestamp, and content hash methods.
+
+**Note:** 7 of 10 LOW issues were verified as false positives (consistent usage, not problematic duplication).
+
 ## [0.1.5] - 2025-12-31
 
 ### Fixed (MEDIUM priority from Critical Analysis)
