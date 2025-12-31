@@ -1363,20 +1363,20 @@ Design OS uses a modular template system for generating implementation prompts a
 
 Commands in `.claude/commands/design-os/` include version headers (`<!-- vX.X.X -->`) at the top of each file:
 
-| Command              | Version | Notes                                                                                           |
-| -------------------- | ------- | ----------------------------------------------------------------------------------------------- |
-| `/product-interview` | v1.3.4  | + Step 14.1b temporal clarification, backup collision handling                                  |
-| `/audit-context`     | v1.1.5  | + Category-specific ambiguity counting, D-005 function wrapper, complete issue count validation |
-| `/product-vision`    | —       | Check file for version                                                                          |
-| `/product-roadmap`   | —       | Check file for version                                                                          |
-| `/data-model`        | —       | Check file for version                                                                          |
-| `/design-tokens`     | —       | Check file for version                                                                          |
-| `/design-shell`      | —       | Check file for version                                                                          |
-| `/shape-section`     | —       | Check file for version                                                                          |
-| `/sample-data`       | —       | Check file for version                                                                          |
-| `/design-screen`     | —       | Check file for version                                                                          |
-| `/screenshot-design` | —       | Check file for version                                                                          |
-| `/export-product`    | —       | Check file for version                                                                          |
+| Command              | Version | Notes                                                                                                                               |
+| -------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `/product-interview` | v1.3.5  | + Warning behavior for --minimal --skip-validation, mid-interview correction, file write verification, completeness math validation |
+| `/audit-context`     | v1.1.6  | + awk portability fix, output capture wrapper, category guards, Consistency Matrix clarification, variable scope notes              |
+| `/product-vision`    | —       | Check file for version                                                                                                              |
+| `/product-roadmap`   | —       | Check file for version                                                                                                              |
+| `/data-model`        | —       | Check file for version                                                                                                              |
+| `/design-tokens`     | —       | Check file for version                                                                                                              |
+| `/design-shell`      | —       | Check file for version                                                                                                              |
+| `/shape-section`     | —       | Check file for version                                                                                                              |
+| `/sample-data`       | —       | Check file for version                                                                                                              |
+| `/design-screen`     | —       | Check file for version                                                                                                              |
+| `/screenshot-design` | —       | Check file for version                                                                                                              |
+| `/export-product`    | —       | Check file for version                                                                                                              |
 
 > **Note:** Commands marked "—" should be checked in their source files for version headers. Add versions to this table as commands are updated.
 

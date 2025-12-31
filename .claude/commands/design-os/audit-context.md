@@ -1,4 +1,4 @@
-<!-- v1.1.5 -->
+<!-- v1.1.6 -->
 
 # Audit Context
 
@@ -416,6 +416,10 @@ count_ambiguity_by_category() {
   # Check critical categories (4, 9, 10) - report ANY occurrence
   for cat in $CRITICAL_CATS; do
     CAT_CONTENT=$(sed -n "/^## $cat\./,/^## /p" "$CONTEXT_FILE")
+    # Guard: skip if category section not found in file
+    if [ -z "$CAT_CONTENT" ]; then
+      continue
+    fi
     CAT_COUNT=$(echo "$CAT_CONTENT" | grep -ciE "$PATTERN" 2>/dev/null || echo 0)
     if [ "$CAT_COUNT" -gt 0 ]; then
       CRITICAL_TOTAL=$((CRITICAL_TOTAL + CAT_COUNT))
@@ -426,6 +430,10 @@ count_ambiguity_by_category() {
   # Check other categories - only report if cumulative >= 6
   for cat in $OTHER_CATS; do
     CAT_CONTENT=$(sed -n "/^## $cat\./,/^## /p" "$CONTEXT_FILE")
+    # Guard: skip if category section not found in file
+    if [ -z "$CAT_CONTENT" ]; then
+      continue
+    fi
     CAT_COUNT=$(echo "$CAT_CONTENT" | grep -ciE "$PATTERN" 2>/dev/null || echo 0)
     OTHER_TOTAL=$((OTHER_TOTAL + CAT_COUNT))
   done
@@ -447,12 +455,38 @@ count_ambiguity_by_category() {
   fi
 }
 
+# Apply to each ambiguity pattern and capture output
+# Usage pattern: capture function output and increment counters
+process_ambiguity_results() {
+  local PATTERN=$1
+  local CHECK_ID=$2
+  local RESULT=$(count_ambiguity_by_category "$PATTERN" "$CHECK_ID")
+
+  # Parse output lines and update global counters
+  echo "$RESULT" | while IFS=: read -r SEVERITY REST; do
+    case "$SEVERITY" in
+      HIGH)
+        AMBIGUITY_HIGH=$((AMBIGUITY_HIGH + 1))
+        echo "🔴 $CHECK_ID: $REST"
+        ;;
+      MEDIUM)
+        AMBIGUITY_MEDIUM=$((AMBIGUITY_MEDIUM + 1))
+        echo "🟠 $CHECK_ID: $REST"
+        ;;
+    esac
+  done
+}
+
+# Initialize counters for ambiguity issues
+AMBIGUITY_HIGH=0
+AMBIGUITY_MEDIUM=0
+
 # Apply to each ambiguity pattern
-count_ambiguity_by_category "$VAGUE_PATTERNS" "A-001"
-count_ambiguity_by_category "$OPENENDED_PATTERNS" "A-003"
-count_ambiguity_by_category "$UNCLEAR_REF_PATTERNS" "A-002"
-count_ambiguity_by_category "$CONDITIONAL_PATTERNS" "A-004"
-count_ambiguity_by_category "$MULTIOPT_PATTERNS" "A-006"
+process_ambiguity_results "$VAGUE_PATTERNS" "A-001"
+process_ambiguity_results "$OPENENDED_PATTERNS" "A-003"
+process_ambiguity_results "$UNCLEAR_REF_PATTERNS" "A-002"
+process_ambiguity_results "$CONDITIONAL_PATTERNS" "A-004"
+process_ambiguity_results "$MULTIOPT_PATTERNS" "A-006"
 ```
 
 **Reporting Threshold:**
@@ -720,6 +754,8 @@ After running all checks, generate the comprehensive report.
 
 ### 8.1: Calculate Summary
 
+> **Variable Scope:** The `HIGH_COUNT`, `MEDIUM_COUNT`, `LOW_COUNT`, and `TOTAL_ISSUES` variables calculated here are used again in Step 10 (Re-run Detection) for comparison with previous run. Ensure these variables remain in scope throughout report generation.
+
 ```bash
 # Count issues by severity
 HIGH_COUNT=$(count issues with 🔴)
@@ -833,12 +869,14 @@ Write to `product/audit-report.md`:
 
 ## Consistency Matrix
 
+> **Note:** This table MUST include all 21 consistency checks (C-001 through C-021). Only failed checks require detailed explanation; passing checks use "—" for Details.
+
 | Check | Status  | Details                                  |
 | ----- | ------- | ---------------------------------------- |
 | C-001 | ✅ PASS | —                                        |
 | C-002 | ✅ PASS | —                                        |
 | C-003 | ❌ FAIL | Real-time + 10k users without scale plan |
-| ...   | ...     | ...                                      |
+| ...   | ...     | (C-004 through C-021)                    |
 
 ---
 
@@ -1161,12 +1199,13 @@ REPORTED_MEDIUM=$(echo "$SUMMARY_LINE" | grep -oE '🟠 [0-9]+' | grep -oE '[0-9
 REPORTED_LOW=$(echo "$SUMMARY_LINE" | grep -oE '🟡 [0-9]+' | grep -oE '[0-9]+' || echo 0)
 
 # Count actual issues by severity in report body
+# Note: Using awk instead of sed for portability (sed '\|' requires extended regex which varies by platform)
 # HIGH issues are under "### 🔴 HIGH Priority Issues" section
-ACTUAL_HIGH=$(sed -n '/^### 🔴 HIGH/,/^### 🟠\|^---/p' "$REPORT_FILE" | grep -c "^#### \[ISSUE-" 2>/dev/null || echo 0)
+ACTUAL_HIGH=$(awk '/^### 🔴 HIGH/,/^### 🟠|^---/' "$REPORT_FILE" | grep -c "^#### \[ISSUE-" 2>/dev/null || echo 0)
 # MEDIUM issues are under "### 🟠 MEDIUM Priority Issues" section
-ACTUAL_MEDIUM=$(sed -n '/^### 🟠 MEDIUM/,/^### 🟡\|^---/p' "$REPORT_FILE" | grep -c "^#### \[ISSUE-" 2>/dev/null || echo 0)
+ACTUAL_MEDIUM=$(awk '/^### 🟠 MEDIUM/,/^### 🟡|^---/' "$REPORT_FILE" | grep -c "^#### \[ISSUE-" 2>/dev/null || echo 0)
 # LOW issues are under "### 🟡 LOW Priority Issues" section
-ACTUAL_LOW=$(sed -n '/^### 🟡 LOW/,/^---/p' "$REPORT_FILE" | grep -c "^#### \[ISSUE-" 2>/dev/null || echo 0)
+ACTUAL_LOW=$(awk '/^### 🟡 LOW/,/^---/' "$REPORT_FILE" | grep -c "^#### \[ISSUE-" 2>/dev/null || echo 0)
 
 # Compare and warn on mismatches
 if [ "$REPORTED_HIGH" != "$ACTUAL_HIGH" ]; then

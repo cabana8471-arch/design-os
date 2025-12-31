@@ -1,4 +1,4 @@
-<!-- v1.3.4 -->
+<!-- v1.3.5 -->
 
 # Product Interview
 
@@ -57,6 +57,13 @@ Before proceeding, check for invalid argument combinations:
 | `--audit --minimal`           | `--audit` takes precedence. Reports completeness for minimal categories only.       |
 | `--skip-validation --audit`   | Error: "--skip-validation only applies to interview modes, not audit."              |
 | `--skip-validation --minimal` | ⚠️ DATA LOSS RISK: Only 6 categories asked; existing categories 2,4,8,9,10,12 lost. |
+
+> **Warning Behavior for `--skip-validation --minimal`:** When this combination is detected, the agent MUST:
+>
+> 1. Display warning: "⚠️ Folosești --minimal cu --skip-validation. Categoriile existente 2, 4, 8, 9, 10, 12 vor fi pierdute permanent."
+> 2. Use AskUserQuestion to confirm: "Continui?" with options "Da, continuă" / "Nu, anulează"
+> 3. If "Nu, anulează": exit with message "Comandă anulată. Folosește /product-interview --minimal (fără --skip-validation) pentru a păstra categoriile existente."
+> 4. If "Da, continuă": proceed with interview (user accepted data loss risk)
 
 ```bash
 # Validate argument combinations
@@ -2253,7 +2260,14 @@ VALIDATION_ERRORS=0
 
 # 1. Verify file was created
 if [ ! -f "$CONTEXT_FILE" ]; then
-  echo "Error: $CONTEXT_FILE - Failed to create file"
+  echo "Error: $CONTEXT_FILE - Failed to create file. Check write permissions: ls -la product/"
+  exit 1
+fi
+
+# 1b. Verify file has minimum content (not empty or partial write)
+WRITTEN_SIZE=$(wc -c < "$CONTEXT_FILE" | tr -d ' ')
+if [ "$WRITTEN_SIZE" -lt 500 ]; then
+  echo "Error: $CONTEXT_FILE - File appears incomplete ($WRITTEN_SIZE bytes). Check disk space."
   exit 1
 fi
 
@@ -2317,6 +2331,15 @@ for i in $(seq 1 12); do
     echo "Warning: Multiple table rows match category $i. Parser will use first match."
   fi
 done
+
+# 7b. Verify completeness percentage matches actual category counts
+COMPLETE_CATS=$(grep -E "^\| *[0-9]+\." "$CONTEXT_FILE" | grep -cE "(✅|Complete)" 2>/dev/null || echo 0)
+EXPECTED_COMPLETENESS=$((COMPLETE_CATS * 100 / 12))
+HEADER_COMPLETENESS=$(grep "^Completeness:" "$CONTEXT_FILE" | grep -oE '[0-9]+' | head -1)
+if [ -n "$HEADER_COMPLETENESS" ] && [ "$EXPECTED_COMPLETENESS" -ne "$HEADER_COMPLETENESS" ]; then
+  echo "Warning: Completeness mismatch - header shows ${HEADER_COMPLETENESS}% but ${COMPLETE_CATS}/12 categories are ✅ (${EXPECTED_COMPLETENESS}%)"
+  VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+fi
 
 # 8. Verify cross-reference consistency
 # Check that commands referenced have at least one completed category
@@ -2397,6 +2420,8 @@ Am creat contextul produsului tău!
 ## Important Notes
 
 > **Language Note:** Example prompts in this template are shown in Romanian. Adapt to the user's conversation language. The **questions** can be in any language, but **all generated files** (product-context.md) MUST be in English for portability.
+>
+> **Language Handling During Generation:** If user provides answers in a non-English language (e.g., Romanian), the agent MUST translate those answers to English when generating `product-context.md`. The conversation remains in the user's preferred language, but all file content must be English. This ensures portability across teams and downstream commands.
 
 > **AskUserQuestion Option Limits:** The AskUserQuestion tool supports 2-4 options per question. Questions in this template with more than 4 options should be adapted:
 >
@@ -2440,6 +2465,28 @@ After completing the interview, check for inconsistencies:
 - 🔴 **HIGH** — Likely a fundamental conflict that needs resolution before proceeding
 - 🟠 **MED** — Worth addressing but may be intentional for specific use cases
 - 🟡 **LOW** — Consider reviewing but acceptable to proceed as-is
+
+### Mid-Interview Answer Correction
+
+If user requests to change a previously answered question in the CURRENT session (e.g., "I want to change my answer to Q2.1"):
+
+1. **Acknowledge:** "Desigur, hai să revizuim [Question X.Y]"
+2. **Re-ask:** Present the question again with original options
+3. **Record:** Replace the previous answer with the new one
+4. **Continue:** Resume from where you left off (not from the changed question)
+
+> **Note:** This is different from `complete_missing` mode which handles corrections across sessions. Mid-interview correction allows fixing mistakes within the same interview session.
+
+**Example flow:**
+
+```
+User: "Așteptă, vreau să schimb răspunsul la 2.3 (Competitors)"
+Agent: "Desigur, hai să revizuim întrebarea despre competitori."
+       [Re-ask Question 2.3]
+User: [Provides new answer]
+Agent: "Am înregistrat noul răspuns. Continuăm de unde am rămas."
+       [Resume from current position, e.g., Question 4.2]
+```
 
 ### Recovery if Interrupted
 
