@@ -13,6 +13,13 @@ Critical analysis of `product/product-context.md` to identify issues before impl
 
 **Language:** Report is generated in English. Conversation can be in user's preferred language.
 
+> **Code Block Conventions:** Code blocks in this command serve two purposes:
+>
+> - **Executable bash** — Marked with `bash` language tag, contains valid shell commands
+> - **Pseudocode/guidance** — Describes logic the agent should implement (e.g., `HIGH_COUNT=$(count issues with 🔴)`)
+>
+> When pseudocode appears, implement equivalent logic rather than running literally.
+
 ---
 
 ## Step 1: Validate Context File
@@ -24,18 +31,14 @@ CONTEXT_FILE="product/product-context.md"
 REPORT_FILE="product/audit-report.md"
 
 if [ ! -f "$CONTEXT_FILE" ]; then
-  echo "Error: product-context.md - File not found."
-  echo ""
-  echo "Run /product-interview first to create the product context."
+  echo "Error: product-context.md - File not found. Run /product-interview first to create the product context."
   exit 1
 fi
 
 # Check minimum content (file should have > 500 chars excluding whitespace)
 CONTENT_LENGTH=$(tr -d '[:space:]' < "$CONTEXT_FILE" | wc -c)
 if [ "$CONTENT_LENGTH" -lt 500 ]; then
-  echo "Error: product-context.md appears to be empty or incomplete."
-  echo ""
-  echo "Run /product-interview to complete the interview."
+  echo "Error: product-context.md - File is empty or incomplete. Run /product-interview to complete the interview."
   exit 1
 fi
 ```
@@ -97,6 +100,8 @@ Report format for each finding:
 ## Step 3: Consistency Checks
 
 Verify that answers across categories are logically consistent.
+
+> **Relationship to /product-interview:** `/product-interview` includes a subset of consistency checks (quick checks during the interview). This command provides the **comprehensive check set** (C-001 through C-020) for thorough validation. Both commands complement each other: interview catches obvious conflicts early, audit provides deep analysis after context is complete.
 
 | Check ID | Condition                                   | Severity  | Message                                                         |
 | -------- | ------------------------------------------- | --------- | --------------------------------------------------------------- |
@@ -222,6 +227,7 @@ Identify redundant or contradictory information.
 | D-001    | Same answer appears in 2+ categories                    | 🟡 LOW    | "Duplicate content between categories. Consider consolidating." |
 | D-002    | Contradictory info about same topic in different places | 🔴 HIGH   | "Contradictory information about [topic]."                      |
 | D-003    | Quick Reference table status mismatches category detail | 🟠 MEDIUM | "Quick Reference shows ✅ but category has incomplete content." |
+| D-004    | Cross-Reference lists category that is ❌ Empty         | 🟡 LOW    | "Cross-Reference mentions category [N] but it's empty."         |
 
 **D-003 Check implementation:**
 
@@ -241,6 +247,23 @@ Report format:
    Fix: Update Quick Reference to ⚠️ Partial, or complete Category 4
 ```
 
+**D-004 Check implementation:**
+
+1. Parse Cross-Reference section for command-to-category mappings
+2. For each category mentioned in Cross-Reference:
+   - Check if Quick Reference shows ❌ Empty for that category
+   - Flag if a command references an empty category
+
+Report format:
+
+```
+🟡 D-004: Cross-Reference references empty category
+   Cross-Reference: /shape-section uses Category 8
+   Quick Reference: Category 8 ❌ Empty
+   Impact: Command may not have required context
+   Fix: Run /product-interview --stage=scale to complete Category 8
+```
+
 ---
 
 ## Step 7: Command Readiness
@@ -250,14 +273,16 @@ Verify context completeness for each downstream Design OS command.
 | Command            | Required Categories | Optional Categories | Ready When           |
 | ------------------ | ------------------- | ------------------- | -------------------- |
 | `/product-vision`  | 1, 2                | —                   | Both ✅              |
-| `/product-roadmap` | 1                   | 2                   | 1 is ✅              |
+| `/product-roadmap` | 1                   | 2, 8                | 1 is ✅              |
 | `/data-model`      | 4, 10               | 1                   | Both 4, 10 are ✅    |
 | `/design-tokens`   | 3                   | 1                   | 3 is ✅              |
 | `/design-shell`    | 2, 3                | 7, 9                | 2 and 3 are ✅       |
-| `/shape-section`   | 5, 6                | 1, 4                | Both 5, 6 are ✅     |
+| `/shape-section`   | 5, 6                | 8, 11               | Both 5, 6 are ✅     |
 | `/sample-data`     | 4, 5                | —                   | Both 4, 5 are ✅     |
 | `/design-screen`   | 5, 6                | 3, 7, 11            | 5 and 6 are ✅       |
 | `/export-product`  | 9, 10, 12           | all others          | All 9, 10, 12 are ✅ |
+
+> **Note:** Categories are aligned with the Cross-Reference section in `/product-interview` output. Required categories BLOCK the command; Optional categories provide enhanced context but won't prevent execution.
 
 **Check implementation:**
 
@@ -453,13 +478,64 @@ Write to `product/audit-report.md`:
 ### 8.3: Write Report File
 
 ```bash
-mkdir -p product
+# Create directory with error handling (standard pattern from agents.md)
+mkdir -p product || {
+  echo "Error: product directory - Failed to create. Check write permissions: ls -la ."
+  exit 1
+}
+
 cat > "$REPORT_FILE" << 'EOF'
 [Generated report content]
 EOF
 
+# Verify file was created
+if [ ! -f "$REPORT_FILE" ]; then
+  echo "Error: $REPORT_FILE - Failed to create report file."
+  exit 1
+fi
+
 echo "📄 Report saved to: $REPORT_FILE"
 ```
+
+### 8.4: Validate Report Structure
+
+Verify the generated report has all required sections.
+
+```bash
+VALIDATION_ERRORS=0
+
+# 1. Check Executive Summary exists
+if ! grep -q "^## Executive Summary" "$REPORT_FILE"; then
+  echo "Warning: Executive Summary section missing from report"
+  VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+fi
+
+# 2. Check Issues Found section exists
+if ! grep -q "^## Issues Found" "$REPORT_FILE"; then
+  echo "Warning: Issues Found section missing from report"
+  VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+fi
+
+# 3. Check Command Readiness section exists
+if ! grep -q "^## Command Readiness" "$REPORT_FILE"; then
+  echo "Warning: Command Readiness section missing from report"
+  VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+fi
+
+# 4. Verify issue counts match summary
+REPORTED_HIGH=$(grep "🔴 HIGH" "$REPORT_FILE" | head -1 | grep -oE '[0-9]+' | head -1)
+ACTUAL_HIGH=$(grep -c "^#### \[ISSUE-" "$REPORT_FILE" 2>/dev/null || echo 0)
+# Note: Simplified check - full validation would verify each severity level
+
+# 5. Report validation results
+if [ $VALIDATION_ERRORS -gt 0 ]; then
+  echo "Warning: $VALIDATION_ERRORS validation issues in generated report"
+else
+  echo "Report structure validated successfully"
+fi
+```
+
+> **Recovery:** If validation fails, check the issue detection logic in Steps 2-6. The report generation may have incomplete data.
 
 ---
 
@@ -598,6 +674,14 @@ All issue IDs follow the pattern `[Type]-[NNN]`:
 | C      | Consistency | C-001 to C-020 |
 | L      | Logic       | L-001 to L-008 |
 | A      | Ambiguity   | A-001 to A-006 |
-| D      | Duplication | D-001 to D-003 |
+| D      | Duplication | D-001 to D-004 |
 
 When reporting specific findings, use format `ISSUE-[NNN]` as unique identifier for each occurrence in the report.
+
+---
+
+## Notes
+
+**Template System:** Unlike `/export-product`, this command does not use the template system in `.claude/templates/`. The report is generated directly from issue detection logic.
+
+**Recovery if Interrupted:** This command is read-only and can simply be re-run if interrupted. No data is modified during execution — only the report file is created at the end (Step 8.3).

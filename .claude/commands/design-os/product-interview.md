@@ -6,6 +6,15 @@ You are conducting a comprehensive product interview to gather detailed context 
 
 **Language:** Conduct the conversation in the user's preferred language (this template uses Romanian prompts as examples). **All output files MUST be in English** for portability.
 
+> **Note on Romanian text:** User-facing conversation messages in this command (questions, options, feedback) are written in Romanian as the default example. This is intentional — these are conversation messages, not file output. When implementing for other languages, replace these with appropriate translations.
+
+> **Code Block Conventions:** Code blocks in this command serve two purposes:
+>
+> - **Executable bash** — Marked with `bash` language tag, contains valid shell commands
+> - **Pseudocode/guidance** — Describes logic the agent should implement (not literal code)
+>
+> When pseudocode appears (e.g., `HIGH_COUNT=$(count issues with 🔴)`), implement equivalent logic rather than running literally.
+
 > **⚠️ No Auto-Save:** Progress is saved only at the end of the interview (Step 14). If you need to stop mid-interview:
 >
 > - Consider using `--minimal` (~20 min) or `--stage=X` (~10-15 min) for shorter sessions
@@ -22,7 +31,6 @@ Parse any arguments to determine interview mode:
 # Variable initialization
 MINIMAL_MODE=false
 AUDIT_MODE=false
-CRITICAL_AUDIT=false  # NEW: For --audit=critical mode
 SKIP_VALIDATION=false
 STAGE=""
 INTERVIEW_MODE="full"  # Set properly in Step 1
@@ -33,7 +41,6 @@ for arg in "$@"; do
     --minimal) MINIMAL_MODE=true ;;
     --stage=*) STAGE="${arg#--stage=}" ;;
     --audit) AUDIT_MODE=true ;;
-    --audit=critical) AUDIT_MODE=true; CRITICAL_AUDIT=true ;;  # NEW
     --skip-validation) SKIP_VALIDATION=true ;;
   esac
 done
@@ -84,7 +91,7 @@ fi
 | Default             | All 12            | Full product-context.md                  |
 | `--minimal`         | 1, 3, 5, 6, 7, 11 | Quick start context (6 categories = 50%) |
 | `--stage=vision`    | 1, 2              | Foundation + User Research               |
-| `--stage=section`   | 5, 6, 7, 11       | Section design context                   |
+| `--stage=section`   | 5, 6, 7, 8, 11    | Section design context                   |
 | `--stage=shell`     | 3, 6, 7           | Shell design context                     |
 | `--stage=data`      | 4, 10             | Data architecture context                |
 | `--stage=scale`     | 8, 9              | Performance + Integration context        |
@@ -120,7 +127,7 @@ When `--stage` is active, only ask questions for the categories in that stage. S
 | Stage     | Categories to Ask | Categories to Skip |
 | --------- | ----------------- | ------------------ |
 | `vision`  | 1, 2              | 3-12               |
-| `section` | 5, 6, 7, 11       | 1-4, 8-10, 12      |
+| `section` | 5, 6, 7, 8, 11    | 1-4, 9-10, 12      |
 | `shell`   | 3, 6, 7           | 1-2, 4-5, 8-12     |
 | `data`    | 4, 10             | 1-3, 5-9, 11-12    |
 | `scale`   | 8, 9              | 1-7, 10-12         |
@@ -139,7 +146,7 @@ check_stage_completion() {
 
   case "$STAGE" in
     vision)  STAGE_CATS="1 2" ;;
-    section) STAGE_CATS="5 6 7 11" ;;
+    section) STAGE_CATS="5 6 7 8 11" ;;
     shell)   STAGE_CATS="3 6 7" ;;
     data)    STAGE_CATS="4 10" ;;
     scale)   STAGE_CATS="8 9" ;;
@@ -206,7 +213,7 @@ should_ask_category() {
   if [ -n "$STAGE" ]; then
     case "$STAGE" in
       vision)   [[ "$CATEGORY_NUM" =~ ^(1|2)$ ]] || return 1 ;;
-      section)  [[ "$CATEGORY_NUM" =~ ^(5|6|7|11)$ ]] || return 1 ;;
+      section)  [[ "$CATEGORY_NUM" =~ ^(5|6|7|8|11)$ ]] || return 1 ;;
       shell)    [[ "$CATEGORY_NUM" =~ ^(3|6|7)$ ]] || return 1 ;;
       data)     [[ "$CATEGORY_NUM" =~ ^(4|10)$ ]] || return 1 ;;
       scale)    [[ "$CATEGORY_NUM" =~ ^(8|9)$ ]] || return 1 ;;
@@ -489,7 +496,7 @@ Before each category, show progress to help users understand where they are in t
 > | Stage     | Categories | Questions |
 > | --------- | ---------- | --------- |
 > | `vision`  | 2          | ~10       |
-> | `section` | 4          | ~18       |
+> | `section` | 5          | ~22       |
 > | `shell`   | 3          | ~14       |
 > | `data`    | 2          | ~8        |
 > | `scale`   | 2          | ~7        |
@@ -2255,6 +2262,8 @@ Am creat contextul produsului tău!
 - See "Recovery if Interrupted" section below for handling interrupted interview sessions
 
 ### Consistency Validation
+
+> **Relationship to /audit-context:** This section provides **quick consistency checks** run during the interview to catch obvious conflicts early. For comprehensive validation with more checks (C-001 through C-020), run `/audit-context` after completing the interview. The two commands complement each other: interview catches issues while gathering context, audit catches issues in a dedicated analysis pass.
 
 After completing the interview, check for inconsistencies:
 
