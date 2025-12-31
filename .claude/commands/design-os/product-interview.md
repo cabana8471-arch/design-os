@@ -1,4 +1,4 @@
-<!-- v1.3.3 -->
+<!-- v1.3.4 -->
 
 # Product Interview
 
@@ -390,12 +390,18 @@ Before proceeding with a full review, create a backup of the existing context:
 # Backup existing context before overwrite
 if [ "$COMPLETENESS" -ge 25 ]; then
   BACKUP_FILE="product/product-context.backup.$(date +%Y%m%d_%H%M%S).md"
+  # Handle rare collision if file exists (same second)
+  if [ -f "$BACKUP_FILE" ]; then
+    BACKUP_FILE="product/product-context.backup.$(date +%Y%m%d_%H%M%S).$(date +%N | cut -c1-3).md"
+  fi
   cp product/product-context.md "$BACKUP_FILE"
   echo "Backup creat: $BACKUP_FILE"
 fi
 ```
 
 > **Backup Policy:** Create backup when existing completeness ≥25%. For very incomplete contexts (<25%), backup is unnecessary since little would be lost.
+>
+> **Collision Handling:** The backup filename uses timestamp with 1-second granularity. In the rare case of running twice within the same second, nanoseconds are appended to avoid overwriting.
 >
 > **Cleanup:** Backup files accumulate over time. To keep only the 3 most recent:
 >
@@ -1614,7 +1620,9 @@ Example: 9 complete categories = 75% completeness
 
 If the user selected "Completăm ce lipsește" in Step 1, existing answers must be preserved and merged with new answers.
 
-**Before asking questions for each category:**
+> **Temporal Note:** Despite being numbered "14.1b", this logic describes how to MERGE existing answers with new ones when GENERATING OUTPUT. The actual question-asking happens in Steps 2-13 (which already skip complete categories). This step describes the OUTPUT GENERATION phase — how to combine existing content with newly gathered answers into the final `product-context.md` file.
+
+**When generating output for each category:**
 
 1. **For ✅ Complete categories:**
    - Do NOT ask any questions (already skipped in Steps 2-13)

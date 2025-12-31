@@ -1,4 +1,4 @@
-<!-- v1.1.4 -->
+<!-- v1.1.5 -->
 
 # Audit Context
 
@@ -372,20 +372,16 @@ Identify vague or unclear requirements that may cause implementation issues.
 ```bash
 # A-001: Vague quantity terms (case-insensitive)
 VAGUE_PATTERNS="\\bfast\\b|\\bgood\\b|\\bmany\\b|\\bsome\\b|\\bvarious\\b|\\bseveral\\b|\\bfew\\b|\\bquick\\b|\\beasy\\b"
-VAGUE_MATCHES=$(grep -ciE "$VAGUE_PATTERNS" "$CONTEXT_FILE")  # -i for case-insensitive
 
 # A-003: Open-ended lists
 OPENENDED_PATTERNS="or similar|etc\\.|and more|and so on|among others"
-OPENENDED_MATCHES=$(grep -ciE "$OPENENDED_PATTERNS" "$CONTEXT_FILE")
 
 # A-002: Unclear references (pronouns without clear antecedent)
 # Look for "the system", "it", "they" at sentence start or after comma
 UNCLEAR_REF_PATTERNS="\\bthe system\\b|\\bit will\\b|\\bit should\\b|\\bthey will\\b|\\bthis will\\b"
-UNCLEAR_MATCHES=$(grep -ciE "$UNCLEAR_REF_PATTERNS" "$CONTEXT_FILE")
 
 # A-004: Conditional without specifics
 CONDITIONAL_PATTERNS="if needed|when appropriate|as required|if necessary|when needed|as needed|where applicable"
-CONDITIONAL_MATCHES=$(grep -ciE "$CONDITIONAL_PATTERNS" "$CONTEXT_FILE")
 
 # A-005: Ranges without target
 # Match patterns like "10-100", "100-1000 users", "5-10%" without "target" or "expected" nearby
@@ -400,7 +396,63 @@ check_a005() {
 # A-006: Multiple options without decision
 # Match "A or B or C" patterns, "option 1, option 2, option 3" patterns
 MULTIOPT_PATTERNS="\\bor\\b.*\\bor\\b|option [0-9].*option [0-9]|either.*or.*or|choice of:"
-MULTIOPT_MATCHES=$(grep -ciE "$MULTIOPT_PATTERNS" "$CONTEXT_FILE")
+```
+
+**Category-Specific Ambiguity Counting:**
+
+The threshold rules require per-category analysis. Use this implementation:
+
+```bash
+# Count ambiguity occurrences per category with threshold logic
+count_ambiguity_by_category() {
+  local PATTERN=$1
+  local CHECK_ID=$2
+  local CRITICAL_CATS="4 9 10"  # Always report ANY occurrence
+  local OTHER_CATS="1 2 3 5 6 7 8 11 12"
+  local CRITICAL_TOTAL=0
+  local OTHER_TOTAL=0
+  local ISSUES=""
+
+  # Check critical categories (4, 9, 10) - report ANY occurrence
+  for cat in $CRITICAL_CATS; do
+    CAT_CONTENT=$(sed -n "/^## $cat\./,/^## /p" "$CONTEXT_FILE")
+    CAT_COUNT=$(echo "$CAT_CONTENT" | grep -ciE "$PATTERN" 2>/dev/null || echo 0)
+    if [ "$CAT_COUNT" -gt 0 ]; then
+      CRITICAL_TOTAL=$((CRITICAL_TOTAL + CAT_COUNT))
+      ISSUES="${ISSUES}Category $cat: $CAT_COUNT occurrences (CRITICAL category)\n"
+    fi
+  done
+
+  # Check other categories - only report if cumulative >= 6
+  for cat in $OTHER_CATS; do
+    CAT_CONTENT=$(sed -n "/^## $cat\./,/^## /p" "$CONTEXT_FILE")
+    CAT_COUNT=$(echo "$CAT_CONTENT" | grep -ciE "$PATTERN" 2>/dev/null || echo 0)
+    OTHER_TOTAL=$((OTHER_TOTAL + CAT_COUNT))
+  done
+
+  # Determine severity and reporting
+  if [ "$CRITICAL_TOTAL" -gt 0 ]; then
+    # Critical categories: 1-5 = MEDIUM, 6+ = HIGH
+    if [ "$CRITICAL_TOTAL" -ge 6 ]; then
+      echo "HIGH:$CHECK_ID in critical categories: $CRITICAL_TOTAL occurrences"
+    else
+      echo "MEDIUM:$CHECK_ID in critical categories: $CRITICAL_TOTAL occurrences"
+    fi
+    echo -e "$ISSUES"
+  fi
+
+  if [ "$OTHER_TOTAL" -ge 6 ]; then
+    # Non-critical categories: 6+ = MEDIUM
+    echo "MEDIUM:$CHECK_ID in non-critical categories: $OTHER_TOTAL occurrences"
+  fi
+}
+
+# Apply to each ambiguity pattern
+count_ambiguity_by_category "$VAGUE_PATTERNS" "A-001"
+count_ambiguity_by_category "$OPENENDED_PATTERNS" "A-003"
+count_ambiguity_by_category "$UNCLEAR_REF_PATTERNS" "A-002"
+count_ambiguity_by_category "$CONDITIONAL_PATTERNS" "A-004"
+count_ambiguity_by_category "$MULTIOPT_PATTERNS" "A-006"
 ```
 
 **Reporting Threshold:**
@@ -557,9 +609,26 @@ Report format:
 3. Flag if any category appears multiple times
 
 ```bash
-# D-005: Check for duplicate category references
-sed -n '/^## Cross-Reference/,/^## /p' "$CONTEXT_FILE" | \
-  grep -oE "Category [0-9]+" | sort | uniq -d
+# D-005: Check for duplicate category references in Cross-Reference
+check_d005() {
+  local DUPLICATES=$(sed -n '/^## Cross-Reference/,/^## /p' "$CONTEXT_FILE" | \
+    grep -oE "Category [0-9]+" | sort | uniq -d)
+
+  if [ -n "$DUPLICATES" ]; then
+    echo "D-005: Duplicate category entries found in Cross-Reference:"
+    echo "$DUPLICATES" | while read dup; do
+      echo "  - $dup appears multiple times"
+    done
+    return 0  # Issue found
+  fi
+  return 1  # No issue
+}
+
+# Usage:
+if check_d005; then
+  # Add to issues list with LOW severity
+  echo "🟡 D-005: Cross-Reference has duplicate entries"
+fi
 ```
 
 Report format:
@@ -1084,12 +1153,45 @@ if ! grep -q "^## Command Readiness" "$REPORT_FILE"; then
   VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
 fi
 
-# 4. Verify issue counts match summary
-REPORTED_HIGH=$(grep "🔴 HIGH" "$REPORT_FILE" | head -1 | grep -oE '[0-9]+' | head -1)
-ACTUAL_HIGH=$(grep -c "^#### \[ISSUE-" "$REPORT_FILE" 2>/dev/null || echo 0)
-# Note: Simplified check - full validation would verify each severity level
+# 4. Verify issue counts match summary (complete verification)
+# Extract reported counts from summary line
+SUMMARY_LINE=$(grep "Issues Found:" "$REPORT_FILE" | head -1)
+REPORTED_HIGH=$(echo "$SUMMARY_LINE" | grep -oE '🔴 [0-9]+' | grep -oE '[0-9]+' || echo 0)
+REPORTED_MEDIUM=$(echo "$SUMMARY_LINE" | grep -oE '🟠 [0-9]+' | grep -oE '[0-9]+' || echo 0)
+REPORTED_LOW=$(echo "$SUMMARY_LINE" | grep -oE '🟡 [0-9]+' | grep -oE '[0-9]+' || echo 0)
 
-# 5. Report validation results
+# Count actual issues by severity in report body
+# HIGH issues are under "### 🔴 HIGH Priority Issues" section
+ACTUAL_HIGH=$(sed -n '/^### 🔴 HIGH/,/^### 🟠\|^---/p' "$REPORT_FILE" | grep -c "^#### \[ISSUE-" 2>/dev/null || echo 0)
+# MEDIUM issues are under "### 🟠 MEDIUM Priority Issues" section
+ACTUAL_MEDIUM=$(sed -n '/^### 🟠 MEDIUM/,/^### 🟡\|^---/p' "$REPORT_FILE" | grep -c "^#### \[ISSUE-" 2>/dev/null || echo 0)
+# LOW issues are under "### 🟡 LOW Priority Issues" section
+ACTUAL_LOW=$(sed -n '/^### 🟡 LOW/,/^---/p' "$REPORT_FILE" | grep -c "^#### \[ISSUE-" 2>/dev/null || echo 0)
+
+# Compare and warn on mismatches
+if [ "$REPORTED_HIGH" != "$ACTUAL_HIGH" ]; then
+  echo "Warning: Summary shows $REPORTED_HIGH HIGH issues but $ACTUAL_HIGH found in report"
+  VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+fi
+if [ "$REPORTED_MEDIUM" != "$ACTUAL_MEDIUM" ]; then
+  echo "Warning: Summary shows $REPORTED_MEDIUM MEDIUM issues but $ACTUAL_MEDIUM found in report"
+  VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+fi
+if [ "$REPORTED_LOW" != "$ACTUAL_LOW" ]; then
+  echo "Warning: Summary shows $REPORTED_LOW LOW issues but $ACTUAL_LOW found in report"
+  VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+fi
+
+# 5. Verify Recommended Actions section has entries for all HIGH issues
+if [ "$ACTUAL_HIGH" -gt 0 ]; then
+  CRITICAL_ACTIONS=$(sed -n '/^### Critical (Must Fix)/,/^###/p' "$REPORT_FILE" | grep -c "^\[ISSUE-" 2>/dev/null || echo 0)
+  if [ "$CRITICAL_ACTIONS" -lt "$ACTUAL_HIGH" ]; then
+    echo "Warning: Not all HIGH issues are listed in Recommended Actions"
+    VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+  fi
+fi
+
+# 6. Report validation results
 if [ $VALIDATION_ERRORS -gt 0 ]; then
   echo "Warning: $VALIDATION_ERRORS validation issues in generated report"
 else
