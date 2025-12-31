@@ -1,4 +1,4 @@
-<!-- v1.1.1 -->
+<!-- v1.1.2 -->
 
 # Audit Context
 
@@ -334,7 +334,7 @@ Verify context completeness for each downstream Design OS command.
 >
 > - **Required (Blocking):** Categories that MUST be ✅ Complete for the command to run. If any are ❌ Empty or ⚠️ Partial, the command will show warnings or may produce incomplete results.
 > - **Optional (Enhancement):** Categories that improve output quality but won't block the command. The command uses defaults or infers values when these are incomplete.
-> - **Relationship to Cross-Reference:** The Cross-Reference section in `/product-interview` output shows ALL categories each command reads. This table shows which of those categories are critical (Required) vs nice-to-have (Optional).
+> - **Relationship to Cross-Reference:** The Cross-Reference section in `/product-interview` output shows categories each command directly references. This table's Optional column may include additional categories (like Category 1 - Product Foundation) that provide helpful context even if not directly referenced. General product context enhances decision-making for any command.
 >
 > **Example:** `/design-shell` uses Categories 2, 3, 7, 9 per Cross-Reference. Of these, Categories 2 and 3 are Required (shell design fundamentals), while 7 and 9 are Optional (mobile patterns and auth integration enhance the design but aren't strictly necessary).
 

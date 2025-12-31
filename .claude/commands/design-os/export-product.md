@@ -1,3 +1,5 @@
+<!-- v1.0.0 -->
+
 # Export Product
 
 You are helping the user export their complete product design as a handoff package for implementation. This generates all files needed to build the product in a real codebase.

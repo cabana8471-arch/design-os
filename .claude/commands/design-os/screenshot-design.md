@@ -1,3 +1,5 @@
+<!-- v1.0.0 -->
+
 # Screenshot Screen Design
 
 You are helping the user capture a screenshot of a screen design they've created. The screenshot will be saved to the product folder for documentation purposes.

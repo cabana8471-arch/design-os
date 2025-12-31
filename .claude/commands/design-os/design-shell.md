@@ -1,8 +1,10 @@
+<!-- v1.0.0 -->
+
 # Design Shell
 
 You are helping the user design the application shell — the persistent navigation and layout that wraps all sections. This is a screen design, not implementation code.
 
-## Step -1: Validate Product Context
+## Step 0: Validate Product Context
 
 **MANDATORY:** Check for `product/product-context.md` before any other steps.
 
@@ -29,7 +31,7 @@ echo "Product context found: ${COMPLETENESS}% complete"
 | ------------ | -------------------------------------------------------------------------------------------- |
 | 0% (missing) | ERROR: Stop and ask user to run `/product-interview`                                         |
 | 1-49%        | WARNING: "Context is ${COMPLETENESS}% complete. Continue or run `/product-interview` first?" |
-| 50%+         | PROCEED: Load context and continue to Step 0                                                 |
+| 50%+         | PROCEED: Load context and continue to Step 0.1                                               |
 
 > **Tip:** Use `/product-interview --minimal` for quick start (6 categories, ~20 min), `/product-interview --audit` to check progress, or `/product-interview --stage=shell` to complete shell-related categories.
 
@@ -45,13 +47,14 @@ These pre-inform design decisions in Steps 3, 3.5, and 3.6.
 
 ---
 
-> **Workflow Structure:** Steps 0-0.7 are **pre-flight checks** (audit/detection) that only run when a shell already exists. For fresh creation, these are skipped and the workflow starts at Step 1.
+> **Workflow Structure:** Step 0 validates product context (mandatory). Steps 0.1-0.7 are **pre-flight checks** (audit/detection) that only run when a shell already exists. For fresh creation, these are skipped and the workflow starts at Step 1.
 
 **Step Index:**
 
 | Step | Purpose                        |
 | ---- | ------------------------------ |
-| 0    | Detect Existing Shell          |
+| 0    | Validate Product Context       |
+| 0.1  | Detect Existing Shell          |
 | 0.5  | Run Audit Checklist            |
 | 0.6  | Display Audit Report           |
 | 0.7  | Post-Audit Actions             |
@@ -76,7 +79,7 @@ These pre-inform design decisions in Steps 3, 3.5, and 3.6.
 
 > **Responsive Strategy:** Shell components use **desktop-first** design — full navigation layout is designed first, then simplified for mobile (hamburger menu, collapsible sidebar). See `agents.md` → "Responsive Strategy Clarification" for details.
 
-## Step 0: Detect Existing Shell
+## Step 0.1: Detect Existing Shell
 
 Before starting, check if a shell already exists:
 
@@ -292,7 +295,7 @@ If accessibility or UX enhancements are priorities, validate use of utility comp
 
 ## Step 0.7: Post-Audit Actions
 
-Based on mode selection from Step 0:
+Based on mode selection from Step 0.1:
 
 - **Audit & Report**: STOP here, display report only
 - **Audit & Fix**: Apply fixes for all fixable issues, then continue

@@ -1,3 +1,5 @@
+<!-- v1.0.0 -->
+
 # Design Tokens
 
 You are helping the user choose colors and typography for their product. These design tokens will be used consistently across all screen designs and the application shell.

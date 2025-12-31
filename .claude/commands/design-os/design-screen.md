@@ -1,8 +1,10 @@
+<!-- v1.0.0 -->
+
 # Design Screen
 
 You are helping the user create a screen design for a section of their product. The screen design will be a props-based React component that can be exported and integrated into any React codebase.
 
-## Step -1: Validate Product Context
+## Step 0: Validate Product Context
 
 **MANDATORY:** Check for `product/product-context.md` before any other steps.
 

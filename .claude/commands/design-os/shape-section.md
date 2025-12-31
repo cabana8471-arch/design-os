@@ -1,3 +1,5 @@
+<!-- v1.0.0 -->
+
 # Shape Section
 
 You are helping the user define the specification for a section of their product. This is a conversational process to establish the scope of functionality, user flows, and UI requirements.

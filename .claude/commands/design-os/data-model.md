@@ -1,3 +1,5 @@
+<!-- v1.0.0 -->
+
 # Data Model
 
 You are helping the user define the core data model for their product. This establishes the "nouns" of the system — the entities and their relationships.

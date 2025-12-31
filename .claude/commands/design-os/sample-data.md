@@ -1,3 +1,5 @@
+<!-- v1.0.0 -->
+
 # Sample Data
 
 You are helping the user create realistic sample data for a section of their product. This data will be used to populate screen designs. You will also generate TypeScript types based on the data structure.

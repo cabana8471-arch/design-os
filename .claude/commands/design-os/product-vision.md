@@ -1,3 +1,5 @@
+<!-- v1.0.0 -->
+
 # Product Vision
 
 You are helping the user define their product vision for Design OS. This is a conversational, multi-step process.
