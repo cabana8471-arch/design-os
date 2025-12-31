@@ -1,4 +1,4 @@
-<!-- v1.1.3 -->
+<!-- v1.1.4 -->
 
 # Audit Context
 
@@ -146,6 +146,17 @@ For each of the 12 categories, extract the section content and run quality check
 3. **Q-001 (Short answers):** For subsections, count words between heading and next heading
 4. **Q-004 (No specifics):** Check if section contains any numbers or specific examples
 
+**Empty subsection threshold (Q-005):**
+
+| Content Length            | Status      | Action                      |
+| ------------------------- | ----------- | --------------------------- |
+| 0 chars (heading only)    | 🔴 Empty    | Must add content            |
+| 1-25 non-whitespace chars | 🔴 Empty    | Content too short, expand   |
+| 26-100 chars              | 🟠 Minimal  | Consider adding more detail |
+| 100+ chars                | ✅ Complete | Sufficient content          |
+
+> **Measurement:** Count non-whitespace characters between `### Heading` and next `###` or `##`, excluding markdown formatting (bullets, bold markers, etc.).
+
 Report format for each finding:
 
 ```
@@ -200,6 +211,73 @@ check_c001() {
   fi
   return 1  # No issue
 }
+
+# C-002: No auth + Compliance-grade audit
+check_c002() {
+  local NO_AUTH=$(grep -ciE "no auth|without auth|public access|no login" "$CONTEXT_FILE")
+  local COMPLIANCE_AUDIT=$(grep -ciE "compliance|SOC|ISO|audit trail|audit log" "$CONTEXT_FILE")
+
+  if [ "$NO_AUTH" -gt 0 ] && [ "$COMPLIANCE_AUDIT" -gt 0 ]; then
+    return 0  # Issue found: audit requires identity tracking
+  fi
+  return 1
+}
+
+# C-003: Real-time + 10k+ users + No scale plan
+check_c003() {
+  local REALTIME=$(grep -ciE "real-?time|live update|websocket|push notification" "$CONTEXT_FILE")
+  local HIGH_USERS=$(grep -oE "[0-9]+[kK]?\+? users" "$CONTEXT_FILE" | grep -E "[0-9]{4,}|[0-9]+[kK]" | wc -l)
+  local SCALE_PLAN=$(grep -ciE "scale|horizontal|vertical|load balanc|sharding|caching strategy" "$CONTEXT_FILE")
+
+  if [ "$REALTIME" -gt 0 ] && [ "$HIGH_USERS" -gt 0 ] && [ "$SCALE_PLAN" -eq 0 ]; then
+    return 0  # Issue found
+  fi
+  return 1
+}
+
+# C-004: Full offline + No sync strategy
+check_c004() {
+  local OFFLINE=$(grep -ciE "full offline|offline first|offline mode|work offline" "$CONTEXT_FILE")
+  local SYNC=$(grep -ciE "sync|synchroniz|conflict resolution|merge strategy" "$CONTEXT_FILE")
+
+  if [ "$OFFLINE" -gt 0 ] && [ "$SYNC" -eq 0 ]; then
+    return 0  # Issue found
+  fi
+  return 1
+}
+
+# C-006: Multi-tenant + No data isolation
+check_c006() {
+  local MULTITENANT=$(grep -ciE "multi-?tenant|tenant|organization|workspace" "$CONTEXT_FILE")
+  local ISOLATION=$(grep -ciE "data isolation|tenant isolation|row-level|schema per tenant|database per tenant" "$CONTEXT_FILE")
+
+  if [ "$MULTITENANT" -gt 0 ] && [ "$ISOLATION" -eq 0 ]; then
+    return 0  # Issue found
+  fi
+  return 1
+}
+
+# C-017: HIPAA + No audit logging
+check_c017() {
+  local HIPAA=$(grep -ci "HIPAA" "$CONTEXT_FILE")
+  local AUDIT=$(grep -ciE "audit log|audit trail|access log|comprehensive audit" "$CONTEXT_FILE")
+
+  if [ "$HIPAA" -gt 0 ] && [ "$AUDIT" -eq 0 ]; then
+    return 0  # Issue found
+  fi
+  return 1
+}
+
+# C-018: Payment integration + No PCI-DSS
+check_c018() {
+  local PAYMENT=$(grep -ciE "payment|stripe|paypal|credit card|billing|checkout" "$CONTEXT_FILE")
+  local PCI=$(grep -ciE "PCI|PCI-DSS|payment compliance|tokeniz" "$CONTEXT_FILE")
+
+  if [ "$PAYMENT" -gt 0 ] && [ "$PCI" -eq 0 ]; then
+    return 0  # Issue found
+  fi
+  return 1
+}
 ```
 
 For each failed check, report:
@@ -228,6 +306,39 @@ Detect contradictory decisions within the same context.
 | L-006    | "No auth" + Role-based access control                     | 🔴 HIGH   | "Cannot have RBAC without authentication."                           |
 | L-007    | "Internal tool" + Public API exposure                     | 🟠 MEDIUM | "Internal tools rarely need public API."                             |
 | L-008    | "Minimal" test coverage + "Compliance-grade" requirements | 🟠 MEDIUM | "Compliance usually requires higher test coverage."                  |
+
+**Detection guidance:**
+
+```bash
+# L-001: Beginners audience + Advanced-only features
+check_l001() {
+  local BEGINNERS=$(grep -ciE "beginner|novice|new user|first-time|non-technical" "$CONTEXT_FILE")
+  local ADVANCED_ONLY=$(grep -ciE "advanced only|expert|power user|technical users only" "$CONTEXT_FILE")
+  [ "$BEGINNERS" -gt 0 ] && [ "$ADVANCED_ONLY" -gt 0 ]
+}
+
+# L-002: Free/OSS model + Enterprise SLA
+check_l002() {
+  local FREE_MODEL=$(grep -ciE "free|open source|OSS|freemium|no cost" "$CONTEXT_FILE")
+  local ENTERPRISE_SLA=$(grep -ciE "enterprise SLA|99\.[0-9]+%|uptime guarantee|24/7 support" "$CONTEXT_FILE")
+  [ "$FREE_MODEL" -gt 0 ] && [ "$ENTERPRISE_SLA" -gt 0 ]
+}
+
+# L-006: No auth + RBAC (HIGH severity)
+check_l006() {
+  local NO_AUTH=$(grep -ciE "no auth|without auth|public access|anonymous" "$CONTEXT_FILE")
+  local RBAC=$(grep -ciE "RBAC|role-based|admin role|user role|permission" "$CONTEXT_FILE")
+  [ "$NO_AUTH" -gt 0 ] && [ "$RBAC" -gt 0 ]
+}
+```
+
+> **Implementation note:** For L-003, L-004, L-005, L-007, L-008 — these require semantic analysis rather than simple pattern matching. The agent should look for:
+>
+> - **L-003:** Check if product-overview.md mentions "MVP" AND completeness is 100%
+> - **L-004:** Compare primary vs secondary persona descriptions for conflicting needs (e.g., "simple interface" vs "power features")
+> - **L-005:** Search Category 4 for "simple" AND Category 4/10 for "audit trail|versioning|history"
+> - **L-007:** Search Category 1 for "internal" AND Category 9 for "public API|external API"
+> - **L-008:** Search Category 12 for "minimal" AND Category 10 for "compliance|SOC|ISO|HIPAA"
 
 Report format:
 
@@ -266,13 +377,46 @@ VAGUE_MATCHES=$(grep -ciE "$VAGUE_PATTERNS" "$CONTEXT_FILE")  # -i for case-inse
 # A-003: Open-ended lists
 OPENENDED_PATTERNS="or similar|etc\\.|and more|and so on|among others"
 OPENENDED_MATCHES=$(grep -ciE "$OPENENDED_PATTERNS" "$CONTEXT_FILE")
+
+# A-002: Unclear references (pronouns without clear antecedent)
+# Look for "the system", "it", "they" at sentence start or after comma
+UNCLEAR_REF_PATTERNS="\\bthe system\\b|\\bit will\\b|\\bit should\\b|\\bthey will\\b|\\bthis will\\b"
+UNCLEAR_MATCHES=$(grep -ciE "$UNCLEAR_REF_PATTERNS" "$CONTEXT_FILE")
+
+# A-004: Conditional without specifics
+CONDITIONAL_PATTERNS="if needed|when appropriate|as required|if necessary|when needed|as needed|where applicable"
+CONDITIONAL_MATCHES=$(grep -ciE "$CONDITIONAL_PATTERNS" "$CONTEXT_FILE")
+
+# A-005: Ranges without target
+# Match patterns like "10-100", "100-1000 users", "5-10%" without "target" or "expected" nearby
+check_a005() {
+  # Find numeric ranges
+  local RANGES=$(grep -oE "[0-9]+[-–][0-9]+" "$CONTEXT_FILE" | wc -l)
+  # Check if any have "target" or "expected" within 20 chars
+  local WITH_TARGET=$(grep -cE "[0-9]+[-–][0-9]+.{0,20}(target|expected|typical)" "$CONTEXT_FILE")
+  [ "$RANGES" -gt "$WITH_TARGET" ]  # Issue if ranges without targets exist
+}
+
+# A-006: Multiple options without decision
+# Match "A or B or C" patterns, "option 1, option 2, option 3" patterns
+MULTIOPT_PATTERNS="\\bor\\b.*\\bor\\b|option [0-9].*option [0-9]|either.*or.*or|choice of:"
+MULTIOPT_MATCHES=$(grep -ciE "$MULTIOPT_PATTERNS" "$CONTEXT_FILE")
 ```
 
 **Reporting Threshold:**
 
-- Report if a pattern appears **6 or more times** in the entire file (cumulative across all categories)
-- Always report ANY instance of vague terms in security/compliance-critical categories (4, 9, 10)
-- For <6 instances: include in report but mark as 🟡 LOW instead of 🟠 MEDIUM
+> **Severity by occurrence count and category:**
+>
+> | Location             | 1-5 occurrences | 6+ occurrences |
+> | -------------------- | --------------- | -------------- |
+> | Categories 4, 9, 10  | 🟠 MEDIUM       | 🔴 HIGH        |
+> | All other categories | 🟡 LOW          | 🟠 MEDIUM      |
+>
+> **Rules:**
+>
+> 1. **Critical categories (4, 9, 10):** Always report ANY instance — these are security/compliance/data-critical
+> 2. **Other categories:** Only report if 6+ total occurrences (cumulative across all non-critical categories)
+> 3. **Severity escalation:** 6+ occurrences bumps severity one level (LOW→MEDIUM, MEDIUM→HIGH)
 
 Report excessive vagueness:
 
@@ -298,6 +442,72 @@ Identify redundant or contradictory information.
 | D-003    | Quick Reference table status mismatches category detail | 🟠 MEDIUM | "Quick Reference shows ✅ but category has incomplete content." |
 | D-004    | Cross-Reference lists category that is ❌ Empty         | 🟡 LOW    | "Cross-Reference mentions category [N] but it's empty."         |
 | D-005    | Cross-Reference has duplicate category entries          | 🟡 LOW    | "Cross-Reference lists category [N] multiple times."            |
+
+**D-001 Check implementation (Duplicate content):**
+
+```bash
+# D-001: Find duplicate sentences/paragraphs across categories
+check_d001() {
+  # Extract all sentences (lines with >15 words) from each category
+  # Compare across categories for exact or near-exact matches
+
+  for i in $(seq 1 12); do
+    # Extract category content
+    CONTENT_I=$(sed -n "/^## $i\./,/^## /p" "$CONTEXT_FILE" | grep -v "^##" | grep -v "^###")
+
+    for j in $(seq $((i+1)) 12); do
+      CONTENT_J=$(sed -n "/^## $j\./,/^## /p" "$CONTEXT_FILE" | grep -v "^##" | grep -v "^###")
+
+      # Find lines appearing in both (excluding short lines and formatting)
+      DUPLICATES=$(echo "$CONTENT_I" | while read line; do
+        [ ${#line} -gt 50 ] && echo "$CONTENT_J" | grep -F "$line" 2>/dev/null
+      done)
+
+      if [ -n "$DUPLICATES" ]; then
+        echo "Duplicate found between Category $i and $j"
+        return 0
+      fi
+    done
+  done
+  return 1
+}
+```
+
+**D-002 Check implementation (Contradictory info):**
+
+```bash
+# D-002: Detect contradictory information about same topic
+# Common contradiction patterns to check:
+check_d002() {
+  # Pattern 1: Auth contradiction (no auth somewhere, auth required elsewhere)
+  local NO_AUTH=$(grep -cinE "no auth|public access|anonymous" "$CONTEXT_FILE")
+  local REQUIRES_AUTH=$(grep -cinE "requires auth|must login|authenticated users" "$CONTEXT_FILE")
+  if [ "$NO_AUTH" -gt 0 ] && [ "$REQUIRES_AUTH" -gt 0 ]; then
+    echo "D-002: Contradictory auth requirements"
+    return 0
+  fi
+
+  # Pattern 2: Scale contradiction (small scale + enterprise scale)
+  local SMALL_SCALE=$(grep -cinE "small team|few users|internal only|<100 users" "$CONTEXT_FILE")
+  local ENTERPRISE=$(grep -cinE "enterprise|10k\+ users|high scale|massive" "$CONTEXT_FILE")
+  if [ "$SMALL_SCALE" -gt 0 ] && [ "$ENTERPRISE" -gt 0 ]; then
+    echo "D-002: Contradictory scale expectations"
+    return 0
+  fi
+
+  # Pattern 3: Complexity contradiction (simple + complex in same domain)
+  local SIMPLE_DATA=$(grep -cinE "simple data|basic model|minimal schema" "$CONTEXT_FILE")
+  local COMPLEX_DATA=$(grep -cinE "complex relations|advanced model|comprehensive schema" "$CONTEXT_FILE")
+  if [ "$SIMPLE_DATA" -gt 0 ] && [ "$COMPLEX_DATA" -gt 0 ]; then
+    echo "D-002: Contradictory data model descriptions"
+    return 0
+  fi
+
+  return 1  # No contradictions found
+}
+```
+
+> **Implementation note:** D-002 detection is inherently imperfect — some "contradictions" may be intentional trade-offs. The agent should flag potential contradictions for human review, not automatically mark them as errors.
 
 **D-003 Check implementation:**
 
@@ -367,17 +577,17 @@ Report format:
 
 Verify context completeness for each downstream Design OS command.
 
-| Command            | Required (Blocking) | Optional (Enhancement) | Ready When           |
-| ------------------ | ------------------- | ---------------------- | -------------------- |
-| `/product-vision`  | 1                   | 2                      | 1 is ✅              |
-| `/product-roadmap` | 1                   | 2, 8                   | 1 is ✅              |
-| `/data-model`      | 4, 10               | 1                      | Both 4, 10 are ✅    |
-| `/design-tokens`   | 3                   | 1                      | 3 is ✅              |
-| `/design-shell`    | 2, 3                | 7, 9                   | 2 and 3 are ✅       |
-| `/shape-section`   | 5, 6                | 8, 11                  | Both 5, 6 are ✅     |
-| `/sample-data`     | 4, 5                | —                      | Both 4, 5 are ✅     |
-| `/design-screen`   | 5, 6                | 3, 7, 11               | 5 and 6 are ✅       |
-| `/export-product`  | 9, 10, 12           | all others             | All 9, 10, 12 are ✅ |
+| Command            | Required (Blocking)                          | Optional (Enhancement)                       | Ready When           |
+| ------------------ | -------------------------------------------- | -------------------------------------------- | -------------------- |
+| `/product-vision`  | 1 (Product Foundation)                       | 2 (User Research)                            | 1 is ✅              |
+| `/product-roadmap` | 1 (Product Foundation)                       | 2 (User Research), 8 (Performance)           | 1 is ✅              |
+| `/data-model`      | 4 (Data Architecture), 10 (Security)         | 1 (Product Foundation)                       | Both 4, 10 are ✅    |
+| `/design-tokens`   | 3 (Design Direction)                         | 1 (Product Foundation)                       | 3 is ✅              |
+| `/design-shell`    | 2 (User Research), 3 (Design Direction)      | 7 (Mobile), 9 (Integration)                  | 2 and 3 are ✅       |
+| `/shape-section`   | 5 (Section-Specific), 6 (UI Patterns)        | 8 (Performance), 11 (Error Handling)         | Both 5, 6 are ✅     |
+| `/sample-data`     | 4 (Data Architecture), 5 (Section-Specific)  | —                                            | Both 4, 5 are ✅     |
+| `/design-screen`   | 5 (Section-Specific), 6 (UI Patterns)        | 3 (Design Direction), 7 (Mobile), 11 (Error) | 5 and 6 are ✅       |
+| `/export-product`  | 9 (Integration), 10 (Security), 12 (Testing) | all others                                   | All 9, 10, 12 are ✅ |
 
 > **Understanding this table:**
 >
@@ -473,7 +683,14 @@ fi
 3. Within same category, order by check type: Q → C → L → A → D
 4. Number issues sequentially: ISSUE-001, ISSUE-002, etc. (across all severities)
 
-**Issue ID Format:** `ISSUE-NNN` where NNN is a sequential number starting at 001.
+**Issue ID vs Check ID:**
+
+| ID Type      | Format      | Purpose                                            | Example                            |
+| ------------ | ----------- | -------------------------------------------------- | ---------------------------------- |
+| **Check ID** | `X-NNN`     | Identifies the **rule** being violated             | `C-001` = GDPR without audit check |
+| **Issue ID** | `ISSUE-NNN` | Identifies a **specific occurrence** in the report | `ISSUE-003` = third issue found    |
+
+> **Relationship:** One Check ID can generate multiple Issue IDs if the same rule is violated in multiple places. For example, if `Q-002` (placeholder text) is found in Category 4 AND Category 10, these become `ISSUE-005` and `ISSUE-008` (assuming sequential numbering places them there).
 
 Write to `product/audit-report.md`:
 
@@ -1031,7 +1248,7 @@ All issue IDs follow the pattern `[Type]-[NNN]`:
 | C      | Consistency | C-001 to C-021 |
 | L      | Logic       | L-001 to L-008 |
 | A      | Ambiguity   | A-001 to A-006 |
-| D      | Duplication | D-001 to D-004 |
+| D      | Duplication | D-001 to D-005 |
 
 When reporting specific findings, use format `ISSUE-[NNN]` as unique identifier for each occurrence in the report.
 

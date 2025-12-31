@@ -1,4 +1,4 @@
-<!-- v1.3.2 -->
+<!-- v1.3.3 -->
 
 # Product Interview
 
@@ -50,12 +50,13 @@ done
 
 Before proceeding, check for invalid argument combinations:
 
-| Combination                 | Behavior                                                                      |
-| --------------------------- | ----------------------------------------------------------------------------- |
-| `--minimal --stage=X`       | Error: "Cannot combine --minimal with --stage. Choose one mode."              |
-| `--audit --stage=X`         | `--audit` takes precedence. Reports completeness for stage categories only.   |
-| `--audit --minimal`         | `--audit` takes precedence. Reports completeness for minimal categories only. |
-| `--skip-validation --audit` | Error: "--skip-validation only applies to interview modes, not audit."        |
+| Combination                   | Behavior                                                                            |
+| ----------------------------- | ----------------------------------------------------------------------------------- |
+| `--minimal --stage=X`         | Error: "Cannot combine --minimal with --stage. Choose one mode."                    |
+| `--audit --stage=X`           | `--audit` takes precedence. Reports completeness for stage categories only.         |
+| `--audit --minimal`           | `--audit` takes precedence. Reports completeness for minimal categories only.       |
+| `--skip-validation --audit`   | Error: "--skip-validation only applies to interview modes, not audit."              |
+| `--skip-validation --minimal` | ⚠️ DATA LOSS RISK: Only 6 categories asked; existing categories 2,4,8,9,10,12 lost. |
 
 ```bash
 # Validate argument combinations
@@ -100,6 +101,13 @@ fi
 | `--skip-validation` | All 12            | Skip Step 1 (existing context check)     |
 
 > **Stage vs Cross-Reference Categories:** The `--stage` categories define what to ASK during the interview. The Cross-Reference section (Step 14.2) shows what each command READS from the context file. These differ intentionally — stages gather focused context, while commands may read from multiple categories. For example, `--stage=shell` asks Categories 3, 6, 7, but `/design-shell` reads Categories 2, 3, 7, 9 (some optional).
+
+> **Step Execution Order:** Step 0 early-exit checks (stage/minimal category completion) run BEFORE Step 1 (existing context validation). This means:
+>
+> 1. **Step 0:** Parse arguments, validate combinations, check if requested categories already complete
+> 2. **Step 1:** Check for existing context file, offer merge/overwrite options
+>
+> If Step 0 determines all requested categories are ✅ Complete, the command exits early without reaching Step 1.
 
 **Stage Validation:**
 
