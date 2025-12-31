@@ -1,4 +1,4 @@
-<!-- v1.2.0 -->
+<!-- v1.3.0 -->
 
 # Product Interview
 
@@ -19,11 +19,60 @@ You are conducting a comprehensive product interview to gather detailed context 
 Parse any arguments to determine interview mode:
 
 ```bash
-# Available modes:
-# --minimal     Quick interview (6 critical categories)
-# --stage=X     Focus on specific stage (vision, section, shell, data, scale, quality)
-# --audit       Check completeness of existing context
-# --skip-validation  Bypass validation for existing users
+# Variable initialization
+MINIMAL_MODE=false
+AUDIT_MODE=false
+CRITICAL_AUDIT=false  # NEW: For --audit=critical mode
+SKIP_VALIDATION=false
+STAGE=""
+INTERVIEW_MODE="full"  # Set properly in Step 1
+
+# Parse arguments
+for arg in "$@"; do
+  case "$arg" in
+    --minimal) MINIMAL_MODE=true ;;
+    --stage=*) STAGE="${arg#--stage=}" ;;
+    --audit) AUDIT_MODE=true ;;
+    --audit=critical) AUDIT_MODE=true; CRITICAL_AUDIT=true ;;  # NEW
+    --skip-validation) SKIP_VALIDATION=true ;;
+  esac
+done
+```
+
+**Conflicting Arguments:**
+
+Before proceeding, check for invalid argument combinations:
+
+| Combination                 | Behavior                                                                      |
+| --------------------------- | ----------------------------------------------------------------------------- |
+| `--minimal --stage=X`       | Error: "Cannot combine --minimal with --stage. Choose one mode."              |
+| `--audit --stage=X`         | `--audit` takes precedence. Reports completeness for stage categories only.   |
+| `--audit --minimal`         | `--audit` takes precedence. Reports completeness for minimal categories only. |
+| `--skip-validation --audit` | Error: "--skip-validation only applies to interview modes, not audit."        |
+
+```bash
+# Validate argument combinations
+if [ "$MINIMAL_MODE" = true ] && [ -n "$STAGE" ]; then
+  echo "Error: Cannot combine --minimal with --stage. Choose one mode."
+  echo "  --minimal covers categories: 1, 3, 5, 6, 7, 11"
+  echo "  --stage=$STAGE covers different categories"
+  exit 1
+fi
+
+if [ "$SKIP_VALIDATION" = true ] && [ "$AUDIT_MODE" = true ]; then
+  echo "Error: --skip-validation only applies to interview modes, not audit."
+  echo "  --audit always checks existing context (that's its purpose)"
+  exit 1
+fi
+
+# Audit mode takes precedence over minimal/stage (applies category filter to audit)
+if [ "$AUDIT_MODE" = true ]; then
+  if [ "$MINIMAL_MODE" = true ]; then
+    echo "Note: --audit mode with --minimal filter. Will audit minimal categories only."
+  elif [ -n "$STAGE" ]; then
+    echo "Note: --audit mode with --stage=$STAGE filter. Will audit stage categories only."
+  fi
+fi
 ```
 
 **Mode behaviors:**
@@ -435,6 +484,19 @@ Before each category, show progress to help users understand where they are in t
 
 > **For --minimal mode:** Adjust progress to show only 6 categories and ~29 questions total.
 
+> **For --stage mode:** Adjust progress to show only the categories in that stage:
+>
+> | Stage     | Categories | Questions |
+> | --------- | ---------- | --------- |
+> | `vision`  | 2          | ~10       |
+> | `section` | 4          | ~18       |
+> | `shell`   | 3          | ~14       |
+> | `data`    | 2          | ~8        |
+> | `scale`   | 2          | ~7        |
+> | `quality` | 1          | ~4        |
+>
+> Format: `📊 Categoria [N] din [STAGE_TOTAL]: [Category Name]`
+
 > **Category Skip:** Before asking questions, check `should_ask_category(1)`. Skip to Step 3 if:
 >
 > - `--stage` mode is active and Category 1 is NOT in the stage's category list, OR
@@ -453,6 +515,21 @@ Before each category, show progress to help users understand where they are in t
 > **Question Numbering Convention:** Questions are numbered as `[Step].[N]` where N starts at 1 for each category. Example: Question 2.1 is the first question in Step 2 (Category 1).
 >
 > **Note:** Question 2.0 below is an exception — it's the foundational "Product Name" question that must be answered first. All other categories start at `.1`.
+
+> **Multi-Part Question Flow:** For questions with >4 options (marked with ⚠️ Option Limit), follow this flow:
+>
+> 1. **Always ask Part A first** — The initial categorization question
+> 2. **Part B is conditional:**
+>    - If Part A answer requires specificity (e.g., "Yes, with options"), ask Part B
+>    - If Part A answer is definitive (e.g., "None", "No"), skip Part B
+> 3. **Recording answers:**
+>    - Combine Part A + Part B into a single answer line
+>    - Format: `[Part A choice]: [Part B specifics]`
+>    - Example: `OAuth / Social: Google, GitHub`
+> 4. **Handling skip/N/A:**
+>    - If user skips Part A, record as "N/A — Not specified"
+>    - If user answers Part A but skips Part B, record Part A only (question is partially answered)
+>    - Mark category as complete only if required questions have valid answers
 
 ### Question 2.0: Product Name (Required)
 
@@ -868,13 +945,22 @@ Use AskUserQuestion:
 
 "Cum preferi să afișezi liste de date?"
 
-Options:
+> **⚠️ Option Limit:** This question has 5 options but AskUserQuestion supports 2-4. Present as two-part question:
+>
+> - **Part A:** "Care e stilul principal pentru liste?" → Cards/Visual | Table/Dense | List/Grid
+> - **Part B (if List/Grid):** "Preferi List sau Grid?" → List | Grid
 
-- **Cards** — Visual, scannable, good for mixed content
-- **Table** — Dense, sortable, good for data-heavy views
+**Part A options:**
+
+- **Cards / Visual** — Visual, scannable, good for mixed content
+- **Table / Dense** — Dense, sortable, good for data-heavy views
+- **List / Grid** — Compact layouts for simple or visual content
+- **Depends on context** — Mix based on data type
+
+**Part B options (if "List / Grid" selected):**
+
 - **List** — Compact, linear, good for simple items
 - **Grid** — Thumbnail-based, good for visual content
-- **Depends on context** — Mix based on data type
 
 ### Question 7.2: Form Validation
 
@@ -895,13 +981,26 @@ Use AskUserQuestion:
 
 "Cum vrei să afișezi notificările și feedback-ul?"
 
-Options:
+> **⚠️ Option Limit:** This question has 5 options but AskUserQuestion supports 2-4. Present as two-part question:
+>
+> - **Part A:** "Ce stil de notificări preferi?" → Toast (popup) | Banner/Inline | Mixed
+> - **Part B (if Toast):** "Unde să apară toast-urile?" → Bottom-right | Top-center
 
-- **Toast (bottom-right)** — Non-intrusive, auto-dismiss
-- **Toast (top-center)** — More visible, auto-dismiss
+**Part A options:**
+
+- **Toast (popup)** — Non-intrusive popups, auto-dismiss
+- **Banner / Inline** — Full-width banner or inline next to content
+- **Mixed** — Based on importance (errors = banner, success = toast)
+
+**Part B options (if "Toast" selected):**
+
+- **Bottom-right** — Non-intrusive, auto-dismiss
+- **Top-center** — More visible, auto-dismiss
+
+**Part B options (if "Banner / Inline" selected):**
+
 - **Banner** — Full-width, requires dismissal
 - **Inline** — Next to related content
-- **Mixed** — Based on importance
 
 ### Question 7.4: Confirmation Patterns
 
@@ -922,13 +1021,26 @@ Use AskUserQuestion:
 
 "Pentru formulare și detalii, preferi:"
 
-Options:
+> **⚠️ Option Limit:** This question has 5 options but AskUserQuestion supports 2-4. Present as two-part question:
+>
+> - **Part A:** "Ce abordare generală preferi?" → Overlay (modal/drawer) | Page-based | Context-dependent
+> - **Part B (if Overlay):** "Ce tip de overlay?" → Modal | Drawer
+
+**Part A options:**
+
+- **Overlay (modal/drawer)** — Stay on page, show content in overlay
+- **Page-based** — Navigate to new page or expand inline
+- **Context-dependent** — Mix based on content size and complexity
+
+**Part B options (if "Overlay" selected):**
 
 - **Modals** — Centered overlay, focused attention
 - **Drawers** — Side panel, context preserved
+
+**Part B options (if "Page-based" selected):**
+
 - **Full page** — Navigate to new page
 - **Inline expand** — Expand in place
-- **Context-dependent** — Mix based on content size
 
 ---
 
@@ -944,13 +1056,22 @@ Use AskUserQuestion:
 
 "Care e prioritatea pentru responsive?"
 
-Options:
+> **⚠️ Option Limit:** This question has 5 options but AskUserQuestion supports 2-4. Present as two-part question:
+>
+> - **Part A:** "Suportul mobil e necesar?" → Yes (both platforms) | Desktop only | Mobile only
+> - **Part B (if Yes):** "Care platformă e primară?" → Desktop-first | Mobile-first | Equal priority
+
+**Part A options:**
+
+- **Yes (both platforms)** — Support both desktop and mobile
+- **Desktop only** — Mobile not needed (internal tool)
+- **Mobile only** — Mobile app or mobile-first product
+
+**Part B options (if "Yes" selected):**
 
 - **Desktop-first** — Optimize for desktop, adapt for mobile
 - **Mobile-first** — Optimize for mobile, enhance for desktop
 - **Equal priority** — Both equally important
-- **Desktop only** — Mobile not needed (internal tool)
-- **Mobile only** — Mobile app or mobile-first product
 
 ### Question 8.2: Touch Interactions
 
@@ -958,13 +1079,25 @@ Use AskUserQuestion:
 
 "Ce interacțiuni touch vrei pe mobil?"
 
-Options (multiselect):
+> **⚠️ Option Limit:** This question has 5 multiselect options but AskUserQuestion supports 2-4. Present as two-part question:
+>
+> - **Part A:** "Ce nivel de gesturi touch?" → Standard only | Common gestures | Advanced gestures
+> - **Part B (if Common/Advanced):** Free-text prompt for specific gestures needed
 
-- **Standard taps** — Just tapping, no special gestures
-- **Swipe actions** — Swipe to delete, archive, etc.
-- **Pull to refresh** — Pull down to reload
-- **Long press** — Context menu on hold
-- **Pinch to zoom** — For images, maps, charts
+**Part A options:**
+
+- **Standard only** — Just tapping, no special gestures
+- **Common gestures** — Swipe actions, pull to refresh (most mobile apps)
+- **Advanced gestures** — Long press, pinch to zoom, custom gestures
+
+**Part B guidance (if "Common" or "Advanced" selected):**
+
+Ask user to specify which apply from this list:
+
+- Swipe actions — Swipe to delete, archive, etc.
+- Pull to refresh — Pull down to reload
+- Long press — Context menu on hold
+- Pinch to zoom — For images, maps, charts
 
 ### Question 8.3: Mobile Navigation
 
@@ -972,13 +1105,26 @@ Use AskUserQuestion:
 
 "Ce tip de navigare pe mobil?"
 
-Options:
+> **⚠️ Option Limit:** This question has 5 options but AskUserQuestion supports 2-4. Present as two-part question:
+>
+> - **Part A:** "Ce abordare pentru navigare mobilă?" → Hidden (hamburger) | Visible (tabs/bottom) | Hybrid | Depends on complexity
+> - **Part B (if Visible/Hybrid):** Specific pattern preference
 
-- **Hamburger menu** — Hidden menu, more space
-- **Bottom navigation** — Tabs at bottom, thumb-friendly
-- **Tab bar + hamburger** — Main tabs + overflow menu
-- **Full-screen menu** — Takeover navigation
+**Part A options:**
+
+- **Hidden (hamburger)** — Hidden menu, more content space
+- **Visible (tabs/bottom)** — Always visible tabs, thumb-friendly
+- **Hybrid** — Combination of visible tabs and hidden overflow
 - **Depends on complexity** — Simple = tabs, complex = hamburger
+
+**Part B options (if "Visible" selected):**
+
+- **Bottom navigation** — Tabs at bottom, thumb-friendly
+- **Full-screen menu** — Takeover navigation when opened
+
+**Part B options (if "Hybrid" selected):**
+
+- **Tab bar + hamburger** — Main tabs + overflow menu for secondary items
 
 ### Question 8.4: Offline Requirements
 
@@ -1061,14 +1207,31 @@ Use AskUserQuestion:
 
 "Cum se autentifică utilizatorii?"
 
-Options:
+> **⚠️ Option Limit:** This question has 6 options but AskUserQuestion supports 2-4. Present as two-part question:
+>
+> - **Part A:** "Ai nevoie de autentificare?" → Yes (with accounts) | No auth (public access)
+> - **Part B (if Yes):** "Ce metodă de autentificare?" → Email-based | OAuth/Social | Enterprise SSO
+
+**Part A options:**
+
+- **Yes (with accounts)** — Users need to sign in
+- **No auth** — Public access only, no user accounts
+
+**Part B options (if "Yes" selected):**
+
+- **Email-based** — Email/password or magic link
+- **OAuth / Social** — Sign in with Google, GitHub, etc.
+- **Enterprise SSO** — SAML, SSO for enterprise customers
+
+**Part B follow-up (if "Email-based" selected):**
 
 - **Email/password** — Classic username/password
-- **Magic link** — Email link, no password
-- **OAuth (Google)** — Sign in with Google
-- **OAuth (multiple)** — Google, GitHub, etc.
-- **SSO/SAML** — Enterprise single sign-on
-- **No auth** — Public access only
+- **Magic link** — Email link, no password to remember
+
+**Part B follow-up (if "OAuth / Social" selected):**
+
+- **OAuth (Google only)** — Just Google sign-in
+- **OAuth (multiple)** — Google, GitHub, Microsoft, etc.
 
 ### Question 10.2: External Services
 
@@ -1104,13 +1267,22 @@ Use AskUserQuestion:
 
 "Vei expune un API pentru terți?"
 
-Options:
+> **⚠️ Option Limit:** This question has 5 options but AskUserQuestion supports 2-4. Present as two-part question:
+>
+> - **Part A:** "Expui un API extern?" → No (internal only) | Yes (external API) | API is the product
+> - **Part B (if Yes):** "Ce tip de acces API?" → Read-only | Full (read/write) | Webhooks
 
-- **No** — Internal use only
+**Part A options:**
+
+- **No (internal only)** — Internal use only, no external API
+- **Yes (external API)** — Will expose API for third parties
+- **API is the product** — Public API product, API is the core offering
+
+**Part B options (if "Yes" selected):**
+
 - **Read-only API** — Others can read data
 - **Full API** — Read and write access
 - **Webhook events** — Push notifications to other systems
-- **Public API product** — API is the product
 
 ---
 
@@ -1436,9 +1608,11 @@ If the user selected "Completăm ce lipsește" in Step 1, existing answers must 
 | Existing Status | New Session Has Answers | Action                            |
 | --------------- | ----------------------- | --------------------------------- |
 | Has content     | No new answers          | Keep existing verbatim            |
-| Has content     | Has new answers         | Ask: "Replace existing with new?" |
+| Has content     | Has new answers ¹       | Ask: "Replace existing with new?" |
 | Empty/missing   | Has new answers         | Use new answers                   |
 | Empty/missing   | No new answers          | Mark as incomplete                |
+
+> **¹ Note:** This scenario only occurs with `--skip-validation` + "Revizuim totul" (review all). In normal mode (`complete_missing`), questions with existing answers are skipped, so there can't be new answers for them.
 
 **Example Merge Dialog:**
 
