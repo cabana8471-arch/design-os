@@ -463,7 +463,9 @@ process_ambiguity_results() {
   local RESULT=$(count_ambiguity_by_category "$PATTERN" "$CHECK_ID")
 
   # Parse output lines and update global counters
-  echo "$RESULT" | while IFS=: read -r SEVERITY REST; do
+  # NOTE: Using here-string (<<<) instead of pipe to avoid subshell
+  # Pipes create subshells where variable modifications are lost
+  while IFS=: read -r SEVERITY REST; do
     case "$SEVERITY" in
       HIGH)
         AMBIGUITY_HIGH=$((AMBIGUITY_HIGH + 1))
@@ -474,7 +476,7 @@ process_ambiguity_results() {
         echo "🟠 $CHECK_ID: $REST"
         ;;
     esac
-  done
+  done <<< "$RESULT"
 }
 
 # Initialize counters for ambiguity issues

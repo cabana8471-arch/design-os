@@ -111,8 +111,22 @@ else
   echo "Starting dev server..."
   npm run dev &
   DEV_SERVER_PREEXISTING=false
-  # Wait for server to be ready
-  sleep 5
+
+  # Wait for server to be ready with retry loop (more reliable than fixed sleep)
+  MAX_RETRIES=30
+  RETRY_COUNT=0
+  echo "Waiting for dev server to be ready..."
+
+  while ! curl -s http://localhost:3000 > /dev/null 2>&1; do
+    RETRY_COUNT=$((RETRY_COUNT + 1))
+    if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+      echo "Error: Dev server failed to start after ${MAX_RETRIES} seconds"
+      exit 1
+    fi
+    sleep 1
+  done
+
+  echo "Dev server ready after ${RETRY_COUNT} seconds"
 fi
 
 echo "DEV_SERVER_PREEXISTING=$DEV_SERVER_PREEXISTING"
