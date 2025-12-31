@@ -1,4 +1,4 @@
-<!-- v1.1.2 -->
+<!-- v1.1.3 -->
 
 # Audit Context
 
@@ -99,13 +99,26 @@ if [ -z "$PRODUCT_NAME" ]; then
   PRODUCT_NAME="Unknown Product"
 fi
 
-# Extract completeness percentage
+# Extract completeness percentage from header
 COMPLETENESS=$(grep "^Completeness:" "$CONTEXT_FILE" | grep -oE '[0-9]+' | head -1)
 if [ -z "$COMPLETENESS" ]; then
   COMPLETENESS=0
 fi
 
-echo "�� Critical Analysis: $PRODUCT_NAME"
+# Verify completeness by counting Quick Reference table statuses
+COMPLETE_COUNT=$(grep -E "^\| *[0-9]+\." "$CONTEXT_FILE" | grep -cE "(✅|Complete)")
+CALCULATED_COMPLETENESS=$((COMPLETE_COUNT * 100 / 12))
+
+# Check for mismatch between extracted and calculated
+if [ "$COMPLETENESS" -ne "$CALCULATED_COMPLETENESS" ]; then
+  echo "⚠️ Completeness mismatch detected:"
+  echo "   Header shows: ${COMPLETENESS}%"
+  echo "   Calculated:   ${CALCULATED_COMPLETENESS}% (${COMPLETE_COUNT}/12 categories ✅)"
+  echo "   Using calculated value."
+  COMPLETENESS=$CALCULATED_COMPLETENESS
+fi
+
+echo "🔍 Critical Analysis: $PRODUCT_NAME"
 echo "📊 Context Completeness: ${COMPLETENESS}%"
 echo ""
 ```
@@ -243,17 +256,25 @@ Identify vague or unclear requirements that may cause implementation issues.
 
 **Pattern detection:**
 
+> **Note:** All pattern matching uses case-insensitive search (`-i` flag) to catch variations like "Fast", "FAST", "fast".
+
 ```bash
-# A-001: Vague quantity terms
+# A-001: Vague quantity terms (case-insensitive)
 VAGUE_PATTERNS="\\bfast\\b|\\bgood\\b|\\bmany\\b|\\bsome\\b|\\bvarious\\b|\\bseveral\\b|\\bfew\\b|\\bquick\\b|\\beasy\\b"
-VAGUE_MATCHES=$(grep -ciE "$VAGUE_PATTERNS" "$CONTEXT_FILE")
+VAGUE_MATCHES=$(grep -ciE "$VAGUE_PATTERNS" "$CONTEXT_FILE")  # -i for case-insensitive
 
 # A-003: Open-ended lists
 OPENENDED_PATTERNS="or similar|etc\\.|and more|and so on|among others"
 OPENENDED_MATCHES=$(grep -ciE "$OPENENDED_PATTERNS" "$CONTEXT_FILE")
 ```
 
-Report excessive vagueness (threshold: >5 instances per pattern):
+**Reporting Threshold:**
+
+- Report if a pattern appears **6 or more times** in the entire file (cumulative across all categories)
+- Always report ANY instance of vague terms in security/compliance-critical categories (4, 9, 10)
+- For <6 instances: include in report but mark as 🟡 LOW instead of 🟠 MEDIUM
+
+Report excessive vagueness:
 
 ```
 🟡 A-001: Multiple vague terms found (12 occurrences)
@@ -276,6 +297,7 @@ Identify redundant or contradictory information.
 | D-002    | Contradictory info about same topic in different places | 🔴 HIGH   | "Contradictory information about [topic]."                      |
 | D-003    | Quick Reference table status mismatches category detail | 🟠 MEDIUM | "Quick Reference shows ✅ but category has incomplete content." |
 | D-004    | Cross-Reference lists category that is ❌ Empty         | 🟡 LOW    | "Cross-Reference mentions category [N] but it's empty."         |
+| D-005    | Cross-Reference has duplicate category entries          | 🟡 LOW    | "Cross-Reference lists category [N] multiple times."            |
 
 **D-003 Check implementation:**
 
@@ -297,6 +319,12 @@ Report format:
 
 **D-004 Check implementation:**
 
+> **Note:** Under normal conditions, D-004 rarely triggers because `/product-interview` Step 14.2 filters Cross-Reference to omit empty categories. This check catches:
+>
+> 1. Manually edited files where Cross-Reference was added without updating Quick Reference
+> 2. Corrupted files where sections were partially deleted
+> 3. Legacy files created before the filtering logic was implemented
+
 1. Parse Cross-Reference section for command-to-category mappings
 2. For each category mentioned in Cross-Reference:
    - Check if Quick Reference shows ❌ Empty for that category
@@ -310,6 +338,27 @@ Report format:
    Quick Reference: Category 8 ❌ Empty
    Impact: Command may not have required context
    Fix: Run /product-interview --stage=scale to complete Category 8
+```
+
+**D-005 Check implementation:**
+
+1. Parse Cross-Reference section for category mentions
+2. Check for duplicate category entries (same category listed more than once)
+3. Flag if any category appears multiple times
+
+```bash
+# D-005: Check for duplicate category references
+sed -n '/^## Cross-Reference/,/^## /p' "$CONTEXT_FILE" | \
+  grep -oE "Category [0-9]+" | sort | uniq -d
+```
+
+Report format:
+
+```
+🟡 D-005: Cross-Reference has duplicate entries
+   Category 5 appears multiple times in Cross-Reference section
+   Impact: May cause confusion; file may be malformed
+   Fix: Remove duplicate entries from Cross-Reference section
 ```
 
 ---
@@ -337,6 +386,8 @@ Verify context completeness for each downstream Design OS command.
 > - **Relationship to Cross-Reference:** The Cross-Reference section in `/product-interview` output shows categories each command directly references. This table's Optional column may include additional categories (like Category 1 - Product Foundation) that provide helpful context even if not directly referenced. General product context enhances decision-making for any command.
 >
 > **Example:** `/design-shell` uses Categories 2, 3, 7, 9 per Cross-Reference. Of these, Categories 2 and 3 are Required (shell design fundamentals), while 7 and 9 are Optional (mobile patterns and auth integration enhance the design but aren't strictly necessary).
+>
+> **Important — Category vs File Prerequisites:** This table checks **category completeness** only (whether context answers exist). Commands also have **file prerequisites** (whether required files like `product-overview.md` exist). A command showing "Ready" here may still fail if prerequisite files are missing. See `agents.md` → "Command Prerequisites" table for file requirements.
 
 **Check implementation:**
 
@@ -415,9 +466,18 @@ fi
 
 ### 8.2: Report Structure
 
+**Issue Ordering Rules:**
+
+1. Group by severity: 🔴 HIGH first, then 🟠 MEDIUM, then 🟡 LOW
+2. Within each severity group, order by category number (1-12)
+3. Within same category, order by check type: Q → C → L → A → D
+4. Number issues sequentially: ISSUE-001, ISSUE-002, etc. (across all severities)
+
+**Issue ID Format:** `ISSUE-NNN` where NNN is a sequential number starting at 001.
+
 Write to `product/audit-report.md`:
 
-```markdown
+````markdown
 # Critical Analysis Report: [Product Name]
 
 **Generated:** [ISO date]
@@ -600,6 +660,46 @@ REPLACE WITH: **Level:** Full audit — Who changed what, when, with old values 
 PRESERVE: All other subsections in Category 4
 \`\`\`
 
+### Subsection Definition
+
+A **subsection** is any `### ` heading (level-3 markdown header) within a category section (`## [0-9]+.`). Each category typically has 4-6 subsections corresponding to the interview questions for that category.
+
+**Example structure:**
+
+```markdown
+## 4. Data Architecture ← Category section
+
+### Data Sensitivity ← Subsection (first)
+
+Public only...
+
+### Compliance Requirements ← Subsection (second)
+
+GDPR...
+
+### Data Relationships ← Subsection (third)
+
+Many-to-many...
+```
+````
+
+**Expected subsection counts per category:**
+
+| Category | Expected Subsections | Notes                  |
+| -------- | -------------------- | ---------------------- |
+| 1        | 6                    | Product Foundation     |
+| 2        | 4                    | User Research          |
+| 3        | 5                    | Design Direction       |
+| 4        | 5                    | Data Architecture      |
+| 5        | 5                    | Section-Specific Depth |
+| 6        | 5                    | UI Patterns            |
+| 7        | 4                    | Mobile & Responsive    |
+| 8        | 4                    | Performance & Scale    |
+| 9        | 3                    | Integration Points     |
+| 10       | 3                    | Security & Compliance  |
+| 11       | 4                    | Error Handling         |
+| 12       | 4                    | Testing & Quality      |
+
 ### Automatic Validation Protocol
 
 > **MANDATORY:** AI agents MUST run validation before AND after editing `product-context.md`.
@@ -682,9 +782,30 @@ fi
 
 If post-edit validation fails:
 
-1. **DO NOT make additional edits**
-2. **Report the failure** to the user
-3. **Suggest restoration:** `git checkout -- product/product-context.md` or re-run `/product-interview`
+1. **DO NOT make additional edits** — Stop immediately
+2. **Report the failure** to the user with specific error message
+3. **Recovery options:**
+
+   **Option A: Git rollback (if committed)**
+
+   ```bash
+   git checkout -- product/product-context.md
+   ```
+
+   **Option B: Re-run interview (if no commit)**
+
+   ```bash
+   /product-interview --skip-validation  # Re-generate from scratch
+   ```
+
+   **Option C: Partial recovery (if only some edits broke validation)**
+
+   ```bash
+   # Manually revert the problematic edit
+   # Re-run post-edit validation to confirm fix
+   ```
+
+4. **After recovery:** Re-run `/audit-context` to regenerate the report from a clean state
 
 ### Anti-Patterns (NEVER DO)
 
@@ -696,7 +817,8 @@ If post-edit validation fails:
 | Add new ## sections                | Only 12 categories exist                       |
 | Modify Quick Reference table       | User updates this manually                     |
 | Remove content that wasn't flagged | Only fix flagged issues                        |
-```
+
+````
 
 ### 8.3: Write Report File
 
@@ -718,7 +840,7 @@ if [ ! -f "$REPORT_FILE" ]; then
 fi
 
 echo "📄 Report saved to: $REPORT_FILE"
-```
+````
 
 ### 8.4: Validate Report Structure
 

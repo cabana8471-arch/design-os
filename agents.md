@@ -1363,20 +1363,20 @@ Design OS uses a modular template system for generating implementation prompts a
 
 Commands in `.claude/commands/design-os/` include version headers (`<!-- vX.X.X -->`) at the top of each file:
 
-| Command              | Version | Notes                                                                  |
-| -------------------- | ------- | ---------------------------------------------------------------------- |
-| `/product-interview` | v1.3.1  | + MINIMAL_MODE filtering, Option Limit fixes, Cross-Reference clarity  |
-| `/audit-context`     | v1.1.2  | + C-021 check, Command Readiness explanations, Optional column clarity |
-| `/product-vision`    | —       | Check file for version                                                 |
-| `/product-roadmap`   | —       | Check file for version                                                 |
-| `/data-model`        | —       | Check file for version                                                 |
-| `/design-tokens`     | —       | Check file for version                                                 |
-| `/design-shell`      | —       | Check file for version                                                 |
-| `/shape-section`     | —       | Check file for version                                                 |
-| `/sample-data`       | —       | Check file for version                                                 |
-| `/design-screen`     | —       | Check file for version                                                 |
-| `/screenshot-design` | —       | Check file for version                                                 |
-| `/export-product`    | —       | Check file for version                                                 |
+| Command              | Version | Notes                                                                                                             |
+| -------------------- | ------- | ----------------------------------------------------------------------------------------------------------------- |
+| `/product-interview` | v1.3.2  | + Multi-part question UX, All-stages-complete handler, Required/Optional question clarity                         |
+| `/audit-context`     | v1.1.3  | + D-005 duplicate check, Ambiguity threshold, Subsection definition, Recovery protocol, Completeness verification |
+| `/product-vision`    | —       | Check file for version                                                                                            |
+| `/product-roadmap`   | —       | Check file for version                                                                                            |
+| `/data-model`        | —       | Check file for version                                                                                            |
+| `/design-tokens`     | —       | Check file for version                                                                                            |
+| `/design-shell`      | —       | Check file for version                                                                                            |
+| `/shape-section`     | —       | Check file for version                                                                                            |
+| `/sample-data`       | —       | Check file for version                                                                                            |
+| `/design-screen`     | —       | Check file for version                                                                                            |
+| `/screenshot-design` | —       | Check file for version                                                                                            |
+| `/export-product`    | —       | Check file for version                                                                                            |
 
 > **Note:** Commands marked "—" should be checked in their source files for version headers. Add versions to this table as commands are updated.
 

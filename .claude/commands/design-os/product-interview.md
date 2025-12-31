@@ -1,4 +1,4 @@
-<!-- v1.3.1 -->
+<!-- v1.3.2 -->
 
 # Product Interview
 
@@ -191,6 +191,20 @@ check_stage_completion() {
 
    Vrei să continuăm cu una dintre acestea?
    ```
+
+4. **Edge case — All stages complete:** If ALL categories (1-12) are ✅ Complete:
+
+   ```
+   🎉 Felicitări! Toate cele 12 categorii sunt complete.
+
+   Contextul produsului tău este complet (100%). Poți continua cu:
+   - /audit-context — Verifică consistența răspunsurilor
+   - /product-vision — Creează viziunea produsului
+
+   Nu mai sunt întrebări de pus.
+   ```
+
+   Exit the command gracefully — do not offer to re-ask questions unless user explicitly requests `--skip-validation`.
 
 **Early Exit: Minimal Mode with All Categories Complete:**
 
@@ -574,6 +588,16 @@ Before each category, show progress to help users understand where they are in t
 > - Record as "N/A — Not specified" in the output
 > - Mark category as ⚠️ Partial unless ALL required questions have valid answers
 > - Optional questions (marked with "(optional)") can be skipped without affecting category status
+>
+> **Required vs Optional Questions:**
+>
+> | Type            | Indicator                      | Category Status if Skipped            |
+> | --------------- | ------------------------------ | ------------------------------------- |
+> | **Required**    | No indicator (default)         | ⚠️ Partial                            |
+> | **Optional**    | Marked "(optional)"            | No impact on status                   |
+> | **Conditional** | Part B of multi-part questions | ⚠️ Partial only if Part A requires it |
+>
+> By default, all questions are **required** unless explicitly marked "(optional)". Questions marked "(optional)" typically gather enhancement details that don't affect core design decisions.
 
 > **Question Numbering Convention:** Questions are numbered as `[Step].[N]` where N starts at 1 for each category. Example: Question 2.1 is the first question in Step 2 (Category 1).
 >
@@ -593,6 +617,14 @@ Before each category, show progress to help users understand where they are in t
 >    - If user skips Part A, record as "N/A — Not specified"
 >    - If user answers Part A but skips Part B, record Part A only (question is partially answered)
 >    - Mark category as complete only if required questions have valid answers
+> 5. **Revisiting Part A:**
+>    - If user requests to change Part A after seeing Part B options, allow it
+>    - Re-ask Part A, then proceed to appropriate Part B based on new answer
+>    - This is a valid workflow — user may learn from Part B options what they actually need
+> 6. **Part B with >4 options:**
+>    - If Part B has more than 4 options, split into sub-parts OR use free-text with examples
+>    - Example split: "Dintre acestea, care sunt prioritare?" → present 2-4 options at a time
+>    - Example free-text: "Ce integrări specifice ai nevoie? (ex: Stripe, Google OAuth, Twilio)"
 
 ### Question 2.0: Product Name (Required)
 
