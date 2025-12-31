@@ -66,6 +66,20 @@ Gather comprehensive context about your product through a structured interview. 
 - `--audit` — Check completeness of existing context
 - `--skip-validation` — Bypass existing context check (for advanced users updating context)
 
+### 0.5. Audit Context (`/audit-context`) — RECOMMENDED
+
+Critical analysis of `product/product-context.md` to identify issues before proceeding with implementation. Detects quality problems, inconsistencies, logic conflicts, ambiguities, and duplications.
+
+**Output:** `product/audit-report.md`
+
+**Workflow:**
+
+1. Run `/audit-context` after `/product-interview`
+2. Review issues in report
+3. Fix issues in `product-context.md`
+4. Re-run `/audit-context` until 0 HIGH issues
+5. Proceed with `/product-vision`
+
 ### 1. Product Overview (`/product-vision`)
 
 Define your product's core description, the problems it solves, and key features.
@@ -112,6 +126,7 @@ Generate the complete export package with all components, types, and handoff doc
 | Command              | Creates                                                                                                                                                                                                                                                       | Location                         |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
 | `/product-interview` | `product-context.md`                                                                                                                                                                                                                                          | `product/`                       |
+| `/audit-context`     | `audit-report.md`                                                                                                                                                                                                                                             | `product/`                       |
 | `/product-vision`    | `product-overview.md`                                                                                                                                                                                                                                         | `product/`                       |
 | `/product-roadmap`   | `product-roadmap.md`                                                                                                                                                                                                                                          | `product/`                       |
 | `/data-model`        | `data-model.md`                                                                                                                                                                                                                                               | `product/data-model/`            |
@@ -139,6 +154,7 @@ Generate the complete export package with all components, types, and handoff doc
 | Command              | Required                                                          | Optional                                    |
 | -------------------- | ----------------------------------------------------------------- | ------------------------------------------- |
 | `/product-interview` | —                                                                 | —                                           |
+| `/audit-context`     | `product-context.md`                                              | —                                           |
 | `/product-vision`    | `product-context.md` (≥50%)                                       | —                                           |
 | `/product-roadmap`   | `product-context.md`, `product-overview.md`                       | —                                           |
 | `/data-model`        | `product-context.md`, `product-overview.md`, `product-roadmap.md` | —                                           |
@@ -1348,6 +1364,7 @@ Commands in `.claude/commands/design-os/` include version headers (`<!-- vX.X.X 
 | Command              | Version | Notes                                              |
 | -------------------- | ------- | -------------------------------------------------- |
 | `/product-interview` | v1.3.0  | Split guidance, argument validation, flow guidance |
+| `/audit-context`     | v1.0.0  | Critical analysis of product context               |
 | `/product-vision`    | —       | Check file for version                             |
 | `/product-roadmap`   | —       | Check file for version                             |
 | `/data-model`        | —       | Check file for version                             |

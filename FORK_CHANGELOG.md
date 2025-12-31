@@ -6,7 +6,68 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
-## [2025-12-31 10:30] Critical Analysis: /product-interview v1.3.0 (13 Issues)
+## [2025-12-31 10:15] New Command: /audit-context v1.0.0
+
+### Description
+
+Created a new standalone command `/audit-context` for critical analysis of `product/product-context.md`. This command identifies quality issues, consistency conflicts, logic problems, ambiguities, and duplications before proceeding with implementation. Generates a comprehensive report to `product/audit-report.md`.
+
+### New Files Created
+
+| File                                          | Description                                                               |
+| --------------------------------------------- | ------------------------------------------------------------------------- |
+| `.claude/commands/design-os/audit-context.md` | New command for critical analysis of product context (v1.0.0, ~350 lines) |
+
+### Modified Files
+
+| File        | Modification                                                                                                                     |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `agents.md` | Added `/audit-context` to Getting Started (step 0.5), Files Generated table, Command Prerequisites table, Command Versions table |
+
+### Features
+
+**Verification Categories (42 checks total):**
+
+- **Quality (Q-001 to Q-005):** Short answers, placeholder text (TBD/N/A), echo answers, missing specifics, empty sections
+- **Consistency (C-001 to C-020):** Cross-category conflicts (GDPR+audit, auth+RBAC, real-time+scale, offline+sync, etc.)
+- **Logic (L-001 to L-008):** Contradictory decisions (audience vs features, business model vs SLA, etc.)
+- **Ambiguity (A-001 to A-006):** Vague terms, unclear references, open-ended lists, undefined conditions
+- **Duplication (D-001 to D-003):** Duplicate content, contradictory info, Quick Reference mismatches
+
+**Output:**
+
+- Terminal summary with issue counts by severity (HIGH/MEDIUM/LOW)
+- Full report saved to `product/audit-report.md`
+- Command Readiness table showing which Design OS commands are blocked
+
+**Workflow:**
+
+```
+/product-interview → /audit-context → (fix issues) → /audit-context → /product-vision
+```
+
+### Statistics
+
+- Files created: 1
+- Files modified: 1
+- Lines added: ~380
+- Command version: v1.0.0
+
+### Verification
+
+- ✅ Command file created with 10 steps (validate, quality, consistency, logic, ambiguity, duplication, readiness, report, summary, re-run)
+- ✅ 42 verification checks defined across 5 categories
+- ✅ Report format includes Executive Summary, Issues by Severity, Consistency Matrix, Command Readiness
+- ✅ agents.md updated in 4 locations (Getting Started, Files table, Prerequisites table, Versions table)
+- ✅ Follows Design OS command patterns and conventions
+
+### Remaining Items
+
+None — command is production-ready at v1.0.0.
+
+---
+
+## [2025-12-31 08:34] Critical Analysis: /product-interview v1.3.0 (13 Issues)
 
 ### Description
 
