@@ -320,7 +320,7 @@ Verify context completeness for each downstream Design OS command.
 
 | Command            | Required (Blocking) | Optional (Enhancement) | Ready When           |
 | ------------------ | ------------------- | ---------------------- | -------------------- |
-| `/product-vision`  | 1, 2                | —                      | Both ✅              |
+| `/product-vision`  | 1                   | 2                      | 1 is ✅              |
 | `/product-roadmap` | 1                   | 2, 8                   | 1 is ✅              |
 | `/data-model`      | 4, 10               | 1                      | Both 4, 10 are ✅    |
 | `/design-tokens`   | 3                   | 1                      | 3 is ✅              |

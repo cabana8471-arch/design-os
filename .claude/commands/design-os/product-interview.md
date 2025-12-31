@@ -192,6 +192,56 @@ check_stage_completion() {
    Vrei să continuăm cu una dintre acestea?
    ```
 
+**Early Exit: Minimal Mode with All Categories Complete:**
+
+If using `--minimal` and ALL minimal categories are already ✅ Complete in the existing context file:
+
+```bash
+# Check if all minimal categories are already complete
+check_minimal_completion() {
+  local ALL_COMPLETE=true
+  local MINIMAL_CATS="1 3 5 6 7 11"
+
+  for cat_num in $MINIMAL_CATS; do
+    CAT_LINE=$(grep "| $cat_num\." product/product-context.md 2>/dev/null | head -1)
+    if ! echo "$CAT_LINE" | grep -qE "(✅|Complete)"; then
+      ALL_COMPLETE=false
+      break
+    fi
+  done
+
+  echo "$ALL_COMPLETE"
+}
+```
+
+**If all minimal categories are complete:**
+
+1. Report to user:
+
+   ```
+   Toate categoriile din modul minimal sunt deja complete:
+   - Categoria 1: ✅ Complete
+   - Categoria 3: ✅ Complete
+   - Categoria 5: ✅ Complete
+   - Categoria 6: ✅ Complete
+   - Categoria 7: ✅ Complete
+   - Categoria 11: ✅ Complete
+
+   Nu există întrebări noi de pus în modul minimal.
+   ```
+
+2. Offer options via AskUserQuestion:
+   - **Completăm restul** — Ask remaining categories (2, 4, 8, 9, 10, 12)
+   - **Revizuim oricum** — Re-ask all minimal questions (use `--skip-validation`)
+   - **Ieșim** — Exit without changes
+
+3. If user selects "Completăm restul":
+   - Set `MINIMAL_MODE=false` to enable all categories
+   - Continue with `INTERVIEW_MODE="complete_missing"` to ask only incomplete categories
+   - This effectively asks categories 2, 4, 8, 9, 10, 12
+
+---
+
 **Category Skip Logic (used in Steps 2-13):**
 
 Before asking questions for any category, check both stage mode AND complete_missing mode:
@@ -2373,3 +2423,13 @@ If you need to pause mid-interview:
 3. If no context exists, you'll start the full interview from scratch
 
 > **Note:** Step 1 detects existing `product-context.md` and offers to complete missing categories rather than starting over.
+
+> **`--audit` vs `/audit-context`:**
+>
+> - **`--audit` flag** — Quick completeness check: shows category status (✅/⚠️/❌) and suggests which `--stage` to run. Use for quick status check.
+> - **`/audit-context` command** — Deep analysis: detects quality issues, consistency conflicts, logic errors, ambiguities, and provides actionable fix recommendations. Use for thorough pre-implementation validation.
+>
+> **When to use each:**
+>
+> - Use `--audit` when you just want to see what's complete/incomplete
+> - Use `/audit-context` before proceeding with `/product-vision` and subsequent commands to ensure the context is production-ready

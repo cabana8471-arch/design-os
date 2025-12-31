@@ -1483,7 +1483,7 @@ Product context solves this by gathering comprehensive information upfront.
 | 2   | User Research & Personas | 4   | Personas, accessibility needs, geographic distribution                       | `/product-vision`, `/design-shell`                  |
 | 3   | Design Direction         | 5   | Aesthetic tone, animation, density, brand constraints                        | `/design-tokens`, `/design-shell`, `/design-screen` |
 | 4   | Data Architecture        | 5   | Sensitivity, compliance, relationships, audit needs                          | `/data-model`, `/sample-data`                       |
-| 5   | Section-Specific Depth   | 5   | User flows, edge cases, empty/loading/error states                           | `/shape-section`, `/design-screen`                  |
+| 5   | Section-Specific Depth   | 5   | User flows, edge cases, empty/loading/error states                           | `/shape-section`, `/sample-data`, `/design-screen`  |
 | 6   | UI Patterns & Components | 5   | Data display, validation, notifications, confirmations                       | `/shape-section`, `/design-screen`                  |
 | 7   | Mobile & Responsive      | 4   | Priority, touch interactions, navigation, offline                            | `/design-shell`, `/design-screen`                   |
 | 8   | Performance & Scale      | 4   | User volume, data scale, real-time needs, search                             | `/product-roadmap`, `/shape-section`                |

@@ -6,6 +6,60 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-31 12:45] Critical Analysis v1.3.2 & v1.1.2: Consistency & UX Fixes
+
+### Description
+
+Second comprehensive critical analysis of `/product-interview` v1.3.1 and `/audit-context` v1.1.1 identified 4 real issues plus 1 minor improvement. All issues have been resolved with focus on cross-file consistency and UX improvements.
+
+### New Files Created
+
+None.
+
+### Modified Files
+
+| File                                              | Modification                                                                                               |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/design-os/audit-context.md`     | Fixed `/product-vision` requirements (Required: 1, Optional: 2 — was incorrectly marking both as Required) |
+| `.claude/commands/design-os/product-interview.md` | Added `--minimal` early exit logic, added `--audit` vs `/audit-context` clarification note                 |
+| `agents.md`                                       | Added `/sample-data` to Category 5's "Used By Commands" column                                             |
+
+### Issues Resolved
+
+**MEDIUM (3):**
+
+- **MEDIUM-001:** `/audit-context` Command Readiness showed `/product-vision` Required: 1, 2 — but Category 2 (User Research & Personas) is optional per `/product-vision.md` Step 0. Fixed to Required: 1, Optional: 2.
+- **MEDIUM-002:** `agents.md` Context Categories table was missing `/sample-data` in Category 5's "Used By Commands" — inconsistent with `/product-interview` Cross-Reference and `/audit-context` Command Readiness. Added `/sample-data`.
+- **MEDIUM-003:** `/product-interview` had no early exit for `--minimal` mode when all 6 minimal categories are complete — unlike `--stage` mode which had explicit handling. Added `check_minimal_completion()` function and user options.
+
+**LOW (1):**
+
+- **LOW-001:** Unclear when to use `--audit` flag vs `/audit-context` command — users could be confused. Added clarification note explaining: `--audit` for quick status, `/audit-context` for deep analysis.
+
+**ALREADY FIXED (1):**
+
+- **HIGH-001:** `/design-tokens` missing from `/audit-context` Command Readiness table — was already present in v1.1.1 (no action needed).
+
+### Statistics
+
+- Files modified: 3
+- Issues resolved: 4 (0 HIGH, 3 MEDIUM, 1 LOW)
+- Already fixed: 1 (discovered `/design-tokens` was already in table)
+
+### Verification
+
+- ✅ `/product-vision` Command Readiness shows Required: 1, Optional: 2
+- ✅ Category 5 "Used By Commands" now includes `/sample-data`
+- ✅ `--minimal` early exit with `check_minimal_completion()` function added
+- ✅ `--audit` vs `/audit-context` clarification note added in Recovery section
+- ✅ All cross-references consistent between 3 files
+
+### Remaining Items
+
+None — both commands are production-ready.
+
+---
+
 ## [2025-12-31 11:15] Critical Analysis v1.3.1 & v1.1.1: Bug Fixes & Documentation Clarity
 
 ### Description
