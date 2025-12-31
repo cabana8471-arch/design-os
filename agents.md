@@ -1363,20 +1363,20 @@ Design OS uses a modular template system for generating implementation prompts a
 
 Commands in `.claude/commands/design-os/` include version headers (`<!-- vX.X.X -->`) at the top of each file:
 
-| Command              | Version | Notes                                                            |
-| -------------------- | ------- | ---------------------------------------------------------------- |
-| `/product-interview` | v1.3.0  | Split guidance, argument validation, flow guidance               |
-| `/audit-context`     | v1.1.0  | AI editing guidelines, validation protocol, fix comparison logic |
-| `/product-vision`    | —       | Check file for version                                           |
-| `/product-roadmap`   | —       | Check file for version                                           |
-| `/data-model`        | —       | Check file for version                                           |
-| `/design-tokens`     | —       | Check file for version                                           |
-| `/design-shell`      | —       | Check file for version                                           |
-| `/shape-section`     | —       | Check file for version                                           |
-| `/sample-data`       | —       | Check file for version                                           |
-| `/design-screen`     | —       | Check file for version                                           |
-| `/screenshot-design` | —       | Check file for version                                           |
-| `/export-product`    | —       | Check file for version                                           |
+| Command              | Version | Notes                                                                 |
+| -------------------- | ------- | --------------------------------------------------------------------- |
+| `/product-interview` | v1.3.1  | + MINIMAL_MODE filtering, Option Limit fixes, Cross-Reference clarity |
+| `/audit-context`     | v1.1.1  | + C-021 check, improved Command Readiness table with explanations     |
+| `/product-vision`    | —       | Check file for version                                                |
+| `/product-roadmap`   | —       | Check file for version                                                |
+| `/data-model`        | —       | Check file for version                                                |
+| `/design-tokens`     | —       | Check file for version                                                |
+| `/design-shell`      | —       | Check file for version                                                |
+| `/shape-section`     | —       | Check file for version                                                |
+| `/sample-data`       | —       | Check file for version                                                |
+| `/design-screen`     | —       | Check file for version                                                |
+| `/screenshot-design` | —       | Check file for version                                                |
+| `/export-product`    | —       | Check file for version                                                |
 
 > **Note:** Commands marked "—" should be checked in their source files for version headers. Add versions to this table as commands are updated.
 

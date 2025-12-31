@@ -1,4 +1,4 @@
-<!-- v1.3.0 -->
+<!-- v1.3.1 -->
 
 # Product Interview
 
@@ -205,6 +205,7 @@ Before asking questions for any category, check both stage mode AND complete_mis
 # Function to check if category should be asked
 # Variables used:
 #   $STAGE - Set in Step 0 from --stage=X argument (optional)
+#   $MINIMAL_MODE - Set in Step 0 from --minimal argument (true/false)
 #   $INTERVIEW_MODE - Set in Step 1: "full", "complete_missing", or "audit"
 should_ask_category() {
   local CATEGORY_NUM=$1
@@ -219,6 +220,11 @@ should_ask_category() {
       scale)    [[ "$CATEGORY_NUM" =~ ^(8|9)$ ]] || return 1 ;;
       quality)  [[ "$CATEGORY_NUM" == "12" ]] || return 1 ;;
     esac
+  fi
+
+  # Check minimal mode (categories 1, 3, 5, 6, 7, 11)
+  if [ "$MINIMAL_MODE" = true ]; then
+    [[ "$CATEGORY_NUM" =~ ^(1|3|5|6|7|11)$ ]] || return 1
   fi
 
   # Check complete_missing mode
@@ -713,13 +719,27 @@ Use AskUserQuestion:
 
 "Ce ton estetic vrei pentru produs?"
 
-Options:
+> **⚠️ Option Limit:** This question has 5 options but AskUserQuestion supports 2-4. Present as two-part question:
+>
+> - **Part A:** "Ce direcție estetică generală?" → Professional/Business | Consumer/Friendly | Technical/Data-focused
+> - **Part B (if Professional/Business):** "Corporate sau Modern?" → Professional / Corporate | Modern / Minimal
+> - **Part B (if Consumer/Friendly):** "Bold sau Playful?" → Bold / Expressive | Playful / Friendly
 
-- **Professional / Corporate** — Clean, trustworthy, conservative. Good for: B2B, finance, healthcare.
-- **Modern / Minimal** — Sleek, spacious, sophisticated. Good for: SaaS, tech products.
-- **Bold / Expressive** — Vibrant, energetic, memorable. Good for: Consumer apps, creative tools.
-- **Playful / Friendly** — Warm, approachable, fun. Good for: Consumer, education, social.
-- **Technical / Dense** — Information-rich, efficient, compact. Good for: Developer tools, analytics, dashboards.
+**Part A options:**
+
+- **Professional / Business** — Clean, trustworthy, sophisticated. Good for: B2B, SaaS, enterprise.
+- **Consumer / Friendly** — Approachable, engaging, memorable. Good for: Consumer apps, social, education.
+- **Technical / Data-focused** — Information-rich, efficient, compact. Good for: Developer tools, analytics, dashboards.
+
+**Part B options (if "Professional / Business" selected):**
+
+- **Professional / Corporate** — Conservative, trustworthy. Good for: Finance, healthcare, legal.
+- **Modern / Minimal** — Sleek, spacious. Good for: SaaS, tech products.
+
+**Part B options (if "Consumer / Friendly" selected):**
+
+- **Bold / Expressive** — Vibrant, energetic. Good for: Creative tools, lifestyle apps.
+- **Playful / Friendly** — Warm, fun. Good for: Education, social, casual apps.
 
 ### Question 4.2: Animation Style
 
@@ -1318,10 +1338,23 @@ Use AskUserQuestion:
 
 "Cum controlezi accesul la date?"
 
-Options:
+> **⚠️ Option Limit:** This question has 5 options but AskUserQuestion supports 2-4. Present as two-part question:
+>
+> - **Part A:** "Ai nevoie de control al accesului?" → No access control | Simple roles | Advanced permissions
+> - **Part B (if Advanced):** "Ce model de permisiuni?" → RBAC | Team-based | Fine-grained
 
-- **No roles** — All users have same access
-- **Basic roles** — Admin vs User
+**Part A options:**
+
+- **No access control** — All users have same access
+- **Simple roles** — Basic Admin vs User distinction
+- **Advanced permissions** — Complex permission model needed
+
+**Part B options (if "Simple roles" selected):**
+
+- **Basic roles** — Admin vs User, no further granularity
+
+**Part B options (if "Advanced permissions" selected):**
+
 - **RBAC** — Multiple roles with defined permissions
 - **Team-based** — Access by team/organization membership
 - **Fine-grained** — Per-resource permissions
@@ -2040,26 +2073,38 @@ Mode: [Full / Minimal / Stage-specific]
 2. If ALL referenced categories are ❌ (empty), omit that command's cross-reference section entirely
 3. If at least one referenced category is ✅ or ⚠️, include the section but only list the completed categories
 
+> **Template Note:** The structure below shows the MAXIMUM cross-reference (when all categories are complete). During generation, apply the filtering rules above to exclude entries for categories marked ❌ Empty in the Quick Reference table. Each command section and each category line should only appear if the category is ✅ or ⚠️.
+
 ### For /product-vision
+
+<!-- Include only if Category 1 or 2 is ✅/⚠️ -->
 
 - **Category 1** (Product Foundation): Product name, target audience, problem space
 - **Category 2** (User Research & Personas): Personas for user descriptions
 
 ### For /product-roadmap
 
+<!-- Include only if Category 1 or 8 is ✅/⚠️ -->
+
 - **Category 1** (Product Foundation): Business model determines scope
 - **Category 8** (Performance & Scale): User volume for complexity estimation
 
 ### For /data-model
+
+<!-- Include only if Category 4 or 10 is ✅/⚠️ -->
 
 - **Category 4** (Data Architecture): Sensitivity, relationships, compliance
 - **Category 10** (Security & Compliance): Auth model, audit requirements
 
 ### For /design-tokens
 
+<!-- Include only if Category 3 is ✅/⚠️ -->
+
 - **Category 3** (Design Direction): Aesthetic tone, brand constraints for palette
 
 ### For /design-shell
+
+<!-- Include only if Category 2, 3, 7, or 9 is ✅/⚠️ -->
 
 - **Category 2** (User Research & Personas): Accessibility requirements for shell
 - **Category 3** (Design Direction): Aesthetic tone, animation style
@@ -2068,6 +2113,8 @@ Mode: [Full / Minimal / Stage-specific]
 
 ### For /shape-section
 
+<!-- Include only if Category 5, 6, 8, or 11 is ✅/⚠️ -->
+
 - **Category 5** (Section-Specific Depth): User flows, edge cases
 - **Category 6** (UI Patterns & Components): Data display, validation preferences
 - **Category 8** (Performance & Scale): Data volume, real-time needs
@@ -2075,10 +2122,14 @@ Mode: [Full / Minimal / Stage-specific]
 
 ### For /sample-data
 
+<!-- Include only if Category 4 or 5 is ✅/⚠️ -->
+
 - **Category 4** (Data Architecture): Data sensitivity for realistic samples
 - **Category 5** (Section-Specific Depth): Edge case data requirements
 
 ### For /design-screen
+
+<!-- Include only if Category 3, 5, 6, 7, or 11 is ✅/⚠️ -->
 
 - **Category 3** (Design Direction): Animation style, information density
 - **Category 5** (Section-Specific Depth): Empty/loading/error states
@@ -2087,6 +2138,8 @@ Mode: [Full / Minimal / Stage-specific]
 - **Category 11** (Error Handling): Error message display
 
 ### For /export-product
+
+<!-- Include only if Category 9, 10, or 12 is ✅/⚠️ -->
 
 - **Category 9** (Integration Points): Auth provider for implementation docs
 - **Category 10** (Security & Compliance): Security requirements for deployment
@@ -2263,7 +2316,9 @@ Am creat contextul produsului tău!
 
 ### Consistency Validation
 
-> **Relationship to /audit-context:** This section provides **quick consistency checks** run during the interview to catch obvious conflicts early. For comprehensive validation with more checks (C-001 through C-020), run `/audit-context` after completing the interview. The two commands complement each other: interview catches issues while gathering context, audit catches issues in a dedicated analysis pass.
+> **Relationship to /audit-context:** This section provides **quick consistency checks** run during the interview to catch obvious conflicts early. For comprehensive validation with more checks (C-001 through C-021), run `/audit-context` after completing the interview. The two commands complement each other: interview catches issues while gathering context, audit catches issues in a dedicated analysis pass.
+>
+> **Note on Severity Differences:** Some checks appear in both commands with different severities. Interview checks use lighter warnings (designed for real-time guidance), while audit checks are stricter (designed for thorough pre-implementation validation). For example: "Real-time vs Scale" is MED here but HIGH in audit (C-003) because the comprehensive audit considers the full technical implications.
 
 After completing the interview, check for inconsistencies:
 

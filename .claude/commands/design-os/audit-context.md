@@ -1,4 +1,4 @@
-<!-- v1.1.0 -->
+<!-- v1.1.1 -->
 
 # Audit Context
 
@@ -148,30 +148,31 @@ Report format for each finding:
 
 Verify that answers across categories are logically consistent.
 
-> **Relationship to /product-interview:** `/product-interview` includes a subset of consistency checks (quick checks during the interview). This command provides the **comprehensive check set** (C-001 through C-020) for thorough validation. Both commands complement each other: interview catches obvious conflicts early, audit provides deep analysis after context is complete.
+> **Relationship to /product-interview:** `/product-interview` includes a subset of consistency checks (quick checks during the interview). This command provides the **comprehensive check set** (C-001 through C-021) for thorough validation. Both commands complement each other: interview catches obvious conflicts early, audit provides deep analysis after context is complete.
 
-| Check ID | Condition                                   | Severity  | Message                                                         |
-| -------- | ------------------------------------------- | --------- | --------------------------------------------------------------- |
-| C-001    | GDPR compliance + No audit log              | 🔴 HIGH   | "GDPR requires audit logging. Add full audit in Category 4."    |
-| C-002    | No auth + Compliance-grade audit            | 🔴 HIGH   | "Audit logging without authentication is contradictory."        |
-| C-003    | Real-time + 10k+ users + No scale plan      | 🔴 HIGH   | "High-scale real-time needs explicit architecture."             |
-| C-004    | Full offline + No sync strategy             | 🔴 HIGH   | "Offline mode requires data synchronization strategy."          |
-| C-005    | SSO/Enterprise + Free/OSS model             | 🟠 MEDIUM | "Enterprise features conflict with free model."                 |
-| C-006    | Multi-tenant + No data isolation            | 🔴 HIGH   | "Multi-tenant requires explicit data isolation."                |
-| C-007    | File uploads + No size limits               | 🟠 MEDIUM | "File uploads need size/type restrictions."                     |
-| C-008    | Search feature + No indexing strategy       | 🟡 LOW    | "Advanced search benefits from indexing strategy."              |
-| C-009    | Mobile-first + No touch interactions        | 🟠 MEDIUM | "Mobile-first should include touch gestures."                   |
-| C-010    | Desktop-only + Mobile navigation            | 🟡 LOW    | "Desktop-only conflicts with mobile navigation choice."         |
-| C-011    | Strict auth + No MFA                        | 🟠 MEDIUM | "Strict authentication should include MFA option."              |
-| C-012    | PWA + Desktop-only responsive               | 🟠 MEDIUM | "PWA implies mobile support, conflicts with desktop-only."      |
-| C-013    | Collaborative real-time + Full offline      | 🟠 MEDIUM | "Real-time collaboration and full offline are hard to combine." |
-| C-014    | Large file uploads + Full offline           | 🟡 LOW    | "Large files offline is technically challenging."               |
-| C-015    | Versioning + Hard delete                    | 🟠 MEDIUM | "Versioning usually implies soft delete, not hard delete."      |
-| C-016    | PII data + No encryption mention            | 🟠 MEDIUM | "Personal data should mention encryption requirements."         |
-| C-017    | HIPAA + No audit logging                    | 🔴 HIGH   | "HIPAA requires comprehensive audit logging."                   |
-| C-018    | Payment integration + No PCI-DSS            | 🔴 HIGH   | "Payment processing requires PCI-DSS compliance."               |
-| C-019    | E2E full regression + Minimal test coverage | 🟠 MEDIUM | "Full E2E regression conflicts with minimal test target."       |
-| C-020    | WCAG AAA + No accessibility persona         | 🟡 LOW    | "AAA compliance should specify accessibility needs."            |
+| Check ID | Condition                                   | Severity  | Message                                                                   |
+| -------- | ------------------------------------------- | --------- | ------------------------------------------------------------------------- |
+| C-001    | GDPR compliance + No audit log              | 🔴 HIGH   | "GDPR requires audit logging. Add full audit in Category 4."              |
+| C-002    | No auth + Compliance-grade audit            | 🔴 HIGH   | "Audit logging without authentication is contradictory."                  |
+| C-003    | Real-time + 10k+ users + No scale plan      | 🔴 HIGH   | "High-scale real-time needs explicit architecture."                       |
+| C-004    | Full offline + No sync strategy             | 🔴 HIGH   | "Offline mode requires data synchronization strategy."                    |
+| C-005    | SSO/Enterprise + Free/OSS model             | 🟠 MEDIUM | "Enterprise features conflict with free model."                           |
+| C-006    | Multi-tenant + No data isolation            | 🔴 HIGH   | "Multi-tenant requires explicit data isolation."                          |
+| C-007    | File uploads + No size limits               | 🟠 MEDIUM | "File uploads need size/type restrictions."                               |
+| C-008    | Search feature + No indexing strategy       | 🟡 LOW    | "Advanced search benefits from indexing strategy."                        |
+| C-009    | Mobile-first + No touch interactions        | 🟠 MEDIUM | "Mobile-first should include touch gestures."                             |
+| C-010    | Desktop-only + Mobile navigation            | 🟡 LOW    | "Desktop-only conflicts with mobile navigation choice."                   |
+| C-011    | Strict auth + No MFA                        | 🟠 MEDIUM | "Strict authentication should include MFA option."                        |
+| C-012    | PWA + Desktop-only responsive               | 🟠 MEDIUM | "PWA implies mobile support, conflicts with desktop-only."                |
+| C-013    | Collaborative real-time + Full offline      | 🟠 MEDIUM | "Real-time collaboration and full offline are hard to combine."           |
+| C-014    | Large file uploads + Full offline           | 🟡 LOW    | "Large files offline is technically challenging."                         |
+| C-015    | Versioning + Hard delete                    | 🟠 MEDIUM | "Versioning usually implies soft delete, not hard delete."                |
+| C-016    | PII data + No encryption mention            | 🟠 MEDIUM | "Personal data should mention encryption requirements."                   |
+| C-017    | HIPAA + No audit logging                    | 🔴 HIGH   | "HIPAA requires comprehensive audit logging."                             |
+| C-018    | Payment integration + No PCI-DSS            | 🔴 HIGH   | "Payment processing requires PCI-DSS compliance."                         |
+| C-019    | E2E full regression + Minimal test coverage | 🟠 MEDIUM | "Full E2E regression conflicts with minimal test target."                 |
+| C-020    | WCAG AAA + No accessibility persona         | 🟡 LOW    | "AAA compliance should specify accessibility needs."                      |
+| C-021    | GDPR compliance + No PII data mentioned     | 🟡 LOW    | "GDPR selected but no personal data described. Verify if PII is handled." |
 
 **Check implementation example:**
 
@@ -317,19 +318,25 @@ Report format:
 
 Verify context completeness for each downstream Design OS command.
 
-| Command            | Required Categories | Optional Categories | Ready When           |
-| ------------------ | ------------------- | ------------------- | -------------------- |
-| `/product-vision`  | 1, 2                | —                   | Both ✅              |
-| `/product-roadmap` | 1                   | 2, 8                | 1 is ✅              |
-| `/data-model`      | 4, 10               | 1                   | Both 4, 10 are ✅    |
-| `/design-tokens`   | 3                   | 1                   | 3 is ✅              |
-| `/design-shell`    | 2, 3                | 7, 9                | 2 and 3 are ✅       |
-| `/shape-section`   | 5, 6                | 8, 11               | Both 5, 6 are ✅     |
-| `/sample-data`     | 4, 5                | —                   | Both 4, 5 are ✅     |
-| `/design-screen`   | 5, 6                | 3, 7, 11            | 5 and 6 are ✅       |
-| `/export-product`  | 9, 10, 12           | all others          | All 9, 10, 12 are ✅ |
+| Command            | Required (Blocking) | Optional (Enhancement) | Ready When           |
+| ------------------ | ------------------- | ---------------------- | -------------------- |
+| `/product-vision`  | 1, 2                | —                      | Both ✅              |
+| `/product-roadmap` | 1                   | 2, 8                   | 1 is ✅              |
+| `/data-model`      | 4, 10               | 1                      | Both 4, 10 are ✅    |
+| `/design-tokens`   | 3                   | 1                      | 3 is ✅              |
+| `/design-shell`    | 2, 3                | 7, 9                   | 2 and 3 are ✅       |
+| `/shape-section`   | 5, 6                | 8, 11                  | Both 5, 6 are ✅     |
+| `/sample-data`     | 4, 5                | —                      | Both 4, 5 are ✅     |
+| `/design-screen`   | 5, 6                | 3, 7, 11               | 5 and 6 are ✅       |
+| `/export-product`  | 9, 10, 12           | all others             | All 9, 10, 12 are ✅ |
 
-> **Note:** Categories are aligned with the Cross-Reference section in `/product-interview` output. Required categories BLOCK the command; Optional categories provide enhanced context but won't prevent execution.
+> **Understanding this table:**
+>
+> - **Required (Blocking):** Categories that MUST be ✅ Complete for the command to run. If any are ❌ Empty or ⚠️ Partial, the command will show warnings or may produce incomplete results.
+> - **Optional (Enhancement):** Categories that improve output quality but won't block the command. The command uses defaults or infers values when these are incomplete.
+> - **Relationship to Cross-Reference:** The Cross-Reference section in `/product-interview` output shows ALL categories each command reads. This table shows which of those categories are critical (Required) vs nice-to-have (Optional).
+>
+> **Example:** `/design-shell` uses Categories 2, 3, 7, 9 per Cross-Reference. Of these, Categories 2 and 3 are Required (shell design fundamentals), while 7 and 9 are Optional (mobile patterns and auth integration enhance the design but aren't strictly necessary).
 
 **Check implementation:**
 
@@ -899,7 +906,7 @@ All issue IDs follow the pattern `[Type]-[NNN]`:
 | Prefix | Type        | Check Range    |
 | ------ | ----------- | -------------- |
 | Q      | Quality     | Q-001 to Q-005 |
-| C      | Consistency | C-001 to C-020 |
+| C      | Consistency | C-001 to C-021 |
 | L      | Logic       | L-001 to L-008 |
 | A      | Ambiguity   | A-001 to A-006 |
 | D      | Duplication | D-001 to D-004 |

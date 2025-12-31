@@ -6,6 +6,66 @@ This file documents all modifications made in this fork of Design OS.
 
 ---
 
+## [2025-12-31 11:15] Critical Analysis v1.3.1 & v1.1.1: Bug Fixes & Documentation Clarity
+
+### Description
+
+Comprehensive critical analysis of `/product-interview` v1.3.0 and `/audit-context` v1.1.0 identified 4 real issues (2 HIGH, 2 MEDIUM) plus 2 LOW observations. All issues have been resolved with version bumps to v1.3.1 and v1.1.1 respectively.
+
+### New Files Created
+
+None.
+
+### Modified Files
+
+| File                                              | Modification                                                                                                                                           |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `.claude/commands/design-os/product-interview.md` | v1.3.0 → v1.3.1: Added MINIMAL_MODE check to should_ask_category(), Option Limit patterns for Q4.1 and Q11.2, Cross-Reference template filtering notes |
+| `.claude/commands/design-os/audit-context.md`     | v1.1.0 → v1.1.1: Added C-021 check, improved Command Readiness table with explanations, updated check range references                                 |
+| `agents.md`                                       | Updated Command Versions table with v1.3.1 and v1.1.1 notes                                                                                            |
+
+### Issues Resolved
+
+**HIGH (2):**
+
+- **HIGH-001:** MINIMAL_MODE category filtering not implemented — `should_ask_category()` checked `$STAGE` but not `$MINIMAL_MODE`. Running `--minimal` would ask all 52 questions instead of ~29. Added check for categories 1, 3, 5, 6, 7, 11.
+- **HIGH-002:** Two questions missing ⚠️ Option Limit warning — Question 4.1 (Aesthetic Tone) and Question 11.2 (Authorization Model) had 5 options each without the required two-part question pattern. Added Part A/B split patterns.
+
+**MEDIUM (2):**
+
+- **MEDIUM-001:** Command Readiness table confusing — "Required Categories" vs Cross-Reference section showed different values without explanation. Renamed columns to "Required (Blocking)" and "Optional (Enhancement)", added comprehensive explanation note with example.
+- **MEDIUM-002:** Cross-Reference template contradicted filtering note — Note said to filter by category status but template showed all categories. Added "Template Note" and HTML comments indicating filtering conditions per command section.
+
+**LOW (2):**
+
+- **LOW-001:** Missing GDPR check in audit-context — Interview had "GDPR vs No PII data" (LOW) check without corresponding C-XXX check. Added C-021 and updated all references from "C-001 through C-020" to "C-001 through C-021".
+- **LOW-002:** Severity differences undocumented — Same checks had different severities between interview (lighter) and audit (stricter). Added explanatory note about intentional difference with example.
+
+### Statistics
+
+- Files modified: 3
+- Issues resolved: 6 (2 HIGH, 2 MEDIUM, 2 LOW)
+- Version bumps: product-interview v1.3.0 → v1.3.1, audit-context v1.1.0 → v1.1.1
+- Consistency checks: C-001 to C-020 → C-001 to C-021
+
+### Verification
+
+- ✅ `should_ask_category()` now checks both `$STAGE` and `$MINIMAL_MODE`
+- ✅ Question 4.1 has Part A/B pattern (3 options → 2 options based on selection)
+- ✅ Question 11.2 has Part A/B pattern (3 options → 1-3 options based on selection)
+- ✅ Command Readiness table has clear column names and explanatory note with example
+- ✅ Cross-Reference template has filtering comments for all 9 command sections
+- ✅ C-021 added to Consistency Checks table
+- ✅ Check range updated in Step 3 note and Appendix
+- ✅ Severity differences note added to Consistency Validation section
+- ✅ agents.md Command Versions table updated
+
+### Remaining Items
+
+None — both commands are production-ready at v1.3.1 and v1.1.1.
+
+---
+
 ## [2025-12-31 10:30] /audit-context v1.1.0: AI Implementation Guidelines & Validation
 
 ### Description
