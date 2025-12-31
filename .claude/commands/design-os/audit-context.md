@@ -1,4 +1,4 @@
-<!-- v1.0.0 -->
+<!-- v1.1.0 -->
 
 # Audit Context
 
@@ -40,6 +40,53 @@ CONTENT_LENGTH=$(tr -d '[:space:]' < "$CONTEXT_FILE" | wc -c)
 if [ "$CONTENT_LENGTH" -lt 500 ]; then
   echo "Error: product-context.md - File is empty or incomplete. Run /product-interview to complete the interview."
   exit 1
+fi
+
+# Save previous report values for comparison (used in Step 10)
+PREV_HIGH=0
+PREV_MEDIUM=0
+PREV_LOW=0
+PREV_REPORT_EXISTS=false
+
+if [ -f "$REPORT_FILE" ]; then
+  PREV_REPORT_EXISTS=true
+  PREV_HIGH=$(grep "🔴 HIGH" "$REPORT_FILE" | grep -oE '[0-9]+' | head -1 || echo 0)
+  PREV_MEDIUM=$(grep "🟠 MEDIUM" "$REPORT_FILE" | grep -oE '[0-9]+' | head -1 || echo 0)
+  PREV_LOW=$(grep "🟡 LOW" "$REPORT_FILE" | grep -oE '[0-9]+' | head -1 || echo 0)
+fi
+
+# Verify essential file structure
+STRUCTURE_VALID=true
+STRUCTURE_WARNINGS=""
+
+if ! grep -q "^## Quick Reference" "$CONTEXT_FILE"; then
+  STRUCTURE_WARNINGS="${STRUCTURE_WARNINGS}\n  - Missing Quick Reference section"
+  STRUCTURE_VALID=false
+fi
+
+if ! grep -q "^Completeness:" "$CONTEXT_FILE"; then
+  STRUCTURE_WARNINGS="${STRUCTURE_WARNINGS}\n  - Missing Completeness line"
+  STRUCTURE_VALID=false
+fi
+
+SECTION_COUNT=$(grep -c "^## [0-9]\+\." "$CONTEXT_FILE" 2>/dev/null || echo 0)
+if [ "$SECTION_COUNT" -lt 6 ]; then
+  STRUCTURE_WARNINGS="${STRUCTURE_WARNINGS}\n  - Only $SECTION_COUNT/12 category sections found"
+  STRUCTURE_VALID=false
+fi
+
+if ! grep -q "^## Cross-Reference" "$CONTEXT_FILE"; then
+  STRUCTURE_WARNINGS="${STRUCTURE_WARNINGS}\n  - Missing Cross-Reference section"
+  STRUCTURE_VALID=false
+fi
+
+if [ "$STRUCTURE_VALID" = false ]; then
+  echo "⚠️ Structure warnings detected:$STRUCTURE_WARNINGS"
+  echo ""
+  echo "The context file may be corrupted or incomplete."
+  echo "Consider running /product-interview to regenerate."
+  echo ""
+  # Continue with audit but note issues in report
 fi
 ```
 
@@ -473,6 +520,175 @@ Write to `product/audit-report.md`:
 
 1. [Suggestion]
 2. [Suggestion]
+
+---
+
+## AI Implementation Guidelines
+
+> **For AI Agents:** When fixing issues in `product-context.md`, follow these strict rules to preserve file integrity.
+
+### File Structure Rules
+
+**CRITICAL — DO NOT MODIFY:**
+
+- Line 1: `# Product Context: [Product Name]` — header format
+- Lines 2-5: Metadata block (`Generated:`, `Last Updated:`, `Completeness:`, `Mode:`)
+- `## Quick Reference` table structure and column format
+- `## N. Category Name` section headers (1-12)
+- `## Cross-Reference: Design OS Commands` section structure
+
+**SAFE TO MODIFY:**
+
+- Content under `### Subsection` headings within categories
+- Values after field labels (e.g., `**Provider:** [value here]`)
+- List items under subsections
+- Text within existing markdown structures
+
+### Edit Location Rules
+
+| Issue Type            | Where to Edit                                  | How to Locate                                          |
+| --------------------- | ---------------------------------------------- | ------------------------------------------------------ |
+| Q-002 (Placeholder)   | Replace placeholder text in-place              | Search for exact placeholder string                    |
+| Q-005 (Empty section) | Add content under existing `### Heading`       | Find the `### Heading`, add below it                   |
+| C-XXX (Consistency)   | Update conflicting value in specified category | Go to `## N. Category`, find relevant `### Subsection` |
+| L-XXX (Logic)         | Fix the value causing contradiction            | Locate by category + subsection from issue             |
+| A-XXX (Ambiguity)     | Replace vague term with specific value         | Search for quoted vague term                           |
+
+### Edit Pattern
+
+**ALWAYS use this pattern:**
+
+1. **Read** the current content of the target subsection
+2. **Identify** the exact line(s) to change
+3. **Replace** only the problematic content, preserving:
+   - The `### Subsection` heading
+   - The field label format (e.g., `**Field:**`)
+   - Surrounding content that is correct
+4. **Verify** the edit didn't change structure
+
+### Example Fixes
+
+**Q-002 Fix (Placeholder → Concrete Value):**
+\`\`\`
+LOCATE: ## 9. Integration Points → ### Authentication
+FIND: **Provider:** TBD - will decide later
+REPLACE WITH: **Provider:** OAuth 2.0 (Google, GitHub)
+PRESERVE: Everything else in the section
+\`\`\`
+
+**Q-005 Fix (Empty Section → Add Content):**
+\`\`\`
+LOCATE: ## 3. Design Direction → ### Visual Inspiration
+CURRENT: ### Visual Inspiration
+[empty]
+ADD AFTER HEADING: - **Linear** — Clean, minimal interface with subtle animations - **Notion** — Flexible blocks, keyboard-first navigation
+PRESERVE: The ### heading itself, next ### or ## section
+\`\`\`
+
+**C-001 Fix (GDPR without audit):**
+\`\`\`
+LOCATE: ## 4. Data Architecture → ### Audit & History
+FIND: **Level:** Basic
+REPLACE WITH: **Level:** Full audit — Who changed what, when, with old values (required for GDPR)
+PRESERVE: All other subsections in Category 4
+\`\`\`
+
+### Automatic Validation Protocol
+
+> **MANDATORY:** AI agents MUST run validation before AND after editing `product-context.md`.
+
+#### Pre-Edit Validation
+
+\`\`\`bash
+CONTEXT_FILE="product/product-context.md"
+
+# 1. Count sections (must be 12)
+
+SECTION_COUNT=$(grep -c "^## [0-9]\+\." "$CONTEXT_FILE")
+echo "Sections: $SECTION_COUNT/12"
+
+# 2. Verify Quick Reference exists
+
+grep -q "^## Quick Reference" "$CONTEXT_FILE" && echo "Quick Reference: ✓" || echo "Quick Reference: MISSING"
+
+# 3. Verify Completeness line format
+
+grep -q "^Completeness:" "$CONTEXT_FILE" && echo "Completeness line: ✓" || echo "Completeness line: MISSING"
+
+# 4. Count subsections per category (for comparison)
+
+for i in $(seq 1 12); do
+  SUBSECTION_COUNT=$(sed -n "/^## $i\./,/^## /p" "$CONTEXT_FILE" | grep -c "^### ")
+echo "Category $i subsections: $SUBSECTION_COUNT"
+done
+
+# 5. Calculate file hash for rollback reference
+
+FILE_HASH=$(md5 -q "$CONTEXT_FILE" 2>/dev/null || md5sum "$CONTEXT_FILE" | cut -d' ' -f1)
+echo "Pre-edit hash: $FILE_HASH"
+\`\`\`
+
+#### Post-Edit Validation
+
+\`\`\`bash
+VALIDATION_PASSED=true
+
+# 1. Section count must still be 12
+
+NEW_SECTION_COUNT=$(grep -c "^## [0-9]\+\." "$CONTEXT_FILE")
+if [ "$NEW_SECTION_COUNT" -ne 12 ]; then
+echo "❌ FAIL: Section count changed"
+VALIDATION_PASSED=false
+fi
+
+# 2. Quick Reference must exist
+
+if ! grep -q "^## Quick Reference" "$CONTEXT_FILE"; then
+echo "❌ FAIL: Quick Reference section deleted"
+VALIDATION_PASSED=false
+fi
+
+# 3. Completeness line must exist
+
+if ! grep -q "^Completeness: [0-9]\+%" "$CONTEXT_FILE"; then
+echo "❌ FAIL: Completeness line missing or malformed"
+VALIDATION_PASSED=false
+fi
+
+# 4. Cross-Reference section must exist
+
+if ! grep -q "^## Cross-Reference" "$CONTEXT_FILE"; then
+echo "❌ FAIL: Cross-Reference section deleted"
+VALIDATION_PASSED=false
+fi
+
+# 5. Report result
+
+if [ "$VALIDATION_PASSED" = true ]; then
+echo "✅ Validation PASSED: File structure intact"
+else
+echo "🔴 Validation FAILED: Revert changes immediately"
+fi
+\`\`\`
+
+#### Rollback Protocol
+
+If post-edit validation fails:
+
+1. **DO NOT make additional edits**
+2. **Report the failure** to the user
+3. **Suggest restoration:** `git checkout -- product/product-context.md` or re-run `/product-interview`
+
+### Anti-Patterns (NEVER DO)
+
+| Anti-Pattern                       | Why It's Wrong                                 |
+| ---------------------------------- | ---------------------------------------------- |
+| Append fixes to end of file        | Content must be in correct category/subsection |
+| Delete section to rewrite it       | May lose content that wasn't flagged           |
+| Change section numbering           | Numbers 1-12 are fixed structure               |
+| Add new ## sections                | Only 12 categories exist                       |
+| Modify Quick Reference table       | User updates this manually                     |
+| Remove content that wasn't flagged | Only fix flagged issues                        |
 ```
 
 ### 8.3: Write Report File
@@ -603,13 +819,22 @@ After review:
 Recommended workflow:
 
 1. Open product/product-context.md
-2. Search for each ISSUE-XXX from report
-3. Apply recommended fixes
-4. Run: /audit-context
-5. Repeat until HIGH = 0
+2. For each ISSUE-XXX from report:
+   - Locate the exact section (## Category → ### Subsection)
+   - Apply the fix IN-PLACE (don't append to end)
+   - Preserve surrounding content
+3. Run: /audit-context
+4. Repeat until HIGH = 0
 
 Tip: Start with HIGH priority, leave LOW for later.
 ```
+
+> **For AI agents:** See "AI Implementation Guidelines" section in the report for detailed editing rules including:
+>
+> - File structure rules (what to modify, what to preserve)
+> - Edit location rules per issue type
+> - Pre/post-edit validation protocol
+> - Rollback instructions if validation fails
 
 **If "Continui oricum":**
 
@@ -638,16 +863,14 @@ To resume later:
 
 ## Step 10: Re-run Detection (Optional)
 
-If a previous report exists, compare with current run:
+If a previous report existed (detected in Step 1), compare with current run:
+
+> **Note:** Previous values were saved in Step 1 BEFORE the new report overwrote the file. This ensures accurate comparison.
 
 ```bash
-if [ -f "$REPORT_FILE" ]; then
-  # Parse previous counts from existing report
-  PREV_HIGH=$(grep "🔴 HIGH" "$REPORT_FILE" | grep -oE '[0-9]+' | head -1)
-  PREV_MEDIUM=$(grep "🟠 MEDIUM" "$REPORT_FILE" | grep -oE '[0-9]+' | head -1)
-  PREV_LOW=$(grep "🟡 LOW" "$REPORT_FILE" | grep -oE '[0-9]+' | head -1)
-
-  # Show comparison
+# Use pre-saved values from Step 1 (not reading from file, which was overwritten)
+if [ "$PREV_REPORT_EXISTS" = true ]; then
+  # Show comparison using pre-saved values
   echo "📊 Comparison with previous analysis:"
   echo ""
   echo "Before: $PREV_HIGH HIGH, $PREV_MEDIUM MEDIUM, $PREV_LOW LOW"
@@ -655,9 +878,14 @@ if [ -f "$REPORT_FILE" ]; then
   echo ""
 
   # Calculate delta
-  RESOLVED=$((PREV_HIGH + PREV_MEDIUM + PREV_LOW - TOTAL_ISSUES))
+  PREV_TOTAL=$((PREV_HIGH + PREV_MEDIUM + PREV_LOW))
+  RESOLVED=$((PREV_TOTAL - TOTAL_ISSUES))
   if [ "$RESOLVED" -gt 0 ]; then
     echo "✅ Resolved: $RESOLVED issues fixed"
+  elif [ "$RESOLVED" -lt 0 ]; then
+    echo "⚠️ New issues: $((-RESOLVED)) additional issues found"
+  else
+    echo "➡️ No change in issue count"
   fi
 fi
 ```

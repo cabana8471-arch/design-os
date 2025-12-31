@@ -173,6 +173,8 @@ Generate the complete export package with all components, types, and handoff doc
 
 **Note on Design Tokens for /design-shell:** While design tokens are optional, if they don't exist, `/design-shell` will use default stone/lime colors. For product-specific branding, run `/design-tokens` before `/design-shell`.
 
+> **Relationship to /audit-context Command Readiness:** The table above shows FILE prerequisites (what files must exist). The `/audit-context` command has a separate "Command Readiness" table showing CATEGORY completeness requirements. A command needs BOTH: the required files must exist AND the relevant categories must have sufficient content.
+
 ### Step Numbering Convention
 
 Design OS commands use decimal step notation for granularity:
@@ -1361,20 +1363,20 @@ Design OS uses a modular template system for generating implementation prompts a
 
 Commands in `.claude/commands/design-os/` include version headers (`<!-- vX.X.X -->`) at the top of each file:
 
-| Command              | Version | Notes                                              |
-| -------------------- | ------- | -------------------------------------------------- |
-| `/product-interview` | v1.3.0  | Split guidance, argument validation, flow guidance |
-| `/audit-context`     | v1.0.0  | Critical analysis of product context               |
-| `/product-vision`    | —       | Check file for version                             |
-| `/product-roadmap`   | —       | Check file for version                             |
-| `/data-model`        | —       | Check file for version                             |
-| `/design-tokens`     | —       | Check file for version                             |
-| `/design-shell`      | —       | Check file for version                             |
-| `/shape-section`     | —       | Check file for version                             |
-| `/sample-data`       | —       | Check file for version                             |
-| `/design-screen`     | —       | Check file for version                             |
-| `/screenshot-design` | —       | Check file for version                             |
-| `/export-product`    | —       | Check file for version                             |
+| Command              | Version | Notes                                                            |
+| -------------------- | ------- | ---------------------------------------------------------------- |
+| `/product-interview` | v1.3.0  | Split guidance, argument validation, flow guidance               |
+| `/audit-context`     | v1.1.0  | AI editing guidelines, validation protocol, fix comparison logic |
+| `/product-vision`    | —       | Check file for version                                           |
+| `/product-roadmap`   | —       | Check file for version                                           |
+| `/data-model`        | —       | Check file for version                                           |
+| `/design-tokens`     | —       | Check file for version                                           |
+| `/design-shell`      | —       | Check file for version                                           |
+| `/shape-section`     | —       | Check file for version                                           |
+| `/sample-data`       | —       | Check file for version                                           |
+| `/design-screen`     | —       | Check file for version                                           |
+| `/screenshot-design` | —       | Check file for version                                           |
+| `/export-product`    | —       | Check file for version                                           |
 
 > **Note:** Commands marked "—" should be checked in their source files for version headers. Add versions to this table as commands are updated.
 
