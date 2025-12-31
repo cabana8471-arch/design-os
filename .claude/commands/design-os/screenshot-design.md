@@ -299,6 +299,39 @@ Examples:
 
 If the user wants both light and dark mode screenshots, capture both.
 
+### Dark Mode Screenshot Capture
+
+To capture dark mode variants, toggle the theme before taking the screenshot:
+
+**1. Toggle dark mode via JavaScript:**
+
+Use Playwright MCP's `browser_evaluate` tool to add the `dark` class:
+
+```javascript
+// Toggle TO dark mode
+document.documentElement.classList.add("dark");
+```
+
+**2. Wait for CSS transitions:** Allow 500ms for theme transitions to complete before capturing.
+
+**3. Capture the screenshot** with `-dark` suffix (e.g., `invoice-list-dark.png`).
+
+**4. Restore light mode (optional):**
+
+```javascript
+// Toggle BACK to light mode
+document.documentElement.classList.remove("dark");
+```
+
+**Playwright MCP Sequence:**
+
+1. `browser_evaluate` — Run the dark mode toggle JavaScript
+2. Wait 500ms — Allow transitions to complete
+3. `browser_take_screenshot` — Capture with `-dark` suffix
+4. (Optional) `browser_evaluate` — Restore light mode for next screenshot
+
+> **Note:** The Design OS theme system uses Tailwind's `dark:` variant classes. All components should have dark mode styles. If the screenshot looks incomplete in dark mode, verify the component uses `dark:` prefixed classes for backgrounds, text, and borders.
+
 ## Step 5: Confirm Completion
 
 > **Recovery:** Ensure Step 6 (Clean Up) runs after user interaction, even if user declines additional screenshots.

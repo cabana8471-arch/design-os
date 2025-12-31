@@ -53,6 +53,39 @@ First, check if `/product/product-roadmap.md` exists and read `/product/product-
 
 ---
 
+## Step 1.5: Read Product Scope
+
+Before generating section suggestions, read the product scope from `product-overview.md`:
+
+```bash
+SCOPE=$(grep -oP '(?<=\*\*Scope:\*\* )\w+' product/product-overview.md 2>/dev/null || echo "Standard")
+echo "Product scope: $SCOPE"
+```
+
+**Adjust section suggestions based on scope:**
+
+| Scope      | Section Count | Complexity Guidance                                                    |
+| ---------- | ------------- | ---------------------------------------------------------------------- |
+| MVP        | 2-3 sections  | Core features only. Focus on the primary user flow.                    |
+| Standard   | 3-5 sections  | Full feature set for primary use cases. Cover main user flows.         |
+| Enterprise | 5-7 sections  | Comprehensive features including admin panels, analytics, integrations |
+
+**How scope affects suggestions:**
+
+- **MVP:** Prioritize ruthlessly. Suggest only the essential 2-3 sections that deliver core value. Avoid "nice to have" sections.
+- **Standard:** Suggest a balanced set of 3-5 sections covering primary features and common secondary features.
+- **Enterprise:** Include additional sections for admin dashboards, advanced analytics, user management, integrations, and audit logs.
+
+**Report to user:**
+
+```
+Product scope: [SCOPE]
+
+Based on this scope, I'll suggest [N] sections focused on [scope description].
+```
+
+---
+
 ## If No Roadmap Exists (Creating New)
 
 ### Analyze the Product Overview

@@ -833,6 +833,16 @@ The `## View Relationships` section uses a specific format that `/design-screen`
 **Note on dataRef:**
 When `dataRef = entityId`, the primary view's callback receives just the ID (e.g., `onView(id: string)`). The **preview wrapper** created by `/design-screen` then looks up the full entity from sample data and passes it to the secondary view. The secondary view always receives the full entity object, not just the ID.
 
+**dataRef Resolution (for preview wrappers):**
+
+| dataRef    | Callback Signature           | Lookup Behavior                                   | Code Pattern in Preview Wrapper                  |
+| ---------- | ---------------------------- | ------------------------------------------------- | ------------------------------------------------ |
+| `entityId` | `onView(id: string)`         | Look up entity in **section's own** `data.json`   | `data.entities.find(e => e.id === id)`           |
+| `entity`   | `onView(entity: EntityType)` | Full entity passed directly — no lookup needed    | `onView={(entity) => setSelectedEntity(entity)}` |
+| `none`     | `onCreate()`                 | No data reference — callback triggers action only | `onCreate={() => setIsCreateModalOpen(true)}`    |
+
+> **Important:** The data lookup ALWAYS uses the **section's local** `data.json` (located at `product/sections/[section-id]/data.json`). Cross-section data references are not supported in preview wrappers. If a secondary view needs data from another section, that should be handled at implementation time, not in Design OS previews.
+
 **Parsing Example:**
 
 ```

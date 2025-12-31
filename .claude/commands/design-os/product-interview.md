@@ -475,6 +475,10 @@ Skip interview, just analyze and report:
 - 75%+: "Context is comprehensive. Proceed with `/product-vision`"
 ```
 
+**After displaying audit report:** EXIT the command immediately. Do NOT proceed to interview questions. The `--audit` flag is for checking status only. If the user wants to answer questions, they should run `/product-interview` (without `--audit`).
+
+---
+
 ### Category Skip Logic (for "complete_missing" mode)
 
 > **Note:** This mode corresponds to user selection "Completăm ce lipsește" in Romanian UI.
