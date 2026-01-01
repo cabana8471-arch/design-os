@@ -260,7 +260,7 @@ Then create `product/sections/[section-id]/data.json` with:
 
 ### Required `_meta` Structure
 
-> **See also:** agents.md → "File Validation Pattern" section for the standardized validation approach used across all commands.
+> **See also:** `agents/validation-patterns.md` → "File Validation Pattern" section for the standardized validation approach used across all commands.
 
 Every data.json MUST include a `_meta` object at the top level with:
 

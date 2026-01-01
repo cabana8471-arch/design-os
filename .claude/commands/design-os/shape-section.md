@@ -155,7 +155,7 @@ Once a section is selected, immediately generate and validate its section-id:
 - "Reports..." → `reports` (trailing punctuation removed)
 - "100% Complete" → `100-complete` (special chars removed, numbers preserved)
 
-> **See also:** `agents.md` → "Section ID Generation Rules" for the standardized specification used across all commands.
+> **See also:** `agents/validation-patterns.md` → "Section ID Generation Rules" for the standardized specification used across all commands.
 
 **Validate against roadmap:**
 
@@ -378,7 +378,7 @@ Options:
 - **Different patterns** — Use the optimal pattern for each screen size (e.g., table on desktop, cards on mobile). Better UX, more work.
 - **Mobile-first progressive** — Start with mobile layout, progressively enhance for larger screens. Best for mobile-dominant user base.
 
-> **Viewport Reference:** Design OS uses standardized viewport dimensions for testing: Desktop (1280×800), Tablet (768×1024), Mobile (375×667). See agents.md → "Viewport Dimensions (Standardized)" for breakpoint details.
+> **Viewport Reference:** Design OS uses standardized viewport dimensions for testing: Desktop (1280×800), Tablet (768×1024), Mobile (375×667). See `agents/validation-patterns.md` → "Viewport Dimensions (Standardized)" for breakpoint details.
 
 ### Record Layout Choices
 
@@ -865,7 +865,7 @@ Output: {
 >
 > View Relationships wire views within a section (e.g., list → detail drawer). Shell Relationships wire global shell elements (e.g., header action → notifications drawer).
 >
-> **See also:** `agents.md` → "View Relationships" section for the canonical relationship format specification, relationship types (drawer/modal/inline), data references, and how `/sample-data` and `/design-screen` use these relationships.
+> **See also:** `agents/section-system.md` → "View Relationships" section for the canonical relationship format specification, relationship types (drawer/modal/inline), data references, and how `/sample-data` and `/design-screen` use these relationships.
 
 **Important:**
 

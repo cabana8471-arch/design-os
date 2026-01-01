@@ -702,7 +702,7 @@ Verify context completeness for each downstream Design OS command.
 >
 > **Example:** `/design-shell` uses Categories 2, 3, 7, 9 per Cross-Reference. Of these, Categories 2 and 3 are Required (shell design fundamentals), while 7 and 9 are Optional (mobile patterns and auth integration enhance the design but aren't strictly necessary).
 >
-> **Important — Category vs File Prerequisites:** This table checks **category completeness** only (whether context answers exist). Commands also have **file prerequisites** (whether required files like `product-overview.md` exist). A command showing "Ready" here may still fail if prerequisite files are missing. See `agents.md` → "Command Prerequisites" table for file requirements.
+> **Important — Category vs File Prerequisites:** This table checks **category completeness** only (whether context answers exist). Commands also have **file prerequisites** (whether required files like `product-overview.md` exist). A command showing "Ready" here may still fail if prerequisite files are missing. See `agents/command-reference.md` → "Command Prerequisites" table for file requirements.
 
 **Check implementation:**
 

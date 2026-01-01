@@ -156,7 +156,7 @@ This command is split into modular phase files for maintainability:
 
 ## See Also
 
-- `agents.md` → Product Context System, Completeness Requirements
+- `agents/export-handoff.md` → Product Context System, Completeness Requirements
 - `agents/validation-patterns.md` → Prerequisite checks, Error handling
 - `/audit-context` → Deep analysis of product-context.md
 - `/product-vision` → Next command after interview

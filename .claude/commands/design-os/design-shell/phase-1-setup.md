@@ -58,7 +58,7 @@ These pre-inform design decisions in Steps 3, 3.5, and 3.6.
 > - **Step 0.7** determines next actions based on the mode selected in Step 0.1
 >   This is NOT an automated process — each check requires verification and judgment.
 
-> **Responsive Strategy:** Shell components use **desktop-first** design — full navigation layout is designed first, then simplified for mobile (hamburger menu, collapsible sidebar). See `agents.md` → "Responsive Strategy Clarification" for details.
+> **Responsive Strategy:** Shell components use **desktop-first** design — full navigation layout is designed first, then simplified for mobile (hamburger menu, collapsible sidebar). See `agents/validation-patterns.md` → "Responsive Strategy Clarification" for details.
 
 ## Step 0.1: Detect Existing Shell
 
@@ -238,7 +238,7 @@ If accessibility or UX enhancements are priorities, validate use of utility comp
 | M4    | ThemeToggle uses useShellShortcuts?            | Add for keyboard shortcuts |
 | M5    | ShellSkeleton used for loading states?         | Add for loading UX         |
 
-> **See also:** `agents.md` → "Shell Utility Components" section for component descriptions and usage.
+> **See also:** `agents/shell-system.md` → "Shell Utility Components" section for component descriptions and usage.
 
 ## Step 0.6: Display Audit Report
 
@@ -457,7 +457,7 @@ Use AskUserQuestion with options:
 - "Continue with basic design principles" — Proceed using fallback guidance
 - "Stop — I'll add the skill file first" — END COMMAND
 
-Track user's choice - if continuing without skill file, use these **enhanced fallback design principles** (see agents.md → "Enhanced Fallback Design Guidance" for full details):
+Track user's choice - if continuing without skill file, use these **enhanced fallback design principles** (see `agents/section-system.md` → "Enhanced Fallback Design Guidance" for full details):
 
 **Aesthetic Tone Options** (ask user to choose one):
 

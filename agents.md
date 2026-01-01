@@ -216,6 +216,7 @@ See `agents/validation-patterns.md`:
 - Variable Naming Conventions
 - Retry Pattern
 - Viewport Dimensions
+- Responsive Strategy Clarification
 - Hookify Guardrails
 
 ### For Export & Context

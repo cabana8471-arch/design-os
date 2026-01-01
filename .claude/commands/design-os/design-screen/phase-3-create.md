@@ -190,58 +190,7 @@ export function InvoiceList({
 
 ### Design Token Shade Guide
 
-Use specific shades for each UI element type to ensure consistency:
-
-**Primary Color Shades:**
-| Element | Light Mode | Dark Mode |
-|---------|------------|-----------|
-| Primary button background | `[primary]-600` | `[primary]-500` |
-| Primary button hover | `[primary]-700` | `[primary]-400` |
-| Primary link text | `[primary]-600` | `[primary]-400` |
-| Primary accent/highlight | `[primary]-500` | `[primary]-400` |
-| Primary badge/tag background | `[primary]-100` | `[primary]-900` |
-| Primary badge/tag text | `[primary]-800` | `[primary]-200` |
-
-**Secondary Color Shades:**
-| Element | Light Mode | Dark Mode |
-|---------|------------|-----------|
-| Secondary button background | `[secondary]-100` | `[secondary]-800` |
-| Secondary button text | `[secondary]-800` | `[secondary]-100` |
-| Secondary badge background | `[secondary]-100` | `[secondary]-900` |
-| Secondary badge text | `[secondary]-700` | `[secondary]-200` |
-| Subtle highlight | `[secondary]-50` | `[secondary]-900/50` |
-
-**Neutral Color Shades:**
-| Element | Light Mode | Dark Mode |
-|---------|------------|-----------|
-| Page background | `[neutral]-50` | `[neutral]-950` |
-| Card background | `white` | `[neutral]-900` |
-| Border/divider | `[neutral]-200` | `[neutral]-800` |
-| Primary text | `[neutral]-900` | `[neutral]-100` |
-| Secondary text | `[neutral]-600` | `[neutral]-400` |
-| Muted/placeholder text | `[neutral]-400` | `[neutral]-500` |
-| Disabled element | `[neutral]-300` | `[neutral]-700` |
-
-**Example Usage:**
-
-```tsx
-// Primary button
-<button className="bg-lime-600 hover:bg-lime-700 dark:bg-lime-500 dark:hover:bg-lime-400 text-white">
-  Save Changes
-</button>
-
-// Secondary badge
-<span className="bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
-  Active
-</span>
-
-// Card with neutral styling
-// Note: Replace [neutral] with your neutral color from design tokens (e.g., stone, slate, gray)
-<div className="bg-white dark:bg-[neutral]-900 border border-[neutral]-200 dark:border-[neutral]-800">
-  <p className="text-[neutral]-900 dark:text-[neutral]-100">Primary text</p>
-  <p className="text-[neutral]-600 dark:text-[neutral]-400">Secondary text</p>
-</div>
-```
+> **See also:** `agents/design-system.md` → "Design Token Shade Guide" for complete shade tables and examples.
 
 ### What to Include
 
@@ -978,7 +927,7 @@ This helps users track their progress and ensures all views are completed before
 - Sub-components should also be props-based for maximum portability
 - Apply design tokens when available for consistent branding
 - Screen designs render inside the shell when viewed in Design OS (if shell exists)
-- For Lucide icons, follow stroke width conventions (see agents.md → "Icon Stroke Width Convention")
+- For Lucide icons, follow stroke width conventions (see `agents/design-system.md` → "Icon Stroke Width Convention")
 
 ### Path Alias Validation (`@/` and `@/../`)
 

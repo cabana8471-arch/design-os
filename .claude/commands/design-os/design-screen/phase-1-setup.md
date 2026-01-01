@@ -63,7 +63,7 @@ These ensure designs include all necessary states and patterns.
 >
 > The preview wrapper created for the first view will be updated to include subsequent views.
 
-> **Responsive Strategy:** Section components use **mobile-first** design — single-column layouts for mobile are designed first, then enhanced for larger screens (grids, multi-column layouts). See `agents.md` → "Responsive Strategy Clarification" for details.
+> **Responsive Strategy:** Section components use **mobile-first** design — single-column layouts for mobile are designed first, then enhanced for larger screens (grids, multi-column layouts). See `agents/validation-patterns.md` → "Responsive Strategy Clarification" for details.
 
 ### Multi-View Workflow Details
 
@@ -141,7 +141,7 @@ Use AskUserQuestion with options:
 
 Track user's choice - if continuing without skill file, use the **fallback design principles** defined in `agents.md`.
 
-> **Note:** The full fallback design principles are documented in `agents.md` → "Enhanced Fallback Design Guidance" section. This includes: Aesthetic Tone Options, Visual Hierarchy, Color Application, Typography Choices, Motion & Interaction, and Distinctiveness Requirements. For skill file validation, see `agents.md` → "Skill File Validation Pattern".
+> **Note:** The full fallback design principles are documented in `agents/section-system.md` → "Enhanced Fallback Design Guidance" section. This includes: Aesthetic Tone Options, Visual Hierarchy, Color Application, Typography Choices, Motion & Interaction, and Distinctiveness Requirements. For skill file validation, see `agents/section-system.md` → "Skill File Validation Pattern".
 
 ### Validate UI Components for Wiring
 
@@ -232,7 +232,7 @@ Use AskUserQuestion with options:
 - "Continue with spec path section" — Use the section ID from file path
 - "Cancel — I'll verify the files first" — END COMMAND
 
-> **See also:** `agents.md` → "Section ID Generation Rules" for the standardized section ID format.
+> **See also:** `agents/validation-patterns.md` → "Section ID Generation Rules" for the standardized section ID format.
 
 ### Verify Section Files
 
@@ -317,7 +317,7 @@ For each relationship found:
 3. Render the secondary view in appropriate wrapper (`Sheet` for drawer, `Dialog` for modal)
 4. Pass entity data based on `dataRef` (`entityId` = lookup, `entity` = pass directly, `none` = no data)
 
-> **See also:** agents.md → "View Relationships" section for complete specification.
+> **See also:** `agents/section-system.md` → "View Relationships" section for complete specification.
 
 ## Step 2: Check for Design System, Shell, and Design Direction
 

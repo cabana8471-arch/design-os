@@ -138,7 +138,7 @@ Shell components use **desktop-first** design:
 - Full navigation layout is designed first
 - Then simplified for mobile (hamburger menu, collapsible sidebar)
 
-See `agents.md` → "Responsive Strategy Clarification" for details.
+See `agents/validation-patterns.md` → "Responsive Strategy Clarification" for details.
 
 ### Shell Component Categories
 
@@ -152,6 +152,6 @@ See `agents.md` → "Responsive Strategy Clarification" for details.
 
 ## See Also
 
-- `agents.md` → Shell Relationships, Shell Props Passthrough, Shell Utility Components
+- `agents/shell-system.md` → Shell Relationships, Shell Props Passthrough, Shell Utility Components
 - `agents/shell-system.md` → Detailed shell system documentation
 - `agents/validation-patterns.md` → Error handling and recovery patterns

@@ -212,7 +212,7 @@ If the Hide button cannot be found or clicked, follow this fallback procedure:
 | **Mobile**            | 375px  | 667px  | Mobile-responsive variants         |
 | **Tablet**            | 768px  | 1024px | Tablet variants (optional)         |
 
-> **Canonical Source:** These dimensions are defined in `agents.md` → "Viewport Dimensions (Standardized)". If values differ, agents.md takes precedence. See that section for responsive breakpoint details and additional context.
+> **Canonical Source:** These dimensions are defined in `agents/validation-patterns.md` → "Viewport Dimensions (Standardized)". If values differ, that section takes precedence. See it for responsive breakpoint details and additional context.
 
 ### Viewport Selection Guidance
 

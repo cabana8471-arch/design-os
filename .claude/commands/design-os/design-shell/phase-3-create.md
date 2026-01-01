@@ -364,7 +364,7 @@ Example rules:
 
 **NEW:** Based on the interactive elements selected in Step 3.6, add the `## Shell Relationships` section to `product/shell/spec.md`.
 
-> **See also:** agents.md → "Shell Relationships" section for complete specification including all valid trigger types, relationship types, and data references.
+> **See also:** `agents/shell-system.md` → "Shell Relationships" section for complete specification including all valid trigger types, relationship types, and data references.
 
 **Format:** `[Trigger].[action] -> [Component] ([type], [dataRef])`
 
@@ -673,7 +673,7 @@ Create the shell components at `src/shell/components/`:
 > | **Utility**   | Pre-existing (boilerplate) | SkipLink, ShellErrorBoundary, ThemeToggle | No        |
 >
 > Utility components are NOT created by this command — they're already in the boilerplate.
-> See agents.md → "Shell Utility Components" for details.
+> See `agents/shell-system.md` → "Shell Utility Components" for details.
 
 ### Primary Components (Always Created by /design-shell)
 
@@ -1639,4 +1639,4 @@ Next: Run `/shape-section` to start designing your first section."
 - Section screen designs will render inside the shell's content area
 - Secondary components use Sheet (for drawers) and Dialog (for modals) from shadcn/ui
 - Shell Relationships map triggers to secondary components for wired preview
-- For Lucide icons, follow stroke width conventions: 1.5 default, 2 for small icons, 2.5+ for emphasis (see agents.md → "Icon Stroke Width Convention")
+- For Lucide icons, follow stroke width conventions: 1.5 default, 2 for small icons, 2.5+ for emphasis (see `agents/design-system.md` → "Icon Stroke Width Convention")

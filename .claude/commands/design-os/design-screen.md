@@ -119,9 +119,9 @@ For sections with multiple views:
 
 ## See Also
 
-- `agents.md` → View Relationships, Shell Relationships, Design Requirements
-- `agents.md` → Content Container Standard, Design Token Shade Guide
-- `agents.md` → Enhanced Fallback Design Guidance, Skill File Validation Pattern
+- `agents/section-system.md` → View Relationships, Enhanced Fallback Design Guidance, Skill File Validation Pattern
+- `agents/shell-system.md` → Shell Relationships
+- `agents/design-system.md` → Design Requirements, Content Container Standard, Design Token Shade Guide
 - `/shape-section` → Section specification with views
 - `/sample-data` → Sample data and types generation
 - `/screenshot-design` → Capture screenshots after design

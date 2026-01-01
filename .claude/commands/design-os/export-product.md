@@ -111,6 +111,6 @@ product-plan.zip (archive of above)
 
 ## See Also
 
-- `agents.md` → "Export & Handoff" section for context
-- `agents.md` → "Template System" section for template details
+- `agents/export-handoff.md` → "Export & Handoff" section for context
+- `agents/command-reference.md` → "Template System" section for template details
 - `.claude/templates/design-os/README.md` for template documentation
