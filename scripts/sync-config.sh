@@ -6,8 +6,10 @@
 # DIRECTORIES TO SYNC (recursive)
 # ============================================================================
 SYNC_DIRS=(
+  "agents"                           # Modular documentation (6 files referenced by agents.md)
   ".claude/commands/design-os"
   ".claude/hookify"
+  ".claude/reference"                # Index files for quick navigation
   ".claude/skills/frontend-design"
   ".claude/templates/design-os"
   "src/components"
@@ -26,6 +28,10 @@ SYNC_DIRS=(
 SYNC_FILES=(
   "agents.md"
   "CLAUDE.md"
+  "CLAUDE-QUICK.md"                  # Token-saving alternative
+  "claude.md"                         # Pointer file to agents.md
+  "components.json"                   # shadcn/ui configuration
+  "LICENSE"                           # License file
   "package.json"
   "vite.config.ts"
   "tsconfig.json"
@@ -91,6 +97,7 @@ EXCLUDE_PATTERNS=(
 # Note: src/shell/components and src/shell/hooks are INCLUDED (utility components)
 # User-generated shell components (AppShell, MainNav) are created by /design-shell
 CREATE_EXCLUDE_DIRS=(
+  ".archive"                          # Legacy backups
   ".git"
   ".github"
   "node_modules"
