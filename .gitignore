@@ -33,3 +33,6 @@ fix-plan.md
 scripts/logs/
 scripts/targets.txt
 scripts/backups/
+
+# Archive (local backups)
+.archive/
