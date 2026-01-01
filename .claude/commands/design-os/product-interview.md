@@ -884,6 +884,8 @@ If yes, prompt for:
 - Font preference (or "open to suggestions")
 - Logo available? (Yes/No)
 
+> **Note:** Mono/code font selection is handled by `/design-tokens` (defaults to IBM Plex Mono). Only collect general font preferences here.
+
 ### Question 4.5: Visual Inspiration
 
 "Există produse sau site-uri ale căror design îl admiri?"

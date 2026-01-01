@@ -764,8 +764,8 @@ for line in spec_lines:
         break  # Next section started
     elif in_relationships_section and line.startswith("- "):
         # Parse: "- PrimaryView.callback -> SecondaryView (type, dataRef)"
-        # Regex: ^- (\w+)\.(\w+) -> (\w+) \((\w+), (\w+)\)$
-        match = re.match(r'^- (\w+)\.(\w+) -> (\w+) \((\w+), (\w+)\)$', line.strip())
+        # Regex: Flexible spacing to handle variations like extra spaces around dots/arrows
+        match = re.match(r'^\s*-\s*(\w+)\s*\.\s*(\w+)\s*->\s*(\w+)\s*\(\s*(\w+)\s*,\s*(\w+)\s*\)\s*$', line.strip())
         if match:
             relationships.append({
                 'primary': match.group(1),
@@ -994,6 +994,16 @@ When navigating to `/sections/[section-id]`:
 ## Step 5: Apply Frontend Design Guidance
 
 Before creating the screen design, apply the design guidance (validated in Step 1) to ensure high-quality design output.
+
+### Design Guidance Priority
+
+Apply design guidance in this priority order:
+
+1. **`product/design-system/design-direction.md`** (if exists) — Contains aesthetic decisions from `/design-shell`, ensures consistency across sections
+2. **`.claude/skills/frontend-design/SKILL.md`** (if validated) — Provides general design principles and patterns
+3. **Fallback design principles** (from Step 1) — Used when neither of the above is available
+
+> **Key Rule:** If `design-direction.md` exists, its visual signatures and guidelines take precedence. SKILL.md provides additional techniques, but design-direction.md defines the product's specific aesthetic.
 
 ### Design Guidance Application
 

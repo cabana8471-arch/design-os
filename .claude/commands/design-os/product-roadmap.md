@@ -393,6 +393,8 @@ done
 5. Cannot start or end with hyphen
 6. Maximum 50 characters
 
+> **See also:** `agents.md` → "Section ID Generation Rules" for the complete authoritative specification.
+
 **5. Verify cleanup:**
 
 - Run the dev server and check the homepage shows only current sections

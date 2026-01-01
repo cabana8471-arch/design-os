@@ -174,6 +174,8 @@ Generate the complete export package with all components, types, and handoff doc
 **Note on Design Tokens for /design-shell:** While design tokens are optional, if they don't exist, `/design-shell` will use default stone/lime colors. For product-specific branding, run `/design-tokens` before `/design-shell`.
 
 > **Relationship to /audit-context Command Readiness:** The table above shows FILE prerequisites (what files must exist). The `/audit-context` command has a separate "Command Readiness" table showing CATEGORY completeness requirements. A command needs BOTH: the required files must exist AND the relevant categories must have sufficient content.
+>
+> **Quick Reference:** See `.claude/commands/design-os/audit-context.md` Step 8.2 for the complete Command Readiness table that maps commands to required category completeness levels.
 
 ### Step Numbering Convention
 
@@ -202,6 +204,8 @@ Design OS commands use decimal step notation for granularity:
 When referencing steps in other commands, use format: `/[command] Step N.M`
 
 Example: "See `/design-shell` Step 6.5 for design direction creation"
+
+> **Maintenance Note:** When modifying step numbers in a command file, search for references to those steps in agents.md and other command files. Use grep: `grep -r "Step [number]" .claude/` to find all references that may need updating.
 
 ---
 
@@ -355,6 +359,11 @@ src/sections/invoices/
 ```
 
 The preview wrapper imports sample data and provides it to components for Design OS viewing. The exportable components never import data directly — they accept everything via props.
+
+> **Preview Naming Convention:** Shell uses `ShellPreview.tsx` (noun only) while sections use `[ViewName]View.tsx` (noun + View suffix). This is intentional:
+>
+> - **Shell** — Single preview file wraps the entire shell; "Preview" suffix distinguishes it from the AppShell component
+> - **Sections** — Multiple preview files per section (one per view); "View" suffix distinguishes previews from exportable components in the same folder
 
 **Seeing Examples:**
 - Run the Design OS workflow commands (`/product-vision`, `/shape-section`, etc.) to generate real examples
@@ -598,6 +607,8 @@ description: skill description
 
 Note: The `name:` and `description:` fields are NOT inside YAML frontmatter — they appear before the `---` separator. This is intentional for readability.
 
+> **Why this format?** Standard YAML frontmatter (between two `---` lines) is parsed as metadata and often hidden by editors. By placing `name:` and `description:` BEFORE the `---`, they remain visible when reading the file directly. The `---` then separates metadata from the actual guidance content. To parse this format, read lines before the first `---` for metadata, and everything after for content.
+
 **When to Use:**
 
 - Referenced by `/design-shell` command — before creating shell components
@@ -652,8 +663,10 @@ Commands that reference the frontend-design skill (`/design-shell`, `/design-scr
 **Validation Steps:**
 
 1. **Check existence:** Verify `.claude/skills/frontend-design/SKILL.md` exists
-2. **Check content:** File must have at least 100 characters of meaningful content (excluding frontmatter)
+2. **Check content:** File must have at least 100 characters after stripping metadata and whitespace (roughly 2-3 short paragraphs of actual guidance)
 3. **Check structure:** File should contain design guidance sections
+
+> **What counts as "meaningful":** 100 chars is the minimum threshold to ensure the file isn't just boilerplate. A proper skill file should have at least 500+ chars covering aesthetic principles, typography choices, and color philosophy.
 
 **Validation Script:**
 
@@ -953,6 +966,32 @@ The `/design-shell` command (Step 3.6) asks about interactive elements and store
 | `helpTopics`    | Help documentation                | `HelpPanelProps`                  |
 | `none`          | No data needed (just callbacks)   | Component-specific callbacks only |
 
+**Data Structure Examples (from `product/shell/data.json`):**
+
+```json
+{
+  "notifications": [
+    {
+      "id": "n1",
+      "title": "New message",
+      "read": false,
+      "timestamp": "2024-01-15T10:30:00Z"
+    }
+  ],
+  "user": {
+    "id": "u1",
+    "name": "Jane Smith",
+    "email": "jane@example.com",
+    "avatar": "/avatars/jane.jpg"
+  },
+  "settings": {
+    "theme": "system",
+    "notifications": true,
+    "language": "en"
+  }
+}
+```
+
 ### How It Works
 
 1. **`/design-shell` Step 3.6** — Asks about interactive elements, records selections
@@ -1157,6 +1196,23 @@ The `/design-shell` command creates this document in Step 6.5, after defining th
 | `/export-product` | **Copies** to export package                               |
 
 > **Note:** `/shape-section` and `/sample-data` intentionally don't reference design-direction.md because they define WHAT the section does, not HOW it looks. Visual design is applied later by `/design-screen`.
+
+### Fallback Behavior
+
+If design-direction.md doesn't exist (user hasn't run `/design-shell`), commands behave as follows:
+
+| Command           | Fallback Behavior                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------------- |
+| `/design-screen`  | Uses SKILL.md guidance or fallback design principles; applies defaults from `agents.md`              |
+| `/export-product` | Skips copying design-direction.md; generated prompts still work but lack specific aesthetic guidance |
+
+**Why this happens:**
+
+- `/design-shell` is optional — users may start with sections before creating a shell
+- The design-direction.md document provides _consistency_ but isn't _required_ for individual screen designs
+- When missing, each screen design uses the skill file or fallback principles independently
+
+**Recommendation:** Run `/design-shell` before `/design-screen` to establish aesthetic consistency across all sections.
 
 ### Exported To
 
@@ -1367,18 +1423,18 @@ Commands in `.claude/commands/design-os/` include version headers (`<!-- vX.X.X 
 | -------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `/product-interview` | v1.3.5  | + Warning behavior for --minimal --skip-validation, mid-interview correction, file write verification, completeness math validation |
 | `/audit-context`     | v1.1.6  | + awk portability fix, output capture wrapper, category guards, Consistency Matrix clarification, variable scope notes              |
-| `/product-vision`    | —       | Check file for version                                                                                                              |
-| `/product-roadmap`   | —       | Check file for version                                                                                                              |
-| `/data-model`        | —       | Check file for version                                                                                                              |
-| `/design-tokens`     | —       | Check file for version                                                                                                              |
-| `/design-shell`      | —       | Check file for version                                                                                                              |
-| `/shape-section`     | —       | Check file for version                                                                                                              |
-| `/sample-data`       | —       | Check file for version                                                                                                              |
-| `/design-screen`     | —       | Check file for version                                                                                                              |
-| `/screenshot-design` | —       | Check file for version                                                                                                              |
-| `/export-product`    | —       | Check file for version                                                                                                              |
+| `/product-vision`    | v1.0.0  | Initial stable version                                                                                                              |
+| `/product-roadmap`   | v1.0.0  | Initial stable version                                                                                                              |
+| `/data-model`        | v1.0.0  | Initial stable version                                                                                                              |
+| `/design-tokens`     | v1.0.0  | Initial stable version                                                                                                              |
+| `/design-shell`      | v1.0.0  | Initial stable version                                                                                                              |
+| `/shape-section`     | v1.0.0  | Initial stable version                                                                                                              |
+| `/sample-data`       | v1.0.0  | Initial stable version                                                                                                              |
+| `/design-screen`     | v1.0.0  | Initial stable version                                                                                                              |
+| `/screenshot-design` | v1.0.0  | Initial stable version                                                                                                              |
+| `/export-product`    | v1.0.0  | Initial stable version                                                                                                              |
 
-> **Note:** Commands marked "—" should be checked in their source files for version headers. Add versions to this table as commands are updated.
+> **Maintenance Note:** When updating a command, bump its version and update this table. Use semantic versioning: patch for fixes, minor for features, major for breaking changes.
 
 ### Usage
 
@@ -1582,9 +1638,11 @@ All commands must follow this consistent pattern for checking prerequisites:
 
 Product scope (MVP/Standard/Enterprise) is determined by `/product-vision` and persisted in `product/product-overview.md`:
 
-- Look for explicit keywords in the document: "MVP", "Standard", "Enterprise", or "Comprehensive"
-- Pattern: `**Scope:** MVP` or `**Scope Level:** Enterprise` in the overview
+- `/product-vision` writes the scope using the format: `**Scope Level:** [MVP|Standard|Enterprise]`
+- Commands that read scope should look for this exact pattern
 - If not found, default to "Standard"
+
+> **Canonical Format:** Always use `**Scope Level:**` (not `**Scope:**`). This ensures consistent parsing across all commands.
 
 | Scope          | Section Complexity | Feature Suggestions                              |
 | -------------- | ------------------ | ------------------------------------------------ |
@@ -1739,6 +1797,8 @@ For commands with multiple steps that can fail (like `/export-product`), include
 
 ### Section ID Generation Rules
 
+> **Single Source of Truth:** These rules are the authoritative definition. Other commands (`/shape-section`, `/product-roadmap`) should reference this section rather than duplicating the rules.
+
 When creating section IDs from section titles, follow these standardized rules:
 
 1. **Convert to lowercase** — "Invoice Management" → "invoice management"
@@ -1879,6 +1939,16 @@ Commands that involve validation loops should follow this consistent retry patte
 
 > **Note:** Commands marked "SHOULD add" would benefit from retry logic for consistency. Currently they fail on first validation error.
 
+**Why different approaches?**
+
+| Approach           | Reason                                                 | Commands                           |
+| ------------------ | ------------------------------------------------------ | ---------------------------------- |
+| Retry (3 attempts) | Iterative fixes needed for structured data validation  | `/sample-data`                     |
+| Fail fast          | Visual output makes issues immediately obvious         | `/design-screen`, `/design-tokens` |
+| Manual recovery    | Multi-step process where issues can occur at any point | `/export-product`                  |
+
+Commands without retry patterns are lower priority because their errors are either immediately visible (visual components) or rare (font validation).
+
 **After 3 failed attempts:**
 
 ```
@@ -1914,6 +1984,13 @@ All commands referencing viewport sizes must use these consistent dimensions:
 | `/export-product`    | Verification checklist includes 375px, 768px, 1024px, 1920px |
 
 **Responsive Strategy Clarification:**
+
+> **TL;DR:** Shell = desktop-first (start with sidebar, add hamburger for mobile). Sections = mobile-first (start with single column, add grid for desktop). Both work at all breakpoints.
+
+| Component | Strategy      | Why                                | Start With    | Enhance For        |
+| --------- | ------------- | ---------------------------------- | ------------- | ------------------ |
+| Shell     | Desktop-first | Navigation optimized for desktop   | Full sidebar  | Hamburger (mobile) |
+| Sections  | Mobile-first  | Content must work on small screens | Single column | Grid (desktop)     |
 
 The shell and section components use different responsive approaches:
 
@@ -2023,11 +2100,13 @@ The Design OS boilerplate includes several intentionally empty directories. This
 | `product/`               | Product definition files           | `/product-vision`, `/product-roadmap`, `/data-model`, `/design-tokens` |
 | `product/sections/`      | Section specifications and data    | `/shape-section`, `/sample-data`                                       |
 | `product/shell/`         | Shell specification                | `/design-shell`                                                        |
-| `product/design-system/` | Design tokens (colors, typography) | `/design-tokens`                                                       |
+| `product/design-system/` | Design tokens (colors, typography) | `/design-tokens`, `/design-shell` (design-direction.md)                |
 | `product/data-model/`    | Global data model                  | `/data-model`                                                          |
 | `src/shell/components/`  | Shell primary/secondary components | `/design-shell` (adds to pre-existing utility components)              |
 | `src/sections/`          | Section screen design components   | `/design-screen`                                                       |
 | `product-plan/`          | Export package (generated)         | `/export-product`                                                      |
+
+> **Note:** Subdirectories within sections (e.g., `product/sections/[id]/`, `src/sections/[id]/components/`) are also initially empty and created by their respective commands.
 
 ### Why Empty?
 
@@ -2127,6 +2206,8 @@ See `.claude/hookify/README.md` for the complete hookify system documentation, i
 - Rule file format and condition operators
 - Creating custom rules
 - Troubleshooting guide
+
+See `.claude/hookify/categories.md` for the category taxonomy and rule organization patterns.
 
 Individual rule files (`.claude/hookify.*.local.md`) contain:
 

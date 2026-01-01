@@ -154,7 +154,20 @@ Use AskUserQuestion with options:
 - "Proceed without shell (Recommended if shell not needed)" — Continue export, skip shell steps
 - "Stop — I'll create the shell first" — END COMMAND
 
-Track the user's choice with a `INCLUDE_SHELL` flag for Steps 8-9.
+**Set the INCLUDE_SHELL flag based on outcome:**
+
+```bash
+# If shell exists and user didn't choose to stop
+if [ "$SHELL_EXISTS" = true ]; then
+  INCLUDE_SHELL=true
+else
+  # User chose to proceed without shell
+  INCLUDE_SHELL=false
+fi
+echo "INCLUDE_SHELL=$INCLUDE_SHELL"
+```
+
+This flag controls Steps 5, 6, 8, 9, 10.5, and 13 behavior regarding shell components.
 
 ### Check Optional Design Direction
 
@@ -578,6 +591,8 @@ Each milestone instruction file should begin with the following preamble (adapt 
 Place in `product-plan/instructions/incremental/01-foundation.md`:
 
 > **Pseudo-code Notation:** This template uses `[IF condition]` and `[If ... :]` syntax as instructions for the AI to conditionally include/exclude content based on the export state. When generating the actual file, evaluate these conditions and include only the appropriate content — do not output the brackets or conditions themselves.
+>
+> **Example:** If `INCLUDE_SHELL=true`, the section `[IF INCLUDE_SHELL=true] Shell renders with navigation` becomes simply `- [ ] Shell renders with navigation`. If `INCLUDE_SHELL=false`, that line is omitted entirely and the `[IF INCLUDE_SHELL=false]` alternatives are included instead.
 
 ```markdown
 # Milestone 1: Foundation

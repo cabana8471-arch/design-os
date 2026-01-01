@@ -178,6 +178,25 @@ Then create the file at `/product/data-model/data-model.md` with this format:
 
 **Important:** Keep descriptions minimal — focus on what each entity represents, not every field it contains. Leave room for the implementation agent to extend the model.
 
+### Verify File Creation
+
+After creating the file, verify it was created correctly:
+
+```bash
+if [ ! -f "product/data-model/data-model.md" ]; then
+  echo "Error: Failed to create product/data-model/data-model.md"
+  exit 1
+fi
+
+# Check file is not empty
+if [ ! -s "product/data-model/data-model.md" ]; then
+  echo "Error: product/data-model/data-model.md is empty"
+  exit 1
+fi
+```
+
+> **Recovery:** If file creation fails, check permissions: `ls -la product/data-model/`
+
 ### Validate Required Sections
 
 After creating the file, verify all required markdown sections exist:
@@ -442,6 +461,20 @@ Relationships should follow a consistent format that clearly communicates cardin
 | `[A] and [B] are linked through [C]` | Many-to-many via junction | "Users and Roles are linked through UserRoles"           |
 | `[A] optionally belongs to [B]`      | Optional many-to-one      | "Task optionally belongs to Project (can be standalone)" |
 | `[A] optionally has one [B]`         | Optional one-to-one       | "User optionally has one Avatar"                         |
+
+**Technical Notation Mapping:**
+
+For those preferring standard database notation, here's the mapping:
+
+| Natural Language            | Technical Notation   | Diagram Symbol |
+| --------------------------- | -------------------- | -------------- |
+| "has many"                  | 1:N                  | `1───*`        |
+| "has one"                   | 1:1                  | `1───1`        |
+| "belongs to"                | N:1 (inverse of 1:N) | `*───1`        |
+| "linked through" (junction) | N:M                  | `*───*`        |
+| "optionally has"            | 0..1:N or 0..1:1     | `0..1───*`     |
+
+> **Note:** Design OS uses natural language for readability. The implementation agent can translate these to the appropriate database schema or ORM configuration.
 
 **Valid Relationship Descriptions:**
 

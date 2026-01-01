@@ -498,3 +498,36 @@ exit 0
 | File valid                | Continue     | "Skill file valid..."                         |
 
 Commands may offer to continue with fallback guidance when skill file is missing.
+
+---
+
+## Changelog
+
+Version history for the template system. Individual template versions are tracked in their header comments (`<!-- vX.X.X -->`).
+
+### v1.0.0 — Initial Release
+
+**Date:** 2024-Q4
+
+**Templates:**
+
+- All common templates at v1.0.0
+- All one-shot templates at v1.0.0 (preamble at v1.1.0)
+- All section templates at v1.0.0 (preamble at v1.1.0)
+
+**Features:**
+
+- Complete template system for one-shot and section prompts
+- Variable substitution (`[Product Name]`, `SECTION_NAME`, `SECTION_ID`, `NN`)
+- Version comment stripping during assembly
+- TDD workflow templates (common and section-specific)
+- Clarifying questions (common for full builds, section for incremental)
+
+### Future Changes
+
+When making significant changes to templates:
+
+1. Update the affected template's version comment
+2. Add an entry to this Changelog section
+3. Update the `agents.md` Template Versions table if needed
+4. Test with `/export-product` to verify correct assembly
