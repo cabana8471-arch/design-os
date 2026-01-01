@@ -521,7 +521,7 @@ Create `product-plan/product-overview.md`:
 
 Build this product in milestones:
 
-1. **Foundation** — Set up design tokens, data model types, and application shell
+1. **Foundation** — Set up design tokens, data model types, routing structure[IF INCLUDE_SHELL=true], and application shell[/IF]
 2. **[Section 1]** — [Brief description]
 3. **[Section 2]** — [Brief description]
    ...

@@ -1606,6 +1606,19 @@ This covers 6 critical categories (1, 3, 5, 6, 7, 11) and takes ~29 questions in
 
 These 6 categories provide minimum viable context (50%) for the design workflow. You can always run `--stage=X` later to fill in gaps.
 
+**Why other categories are excluded from `--minimal`:**
+
+| Category Excluded            | Reason                                                                                       |
+| ---------------------------- | -------------------------------------------------------------------------------------------- |
+| 2 (User Research & Personas) | Helpful but not blocking — designs can proceed with basic audience understanding             |
+| 4 (Data Architecture)        | Implementation detail — can be defined during `/data-model` when needed                      |
+| 8 (Performance & Scale)      | Implementation concern — relevant at export/implementation phase, not design                 |
+| 9 (Integration Points)       | Implementation detail — auth/API specifics defined during implementation                     |
+| 10 (Security & Compliance)   | Implementation phase — security details typically defined by implementation team, not design |
+| 12 (Testing & Quality)       | Implementation phase — testing strategy defined when actually writing tests                  |
+
+These categories enhance the design but aren't required for the visual design workflow. They become relevant during `/export-product` and implementation.
+
 ### Updating Context
 
 To add missing sections or update existing answers:
@@ -1799,10 +1812,24 @@ For commands with multiple steps that can fail (like `/export-product`), include
 **Commands with dedicated recovery sections:**
 
 - `/export-product` — Full rollback/recovery section (Step 15)
+- `/sample-data` — Recovery Pattern section at end of file
 
 **Commands with inline recovery notes:**
 
-- All other commands should include brief `> **Recovery:**` notes for critical file operations
+All commands that create or modify files should include brief `> **Recovery:**` notes for critical file operations. Priority commands:
+
+| Command              | Critical Operations                    | Recovery Note Location         |
+| -------------------- | -------------------------------------- | ------------------------------ |
+| `/screenshot-design` | Dev server startup, screenshot capture | Steps 3, 4, 5 (already added)  |
+| `/design-shell`      | Component creation, spec generation    | After Step 7 (component write) |
+| `/design-screen`     | Component creation, preview generation | After Step 5 (component write) |
+| `/shape-section`     | Spec file creation                     | After Step 7 (spec write)      |
+| `/design-tokens`     | JSON file creation                     | After token file write         |
+| `/product-vision`    | Overview file creation                 | After overview write           |
+| `/product-roadmap`   | Roadmap file creation                  | After roadmap write            |
+| `/data-model`        | Data model file creation               | After data-model write         |
+
+> **Note:** Commands like `/product-interview` and `/audit-context` are primarily read/analyze operations and don't require recovery notes unless they write files.
 
 ### Section ID Generation Rules
 

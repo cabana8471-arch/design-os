@@ -49,6 +49,13 @@ These pre-inform design decisions in Steps 3, 3.5, and 3.6.
 
 > **Workflow Structure:** Step 0 validates product context (mandatory). Steps 0.1-0.7 are **pre-flight checks** (audit/detection) that only run when a shell already exists. For fresh creation, these are skipped and the workflow starts at Step 1.
 
+> **Control Flow for Steps 0.5-0.7:** These steps form a SEQUENTIAL audit workflow:
+>
+> - **Step 0.5** presents a manual reference checklist — work through each category with the user
+> - **Step 0.6** displays the aggregated audit report summarizing all findings
+> - **Step 0.7** determines next actions based on the mode selected in Step 0.1
+>   This is NOT an automated process — each check requires verification and judgment.
+
 **Step Index:**
 
 | Step | Purpose                        |
@@ -117,7 +124,7 @@ I've detected an existing Shell Design:
 What would you like to do?
 
 1. **Audit & Report** — Check everything, report issues, no modifications
-2. **Audit & Fix** — Check and auto-repair problems found
+2. **Audit & Manual Fix** — Check issues, then guide you through manual repairs
 3. **Enhance** — Add missing secondary components (drawers, modals)
 4. **Full Rebuild** — Delete everything and start fresh
 ```
@@ -127,7 +134,7 @@ What would you like to do?
 Use AskUserQuestion with these options. Based on the choice:
 
 - **Audit & Report**: Go to Step 0.5, then STOP after displaying report (command ends; user can re-run `/design-shell` to take action)
-- **Audit & Fix**: Go to Step 0.5, fix issues, continue to Step 1+
+- **Audit & Manual Fix**: Go to Step 0.5, work through checklist with user to manually fix issues, then continue to Step 1+
 - **Enhance**: Skip design questions (assume existing shell is valid). Go directly to Step 3.6 to add new secondary components based on updated interactive elements selections.
 - **Full Rebuild**: Delete existing shell files, then continue to Step 1
 

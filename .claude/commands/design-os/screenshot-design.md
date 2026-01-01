@@ -355,7 +355,9 @@ When all screenshots are complete, guide the user to the next step:
 
 "**Next step:** When all your sections have screen designs and screenshots, run `/export-product` to generate the complete handoff package for implementation."
 
-## Step 6: Clean Up - Kill Dev Server
+> **MANDATORY:** After confirming completion (whether user requests additional screenshots or not), ALWAYS proceed to Step 6 to clean up the dev server. Do not end the command without running Step 6.
+
+## Step 6: Clean Up - Kill Dev Server (MANDATORY)
 
 After you're done capturing screenshots, clean up the dev server process based on the detection from Step 2.
 
