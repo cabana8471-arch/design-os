@@ -385,6 +385,11 @@ else:
         errors.append("Missing '_meta.relationships' array")
     elif not isinstance(meta['relationships'], list):
         errors.append("'_meta.relationships' must be an array")
+    else:
+        # Check _meta.relationships content quality
+        if len(meta['relationships']) == 0 and len(meta.get('models', {})) > 1:
+            print("Warning: '_meta.relationships' is empty but multiple models exist.")
+            print("Consider documenting how models relate to each other.")
 
     # Verify model keys match data keys (bidirectional)
     if 'models' in meta and isinstance(meta['models'], dict):

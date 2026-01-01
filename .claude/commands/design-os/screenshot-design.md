@@ -393,7 +393,7 @@ Do NOT kill the server. Inform the user:
 - **Standard viewports:** Desktop 1280x800 (default), Mobile 375x667, Tablet 768x1024
 - **Configured port:** 3000 (see vite.config.ts)
 - Always capture full page screenshots to include all scrollable content
-- **Cleanup:** Only kill the dev server if you started it (DEV_SERVER_PREEXISTING=false)
+- **Dev server cleanup policy:** Only kill servers you started (`DEV_SERVER_PREEXISTING=false`). Pre-existing servers are left running to avoid disrupting the user's workflow.
 
 ### Performance Note
 

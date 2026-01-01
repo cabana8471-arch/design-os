@@ -940,6 +940,8 @@ The `/design-shell` command (Step 3.6) asks about interactive elements and store
 
 **Format:** `- [Trigger].[action] -> [Component] ([type], [dataRef])`
 
+> **Important:** The `- ` prefix (hyphen + space) is REQUIRED for markdown list parsing. Lines without this prefix will be ignored by the relationship parser.
+
 ### Trigger Types
 
 | Trigger        | Source                   | Example Action                    |
@@ -1414,6 +1416,13 @@ Design OS uses a modular template system for generating implementation prompts a
 | `section/tdd-workflow.md`          | v1.2.0-section | Section-specific TDD           |
 
 > **Version Format:** `v{major}.{minor}.{patch}[-suffix]`. The `-section` suffix indicates section-specific variants.
+
+> **Maintenance Process:** When updating template files:
+>
+> 1. Bump version in template file header (e.g., `<!-- v1.0.1 -->`)
+> 2. Update corresponding entry in this table
+> 3. Run `grep -h "^<!-- v" .claude/templates/design-os/**/*.md` to verify all versions
+> 4. Document changes in commit message
 
 ### Command Versions
 

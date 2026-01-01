@@ -139,7 +139,7 @@ Use AskUserQuestion with options:
 
 Track user's choice - if continuing without skill file, use the **fallback design principles** defined in `agents.md`.
 
-> **Note:** The full fallback design principles are documented in `agents.md` → "Enhanced Fallback Design Guidance" section. This includes: Aesthetic Tone Options, Visual Hierarchy, Color Application, Typography Choices, Motion & Interaction, and Distinctiveness Requirements. Use the `frontend-design` skill invocation pattern from `agents.md` → "Skill Invocation Standard Pattern".
+> **Note:** The full fallback design principles are documented in `agents.md` → "Enhanced Fallback Design Guidance" section. This includes: Aesthetic Tone Options, Visual Hierarchy, Color Application, Typography Choices, Motion & Interaction, and Distinctiveness Requirements. For skill file validation, see `agents.md` → "Skill File Validation Pattern".
 
 ### Validate UI Components for Wiring
 

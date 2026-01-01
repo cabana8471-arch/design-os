@@ -73,6 +73,10 @@ These pre-inform design decisions in Steps 3, 3.5, and 3.6.
 | 7    | Create Shell Components        |
 | 7.5  | Validate Section Availability  |
 | 8    | Create Wired Shell Preview     |
+| 8.0  | Validate Shell Data            |
+| 8.0b | Validate Field-to-Component    |
+| 8.1  | Parse Shell Relationships      |
+| 8.2  | Generate ShellPreview          |
 | 9    | Apply Design Tokens            |
 | 9.5  | Inject Anti-Flicker Script     |
 | 10   | Confirm Completion             |
@@ -1980,6 +1984,8 @@ import { HelpPanel } from "./components/HelpPanel"; // ⚠️ CONDITIONAL: Only 
 import { MobileMenuDrawer } from "./components/MobileMenuDrawer"; // ⚠️ CONDITIONAL: Only include if MobileNav.toggle in relationships
 
 // Import shell data and types
+// Note: These imports require Step 6.7-6.8 to have completed successfully
+// If data.json doesn't exist, the dev server will show a clear error
 import shellData from "../../../product/shell/data.json";
 import type { ShellData } from "../../../product/shell/types";
 

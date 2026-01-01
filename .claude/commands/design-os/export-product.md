@@ -679,9 +679,16 @@ The export does not include shell components. Refer to `product-overview.md` for
 
 - `product-plan/design-system/` — Design tokens
 - `product-plan/data-model/` — Type definitions
-- [IF INCLUDE_SHELL=true] `product-plan/shell/README.md` — Shell design intent
-- [IF INCLUDE_SHELL=true] `product-plan/shell/components/` — Shell React components
-- [IF INCLUDE_SHELL=true] `product-plan/shell/screenshot.png` — Shell visual reference
+
+**[IF INCLUDE_SHELL=true]:**
+
+- `product-plan/shell/README.md` — Shell design intent
+- `product-plan/shell/components/` — Shell React components
+- `product-plan/shell/screenshot.png` — Shell visual reference
+
+**[IF INCLUDE_SHELL=false]:**
+
+- No shell files included — implement your own navigation
 
 ## Done When
 
@@ -1241,9 +1248,32 @@ Continue to Step 9 with confidence.
    - If validation passes, continue to Step 9 and subsequent steps
    - If earlier steps (1-7) were not completed, re-run `/export-product` from the beginning instead
 
-## Step 8A: Validate Design Coherence
+## Step 8A: Validate Design Coherence (CONDITIONAL)
 
-Before copying components, perform a design coherence check across all sections to ensure consistent styling.
+**Execute this step IF:**
+
+1. `product/design-system/design-direction.md` exists, AND
+2. The file contains a `## Visual Signatures` section
+
+**Skip this step IF:**
+
+- design-direction.md doesn't exist (shell not designed yet)
+- The file exists but lacks Visual Signatures (minimal design direction)
+
+```bash
+# Check if Step 8A should run
+SHOULD_RUN_8A=false
+
+if [ -f "product/design-system/design-direction.md" ]; then
+  if grep -q "## Visual Signatures" product/design-system/design-direction.md; then
+    SHOULD_RUN_8A=true
+  fi
+fi
+
+echo "Step 8A execution: $SHOULD_RUN_8A"
+```
+
+**If SHOULD_RUN_8A=true**, perform the design coherence check across all sections to ensure consistent styling.
 
 ### Check for Design Direction Document
 
@@ -1389,6 +1419,37 @@ fi
 ```
 
 This ensures implementation agents have access to the aesthetic direction when building the product.
+
+## Step 8B: Validate Props-Based Pattern
+
+Verify that exportable components don't import data directly (which would break in the target codebase):
+
+```bash
+# Check for direct data imports in exportable components
+DIRECT_IMPORTS=$(grep -r "from.*data\.json" src/sections/*/components/*.tsx 2>/dev/null || true)
+
+if [ -n "$DIRECT_IMPORTS" ]; then
+  echo "Warning: Found components with direct data imports:"
+  echo "$DIRECT_IMPORTS"
+  echo ""
+  echo "Exportable components should receive data via props, not import it directly."
+  echo "These components may fail in the target codebase."
+fi
+```
+
+**If direct imports are found:**
+
+1. List the affected files to the user
+2. Warn that these components need refactoring
+3. Ask whether to continue anyway or stop to fix
+
+```
+Question: Direct data imports found in [N] component(s). How do you want to proceed?
+- Continue anyway — I'll fix them in the target codebase
+- Stop here — I need to refactor these components first
+```
+
+**Note:** Preview wrapper files (e.g., `InvoiceListView.tsx`) at the section root ARE allowed to import data — they're Design OS preview files and not exported. Only files in `components/` subdirectories must be props-based.
 
 ## Step 9: Copy and Transform Components
 

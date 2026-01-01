@@ -466,6 +466,12 @@ Let the user know:
 
 "I've created your product overview at `/product/product-overview.md`. The homepage will now display **[Product Name]** with your product vision. You can run `/product-roadmap` next to break this down into development sections."
 
+> **Recovery:** If this command fails, check:
+>
+> 1. Directory permissions: `ls -la product/`
+> 2. File wasn't created: Retry command
+> 3. Partial content: Delete file and retry from start
+
 ## Important Notes
 
 - Be conversational and helpful, not robotic

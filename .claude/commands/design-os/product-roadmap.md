@@ -223,6 +223,12 @@ If they confirm, follow the "Creating New" flow above but explicitly note you're
 
 ---
 
+> **Recovery:** If this command fails, check:
+>
+> 1. Directory permissions: `ls -la product/`
+> 2. File wasn't created: Retry command
+> 3. Partial content: Delete file and retry from start
+
 ## Important Notes
 
 ### Manual Edit Protection
