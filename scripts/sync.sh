@@ -1070,11 +1070,11 @@ cleanup_old_files() {
   local deleted_logs=0
   local deleted_backups=0
 
-  # Delete old log files
-  while IFS= read -r -d '' file; do
-    rm -f "$file"
+  # Delete old log directories (timestamped subfolders)
+  while IFS= read -r -d '' dir; do
+    rm -rf "$dir"
     ((deleted_logs++))
-  done < <(find "$LOGS_DIR" -maxdepth 1 \( -name "sync-*.log" -o -name "sync-*.json" \) -mtime +$LOG_RETENTION_DAYS -print0 2>/dev/null)
+  done < <(find "$LOGS_DIR" -mindepth 1 -maxdepth 1 -type d -mtime +$LOG_RETENTION_DAYS -print0 2>/dev/null)
 
   # Delete old backup ZIP files
   while IFS= read -r -d '' file; do
@@ -1082,7 +1082,7 @@ cleanup_old_files() {
     ((deleted_backups++))
   done < <(find "$BACKUPS_DIR" -maxdepth 1 -name "backup-*.zip" -mtime +$BACKUP_RETENTION_DAYS -print0 2>/dev/null)
 
-  log_success "Deleted $deleted_logs log files, $deleted_backups backup archives"
+  log_success "Deleted $deleted_logs log directories, $deleted_backups backup archives"
 }
 
 # ============================================================================
@@ -1318,8 +1318,13 @@ generate_report() {
   local target="$1"
   local timestamp
   timestamp=$(get_timestamp_filename)
-  local log_file="$LOGS_DIR/sync-$timestamp.log"
-  local json_file="$LOGS_DIR/sync-$timestamp.json"
+
+  # Create timestamped log directory
+  local log_dir="$LOGS_DIR/$timestamp"
+  mkdir -p "$log_dir"
+
+  local log_file="$log_dir/sync.log"
+  local json_file="$log_dir/sync.json"
   local version
   version=$(get_boilerplate_version)
 
@@ -1464,7 +1469,7 @@ EOF
 }
 EOF
 
-  log_verbose "Report saved: $log_file"
+  log_verbose "Report saved: $log_dir/"
 
   # Print summary to console
   if [[ "$QUIET" != true ]]; then
