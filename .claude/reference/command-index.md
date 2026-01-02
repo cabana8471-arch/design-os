@@ -91,7 +91,7 @@ Quick reference for all Design OS commands with their purpose and outputs.
 
 ## Export Command
 
-### `/export-product` (v1.0.0)
+### `/export-product` (v1.1.0)
 
 **Purpose:** Generate complete export package for implementation.
 **Output:** `product-plan/` directory with:

@@ -32,7 +32,15 @@ All section screen designs MUST use a consistent container wrapper. This ensures
 </div>
 ```
 
-> **Note:** `[neutral]` is a placeholder — replace with your neutral color palette (e.g., `stone`, `slate`, `gray`, `zinc`). For example: `bg-stone-50 dark:bg-stone-950`.
+> **Note:** `[neutral]` is a placeholder — replace with your neutral color palette (e.g., `stone`, `slate`, `gray`, `zinc`).
+
+**Concrete Example (using `stone`):**
+
+```tsx
+<div className="h-full bg-stone-50 dark:bg-stone-950 px-4 py-4 sm:px-6">
+  {/* Section content */}
+</div>
+```
 
 ### Container Values by Information Density
 
