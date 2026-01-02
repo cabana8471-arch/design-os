@@ -10,6 +10,8 @@ Design OS follows a structured sequence. Each step builds on the previous one.
 
 Before designing any screens, establish the foundation:
 
+0. **Product Interview** — Gather comprehensive context (required first step)
+   0.5. **Audit Context** — Validate context quality (recommended)
 1. **Product Vision** — Define what you're building and why
 2. **Product Roadmap** — Break your product into sections
 3. **Data Model** — Define the core entities in your system
@@ -41,18 +43,20 @@ See [Export](export.md) for details on what's included and how to use it.
 
 ## Quick Reference
 
-| Command | Purpose |
-|---------|---------|
-| `/product-vision` | Define product name, description, problems, features |
-| `/product-roadmap` | Break product into sections |
-| `/data-model` | Define core entities and relationships |
-| `/design-tokens` | Choose colors and typography |
-| `/design-shell` | Design navigation and layout |
-| `/shape-section` | Define a section's scope and requirements |
-| `/sample-data` | Generate sample data and TypeScript types |
-| `/design-screen` | Create screen design components |
-| `/screenshot-design` | Capture screenshots |
-| `/export-product` | Generate the complete handoff package |
+| Command              | Purpose                                                    |
+| -------------------- | ---------------------------------------------------------- |
+| `/product-interview` | Gather comprehensive product context (required first step) |
+| `/audit-context`     | Validate context quality, find issues (recommended)        |
+| `/product-vision`    | Define product name, description, problems, features       |
+| `/product-roadmap`   | Break product into sections                                |
+| `/data-model`        | Define core entities and relationships                     |
+| `/design-tokens`     | Choose colors and typography                               |
+| `/design-shell`      | Design navigation and layout                               |
+| `/shape-section`     | Define a section's scope and requirements                  |
+| `/sample-data`       | Generate sample data and TypeScript types                  |
+| `/design-screen`     | Create screen design components                            |
+| `/screenshot-design` | Capture screenshots                                        |
+| `/export-product`    | Generate the complete handoff package                      |
 
 ## Tips
 

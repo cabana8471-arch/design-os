@@ -39,7 +39,7 @@ In the same project directory, start Claude Code:
 claude
 ```
 
-You're ready to start designing. Run `/product-vision` to begin defining your product.
+You're ready to start designing. Run `/product-interview` to gather context about your product. This creates the foundation that all other commands build upon.
 
 ---
 

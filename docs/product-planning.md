@@ -2,6 +2,48 @@
 
 The first phase of Design OS establishes the foundation for your product. Complete these steps before designing any screens.
 
+## 0. Product Interview (Required)
+
+```
+/product-interview
+```
+
+Gather comprehensive context about your product through a structured interview. This is the **required first step** that creates the foundation for all subsequent commands.
+
+The interview covers 12 categories including:
+
+- **Product Foundation** — Core vision and target users
+- **Navigation & Shell** — App structure preferences
+- **Section Details** — Feature requirements
+- **Data & Relationships** — Entity definitions
+- **Scale & Growth** — Future considerations
+- **Quality & Polish** — Standards and accessibility
+
+**Creates:** `product/product-context.md`
+
+**Modes:**
+
+- Default — Full interview (12 categories, ~52 questions)
+- `--minimal` — Quick start (6 critical categories)
+- `--audit` — Check completeness of existing context
+
+## 0.5. Audit Context (Recommended)
+
+```
+/audit-context
+```
+
+Critical analysis of your `product-context.md` to identify issues before proceeding. Detects:
+
+- Quality problems and inconsistencies
+- Logic conflicts between answers
+- Ambiguities that could cause implementation issues
+- Duplications and gaps
+
+Run this after `/product-interview` and fix any HIGH priority issues before continuing.
+
+**Creates:** `product/audit-report.md`
+
 ## 1. Product Vision
 
 ```
