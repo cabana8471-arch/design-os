@@ -1,120 +1,115 @@
 # agents.md Index
 
-Quick navigation to sections in the full `agents.md` documentation.
+Quick navigation to sections in the Design OS agent documentation.
+
+> **Note:** The documentation has been modularized into separate files for maintainability. This index maps topics to their locations.
 
 ---
 
-## Core Concepts
+## Documentation Structure
 
-| Section                             | Line Range | Description                                   |
-| ----------------------------------- | ---------- | --------------------------------------------- |
-| Understanding Design OS Context     | ~20-50     | Two contexts: Design OS app vs Product design |
-| Language Requirement                | ~52-70     | All files must be in English                  |
-| Getting Started — The Planning Flow | ~72-140    | Complete workflow sequence                    |
-| The Four Pillars                    | ~490-520   | Overview, Data Model, Design System, Shell    |
-
----
-
-## Commands Reference
-
-| Section                   | Line Range | Description                        |
-| ------------------------- | ---------- | ---------------------------------- |
-| Command Quick Reference   | ~142-210   | Files generated per command        |
-| Command Prerequisites     | ~152-180   | Required vs optional prerequisites |
-| Step Numbering Convention | ~180-210   | Decimal notation explained         |
+| File                            | Contents                                                             |
+| ------------------------------- | -------------------------------------------------------------------- |
+| `agents.md`                     | Core concepts, planning flow, four pillars                           |
+| `agents/command-reference.md`   | Command tables, prerequisites, step numbering, template system       |
+| `agents/design-system.md`       | Design requirements, Tailwind directives, design direction           |
+| `agents/section-system.md`      | File structure, view relationships, skills & design guidance         |
+| `agents/shell-system.md`        | Shell relationships, shell props passthrough, utility components     |
+| `agents/validation-patterns.md` | Prerequisite checks, error handling, retry logic, hookify guardrails |
+| `agents/export-handoff.md`      | Export process, product context system, template state               |
 
 ---
 
-## File Structure
+## Core Concepts (agents.md)
 
-| Section                        | Line Range | Description                  |
-| ------------------------------ | ---------- | ---------------------------- |
-| File Structure                 | ~212-410   | Complete directory tree      |
-| Components vs Preview Wrappers | ~342-380   | Exportable vs Design OS only |
-| data.json → sample-data.json   | ~268-285   | Transformation during export |
-
----
-
-## Design Guidelines
-
-| Section                    | Line Range | Description                        |
-| -------------------------- | ---------- | ---------------------------------- |
-| Design Requirements        | ~415-450   | Responsive, dark mode, props-based |
-| Content Container Standard | ~452-505   | Padding and density guidelines     |
-| Tailwind CSS Directives    | ~507-570   | v4 patterns, built-in classes      |
-| Import Path Aliases        | ~572-605   | @/ alias usage                     |
+| Section                             | Description                                   |
+| ----------------------------------- | --------------------------------------------- |
+| Understanding Design OS Context     | Two contexts: Design OS app vs Product design |
+| Language Requirement                | All files must be in English                  |
+| Getting Started — The Planning Flow | Complete workflow sequence                    |
+| Workflow Decision Tree              | When to skip commands                         |
+| Error Recovery                      | Common mistakes and fixes                     |
+| The Four Pillars                    | Overview, Data Model, Design System, Shell    |
+| Quick Reference: Key Documentation  | Links to other documentation files            |
 
 ---
 
-## Skills & Design Quality
+## Commands Reference (agents/command-reference.md)
 
-| Section                    | Line Range | Description               |
-| -------------------------- | ---------- | ------------------------- |
-| Skills & Design Guidance   | ~607-700   | Frontend-design skill     |
-| Skill File Validation      | ~700-780   | Validation pattern        |
-| Enhanced Fallback Guidance | ~782-830   | When SKILL.md unavailable |
-
----
-
-## Relationships
-
-| Section             | Line Range | Description            |
-| ------------------- | ---------- | ---------------------- |
-| View Relationships  | ~825-920   | Section view wiring    |
-| Shell Relationships | ~922-1080  | Shell component wiring |
-| Relationship Format | ~1082-1100 | Common format standard |
+| Section                     | Description                        |
+| --------------------------- | ---------------------------------- |
+| Files Generated Per Command | What each command creates          |
+| Command Prerequisites       | Required vs optional prerequisites |
+| Step Numbering Convention   | Decimal notation explained         |
+| Template System             | Prompt templates and versions      |
 
 ---
 
-## Design Direction & System
+## File Structure (agents/section-system.md)
 
-| Section                   | Line Range | Description             |
-| ------------------------- | ---------- | ----------------------- |
-| Design Direction Document | ~1102-1200 | Aesthetic decisions     |
-| Design System Scope       | ~1202-1220 | Design OS vs Product    |
-| Shell Props Passthrough   | ~1222-1380 | ScreenDesignPage wiring |
-
----
-
-## Export & Templates
-
-| Section              | Line Range | Description              |
-| -------------------- | ---------- | ------------------------ |
-| Export & Handoff     | ~1382-1420 | Export package structure |
-| Template System      | ~1422-1515 | Prompt templates         |
-| Foundation Milestone | ~1470-1515 | What Foundation includes |
+| Section                        | Description                  |
+| ------------------------------ | ---------------------------- |
+| Complete File Structure        | Full directory tree          |
+| Shell Component Categories     | Navigation, layout, chrome   |
+| Components vs Preview Wrappers | Exportable vs Design OS only |
+| View Relationships             | Section view wiring          |
+| Skills & Design Guidance       | SKILL.md usage               |
 
 ---
 
-## Standards & Patterns
+## Design Guidelines (agents/design-system.md)
 
-| Section                          | Line Range | Description         |
-| -------------------------------- | ---------- | ------------------- |
-| Product Context System           | ~1517-1620 | Interview output    |
-| Standardized Prerequisite Checks | ~1622-1800 | Validation patterns |
-| Error Message Format             | ~1670-1705 | Error formatting    |
-| Directory Creation               | ~1707-1740 | mkdir -p patterns   |
-| Recovery Pattern                 | ~1750-1800 | Failure recovery    |
-| Section ID Generation            | ~1830-1880 | ID rules            |
-| Viewport Dimensions              | ~1970-2015 | Standard sizes      |
+| Section                    | Description                        |
+| -------------------------- | ---------------------------------- |
+| Design Requirements        | Responsive, dark mode, props-based |
+| Content Container Standard | Padding and density guidelines     |
+| Tailwind CSS v4 Directives | v4 patterns, built-in classes      |
+| Import Path Aliases        | @/ alias usage                     |
+| Design Direction Document  | Aesthetic decisions                |
 
 ---
 
-## Utilities
+## Shell System (agents/shell-system.md)
 
-| Section                  | Line Range | Description              |
-| ------------------------ | ---------- | ------------------------ |
-| Shell Utility Components | ~2018-2060 | Pre-existing utilities   |
-| Template State           | ~2062-2120 | Empty directories        |
-| Hookify Guardrails       | ~2122-2180 | Real-time feedback rules |
+| Section                  | Description                          |
+| ------------------------ | ------------------------------------ |
+| Shell Relationships      | Shell component wiring               |
+| Shell Props Passthrough  | ScreenDesignPage wiring              |
+| Shell Utility Components | Pre-existing utilities (hooks, etc.) |
+
+---
+
+## Standards & Patterns (agents/validation-patterns.md)
+
+| Section                          | Description                         |
+| -------------------------------- | ----------------------------------- |
+| Standardized Prerequisite Checks | Validation patterns                 |
+| Error Message Format             | Error formatting standard           |
+| Directory Creation               | mkdir -p patterns                   |
+| Recovery Pattern                 | Failure recovery guidance           |
+| Section ID Generation            | ID rules for sections               |
+| Variable Naming Conventions      | Placeholder vs bash variables       |
+| Retry Pattern                    | Standardized retry logic            |
+| Viewport Dimensions              | Standard viewport sizes             |
+| Hookify Guardrails               | Real-time feedback rules (41 rules) |
+
+---
+
+## Export & Handoff (agents/export-handoff.md)
+
+| Section                   | Description              |
+| ------------------------- | ------------------------ |
+| Export & Handoff          | Export package structure |
+| Product Context System    | Interview output         |
+| Completeness Requirements | What must be complete    |
+| Template State            | Empty directories        |
 
 ---
 
 ## How to Use This Index
 
-1. Find the topic you need
-2. Open `agents.md`
-3. Navigate to the line range indicated
-4. Read the full documentation
+1. Find the topic you need in the tables above
+2. Open the corresponding file from the Documentation Structure table
+3. Search for the section name within that file
 
-**Tip:** In VS Code, use `Ctrl+G` (or `Cmd+G`) to go to a specific line number.
+**Tip:** In VS Code, use `Ctrl+F` (or `Cmd+F`) to search within a file.

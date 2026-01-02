@@ -577,14 +577,14 @@ Each rule can either:
 
 | Category       | Prefix           | Count | Purpose                                |
 | -------------- | ---------------- | ----- | -------------------------------------- |
-| Code Patterns  | `dos-code-`      | 6     | Prevent code that won't work correctly |
-| Workflow       | `dos-workflow-`  | 3     | Guide command sequence                 |
-| Data Integrity | `dos-data-`      | 4     | Ensure data.json correctness           |
-| Design System  | `dos-design-`    | 4     | Enforce design consistency             |
-| Accessibility  | `dos-a11y-`      | 2     | Catch accessibility issues             |
-| File Structure | `dos-structure-` | 3     | Ensure correct file organization       |
+| Code Patterns  | `dos-code-`      | 11    | Prevent code that won't work correctly |
+| Workflow       | `dos-workflow-`  | 6     | Guide command sequence                 |
+| Data Integrity | `dos-data-`      | 7     | Ensure data.json correctness           |
+| Design System  | `dos-design-`    | 8     | Enforce design consistency             |
+| Accessibility  | `dos-a11y-`      | 3     | Catch accessibility issues             |
+| File Structure | `dos-structure-` | 6     | Ensure correct file organization       |
 
-**Total: 22 rules (3 BLOCK + 19 WARN)**
+**Total: 41 rules (7 BLOCK + 34 WARN)**
 
 ### Critical Rules (BLOCK)
 
@@ -594,6 +594,10 @@ These rules **prevent** actions that would break Design OS:
 | ------------------------------------ | ----------------------------------------------- |
 | `dos-code-block-direct-data-import`  | Importing data.json in exportable components    |
 | `dos-code-block-tailwind-config`     | Creating tailwind.config.js (v4 doesn't use it) |
+| `dos-code-block-hardcoded-colors`    | Hardcoded hex/rgb colors instead of Tailwind    |
+| `dos-code-block-inline-styles`       | Inline style attributes in React components     |
+| `dos-code-block-missing-dark-mode`   | Components without dark mode support            |
+| `dos-data-block-invalid-json`        | Invalid JSON syntax in data files               |
 | `dos-structure-block-tsx-in-product` | Creating .tsx files in product/ directory       |
 
 ### Managing Rules

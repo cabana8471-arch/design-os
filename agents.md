@@ -20,7 +20,7 @@ This documentation is split into modular files for maintainability. Read the rel
 | `agents/validation-patterns.md` | Prerequisite checks, error handling, retry logic, hookify guardrails |
 | `agents/export-handoff.md`      | Export process, product context system, template state               |
 
-### File Index (68 total files in .claude/)
+### File Index (91 total files in .claude/)
 
 | Category      | Count | Location                                |
 | ------------- | ----- | --------------------------------------- |
@@ -28,7 +28,7 @@ This documentation is split into modular files for maintainability. Read the rel
 | Phase files   | 16    | `.claude/commands/design-os/[cmd]/*.md` |
 | Templates     | 13    | `.claude/templates/design-os/**/*.md`   |
 | Hookify docs  | 2     | `.claude/hookify/*.md`                  |
-| Hookify rules | 22    | `.claude/hookify/*.local.md`            |
+| Hookify rules | 41    | `.claude/hookify.*.local.md`            |
 | Agent docs    | 6     | `agents/*.md`                           |
 | Root          | 1     | `agents.md`                             |
 

@@ -25,6 +25,11 @@ If exportable components import data directly, they become tied to Design OS and
 | ----------------------------- | ------ | -------------------------------------------------------------- |
 | `block-direct-data-import`    | Block  | `import data from '@/../product/.../data.json'` in components/ |
 | `block-tailwind-config`       | Block  | Creating `tailwind.config.js` (Tailwind v4 is CSS-based)       |
+| `block-hardcoded-colors`      | Block  | Hardcoded hex/rgb colors instead of Tailwind classes           |
+| `block-inline-styles`         | Block  | Inline style attributes in React components                    |
+| `block-missing-dark-mode`     | Block  | Components without dark mode support                           |
+| `warn-complex-conditionals`   | Warn   | Complex nested conditional logic                               |
+| `warn-magic-numbers`          | Warn   | Unexplained numeric values in code                             |
 | `warn-missing-dark-mode`      | Warn   | Color classes without `dark:` variants                         |
 | `warn-relative-imports`       | Warn   | `../../../` instead of `@/` alias                              |
 | `warn-missing-responsive`     | Warn   | Grid layouts without breakpoint prefixes                       |
@@ -78,11 +83,14 @@ Running commands out of order causes:
 
 ### Rules in This Category
 
-| Rule                         | Action | When It Triggers             |
-| ---------------------------- | ------ | ---------------------------- |
-| `warn-design-screen-prereqs` | Warn   | User types `/design-screen`  |
-| `warn-sample-data-prereqs`   | Warn   | User types `/sample-data`    |
-| `warn-export-prereqs`        | Warn   | User types `/export-product` |
+| Rule                         | Action | When It Triggers                |
+| ---------------------------- | ------ | ------------------------------- |
+| `warn-batch-changes`         | Warn   | Making too many changes at once |
+| `warn-design-screen-prereqs` | Warn   | User types `/design-screen`     |
+| `warn-export-prereqs`        | Warn   | User types `/export-product`    |
+| `warn-missing-preview`       | Warn   | Missing preview for components  |
+| `warn-sample-data-prereqs`   | Warn   | User types `/sample-data`       |
+| `warn-skip-verification`     | Warn   | Skipping verification steps     |
 
 Each rule displays a **checklist** of prerequisites to verify.
 
@@ -122,10 +130,13 @@ The `_meta` object is required for:
 
 | Rule                       | Action | Catches                                       |
 | -------------------------- | ------ | --------------------------------------------- |
+| `block-invalid-json`       | Block  | Invalid JSON syntax in data files             |
+| `warn-empty-arrays`        | Warn   | Empty data arrays that should have content    |
+| `warn-hardcoded-ids`       | Warn   | `id="inv-12345"` instead of `id={invoice.id}` |
 | `warn-missing-meta`        | Warn   | data.json without `_meta` object              |
 | `warn-placeholder-content` | Warn   | "Test 1", "Lorem ipsum", "Foo", "Bar"         |
 | `warn-trailing-comma`      | Warn   | JSON syntax errors                            |
-| `warn-hardcoded-ids`       | Warn   | `id="inv-12345"` instead of `id={invoice.id}` |
+| `warn-type-mismatch`       | Warn   | Data doesn't match types.ts definitions       |
 
 ---
 
@@ -147,12 +158,16 @@ Additionally, Design OS uses:
 
 ### Rules in This Category
 
-| Rule                       | Action | Catches                                   |
-| -------------------------- | ------ | ----------------------------------------- |
-| `warn-generic-fonts`       | Warn   | `font-inter`, `font-roboto`, `font-arial` |
-| `warn-custom-colors`       | Warn   | `#ff5733`, `rgb(...)`, `hsl(...)`         |
-| `warn-container-padding`   | Warn   | Non-standard container padding (`p-1`)    |
-| `warn-hover-no-transition` | Warn   | `hover:bg-*` without `transition` classes |
+| Rule                        | Action | Catches                                   |
+| --------------------------- | ------ | ----------------------------------------- |
+| `warn-color-contrast`       | Warn   | Insufficient color contrast ratios        |
+| `warn-container-padding`    | Warn   | Non-standard container padding (`p-1`)    |
+| `warn-custom-colors`        | Warn   | `#ff5733`, `rgb(...)`, `hsl(...)`         |
+| `warn-font-scaling`         | Warn   | Fixed font sizes that don't scale         |
+| `warn-generic-fonts`        | Warn   | `font-inter`, `font-roboto`, `font-arial` |
+| `warn-hover-no-transition`  | Warn   | `hover:bg-*` without `transition` classes |
+| `warn-inconsistent-spacing` | Warn   | Inconsistent spacing values               |
+| `warn-missing-states`       | Warn   | Missing hover/focus/active states         |
 
 ---
 
@@ -172,6 +187,7 @@ Accessible design is non-negotiable. Common issues include:
 | Rule                       | Action | Catches                                          |
 | -------------------------- | ------ | ------------------------------------------------ |
 | `warn-icon-button-no-aria` | Warn   | `<button><Icon /></button>` without `aria-label` |
+| `warn-missing-aria`        | Warn   | Interactive elements missing ARIA attributes     |
 | `warn-missing-focus`       | Warn   | Buttons without `focus:` styles                  |
 
 ---
@@ -208,7 +224,10 @@ Files in `product/` must be portable. React components belong in `src/`.
 | Rule                      | Action | Catches                                    |
 | ------------------------- | ------ | ------------------------------------------ |
 | `block-tsx-in-product`    | Block  | `.tsx` files in `product/` directory       |
+| `warn-circular-deps`      | Warn   | Circular import dependencies               |
 | `warn-component-location` | Warn   | Exportable component outside `components/` |
+| `warn-deep-nesting`       | Warn   | Deeply nested file structures              |
+| `warn-large-files`        | Warn   | Files exceeding recommended size limits    |
 | `warn-shell-location`     | Warn   | Shell components outside `src/shell/`      |
 
 ---
