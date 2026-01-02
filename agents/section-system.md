@@ -164,6 +164,55 @@ The preview wrapper imports sample data and provides it to components for Design
 
 ---
 
+## Naming Conventions
+
+| Type             | Convention                  | Example            |
+| ---------------- | --------------------------- | ------------------ |
+| Section ID       | kebab-case                  | `user-management`  |
+| Component files  | PascalCase.tsx              | `UserList.tsx`     |
+| Type files       | kebab-case.ts               | `types.ts`         |
+| Data files       | kebab-case.json             | `data.json`        |
+| View components  | PascalCase + View suffix    | `UserListView.tsx` |
+| Preview wrappers | PascalCase + Preview suffix | `ShellPreview.tsx` |
+
+> **Section ID Rules**: See `validation-patterns.md` Section ID Generation Rules for complete naming requirements.
+
+---
+
+## Component Folder Organization
+
+### Standard Section Structure
+
+```
+src/sections/[section-id]/
+├── components/           # Exportable components
+│   ├── index.ts         # Barrel export
+│   ├── [Primary].tsx    # Main view component
+│   ├── [Secondary].tsx  # Detail/form components
+│   └── [Shared].tsx     # Shared within section
+└── [ViewName]View.tsx   # Preview wrappers (not exported)
+```
+
+### When to Create Sub-folders
+
+| Condition       | Action           |
+| --------------- | ---------------- |
+| <5 components   | Flat structure   |
+| 5-10 components | Group by feature |
+| >10 components  | Split section    |
+
+### Index.ts Pattern
+
+```tsx
+// components/index.ts
+export { UserList } from "./UserList";
+export { UserCard } from "./UserCard";
+export { UserForm } from "./UserForm";
+// Do NOT export preview wrappers
+```
+
+---
+
 ## View Relationships
 
 Design OS supports wiring views together for functional previews. When a section has multiple views (e.g., list + drawer), they can be connected so clicking an item in the list actually opens the drawer.
@@ -309,6 +358,40 @@ Commands that create user-facing components reference the frontend-design skill 
    - Step 1: Validates `.claude/skills/frontend-design/SKILL.md` exists and has meaningful content (>100 chars)
    - Step 5: Applies the design guidance when creating screen components
 
+### Skill File Content Template
+
+**Required Structure for SKILL.md:**
+
+```markdown
+<!-- v1.0.0 -->
+<!-- Usage: [when to use this skill] -->
+
+name: [skill-name]
+description: [one-line description]
+
+---
+
+## [Main Guidance Section]
+
+[Actual guidance content - minimum 100 characters after metadata]
+
+### Sub-section 1
+
+[Detailed guidance]
+
+### Sub-section 2
+
+[More guidance]
+```
+
+**Validation Criteria:**
+
+1. Version comment present (e.g., `<!-- v1.0.0 -->`)
+2. `name:` and `description:` fields before `---`
+3. Content after `---` separator
+4. Minimum 100 characters of actual guidance
+5. At least one markdown heading (##)
+
 ### Design Guidance Hierarchy
 
 When creating screen designs, follow this hierarchy:
@@ -402,3 +485,65 @@ Even without the full skill file, make at least ONE distinctive choice:
 - Creative use of negative space
 - Unique hover interaction
 - Non-standard card treatment
+
+---
+
+## Performance Guidelines
+
+### Component Complexity Limits
+
+| Metric      | Limit   | Action if Exceeded        |
+| ----------- | ------- | ------------------------- |
+| Props       | <15     | Split into sub-components |
+| Lines       | <300    | Extract logic to hooks    |
+| Re-renders  | <10/sec | Add useMemo/useCallback   |
+| Bundle size | <50KB   | Code-split large deps     |
+
+### Data Optimization
+
+- Paginate lists >50 items
+- Virtualize lists >100 items
+- Debounce search inputs (300ms)
+- Cache API responses when appropriate
+
+### Image Guidelines
+
+- Use WebP format
+- Lazy load below-fold images
+- Provide width/height to prevent layout shift
+
+---
+
+## Testing Screen Designs
+
+### Unit Test Structure
+
+```tsx
+describe("UserListView", () => {
+  it("renders user list", () => {
+    render(<UserListView users={mockUsers} />);
+    expect(screen.getByRole("list")).toBeInTheDocument();
+  });
+
+  it("calls onSelectUser when item clicked", () => {
+    const onSelect = vi.fn();
+    render(<UserListView users={mockUsers} onSelectUser={onSelect} />);
+    fireEvent.click(screen.getByText("John Doe"));
+    expect(onSelect).toHaveBeenCalledWith("user-1");
+  });
+
+  it("shows empty state when no users", () => {
+    render(<UserListView users={[]} />);
+    expect(screen.getByText(/no users/i)).toBeInTheDocument();
+  });
+});
+```
+
+### What to Test
+
+- [ ] Renders with mock data
+- [ ] All callbacks fire correctly
+- [ ] Empty states display
+- [ ] Loading states display
+- [ ] Error states display
+- [ ] Responsive breakpoints work

@@ -1,3 +1,5 @@
+<!-- v1.0.0 -->
+
 # Design OS Prompt Template System
 
 This directory contains modular templates for generating implementation prompts during the `/export-product` command.

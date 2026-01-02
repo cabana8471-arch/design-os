@@ -134,6 +134,33 @@ To add missing sections or update existing answers:
 
 `product/product-context.md` — Committed to repository, shared with team, referenced by all commands.
 
+### Shell Conditional Logic Implementation
+
+**Where INCLUDE_SHELL is Set:**
+
+- **Location:** `/export-product` Step 1 prerequisite check
+- **Storage:** Not persisted — evaluated at export time
+- **Detection:** Checks if `product/shell/spec.md` exists
+
+**How Commands Detect It:**
+
+```
+IF product/shell/spec.md EXISTS:
+  INCLUDE_SHELL=true
+  - Export shell components
+  - Include shell types in prompts
+ELSE:
+  INCLUDE_SHELL=false
+  - Skip shell export
+  - Generate standalone section prompts
+```
+
+**When Shell is Excluded:**
+
+- User ran `/design-screen` without `/design-shell`
+- Product is a single-page app without navigation
+- Export is for component library only
+
 ---
 
 ## Template State (Boilerplate Directories)
@@ -182,3 +209,49 @@ The Design OS source code includes functions that check for content existence:
 - `loadProductData()` — Returns empty/null values until product files are created
 
 These functions gracefully handle the empty state and enable the UI to show appropriate "get started" messaging rather than errors.
+
+---
+
+## Prompt Assembly Details
+
+### Order of Assembly (One-Shot Prompt)
+
+1. `common/top-rules.md`
+2. `one-shot/preamble.md`
+3. `common/model-guidance.md`
+4. `one-shot/prompt-template.md`
+5. `common/verification-checklist.md`
+6. `common/tdd-workflow.md`
+7. `common/reporting-protocol.md`
+
+### Variable Substitution
+
+| Variable         | Source              | Example           |
+| ---------------- | ------------------- | ----------------- |
+| `[Product Name]` | product-overview.md | "TaskFlow"        |
+| `SECTION_NAME`   | Section spec.md     | "User Management" |
+| `SECTION_ID`     | Section folder      | "user-management" |
+| `NN`             | View count          | "03"              |
+
+### Version Stripping
+
+Template version comments (e.g., `<!-- v1.0.0 -->`) are removed from final output.
+
+---
+
+## Context Validation Rules
+
+### What "Complete" Means for a Category
+
+A category is marked ✅ Complete when:
+
+1. **All required questions answered** — No empty responses
+2. **Minimum word count met** — At least 20 words per answer
+3. **No placeholder text** — No "[TODO]", "TBD", or similar
+4. **Internally consistent** — No contradictions within category
+
+### Partial Completion
+
+- 4/5 questions answered = ❌ Incomplete (doesn't count toward 50%)
+- 5/5 questions with one <20 words = ❌ Incomplete
+- 5/5 questions properly answered = ✅ Complete

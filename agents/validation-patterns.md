@@ -327,6 +327,62 @@ Commands should ask users questions in a consistent, predictable way:
 
 ---
 
+## Relationship Format Validation
+
+### Valid Format
+
+```
+- [SourceView].[callbackName] -> [TargetView] (type, dataRef)
+```
+
+### Validation Rules
+
+| Rule           | Valid                         | Invalid                |
+| -------------- | ----------------------------- | ---------------------- |
+| View names     | PascalCase                    | kebab-case, snake_case |
+| Callback names | camelCase                     | PascalCase, kebab-case |
+| Type           | `navigate`, `modal`, `drawer` | custom types           |
+| DataRef        | matches types.ts              | undefined references   |
+
+### Example Validations
+
+```
+✓ UserList.onViewUser -> UserDetail (navigate, userId)
+✓ Dashboard.onOpenSettings -> SettingsModal (modal, null)
+✗ user-list.on_view -> UserDetail (navigate, userId)  # wrong case
+✗ UserList.onViewUser -> UserDetail (popup, userId)   # invalid type
+```
+
+---
+
+## Category Completeness by Command
+
+### Which Categories Each Command Needs
+
+| Command            | Required Categories                        | Minimum % |
+| ------------------ | ------------------------------------------ | --------- |
+| `/product-vision`  | 1 (Foundation)                             | 8%        |
+| `/product-roadmap` | 1, 8 (Foundation, Scale)                   | 17%       |
+| `/design-tokens`   | 3 (Design Direction)                       | 8%        |
+| `/design-shell`    | 2, 3, 7 (Personas, Design, Mobile)         | 25%       |
+| `/shape-section`   | 5, 6, 11 (Section, UI, Error)              | 25%       |
+| `/sample-data`     | 4, 5 (Data, Section)                       | 17%       |
+| `/design-screen`   | 3, 5, 6, 7, 11                             | 42%       |
+| `/export-product`  | 9, 10, 12 (Integration, Security, Testing) | 25%       |
+
+### Validation at Command Start
+
+```
+IF category_completeness < required_minimum:
+  WARN: "Category X incomplete. Continue with defaults? [y/N]"
+  IF user_confirms:
+    PROCEED with fallback values
+  ELSE:
+    SUGGEST: "Run /product-interview --stage=X"
+```
+
+---
+
 ## Retry Pattern (Standardized)
 
 Commands that involve validation loops should follow this consistent retry pattern:
@@ -373,6 +429,36 @@ Commands without retry patterns are lower priority because their errors are eith
 ```
 Error: Validation failed after 3 attempts.
 Please review the errors above and fix manually before retrying.
+```
+
+### Retry Timeline by Operation Type
+
+| Operation  | Wait Before Retry | Max Attempts | Escalation           |
+| ---------- | ----------------- | ------------ | -------------------- |
+| File read  | 0ms               | 2            | Fail immediately     |
+| File write | 100ms             | 3            | Check permissions    |
+| Screenshot | 2000ms            | 3            | Increase viewport    |
+| Dev server | 5000ms            | 5            | Check port conflicts |
+| Build      | 3000ms            | 2            | Show error details   |
+
+### Exponential Backoff Pattern
+
+```typescript
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  maxAttempts: number,
+  baseDelay: number,
+): Promise<T> {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (attempt === maxAttempts) throw error;
+      const delay = baseDelay * Math.pow(2, attempt - 1);
+      await sleep(delay);
+    }
+  }
+}
 ```
 
 ---
@@ -547,3 +633,82 @@ Individual rule files (`.claude/hookify.*.local.md`) contain:
 - Match patterns and file filters
 - Action type (warn or block)
 - Enabled/disabled status
+
+---
+
+## Cross-Command Error Propagation
+
+### Error Cascade Rules
+
+When a command fails, dependent commands should:
+
+| Failing Command      | Affected Commands                     | Behavior                              |
+| -------------------- | ------------------------------------- | ------------------------------------- |
+| `/product-interview` | ALL                                   | Block: "Run /product-interview first" |
+| `/product-vision`    | `/product-roadmap`, `/export-product` | Block with clear message              |
+| `/design-tokens`     | `/design-shell`, `/design-screen`     | Warn + use defaults                   |
+| `/design-shell`      | `/design-screen`                      | Warn + skip shell integration         |
+| `/shape-section`     | `/sample-data`, `/design-screen`      | Block for that section                |
+
+### Error Message Format
+
+```
+❌ Cannot proceed: [Command Name]
+
+Required file missing: [file path]
+└── Created by: /[prerequisite-command]
+
+Action: Run `/[prerequisite-command]` first, then retry.
+```
+
+### Partial Failure Recovery
+
+If command fails mid-execution:
+
+1. Log which step failed
+2. List files successfully created
+3. Provide specific recovery command
+4. Do NOT auto-rollback (user may want partial work)
+
+---
+
+## Data Type Validation (types.ts ↔ data.json)
+
+### Validation Checklist
+
+Before accepting data.json as valid:
+
+1. [ ] JSON parses without errors
+2. [ ] Has `_meta` structure with version
+3. [ ] All required entity arrays present
+4. [ ] Entity IDs unique within array
+5. [ ] Foreign key references valid
+6. [ ] Enum values match types.ts definitions
+
+### Validation Example
+
+```typescript
+// types.ts
+type UserRole = "admin" | "member" | "guest";
+
+interface User {
+  id: string;
+  name: string;
+  role: UserRole;
+  teamId: string; // FK to Team
+}
+
+// Validation checks for data.json:
+// 1. user.role IN ['admin', 'member', 'guest']
+// 2. user.teamId EXISTS IN teams[].id
+// 3. user.id UNIQUE across all users
+```
+
+### Auto-Validation in Commands
+
+`/sample-data` should validate:
+
+- All generated data matches types.ts
+- No orphan foreign keys
+- No duplicate IDs
+- Enums use valid values only

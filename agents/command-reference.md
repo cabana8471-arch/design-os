@@ -60,6 +60,56 @@ This document contains the command quick reference tables, prerequisites, step n
 
 > **Relationship to /audit-context Command Readiness:** The table above shows FILE prerequisites (what files must exist). The `/audit-context` command has a separate "Command Readiness" table showing CATEGORY completeness requirements. A command needs BOTH: the required files must exist AND the relevant categories must have sufficient content.
 
+### Visual Dependency Graph
+
+```
+/product-interview ──┬──► /audit-context
+                     │
+                     └──► /product-vision ──► /product-roadmap
+                                   │
+                                   ▼
+                          /data-model (optional)
+                                   │
+                                   ▼
+                          /design-tokens
+                                   │
+                                   ▼
+                          /design-shell
+                                   │
+                     ┌─────────────┴─────────────┐
+                     ▼                           ▼
+              /shape-section              /sample-data
+                     │                           │
+                     └─────────┬─────────────────┘
+                               ▼
+                        /design-screen
+                               │
+                               ▼
+                      /screenshot-design
+                               │
+                               ▼
+                       /export-product
+```
+
+### Troubleshooting Prerequisites
+
+| Error Message                   | Cause               | Solution             |
+| ------------------------------- | ------------------- | -------------------- |
+| "product-context.md not found"  | Interview not run   | `/product-interview` |
+| "product-overview.md not found" | Vision not run      | `/product-vision`    |
+| "spec.md not found"             | Section not defined | `/shape-section`     |
+| "Shell components missing"      | Shell not designed  | `/design-shell`      |
+| "Design tokens missing"         | Tokens not defined  | `/design-tokens`     |
+
+### Fallback Behavior (Optional Prerequisites)
+
+| When Missing        | Fallback                                      |
+| ------------------- | --------------------------------------------- |
+| design-tokens       | Tailwind defaults (slate/stone, system fonts) |
+| data-model          | Types generated inline, no entity validation  |
+| SKILL.md            | Generic design guidance ("Refined Utility")   |
+| design-direction.md | Neutral style, no distinctive choices         |
+
 ---
 
 ## Step Numbering Convention

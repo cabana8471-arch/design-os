@@ -20,6 +20,18 @@ This documentation is split into modular files for maintainability. Read the rel
 | `agents/validation-patterns.md` | Prerequisite checks, error handling, retry logic, hookify guardrails |
 | `agents/export-handoff.md`      | Export process, product context system, template state               |
 
+### File Index (68 total files in .claude/)
+
+| Category      | Count | Location                                |
+| ------------- | ----- | --------------------------------------- |
+| Main commands | 12    | `.claude/commands/design-os/*.md`       |
+| Phase files   | 16    | `.claude/commands/design-os/[cmd]/*.md` |
+| Templates     | 13    | `.claude/templates/design-os/**/*.md`   |
+| Hookify docs  | 2     | `.claude/hookify/*.md`                  |
+| Hookify rules | 22    | `.claude/hookify/*.local.md`            |
+| Agent docs    | 6     | `agents/*.md`                           |
+| Root          | 1     | `agents.md`                             |
+
 ---
 
 ## Understanding Design OS Context
@@ -134,6 +146,39 @@ Generate the complete export package with all components, types, and handoff doc
 **Output:** `product-plan/`
 
 > **See also:** `agents/command-reference.md` for the complete command reference tables.
+
+---
+
+## Workflow Decision Tree
+
+| Product Type  | Commands to Skip                | Rationale              |
+| ------------- | ------------------------------- | ---------------------- |
+| MVP Simple    | `/audit-context`, `/data-model` | Minimal viable product |
+| MVP with Data | `/audit-context`                | Data model needed      |
+| Standard      | None                            | Full workflow          |
+| Enterprise    | None + multiple sections        | Most comprehensive     |
+
+### Quick Start (MVP)
+
+```
+/product-interview --minimal → /product-vision → /design-tokens → /design-shell → /shape-section → /design-screen
+```
+
+### Comprehensive (Enterprise)
+
+```
+/product-interview → /audit-context → /product-vision → /product-roadmap → /data-model → /design-tokens → /design-shell → [for each section] → /export-product
+```
+
+---
+
+## Error Recovery
+
+| Mistake                               | Solution                                               |
+| ------------------------------------- | ------------------------------------------------------ |
+| Ran `/product-vision` without context | Run `/product-interview`, then `/product-vision` again |
+| Ran `/design-screen` without shell    | Run `/design-shell`, then `/design-screen` again       |
+| Wrong order                           | Check Prerequisites in `command-reference.md`          |
 
 ---
 

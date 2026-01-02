@@ -170,6 +170,25 @@ Shell relationships are documented but ShellPreview is NOT exported:
 - Shell README.md documents the relationships
 - Wiring implementation depends on target codebase's state management
 
+### Data Flow: Preview vs Export
+
+| Context     | Data Source                        | Wiring                                       |
+| ----------- | ---------------------------------- | -------------------------------------------- |
+| **Preview** | ScreenDesignPage passes mock data  | `<Component {...shellData.secondaryData} />` |
+| **Export**  | Target codebase provides real data | Consumer wires to actual API/state           |
+
+**Preview Time:**
+
+- Shell data parsed from spec.md
+- ScreenDesignPage creates mock state
+- Secondary components receive props through shell
+
+**Export Time:**
+
+- Components export as standalone
+- No shell wrapper needed
+- Consumer integrates with their own data layer
+
 ### Relationship Format Standard
 
 Both View Relationships (sections) and Shell Relationships use the same format:
@@ -358,3 +377,84 @@ import {
   useShellState,
 } from "@/shell/hooks";
 ```
+
+### Shell Hooks Usage Examples
+
+**useFocusManagement:**
+
+```tsx
+const { focusRef, handleFocus } = useFocusManagement();
+// Use for modal focus trapping
+<Dialog ref={focusRef} onFocus={handleFocus}>
+```
+
+**useShellShortcuts:**
+
+```tsx
+useShellShortcuts({
+  "cmd+k": () => setSearchOpen(true),
+  escape: () => setSearchOpen(false),
+});
+```
+
+**useShellState:**
+
+```tsx
+const { sidebarCollapsed, setSidebarCollapsed } = useShellState();
+// Persists sidebar state across navigation
+```
+
+**useSessionTimeout:**
+
+```tsx
+useSessionTimeout({
+  timeout: 30 * 60 * 1000, // 30 minutes
+  onTimeout: () => logout(),
+});
+```
+
+### Testing Shell Components
+
+**Testing Callbacks:**
+
+```tsx
+it("calls onSelect when item clicked", () => {
+  const onSelect = vi.fn();
+  render(<NavigationItem onSelect={onSelect} />);
+  fireEvent.click(screen.getByRole("button"));
+  expect(onSelect).toHaveBeenCalledWith(expectedId);
+});
+```
+
+**Testing Props Passthrough:**
+
+```tsx
+it("passes shell props to secondary components", () => {
+  const shellProps = { user: mockUser, notifications: mockNotifications };
+  render(<ShellPreview {...shellProps} />);
+  expect(screen.getByText(mockUser.name)).toBeInTheDocument();
+});
+```
+
+### Mobile Navigation (MobileMenuDrawer)
+
+**Trigger:** Hamburger icon in mobile header
+**Behavior:**
+
+- Opens as full-height drawer from left
+- Contains all nav items from sidebar
+- Closes on: item select, outside click, swipe left
+
+```tsx
+<MobileMenuDrawer
+  open={menuOpen}
+  onClose={() => setMenuOpen(false)}
+  items={navigationItems}
+  onSelect={(id) => {
+    navigate(id);
+    setMenuOpen(false);
+  }}
+/>
+```
+
+> **Note:** `/design-shell` creates `product/design-system/design-direction.md` which defines the visual language for all screen designs. See `design-system.md` for the schema.

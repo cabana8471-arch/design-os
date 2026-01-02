@@ -12,6 +12,17 @@ When creating screen designs, follow these guidelines:
 
 - **Light & Dark Mode**: Use `dark:` variants for all colors. Test that all UI elements are visible and readable in both modes.
 
+### Dark Mode Validation Checklist
+
+Before marking dark mode complete:
+
+- [ ] All text has sufficient contrast (WCAG AA: 4.5:1)
+- [ ] All icons visible against backgrounds
+- [ ] All buttons/inputs have visible borders or fills
+- [ ] All hover/focus states work in both modes
+- [ ] No hardcoded colors (use CSS variables or Tailwind `dark:` prefix)
+- [ ] Images with transparency work on dark backgrounds
+
 - **Use Design Tokens**: When design tokens are defined, apply the product's color palette and typography. Otherwise, fall back to `stone` for neutrals and `lime` for accents.
 
 - **Props-Based Components**: All screen design components must accept data and callbacks via props. Never import data directly in exportable components.
@@ -49,6 +60,12 @@ All section screen designs MUST use a consistent container wrapper. This ensures
 | Compact     | `px-3 py-3 sm:px-4` | `bg-[neutral]-50/50` |
 | Comfortable | `px-4 py-4 sm:px-6` | `bg-[neutral]-50`    |
 | Spacious    | `px-6 py-6 sm:px-8` | `bg-[neutral]-50`    |
+
+**Decision Factors:**
+
+- **Compact**: Dense data tables, dashboards, admin panels
+- **Comfortable**: Standard forms, content pages, most UIs (default)
+- **Spacious**: Marketing pages, onboarding flows, landing pages
 
 ### Where Density Comes From
 
@@ -384,3 +401,95 @@ Use specific shades for each UI element type to ensure consistency:
   <p className="text-[neutral]-600 dark:text-[neutral]-400">Secondary text</p>
 </div>
 ```
+
+---
+
+## Typography Scale Reference
+
+| Element | Tailwind Class           | Size | Use               |
+| ------- | ------------------------ | ---- | ----------------- |
+| h1      | `text-4xl font-bold`     | 36px | Page titles       |
+| h2      | `text-2xl font-semibold` | 24px | Section headers   |
+| h3      | `text-xl font-medium`    | 20px | Card titles       |
+| body    | `text-base`              | 16px | Main content      |
+| caption | `text-sm text-muted`     | 14px | Help text, labels |
+| tiny    | `text-xs`                | 12px | Badges, tags      |
+
+---
+
+## Accessibility Patterns
+
+### Required for All Components
+
+- [ ] All interactive elements keyboard accessible (Tab, Enter, Space)
+- [ ] Focus indicators visible (outline or ring)
+- [ ] ARIA labels for icons and buttons without text
+- [ ] Color not sole means of conveying information
+- [ ] Minimum touch target 44x44px on mobile
+
+### Form Accessibility
+
+```tsx
+<label htmlFor="email">Email</label>
+<input
+  id="email"
+  aria-describedby="email-hint"
+  aria-invalid={hasError}
+/>
+<span id="email-hint">We'll never share your email</span>
+{hasError && <span role="alert">{errorMessage}</span>}
+```
+
+### Modal/Dialog Accessibility
+
+- Focus trap inside modal
+- ESC closes modal
+- `aria-modal="true"`
+- Return focus to trigger on close
+
+---
+
+## Props-Based Component Pattern
+
+### Good Example
+
+```tsx
+interface ButtonProps {
+  variant: "primary" | "secondary" | "ghost";
+  size: "sm" | "md" | "lg";
+  children: React.ReactNode;
+}
+
+function Button({ variant, size, children }: ButtonProps) {
+  return (
+    <button className={cn(variants[variant], sizes[size])}>{children}</button>
+  );
+}
+```
+
+### Bad Example (hardcoded)
+
+```tsx
+function PrimaryButton({ children }) {
+  return (
+    <button className="bg-blue-500 text-white px-4 py-2">{children}</button>
+  );
+}
+// Creates duplicate components instead of variants
+```
+
+---
+
+## Design Direction ↔ Design Tokens Integration
+
+**Flow:**
+
+1. `/design-tokens` creates `colors.json` + `typography.json`
+2. `/design-shell` reads tokens and creates `design-direction.md`
+3. `/design-screen` reads `design-direction.md` for style guidance
+
+**design-direction.md references:**
+
+- Primary/secondary colors from tokens
+- Font family from typography
+- Generates: distinctive choices, visual metaphors, interaction patterns

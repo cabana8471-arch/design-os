@@ -1,3 +1,5 @@
+<!-- v1.0.0 -->
+
 # Design OS Hookify Rules
 
 Design OS includes **hookify guardrails** that provide real-time feedback during development. These rules catch common mistakes before they cause problems.
