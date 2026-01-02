@@ -200,7 +200,9 @@ BOILERPLATE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Logs directory
 LOGS_DIR="$SCRIPT_DIR/logs"
-BACKUPS_DIR="$LOGS_DIR/backups"
+
+# Backups directory (centralized in .archive/ for ZIP archives)
+BACKUPS_DIR="$BOILERPLATE_ROOT/.archive"
 
 # ============================================================================
 # FUNCTIONS

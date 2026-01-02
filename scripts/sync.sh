@@ -667,10 +667,25 @@ create_backup() {
   local target="$1"
   local timestamp
   timestamp=$(get_timestamp_filename)
-  CURRENT_BACKUP_DIR="$BACKUPS_DIR/$timestamp"
+
+  # Get project name from target path for ZIP filename
+  local project_name
+  project_name=$(basename "$target")
+
+  # Create backup directory if it doesn't exist
+  mkdir -p "$BACKUPS_DIR"
+
+  # ZIP file path
+  local zip_file="$BACKUPS_DIR/backup-${project_name}-${timestamp}.zip"
+  CURRENT_BACKUP_DIR="$zip_file"
+
+  # Create temp directory for backup files
+  local temp_dir
+  temp_dir=$(mktemp -d)
+  local backup_content_dir="$temp_dir/backup-${project_name}-${timestamp}"
+  mkdir -p "$backup_content_dir"
 
   log_info "Creating backup..."
-  mkdir -p "$CURRENT_BACKUP_DIR"
 
   local backed_up=0
 
@@ -678,7 +693,7 @@ create_backup() {
   for file in "${FILES_MODIFIED[@]}" "${FILES_CONFLICTS[@]}"; do
     local target_file="$target/$file"
     if [[ -f "$target_file" ]]; then
-      local backup_file="$CURRENT_BACKUP_DIR/$file"
+      local backup_file="$backup_content_dir/$file"
       local backup_dir
       backup_dir=$(dirname "$backup_file")
       mkdir -p "$backup_dir"
@@ -688,22 +703,43 @@ create_backup() {
         log_verbose "Backed up: $file"
       else
         log_error "Failed to backup: $file"
+        rm -rf "$temp_dir"
         exit $EXIT_BACKUP_ERROR
       fi
     fi
   done
 
   # Save backup metadata
-  cat > "$CURRENT_BACKUP_DIR/.backup-info.json" << EOF
+  cat > "$backup_content_dir/.backup-info.json" << EOF
 {
   "timestamp": "$(get_timestamp)",
   "target": "$target",
+  "project_name": "$project_name",
   "files_count": $backed_up,
   "boilerplate_version": "$(get_boilerplate_version)"
 }
 EOF
 
-  log_success "Backup created: $CURRENT_BACKUP_DIR ($backed_up files)"
+  # Create ZIP archive
+  if command -v zip &>/dev/null; then
+    (cd "$temp_dir" && zip -rq "$zip_file" "backup-${project_name}-${timestamp}")
+    if [[ $? -eq 0 ]]; then
+      local zip_size
+      zip_size=$(format_size $(get_file_size "$zip_file"))
+      log_success "Backup created: $zip_file ($backed_up files, $zip_size)"
+    else
+      log_error "Failed to create ZIP archive"
+      rm -rf "$temp_dir"
+      exit $EXIT_BACKUP_ERROR
+    fi
+  else
+    log_error "zip command not found. Please install zip."
+    rm -rf "$temp_dir"
+    exit $EXIT_MISSING_DEPENDENCY
+  fi
+
+  # Clean up temp directory
+  rm -rf "$temp_dir"
 }
 
 # ============================================================================
@@ -832,44 +868,59 @@ show_diff() {
 
 list_backups() {
   local target="$1"
+  local target_name
+  target_name=$(basename "$target")
 
   echo ""
   echo "Available backups for: $target"
   echo ""
-  echo "  ID                      Date                 Files   Size"
-  echo "  ─────────────────────────────────────────────────────────────"
+  echo "  ID                                              Date                 Files   Size"
+  echo "  ─────────────────────────────────────────────────────────────────────────────────────"
 
   local found=0
 
-  for backup_dir in "$BACKUPS_DIR"/*/; do
-    if [[ -d "$backup_dir" ]]; then
+  # List ZIP files in backups directory
+  for zip_file in "$BACKUPS_DIR"/backup-*.zip; do
+    if [[ -f "$zip_file" ]]; then
       local backup_id
-      backup_id=$(basename "$backup_dir")
-      local info_file="$backup_dir/.backup-info.json"
+      backup_id=$(basename "$zip_file" .zip)
 
-      if [[ -f "$info_file" ]]; then
-        local backup_target
-        if command -v jq &>/dev/null; then
-          backup_target=$(jq -r '.target // ""' "$info_file" 2>/dev/null)
-        else
-          backup_target=$(grep '"target"' "$info_file" | sed 's/.*: *"\([^"]*\)".*/\1/' 2>/dev/null)
-        fi
+      # Extract metadata from ZIP to check target
+      local temp_dir
+      temp_dir=$(mktemp -d)
 
-        # Only show backups for this target
-        if [[ "$backup_target" == "$target" ]]; then
+      # Try to extract .backup-info.json from the ZIP
+      if unzip -q -o "$zip_file" "*/.backup-info.json" -d "$temp_dir" 2>/dev/null; then
+        local info_file
+        info_file=$(find "$temp_dir" -name ".backup-info.json" -type f | head -1)
+
+        if [[ -f "$info_file" ]]; then
+          local backup_target
           local files_count
-          files_count=$(find "$backup_dir" -type f ! -name ".backup-info.json" | wc -l | tr -d ' ')
-          local total_size
-          total_size=$(du -sh "$backup_dir" 2>/dev/null | cut -f1)
+          if command -v jq &>/dev/null; then
+            backup_target=$(jq -r '.target // ""' "$info_file" 2>/dev/null)
+            files_count=$(jq -r '.files_count // 0' "$info_file" 2>/dev/null)
+          else
+            backup_target=$(grep '"target"' "$info_file" | sed 's/.*: *"\([^"]*\)".*/\1/' 2>/dev/null)
+            files_count=$(grep '"files_count"' "$info_file" | sed 's/.*: *\([0-9]*\).*/\1/' 2>/dev/null)
+          fi
 
-          # Format date from ID
-          local date_str
-          date_str=$(echo "$backup_id" | sed 's/\([0-9]\{4\}\)-\([0-9]\{2\}\)-\([0-9]\{2\}\)-\([0-9]\{2\}\)-\([0-9]\{2\}\)-\([0-9]\{2\}\)/\1-\2-\3 \4:\5:\6/')
+          # Only show backups for this target
+          if [[ "$backup_target" == "$target" ]]; then
+            local total_size
+            total_size=$(format_size $(get_file_size "$zip_file"))
 
-          printf "  %-22s %-20s %5s   %s\n" "$backup_id" "$date_str" "$files_count" "$total_size"
-          ((found++))
+            # Extract date from backup ID (backup-projectname-YYYY-MM-DD-HH-MM-SS)
+            local date_str
+            date_str=$(echo "$backup_id" | sed 's/.*-\([0-9]\{4\}\)-\([0-9]\{2\}\)-\([0-9]\{2\}\)-\([0-9]\{2\}\)-\([0-9]\{2\}\)-\([0-9]\{2\}\)$/\1-\2-\3 \4:\5:\6/')
+
+            printf "  %-45s %-20s %5s   %s\n" "$backup_id" "$date_str" "$files_count" "$total_size"
+            ((found++))
+          fi
         fi
       fi
+
+      rm -rf "$temp_dir"
     fi
   done
 
@@ -885,20 +936,54 @@ list_backups() {
 restore_backup() {
   local target="$1"
   local backup_id="$2"
-  local backup_dir="$BACKUPS_DIR/$backup_id"
 
-  if [[ ! -d "$backup_dir" ]]; then
+  # Add .zip extension if not provided
+  local zip_file
+  if [[ "$backup_id" == *.zip ]]; then
+    zip_file="$BACKUPS_DIR/$backup_id"
+  else
+    zip_file="$BACKUPS_DIR/${backup_id}.zip"
+  fi
+
+  if [[ ! -f "$zip_file" ]]; then
     log_error "Backup not found: $backup_id"
     log_info "Use --list-backups to see available backups"
     exit $EXIT_GENERAL_ERROR
   fi
 
+  # Check for unzip command
+  if ! command -v unzip &>/dev/null; then
+    log_error "unzip command not found. Please install unzip."
+    exit $EXIT_MISSING_DEPENDENCY
+  fi
+
   log_info "Restoring from backup: $backup_id"
+
+  # Create temp directory for extraction
+  local temp_dir
+  temp_dir=$(mktemp -d)
+
+  # Extract ZIP to temp directory
+  if ! unzip -q "$zip_file" -d "$temp_dir" 2>/dev/null; then
+    log_error "Failed to extract backup archive"
+    rm -rf "$temp_dir"
+    exit $EXIT_GENERAL_ERROR
+  fi
+
+  # Find the extracted backup directory (should be backup-projectname-timestamp)
+  local backup_content_dir
+  backup_content_dir=$(find "$temp_dir" -mindepth 1 -maxdepth 1 -type d | head -1)
+
+  if [[ -z "$backup_content_dir" ]] || [[ ! -d "$backup_content_dir" ]]; then
+    log_error "Invalid backup archive structure"
+    rm -rf "$temp_dir"
+    exit $EXIT_GENERAL_ERROR
+  fi
 
   local restored=0
 
   while IFS= read -r -d '' file; do
-    local rel_path="${file#$backup_dir/}"
+    local rel_path="${file#$backup_content_dir/}"
     [[ "$rel_path" == ".backup-info.json" ]] && continue
 
     local target_file="$target/$rel_path"
@@ -913,7 +998,10 @@ restore_backup() {
     else
       log_error "Failed to restore: $rel_path"
     fi
-  done < <(find "$backup_dir" -type f -print0)
+  done < <(find "$backup_content_dir" -type f -print0)
+
+  # Clean up temp directory
+  rm -rf "$temp_dir"
 
   log_success "Restored $restored files from backup"
 }
@@ -988,13 +1076,13 @@ cleanup_old_files() {
     ((deleted_logs++))
   done < <(find "$LOGS_DIR" -maxdepth 1 \( -name "sync-*.log" -o -name "sync-*.json" \) -mtime +$LOG_RETENTION_DAYS -print0 2>/dev/null)
 
-  # Delete old backup directories
-  while IFS= read -r -d '' dir; do
-    rm -rf "$dir"
+  # Delete old backup ZIP files
+  while IFS= read -r -d '' file; do
+    rm -f "$file"
     ((deleted_backups++))
-  done < <(find "$BACKUPS_DIR" -mindepth 1 -maxdepth 1 -type d -mtime +$BACKUP_RETENTION_DAYS -print0 2>/dev/null)
+  done < <(find "$BACKUPS_DIR" -maxdepth 1 -name "backup-*.zip" -mtime +$BACKUP_RETENTION_DAYS -print0 2>/dev/null)
 
-  log_success "Deleted $deleted_logs log files, $deleted_backups backup directories"
+  log_success "Deleted $deleted_logs log files, $deleted_backups backup archives"
 }
 
 # ============================================================================
