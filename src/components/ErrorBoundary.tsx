@@ -8,7 +8,6 @@ import { Component, type ReactNode } from 'react'
 import { AlertTriangle, RefreshCw, Home, ChevronDown, ChevronUp, Terminal, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
 
 /**
  * Recovery action with optional command
@@ -99,7 +98,64 @@ function getDefaultRecoveryActions(
 }
 
 /**
+ * Command copy button - handles its own state to avoid hooks issues in error boundaries
+ */
+class CommandCopyButton extends Component<
+  { command: string },
+  { copied: boolean }
+> {
+  private timeoutId: ReturnType<typeof setTimeout> | null = null
+
+  constructor(props: { command: string }) {
+    super(props)
+    this.state = { copied: false }
+  }
+
+  componentWillUnmount() {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId)
+    }
+  }
+
+  handleCopy = async () => {
+    await navigator.clipboard.writeText(this.props.command)
+    this.setState({ copied: true })
+    this.timeoutId = setTimeout(() => this.setState({ copied: false }), 2000)
+  }
+
+  render() {
+    const { command } = this.props
+    const { copied } = this.state
+
+    return (
+      <button
+        onClick={this.handleCopy}
+        className={cn(
+          'flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-mono',
+          'bg-stone-900 dark:bg-stone-950 text-lime-400',
+          'hover:bg-stone-800 dark:hover:bg-stone-900 transition-colors'
+        )}
+        title="Copy command"
+      >
+        {copied ? (
+          <>
+            <Check className="w-3 h-3" strokeWidth={2} />
+            Copied
+          </>
+        ) : (
+          <>
+            <Terminal className="w-3 h-3" strokeWidth={2} />
+            {command}
+          </>
+        )}
+      </button>
+    )
+  }
+}
+
+/**
  * Context-aware recovery suggestions component
+ * Note: Uses class component for copy button to avoid hooks issues in error boundaries
  */
 function ContextRecovery({
   context,
@@ -112,19 +168,11 @@ function ContextRecovery({
   recoveryActions?: RecoveryAction[]
   error?: Error | null
 }) {
-  const [copiedCommand, setCopiedCommand] = useState<string | null>(null)
-
   // Combine default and custom recovery actions
   const defaultActions = getDefaultRecoveryActions(context, sectionId, error)
   const allActions = [...defaultActions, ...(recoveryActions || [])]
 
   if (allActions.length === 0) return null
-
-  const handleCopyCommand = async (command: string) => {
-    await navigator.clipboard.writeText(command)
-    setCopiedCommand(command)
-    setTimeout(() => setCopiedCommand(null), 2000)
-  }
 
   return (
     <div className="w-full max-w-md mb-6">
@@ -147,35 +195,9 @@ function ContextRecovery({
                 </p>
               )}
             </div>
-            {action.command && (
-              <button
-                onClick={() => handleCopyCommand(action.command!)}
-                className={cn(
-                  'flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-mono',
-                  'bg-stone-900 dark:bg-stone-950 text-lime-400',
-                  'hover:bg-stone-800 dark:hover:bg-stone-900 transition-colors'
-                )}
-                title="Copy command"
-              >
-                {copiedCommand === action.command ? (
-                  <>
-                    <Check className="w-3 h-3" strokeWidth={2} />
-                    Copied
-                  </>
-                ) : (
-                  <>
-                    <Terminal className="w-3 h-3" strokeWidth={2} />
-                    {action.command}
-                  </>
-                )}
-              </button>
-            )}
+            {action.command && <CommandCopyButton command={action.command} />}
             {action.onClick && !action.command && (
-              <Button
-                onClick={action.onClick}
-                variant="outline"
-                size="sm"
-              >
+              <Button onClick={action.onClick} variant="outline" size="sm">
                 {action.label}
               </Button>
             )}
