@@ -33,6 +33,14 @@ fix-plan.md
 scripts/logs/
 scripts/targets.txt
 scripts/backups/
+.sync-manifest.json
+.sync.lock
 
 # Archive (local backups)
 .archive/
+
+# Evaluator suite
+.claude/commands/evaluator-suite/
+.claude/agents/evaluator-suite/
+.claude/templates/evaluator-suite/
+.claude/EVALUATOR-SUITE-README.md

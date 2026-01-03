@@ -18,6 +18,7 @@ Synchronization script for keeping Design OS projects up-to-date with the boiler
 - **inotify-tools** (optional, for watch mode on Linux)
 
 Installing optional dependencies:
+
 ```bash
 # macOS
 brew install jq fswatch
@@ -80,18 +81,18 @@ Create mode copies files from the boilerplate into a new folder, automatically c
 
 ### Files Excluded on Create
 
-| Folder/File | Reason |
-|-------------|--------|
-| `.git/` | New repo is created |
-| `node_modules/` | Generated with npm install |
-| `product/*` | Project-specific content |
-| `product-plan/` | Export output |
-| `src/sections/*` | User designs |
-| `_documentatie/` | Fork internal documentation |
-| `scripts/logs/` | Local logs |
-| `VERSION` | Only for sync |
-| `FORK_CHANGELOG.md` | Fork-specific |
-| `fix-plan.md` | Development tasks |
+| Folder/File         | Reason                      |
+| ------------------- | --------------------------- |
+| `.git/`             | New repo is created         |
+| `node_modules/`     | Generated with npm install  |
+| `product/*`         | Project-specific content    |
+| `product-plan/`     | Export output               |
+| `src/sections/*`    | User designs                |
+| `_documentatie/`    | Fork internal documentation |
+| `scripts/logs/`     | Local logs                  |
+| `VERSION`           | Only for sync               |
+| `FORK_CHANGELOG.md` | Fork-specific               |
+| `fix-plan.md`       | Development tasks           |
 
 ### Example Output
 
@@ -177,6 +178,7 @@ Create mode copies files from the boilerplate into a new folder, automatically c
 ```
 
 Example output:
+
 ```
 Target: /Users/user/projects/my-app
 Boilerplate version: 1.0.0
@@ -186,6 +188,7 @@ Status: UP TO DATE ✓
 ```
 
 Or if there are changes:
+
 ```
 Status: OUT OF DATE
 
@@ -248,32 +251,32 @@ cp scripts/targets.txt.example scripts/targets.txt
 
 ### Create Mode
 
-| Option | Description |
-|--------|-------------|
+| Option            | Description                                 |
+| ----------------- | ------------------------------------------- |
 | `--create <path>` | Creates a new Design OS project at `<path>` |
-| `--name <name>` | Project name (default: folder name) |
-| `--no-install` | Don't run `npm install` after copying |
-| `--no-git` | Don't initialize git repository |
+| `--name <name>`   | Project name (default: folder name)         |
+| `--no-install`    | Don't run `npm install` after copying       |
+| `--no-git`        | Don't initialize git repository             |
 
 ### Sync Mode
 
-| Option | Description |
-|--------|-------------|
-| `--target <path>` | Path to destination project (required for sync/status/restore) |
-| `--batch` | Synchronize all projects from `targets.txt` |
-| `--dry-run` | Simulation without actual changes |
-| `--backup` | Create backup before overwrite (default: on) |
-| `--no-backup` | Disable backup |
-| `--diff` | Display content differences |
-| `--restore <id>` | Restore from backup (requires `--target`) |
-| `--list-backups` | List available backups (requires `--target`) |
-| `--status` | Check if target is up-to-date (no sync) |
-| `--force` | Overwrite all conflicts without confirmation |
-| `--skip-conflicts` | Skip files with conflicts |
-| `--cleanup` | Only clean old files, no sync |
-| `--verbose` | Detailed output |
-| `--quiet` | Errors only |
-| `--help` | Display help |
+| Option             | Description                                                    |
+| ------------------ | -------------------------------------------------------------- |
+| `--target <path>`  | Path to destination project (required for sync/status/restore) |
+| `--batch`          | Synchronize all projects from `targets.txt`                    |
+| `--dry-run`        | Simulation without actual changes                              |
+| `--backup`         | Create backup before overwrite (default: on)                   |
+| `--no-backup`      | Disable backup                                                 |
+| `--diff`           | Display content differences                                    |
+| `--restore <id>`   | Restore from backup (requires `--target`)                      |
+| `--list-backups`   | List available backups (requires `--target`)                   |
+| `--status`         | Check if target is up-to-date (no sync)                        |
+| `--force`          | Overwrite all conflicts without confirmation                   |
+| `--skip-conflicts` | Skip files with conflicts                                      |
+| `--cleanup`        | Only clean old files, no sync                                  |
+| `--verbose`        | Detailed output                                                |
+| `--quiet`          | Errors only                                                    |
+| `--help`           | Display help                                                   |
 
 ## Synchronized Files
 
@@ -374,6 +377,7 @@ After each sync, the script creates/updates `.sync-manifest.json` in the target 
 ```
 
 This manifest enables:
+
 - Detection of local modifications (conflicts)
 - Up-to-date status verification
 - Warnings when boilerplate has been updated
@@ -383,15 +387,17 @@ This manifest enables:
 ```
 scripts/
 ├── logs/
-│   ├── sync-2025-12-26-14-30-00.log   # Text log
-│   ├── sync-2025-12-26-14-30-00.json  # JSON log
-│   └── backups/
-│       └── 2025-12-26-14-30-00/       # Backup files
-│           ├── .backup-info.json
-│           └── [backed up files...]
+│   └── 2025-12-26-14-30-00/           # Timestamped directory per sync
+│       ├── sync.log                    # Text log
+│       └── sync.json                   # JSON log (if jq available)
+
+.archive/                               # Backup archives (at project root)
+├── backup-my-app-2025-12-26-14-30-00.zip
+└── backup-my-app-2025-12-27-10-00-00.zip
 ```
 
 Default retention:
+
 - **Logs:** 7 days
 - **Backups:** 30 days
 
@@ -399,28 +405,28 @@ Default retention:
 
 ### Sync Mode
 
-| Code | Meaning |
-|------|---------|
-| `0` | Success - sync completed without errors |
-| `1` | General error / invalid arguments |
-| `2` | Target doesn't exist |
-| `3` | Target is not a valid Design OS project |
-| `4` | Lock file exists (another sync in progress) |
-| `5` | Backup error |
-| `6` | Copy error |
-| `7` | Missing dependency |
-| `10` | Batch mode - at least one project failed |
+| Code | Meaning                                     |
+| ---- | ------------------------------------------- |
+| `0`  | Success - sync completed without errors     |
+| `1`  | General error / invalid arguments           |
+| `2`  | Target doesn't exist                        |
+| `3`  | Target is not a valid Design OS project     |
+| `4`  | Lock file exists (another sync in progress) |
+| `5`  | Backup error                                |
+| `6`  | Copy error                                  |
+| `7`  | Missing dependency                          |
+| `10` | Batch mode - at least one project failed    |
 
 ### Create Mode
 
-| Code | Meaning |
-|------|---------|
-| `0` | Success - project created |
-| `1` | General error / invalid arguments |
-| `11` | Cancelled by user (existing target) |
-| `12` | File copy error |
+| Code | Meaning                                 |
+| ---- | --------------------------------------- |
+| `0`  | Success - project created               |
+| `1`  | General error / invalid arguments       |
+| `11` | Cancelled by user (existing target)     |
+| `12` | File copy error                         |
 | `13` | npm install failed (warning, continues) |
-| `14` | git init failed (warning, continues) |
+| `14` | git init failed (warning, continues)    |
 
 ## Configuration
 
@@ -476,6 +482,7 @@ sudo apt install inotify-tools
 ### Unexpected conflicts
 
 If you see conflicts for files you haven't modified:
+
 1. Check `.sync-manifest.json` in the target
 2. Delete the manifest for a fresh sync: `rm ~/projects/my-app/.sync-manifest.json`
 3. Run sync with `--force` to reset the state
@@ -483,18 +490,21 @@ If you see conflicts for files you haven't modified:
 ## Recommended Workflow
 
 1. **First sync** for a new project:
+
    ```bash
    ./scripts/sync.sh --target ~/projects/new-app --dry-run
    ./scripts/sync.sh --target ~/projects/new-app
    ```
 
 2. **Periodic sync** (check + update):
+
    ```bash
    ./scripts/sync.sh --target ~/projects/my-app --status
    ./scripts/sync.sh --target ~/projects/my-app --diff
    ```
 
 3. **Active development** (watch mode):
+
    ```bash
    ./scripts/sync-watch.sh --target ~/projects/my-app --force
    ```

@@ -55,7 +55,7 @@ NO_INSTALL=false
 NO_GIT=false
 
 # Runtime state
-LOCK_FILE=""
+LOCK_DIR=""
 FILES_NEW=()
 FILES_MODIFIED=()
 FILES_UNCHANGED=()
@@ -304,6 +304,18 @@ validate_environment() {
     log_verbose "jq not found, using manual JSON generation"
   fi
 
+  # Check if zip is available (optional, for backup/restore)
+  if command -v zip &>/dev/null; then
+    log_verbose "zip is available for backup archives"
+  else
+    log_warn "zip not found - backup/restore will create directory copies instead of archives"
+  fi
+
+  # Check if bc is available (optional, for percentage calculations)
+  if ! command -v bc &>/dev/null; then
+    log_verbose "bc not found - percentage calculations will use integer arithmetic"
+  fi
+
   # Ensure logs directory exists
   mkdir -p "$LOGS_DIR"
   mkdir -p "$BACKUPS_DIR"
@@ -338,30 +350,54 @@ validate_target() {
 
 acquire_lock() {
   local target="$1"
-  LOCK_FILE="$target/.sync.lock"
+  LOCK_DIR="$target/.sync.lock"
 
-  if [[ -f "$LOCK_FILE" ]]; then
-    local pid
-    pid=$(cat "$LOCK_FILE" 2>/dev/null)
-    if ps -p "$pid" &>/dev/null 2>&1; then
-      log_error "Another sync is in progress (PID: $pid)"
-      log_error "Lock file: $LOCK_FILE"
-      exit $EXIT_LOCK_EXISTS
-    fi
-    # Stale lock file, remove it
-    log_warn "Removing stale lock file (PID $pid not running)"
-    rm -f "$LOCK_FILE"
+  # Use mkdir for atomic lock acquisition (mkdir is atomic on POSIX systems)
+  # This prevents race conditions between checking and creating the lock
+  if mkdir "$LOCK_DIR" 2>/dev/null; then
+    # Lock acquired successfully - write our PID for debugging
+    echo $$ > "$LOCK_DIR/pid"
+    trap 'release_lock' EXIT INT TERM
+    log_verbose "Lock acquired: $LOCK_DIR"
+    return 0
   fi
 
-  echo $$ > "$LOCK_FILE"
-  trap 'release_lock' EXIT INT TERM
-  log_verbose "Lock acquired: $LOCK_FILE"
+  # Lock already exists - check if it's stale
+  if [[ -d "$LOCK_DIR" ]]; then
+    local pid_file="$LOCK_DIR/pid"
+    if [[ -f "$pid_file" ]]; then
+      local pid
+      pid=$(cat "$pid_file" 2>/dev/null)
+      if [[ -n "$pid" ]] && ps -p "$pid" &>/dev/null 2>&1; then
+        log_error "Another sync is in progress (PID: $pid)"
+        log_error "Lock directory: $LOCK_DIR"
+        exit $EXIT_LOCK_EXISTS
+      fi
+    fi
+    # Stale lock - process no longer running
+    log_warn "Removing stale lock (previous sync did not complete)"
+    rm -rf "$LOCK_DIR"
+
+    # Try again to acquire the lock
+    if mkdir "$LOCK_DIR" 2>/dev/null; then
+      echo $$ > "$LOCK_DIR/pid"
+      trap 'release_lock' EXIT INT TERM
+      log_verbose "Lock acquired after removing stale lock: $LOCK_DIR"
+      return 0
+    else
+      log_error "Failed to acquire lock after removing stale lock"
+      exit $EXIT_LOCK_EXISTS
+    fi
+  fi
+
+  log_error "Failed to acquire lock"
+  exit $EXIT_LOCK_EXISTS
 }
 
 release_lock() {
-  if [[ -n "$LOCK_FILE" ]] && [[ -f "$LOCK_FILE" ]]; then
-    rm -f "$LOCK_FILE"
-    log_verbose "Lock released: $LOCK_FILE"
+  if [[ -n "$LOCK_DIR" ]] && [[ -d "$LOCK_DIR" ]]; then
+    rm -rf "$LOCK_DIR"
+    log_verbose "Lock released: $LOCK_DIR"
   fi
 }
 
@@ -675,6 +711,12 @@ create_backup() {
   # Create backup directory if it doesn't exist
   mkdir -p "$BACKUPS_DIR"
 
+  # Check if zip is available before doing any work
+  if ! command -v zip &>/dev/null; then
+    log_error "zip command not found. Please install zip for backup functionality."
+    exit $EXIT_MISSING_DEPENDENCY
+  fi
+
   # ZIP file path
   local zip_file="$BACKUPS_DIR/backup-${project_name}-${timestamp}.zip"
   CURRENT_BACKUP_DIR="$zip_file"
@@ -720,22 +762,16 @@ create_backup() {
 }
 EOF
 
-  # Create ZIP archive
-  if command -v zip &>/dev/null; then
-    (cd "$temp_dir" && zip -rq "$zip_file" "backup-${project_name}-${timestamp}")
-    if [[ $? -eq 0 ]]; then
-      local zip_size
-      zip_size=$(format_size $(get_file_size "$zip_file"))
-      log_success "Backup created: $zip_file ($backed_up files, $zip_size)"
-    else
-      log_error "Failed to create ZIP archive"
-      rm -rf "$temp_dir"
-      exit $EXIT_BACKUP_ERROR
-    fi
+  # Create ZIP archive (zip availability already checked at function start)
+  (cd "$temp_dir" && zip -rq "$zip_file" "backup-${project_name}-${timestamp}")
+  if [[ $? -eq 0 ]]; then
+    local zip_size
+    zip_size=$(format_size $(get_file_size "$zip_file"))
+    log_success "Backup created: $zip_file ($backed_up files, $zip_size)"
   else
-    log_error "zip command not found. Please install zip."
+    log_error "Failed to create ZIP archive"
     rm -rf "$temp_dir"
-    exit $EXIT_MISSING_DEPENDENCY
+    exit $EXIT_BACKUP_ERROR
   fi
 
   # Clean up temp directory
@@ -1722,33 +1758,39 @@ init_git() {
 
   log_info "Initializing git repository..."
 
-  # Change to target directory
-  cd "$target" || exit $EXIT_CREATE_GIT_ERROR
+  # Use subshell to avoid changing parent's working directory
+  (
+    cd "$target" || exit $EXIT_CREATE_GIT_ERROR
 
-  # Initialize git
-  if ! git init &>/dev/null; then
-    log_warn "git init failed"
-    return 1
-  fi
+    # Initialize git
+    if ! git init &>/dev/null; then
+      exit 1
+    fi
 
-  # Add all files
-  if ! git add . &>/dev/null; then
-    log_warn "git add failed"
-    return 1
-  fi
+    # Add all files
+    if ! git add . &>/dev/null; then
+      exit 1
+    fi
 
-  # Create initial commit
-  local commit_msg="Initial project from Design OS boilerplate v$version
+    # Create initial commit
+    local commit_msg="Initial project from Design OS boilerplate v$version
 
 🤖 Generated with Design OS Boilerplate"
 
-  if ! git commit -m "$commit_msg" &>/dev/null; then
-    log_warn "git commit failed"
+    if ! git commit -m "$commit_msg" &>/dev/null; then
+      exit 1
+    fi
+
+    exit 0
+  )
+
+  if [[ $? -eq 0 ]]; then
+    log_success "Git repository initialized with initial commit"
+    return 0
+  else
+    log_warn "git init failed"
     return 1
   fi
-
-  log_success "Git repository initialized with initial commit"
-  return 0
 }
 
 # Run npm install
@@ -1757,16 +1799,23 @@ run_npm_install() {
 
   log_info "Installing dependencies..."
 
-  # Change to target directory
-  cd "$target" || exit $EXIT_CREATE_NPM_ERROR
+  # Use subshell to avoid changing parent's working directory
+  local npm_output
+  npm_output=$(
+    cd "$target" || exit $EXIT_CREATE_NPM_ERROR
+    npm install 2>&1
+    exit $?
+  )
+  local npm_result=$?
 
-  # Run npm install
-  if npm install 2>&1 | tail -5; then
+  if [[ $npm_result -eq 0 ]]; then
+    # Get package count from within target directory
     local pkg_count
-    pkg_count=$(npm list --depth=0 2>/dev/null | wc -l | tr -d ' ')
+    pkg_count=$(cd "$target" && npm list --depth=0 2>/dev/null | wc -l | tr -d ' ')
     log_success "npm install completed ($pkg_count packages)"
     return 0
   else
+    echo "$npm_output" | tail -5
     log_warn "npm install failed - you can run it manually later"
     return 1
   fi

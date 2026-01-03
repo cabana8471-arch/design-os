@@ -15,28 +15,10 @@ source "$SCRIPT_DIR/sync-config.sh"
 # WATCH CONFIGURATION
 # ============================================================================
 
-# Directories to monitor (relative to boilerplate root)
-WATCH_DIRS=(
-  ".claude/commands"
-  ".claude/skills"
-  ".claude/templates"
-  "src/components"
-  "src/lib"
-  "src/types"
-  "docs"
-)
-
-# Individual files to monitor
-WATCH_FILES=(
-  "agents.md"
-  "CLAUDE.md"
-  "package.json"
-  "vite.config.ts"
-  "tsconfig.json"
-  "index.html"
-  "src/main.tsx"
-  "src/index.css"
-)
+# Use the same directories and files as sync-config.sh for consistency
+# This ensures watch mode triggers for ALL files that would be synced
+WATCH_DIRS=("${SYNC_DIRS[@]}")
+WATCH_FILES=("${SYNC_FILES[@]}")
 
 # Debounce delay in seconds (avoid rapid re-syncs)
 DEBOUNCE_DELAY=2

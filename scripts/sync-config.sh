@@ -116,7 +116,7 @@ CREATE_EXCLUDE_DIRS=(
 CREATE_EXCLUDE_FILES=(
   "FORK_CHANGELOG.md"
   "fix-plan.md"
-  "VERSION"
+  "VERSION"                           # Excluded: derived projects get version from their own package.json
   "scripts/targets.txt"
   ".claude/settings.local.json"
   ".DS_Store"
@@ -192,7 +192,9 @@ AUTO_CLEANUP=true
 # ============================================================================
 # PATHS (calculated automatically)
 # ============================================================================
-# Get the directory where this script is located
+# Note: SCRIPT_DIR is defined here using BASH_SOURCE[0] to correctly resolve
+# paths relative to this config file, regardless of which script sources it.
+# This intentionally overwrites any SCRIPT_DIR defined by the calling script.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Boilerplate root is one level up from scripts/
@@ -222,13 +224,16 @@ get_boilerplate_version() {
 is_excluded() {
   local path="$1"
   for pattern in "${EXCLUDE_PATTERNS[@]}"; do
-    # Convert glob pattern to regex-like matching
+    # Glob pattern matching (handles wildcards)
     case "$path" in
       $pattern) return 0 ;;
     esac
-    # Also check if path contains the pattern (for directory patterns)
-    if [[ "$path" == *"$pattern"* ]] && [[ "$pattern" != *"*"* ]]; then
-      return 0
+    # For non-glob patterns (like exact file names), check exact match or directory prefix
+    if [[ "$pattern" != *"*"* ]]; then
+      # Check if path matches exactly or is under the excluded directory
+      if [[ "$path" == "$pattern" ]] || [[ "$path" == "$pattern/"* ]]; then
+        return 0
+      fi
     fi
   done
   return 1
