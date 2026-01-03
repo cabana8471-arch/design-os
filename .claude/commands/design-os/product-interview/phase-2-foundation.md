@@ -1,4 +1,4 @@
-<!-- v1.0.0 -->
+<!-- v1.0.1 -->
 
 # Phase 2: Foundation Categories (1-6)
 
@@ -40,20 +40,7 @@ Before each category, show progress to help users understand where they are in t
 
 **Question counts per category (for progress calculation):**
 
-| Category | Questions | Cumulative |
-| -------- | --------- | ---------- |
-| 1        | 6         | 1-6        |
-| 2        | 4         | 7-10       |
-| 3        | 5         | 11-15      |
-| 4        | 5         | 16-20      |
-| 5        | 5         | 21-25      |
-| 6        | 5         | 26-30      |
-| 7        | 4         | 31-34      |
-| 8        | 4         | 35-38      |
-| 9        | 3         | 39-41      |
-| 10       | 3         | 42-44      |
-| 11       | 4         | 45-48      |
-| 12       | 4         | 49-52      |
+> See the **Question Counts** table in the main `product-interview.md` file for the complete reference. Total: ~52 questions (full interview).
 
 > **For --minimal mode:** Adjust progress to show only 6 categories and ~29 questions total.
 
@@ -355,7 +342,7 @@ If yes, prompt for:
 - Font preference (or "open to suggestions")
 - Logo available? (Yes/No)
 
-> **Note:** Mono/code font selection is handled by `/design-tokens` (defaults to IBM Plex Mono). Only collect general font preferences here.
+> **Note:** Mono/code font selection is handled by `/design-tokens` (defaults to IBM Plex Mono). Only collect general font preferences here. If the user mentions specific font preferences (including mono fonts), record them in this section — they will be used by `/design-tokens` when generating the typography configuration.
 
 ### Question 4.5: Visual Inspiration
 

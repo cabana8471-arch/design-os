@@ -1,4 +1,4 @@
-<!-- v1.0.0 -->
+<!-- v1.0.1 -->
 
 # Phase 3: Depth Categories (7-12)
 
@@ -416,16 +416,18 @@ Options:
 
 ### Question 13.4: Browser Support
 
-Use AskUserQuestion:
+Use AskUserQuestion with `multiSelect: true`:
 
-"Ce browsere trebuie să suporți?"
+"Ce browsere trebuie să suporți? (Poți selecta mai multe)"
 
-Options (multiselect):
+Options:
 
 - **Modern only** — Chrome, Firefox, Safari, Edge (latest)
 - **Include Safari iOS** — Mobile Safari support
 - **Include older browsers** — IE11, older Edge
 - **Progressive enhancement** — Basic works everywhere, best in modern
+
+> **Note:** With exactly 4 options and `multiSelect: true`, this question stays within AskUserQuestion limits. Record all selected options in the output, e.g., "Modern only, Include Safari iOS".
 
 ---
 

@@ -359,16 +359,18 @@ Commands should ask users questions in a consistent, predictable way:
 
 ### Which Categories Each Command Needs
 
-| Command            | Required Categories                        | Minimum % |
-| ------------------ | ------------------------------------------ | --------- |
-| `/product-vision`  | 1 (Foundation)                             | 8%        |
-| `/product-roadmap` | 1, 8 (Foundation, Scale)                   | 17%       |
-| `/design-tokens`   | 3 (Design Direction)                       | 8%        |
-| `/design-shell`    | 2, 3, 7 (Personas, Design, Mobile)         | 25%       |
-| `/shape-section`   | 5, 6, 11 (Section, UI, Error)              | 25%       |
-| `/sample-data`     | 4, 5 (Data, Section)                       | 17%       |
-| `/design-screen`   | 3, 5, 6, 7, 11                             | 42%       |
-| `/export-product`  | 9, 10, 12 (Integration, Security, Testing) | 25%       |
+> **Note:** The "Minimum %" column shows the file completeness threshold required by command-reference.md. The "Key Categories" column shows which categories provide the most relevant context for that command. Commands will warn (not stop) if key categories are incomplete.
+
+| Command            | Key Categories                             | Minimum % | Notes                                          |
+| ------------------ | ------------------------------------------ | --------- | ---------------------------------------------- |
+| `/product-vision`  | 1 (Foundation)                             | 50%       | Requires ≥50% per command-reference.md         |
+| `/product-roadmap` | 1, 8 (Foundation, Scale)                   | 50%       | Requires product-overview.md + product-context |
+| `/design-tokens`   | 3 (Design Direction)                       | 50%       | Requires product-overview.md                   |
+| `/design-shell`    | 2, 3, 7 (Personas, Design, Mobile)         | 50%       | Requires roadmap; tokens optional              |
+| `/shape-section`   | 5, 6, 11 (Section, UI, Error)              | 50%       | Requires roadmap; data model optional          |
+| `/sample-data`     | 4, 5 (Data, Section)                       | 50%       | Requires section spec.md                       |
+| `/design-screen`   | 3, 5, 6, 7, 11                             | 50%       | Requires spec.md, data.json, types.ts          |
+| `/export-product`  | 9, 10, 12 (Integration, Security, Testing) | 50%       | Requires product-overview + at least 1 section |
 
 ### Validation at Command Start
 

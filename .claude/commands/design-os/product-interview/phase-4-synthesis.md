@@ -1,4 +1,4 @@
-<!-- v1.0.0 -->
+<!-- v1.0.1 -->
 
 # Phase 4: Synthesis & Output
 
@@ -21,6 +21,37 @@ For each of the 12 categories, determine its status:
 | Complete | All questions answered         | ✅     |
 | Partial  | 1+ questions answered, not all | ⚠️     |
 | Empty    | No questions answered          | ❌     |
+
+**Answer Quality Validation:**
+
+Before marking a category as complete, verify each answer meets quality standards:
+
+```bash
+# 1. Check minimum word count per answer (min 20 words for substantive answers)
+# Short answers like "Yes", "None", "N/A" are exceptions
+is_substantive_answer() {
+  local ANSWER="$1"
+  local WORD_COUNT=$(echo "$ANSWER" | wc -w | tr -d ' ')
+  # Short acceptable answers
+  case "$ANSWER" in
+    "Yes"|"No"|"None"|"N/A"|"N/A — Not specified") return 0 ;;
+  esac
+  # Substantive answers need 20+ words
+  [ "$WORD_COUNT" -ge 20 ]
+}
+
+# 2. Check for placeholder text that indicates incomplete answers
+has_placeholders() {
+  local CONTENT="$1"
+  echo "$CONTENT" | grep -qiE '\[TODO\]|\[TBD\]|TBD|TODO|FIXME|\[PLACEHOLDER\]|\[FILL IN\]'
+}
+```
+
+**Validation during completeness calculation:**
+
+- If any answer has placeholders → Mark category as ⚠️ Partial
+- If substantive answers have <20 words → Warn but don't downgrade status
+- Log warnings for review: "Category X: Answer to Q.Y has placeholder text"
 
 **Completeness calculation:**
 
@@ -93,6 +124,12 @@ If the user selected "Completăm ce lipsește" in Step 1, existing answers must 
    - Maintain category structure (headings, formatting)
 
 ### 14.2: Generate product-context.md
+
+**First, ensure the directory exists:**
+
+```bash
+mkdir -p product/
+```
 
 Create or update `product/product-context.md` with this structure:
 
@@ -407,6 +444,19 @@ Create or update `product/product-context.md` with this structure:
 
 > **Template Note:** The structure below shows the MAXIMUM cross-reference (when all categories are complete). During generation, apply the filtering rules above to exclude entries for categories marked ❌ Empty in the Quick Reference table. Each command section and each category line should only appear if the category is ✅ or ⚠️.
 
+**Cross-Reference Filtering Test Cases:**
+
+| Scenario                     | Cat Status       | Expected Output                           |
+| ---------------------------- | ---------------- | ----------------------------------------- |
+| `/design-shell` all complete | 2✅ 3✅ 7✅ 9✅  | Include section with all 4 category lines |
+| `/design-shell` partial      | 2❌ 3✅ 7❌ 9✅  | Include section with only Cat 3 & 9 lines |
+| `/design-shell` none         | 2❌ 3❌ 7❌ 9❌  | Omit entire `/design-shell` section       |
+| `/design-tokens` complete    | 3✅              | Include section with Cat 3 line           |
+| `/design-tokens` empty       | 3❌              | Omit entire `/design-tokens` section      |
+| `/shape-section` mixed       | 5⚠️ 6❌ 8❌ 11✅ | Include section with Cat 5 & 11 lines     |
+
+> **Edge Case:** If a category is ⚠️ (Partial), it still counts as "completed" for cross-reference inclusion. The cross-reference shows what context IS available, even if incomplete.
+
 ### For /product-vision
 
 <!-- Include only if Category 1 or 2 is ✅/⚠️ -->
@@ -492,9 +542,15 @@ if [ ! -f "$CONTEXT_FILE" ]; then
 fi
 
 # 1b. Verify file has minimum content (not empty or partial write)
+# Minimum size calculation:
+#   - Header + Quick Reference table: ~600 bytes
+#   - At least 3 category sections (25%): ~300 bytes each = 900 bytes
+#   - Cross-reference section: ~200 bytes
+#   - Total minimum for 25% complete file: ~1700 bytes
+# Using 1000 bytes as safety threshold (catches partial writes but allows minimal files)
 WRITTEN_SIZE=$(wc -c < "$CONTEXT_FILE" | tr -d ' ')
-if [ "$WRITTEN_SIZE" -lt 500 ]; then
-  echo "Error: $CONTEXT_FILE - File appears incomplete ($WRITTEN_SIZE bytes). Check disk space."
+if [ "$WRITTEN_SIZE" -lt 1000 ]; then
+  echo "Error: $CONTEXT_FILE - File appears incomplete ($WRITTEN_SIZE bytes, expected ≥1000). Check disk space."
   exit 1
 fi
 
@@ -552,8 +608,9 @@ for i in $(seq 1 12); do
 done
 
 # 7. Warn if multiple matches for a category (potential parsing issue)
+# Use trailing space after dot to prevent false matches (e.g., "| 1. " won't match "| 10.")
 for i in $(seq 1 12); do
-  MATCH_COUNT=$(grep -c "| $i\." "$CONTEXT_FILE" 2>/dev/null || echo 0)
+  MATCH_COUNT=$(grep -c "| $i\. " "$CONTEXT_FILE" 2>/dev/null || echo 0)
   if [ "$MATCH_COUNT" -gt 1 ]; then
     echo "Warning: Multiple table rows match category $i. Parser will use first match."
   fi
@@ -597,7 +654,8 @@ for cmd in $COMMANDS; do
     HAS_CONTENT=false
     CMD_CATS=$(get_cmd_categories "$cmd")
     for cat_num in $CMD_CATS; do
-      CAT_LINE=$(grep "| $cat_num\." "$CONTEXT_FILE" | head -1)
+      # Use trailing space after dot to prevent false matches (e.g., "| 1. " won't match "| 10.")
+      CAT_LINE=$(grep "| $cat_num\. " "$CONTEXT_FILE" | head -1)
       if echo "$CAT_LINE" | grep -qE "(✅|⚠️|Complete|Partial)"; then
         HAS_CONTENT=true
         break
@@ -658,10 +716,10 @@ Am creat contextul produsului tău!
 >
 > The agent should use judgment to present information clearly while staying within tool constraints.
 
-- Folosește AskUserQuestion cu opțiuni predefinite când e posibil
-- Păstrează întrebările concise - nu repeta ce-ai aflat deja
-- Dacă utilizatorul dă răspunsuri vagi, cere clarificări
-- Validează consistența între răspunsuri (ex: Free/OSS + SSO/SAML = warning)
+- Use AskUserQuestion with predefined options whenever possible
+- Keep questions concise — don't repeat what you've already learned
+- If the user gives vague answers, ask for clarification
+- Validate consistency between answers (e.g., Free/OSS + SSO/SAML = warning)
 - See "Recovery if Interrupted" section below for handling interrupted interview sessions
 
 ### Consistency Validation

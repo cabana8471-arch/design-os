@@ -187,20 +187,20 @@ Design OS uses a modular template system for generating implementation prompts a
 
 Commands in `.claude/commands/design-os/` include version headers (`<!-- vX.X.X -->`) at the top of each file:
 
-| Command              | Version | Notes                                                                                                                               |
-| -------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `/product-interview` | v1.3.5  | + Warning behavior for --minimal --skip-validation, mid-interview correction, file write verification, completeness math validation |
-| `/audit-context`     | v1.1.6  | + awk portability fix, output capture wrapper, category guards, Consistency Matrix clarification, variable scope notes              |
-| `/product-vision`    | v1.0.0  | Initial stable version                                                                                                              |
-| `/product-roadmap`   | v1.0.0  | Initial stable version                                                                                                              |
-| `/data-model`        | v1.0.0  | Initial stable version                                                                                                              |
-| `/design-tokens`     | v1.0.0  | Initial stable version                                                                                                              |
-| `/design-shell`      | v1.0.0  | Initial stable version                                                                                                              |
-| `/shape-section`     | v1.0.0  | Initial stable version                                                                                                              |
-| `/sample-data`       | v1.0.0  | Initial stable version                                                                                                              |
-| `/design-screen`     | v1.0.0  | Initial stable version                                                                                                              |
-| `/screenshot-design` | v1.0.0  | Initial stable version                                                                                                              |
-| `/export-product`    | v1.1.0  | Refactored into phases                                                                                                              |
+| Command              | Version | Notes                                                                                                                  |
+| -------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `/product-interview` | v1.3.6  | + Audit fixes: grep patterns, file validation, word count checks, placeholder detection, mkdir safety                  |
+| `/audit-context`     | v1.1.6  | + awk portability fix, output capture wrapper, category guards, Consistency Matrix clarification, variable scope notes |
+| `/product-vision`    | v1.0.0  | Initial stable version                                                                                                 |
+| `/product-roadmap`   | v1.0.0  | Initial stable version                                                                                                 |
+| `/data-model`        | v1.0.0  | Initial stable version                                                                                                 |
+| `/design-tokens`     | v1.0.0  | Initial stable version                                                                                                 |
+| `/design-shell`      | v1.0.0  | Initial stable version                                                                                                 |
+| `/shape-section`     | v1.0.0  | Initial stable version                                                                                                 |
+| `/sample-data`       | v1.0.0  | Initial stable version                                                                                                 |
+| `/design-screen`     | v1.0.0  | Initial stable version                                                                                                 |
+| `/screenshot-design` | v1.0.0  | Initial stable version                                                                                                 |
+| `/export-product`    | v1.1.0  | Refactored into phases                                                                                                 |
 
 > **Maintenance Note:** When updating a command, bump its version and update this table. Use semantic versioning: patch for fixes, minor for features, major for breaking changes.
 

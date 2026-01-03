@@ -1,4 +1,4 @@
-<!-- v1.0.0 -->
+<!-- v1.0.1 -->
 
 # Phase 1: Setup & Mode Detection
 
@@ -41,12 +41,15 @@ Before proceeding, check for invalid argument combinations:
 | `--skip-validation --audit`   | Error: "--skip-validation only applies to interview modes, not audit."              |
 | `--skip-validation --minimal` | ⚠️ DATA LOSS RISK: Only 6 categories asked; existing categories 2,4,8,9,10,12 lost. |
 
-> **Warning Behavior for `--skip-validation --minimal`:** When this combination is detected, the agent MUST:
+> **Warning Behavior for `--skip-validation --minimal`:** When this combination is detected AND `product-context.md` exists, the agent MUST:
 >
-> 1. Display warning: "⚠️ Folosești --minimal cu --skip-validation. Categoriile existente 2, 4, 8, 9, 10, 12 vor fi pierdute permanent."
-> 2. Use AskUserQuestion to confirm: "Continui?" with options "Da, continuă" / "Nu, anulează"
-> 3. If "Nu, anulează": exit with message "Comandă anulată. Folosește /product-interview --minimal (fără --skip-validation) pentru a păstra categoriile existente."
-> 4. If "Da, continuă": proceed with interview (user accepted data loss risk)
+> 1. **First check if context exists:** `[ -f "product/product-context.md" ]`
+> 2. **If NO existing context:** Proceed without warning (nothing to lose)
+> 3. **If existing context found:**
+>    - Display warning: "⚠️ Folosești --minimal cu --skip-validation. Categoriile existente 2, 4, 8, 9, 10, 12 vor fi pierdute permanent."
+>    - Use AskUserQuestion to confirm: "Continui?" with options "Da, continuă" / "Nu, anulează"
+>    - If "Nu, anulează": exit with message "Comandă anulată. Folosește /product-interview --minimal (fără --skip-validation) pentru a păstra categoriile existente."
+>    - If "Da, continuă": proceed with interview (user accepted data loss risk)
 
 ```bash
 # Validate argument combinations
@@ -75,20 +78,7 @@ fi
 
 **Mode behaviors:**
 
-> **Note:** Numbers in the "Categories" column refer to Category numbers (1-12), not Step numbers (0-14). See the Step-to-Category Mapping table in Step 2 for the correspondence.
-
-| Mode                | Categories (1-12) | Output                                   |
-| ------------------- | ----------------- | ---------------------------------------- |
-| Default             | All 12            | Full product-context.md                  |
-| `--minimal`         | 1, 3, 5, 6, 7, 11 | Quick start context (6 categories = 50%) |
-| `--stage=vision`    | 1, 2              | Foundation + User Research               |
-| `--stage=section`   | 5, 6, 7, 8, 11    | Section design context                   |
-| `--stage=shell`     | 3, 6, 7           | Shell design context                     |
-| `--stage=data`      | 4, 10             | Data architecture context                |
-| `--stage=scale`     | 8, 9              | Performance + Integration context        |
-| `--stage=quality`   | 12                | Testing & Quality context                |
-| `--audit`           | N/A               | Report on completeness                   |
-| `--skip-validation` | All 12            | Skip Step 1 (existing context check)     |
+> **Note:** See the **Mode Options** table in the main `product-interview.md` file for the complete reference. Numbers in the "Categories" column refer to Category numbers (1-12), not Step numbers (0-14). See the Step-to-Category Mapping table in Step 2 for the correspondence.
 
 > **Stage vs Cross-Reference Categories:** The `--stage` categories define what to ASK during the interview. The Cross-Reference section (Step 14.2) shows what each command READS from the context file. These differ intentionally — stages gather focused context, while commands may read from multiple categories. For example, `--stage=shell` asks Categories 3, 6, 7, but `/design-shell` reads Categories 2, 3, 7, 9 (some optional).
 
@@ -152,7 +142,8 @@ check_stage_completion() {
   esac
 
   for cat_num in $STAGE_CATS; do
-    CAT_LINE=$(grep "| $cat_num\." product/product-context.md 2>/dev/null | head -1)
+    # Use trailing space after dot to prevent false matches (e.g., "| 1. " won't match "| 10.")
+    CAT_LINE=$(grep "| $cat_num\. " product/product-context.md 2>/dev/null | head -1)
     if ! echo "$CAT_LINE" | grep -qE "(✅|Complete)"; then
       ALL_COMPLETE=false
       break
@@ -215,7 +206,8 @@ check_minimal_completion() {
   local MINIMAL_CATS="1 3 5 6 7 11"
 
   for cat_num in $MINIMAL_CATS; do
-    CAT_LINE=$(grep "| $cat_num\." product/product-context.md 2>/dev/null | head -1)
+    # Use trailing space after dot to prevent false matches (e.g., "| 1. " won't match "| 10.")
+    CAT_LINE=$(grep "| $cat_num\. " product/product-context.md 2>/dev/null | head -1)
     if ! echo "$CAT_LINE" | grep -qE "(✅|Complete)"; then
       ALL_COMPLETE=false
       break
@@ -258,10 +250,15 @@ check_minimal_completion() {
 
 Before asking questions for any category, check both stage mode AND complete_missing mode:
 
-> **⚠️ Variable Order:** This function references `$INTERVIEW_MODE` which is set in Step 1 (not here). The function is defined here for reference but only called during Steps 2-13. Variable initialization order:
+> **⚠️ Variable Order & Function Scope:** This function is DEFINED in Step 0 but only CALLED during Steps 2-13. It safely references variables that are set at different times:
 >
-> 1. `$STAGE` — Set here in Step 0 from `--stage=X` argument
-> 2. `$INTERVIEW_MODE` — Set in Step 1: "full", "complete_missing", or "audit" (defaults to "full")
+> | Variable          | Set When      | Default Value          | Used By                     |
+> | ----------------- | ------------- | ---------------------- | --------------------------- |
+> | `$STAGE`          | Step 0 (args) | Empty (full interview) | Stage mode check            |
+> | `$MINIMAL_MODE`   | Step 0 (args) | `false`                | Minimal mode check          |
+> | `$INTERVIEW_MODE` | Step 1 (user) | `"full"`               | complete_missing mode check |
+>
+> **Safe to define here** because bash functions are evaluated at call time, not definition time. All variables will be set before any call to `should_ask_category()` in Steps 2-13.
 
 ```bash
 # Function to check if category should be asked
@@ -291,7 +288,8 @@ should_ask_category() {
 
   # Check complete_missing mode
   if [ "$INTERVIEW_MODE" = "complete_missing" ]; then
-    CATEGORY_LINE=$(grep "| $CATEGORY_NUM\." product/product-context.md 2>/dev/null | head -1)
+    # Use trailing space after dot to prevent false matches (e.g., "| 1. " won't match "| 10.")
+    CATEGORY_LINE=$(grep "| $CATEGORY_NUM\. " product/product-context.md 2>/dev/null | head -1)
     if echo "$CATEGORY_LINE" | grep -qE "(✅|Complete)"; then
       return 1  # Skip complete categories
     fi
@@ -381,8 +379,9 @@ Before proceeding with a full review, create a backup of the existing context:
 if [ "$COMPLETENESS" -ge 25 ]; then
   BACKUP_FILE="product/product-context.backup.$(date +%Y%m%d_%H%M%S).md"
   # Handle rare collision if file exists (same second)
+  # Use $RANDOM for cross-platform compatibility (macOS doesn't support date +%N)
   if [ -f "$BACKUP_FILE" ]; then
-    BACKUP_FILE="product/product-context.backup.$(date +%Y%m%d_%H%M%S).$(date +%N | cut -c1-3).md"
+    BACKUP_FILE="product/product-context.backup.$(date +%Y%m%d_%H%M%S)_${RANDOM}.md"
   fi
   cp product/product-context.md "$BACKUP_FILE"
   echo "Backup creat: $BACKUP_FILE"
@@ -391,7 +390,7 @@ fi
 
 > **Backup Policy:** Create backup when existing completeness ≥25%. For very incomplete contexts (<25%), backup is unnecessary since little would be lost.
 >
-> **Collision Handling:** The backup filename uses timestamp with 1-second granularity. In the rare case of running twice within the same second, nanoseconds are appended to avoid overwriting.
+> **Collision Handling:** The backup filename uses timestamp with 1-second granularity. In the rare case of running twice within the same second, `$RANDOM` (0-32767) is appended for uniqueness. This approach is cross-platform compatible (macOS doesn't support `date +%N` for nanoseconds).
 >
 > **Cleanup:** Backup files accumulate over time. To keep only the 3 most recent:
 >
@@ -458,6 +457,30 @@ Skip interview, just analyze and report:
 - 75%+: "Context is comprehensive. Proceed with `/product-vision`"
 ```
 
+**Filtered Audit Report (`--audit --stage=X` or `--audit --minimal`):**
+
+When audit is combined with `--stage` or `--minimal`, the report shows ONLY the categories in that filter:
+
+```markdown
+## Context Audit Report (Stage: shell)
+
+> Showing only categories for --stage=shell: 3, 6, 7
+
+| Category          | Status      | Completeness | Key Gaps                   |
+| ----------------- | ----------- | ------------ | -------------------------- |
+| 3. Design Dir.    | ✅ Complete | 100%         | None                       |
+| 6. UI Patterns    | ⚠️ Partial  | 60%          | Missing notification style |
+| 7. Mobile & Resp. | ❌ Empty    | 0%           | Not started                |
+
+**Stage Completeness: 53%** (based on 3 categories)
+
+**Recommendation:**
+
+- "2 of 3 shell categories need work. Run `/product-interview --stage=shell` to complete."
+```
+
+> **Note:** The "Overall Completeness" changes to "Stage Completeness" and is calculated only from the filtered categories, not all 12.
+
 **After displaying audit report:** EXIT the command immediately. Do NOT proceed to interview questions. The `--audit` flag is for checking status only. If the user wants to answer questions, they should run `/product-interview` (without `--audit`).
 
 ---
@@ -481,7 +504,8 @@ CATEGORY_NUM=1
 
 # Robust emoji parsing - handles UTF-8 variations
 # Match emoji OR text status (Complete/Partial/Empty)
-CATEGORY_LINE=$(grep "| $CATEGORY_NUM\." product/product-context.md | head -1)
+# Use trailing space after dot to prevent false matches (e.g., "| 1. " won't match "| 10.")
+CATEGORY_LINE=$(grep "| $CATEGORY_NUM\. " product/product-context.md | head -1)
 
 # Check for Complete status (✅ or "Complete")
 if echo "$CATEGORY_LINE" | grep -qE "(✅|Complete)"; then

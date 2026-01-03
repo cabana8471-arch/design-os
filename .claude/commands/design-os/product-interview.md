@@ -1,4 +1,4 @@
-<!-- v1.3.5 -->
+<!-- v1.3.6 -->
 
 # Product Interview
 
@@ -150,7 +150,7 @@ This command is split into modular phase files for maintainability:
 | 11       | 4         | 45-48      |
 | 12       | 4         | 49-52      |
 
-**Total:** ~52 questions (full interview: 45-60 min, minimal: 20-30 min)
+**Total:** ~52 questions for full interview, ~29 questions for minimal mode (full: 45-60 min, minimal: 20-30 min)
 
 ---
 
