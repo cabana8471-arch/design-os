@@ -21,3 +21,6 @@ dist/
 # Logs
 *.log
 npm-debug.log*
+
+scripts/logs/
+scripts/targets.txt
